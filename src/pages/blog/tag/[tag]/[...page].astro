@@ -5,7 +5,7 @@ import { getCollection } from "astro:content";
 import createSlug from "../../../../lib/createSlug";
 
 export async function getStaticPaths({ paginate }) {
-  const all_posts = await getCollection("blog");
+  const all_posts = (await getCollection("blog")).filter((post) => !post.data.draft);
   const all_tags = all_posts.flatMap((post) => {
     return post.data.tags || [];
   });
@@ -41,7 +41,10 @@ const params = Astro.params;
           <>
             <HorizontalCard
               title={post.data.title}
-              img={post.data.heroImage}
+              img={post.data.thumbnailImage ?? post.data.heroImage}
+              imgClass={post.data.thumbnailImage ? "w-20 h-20 md:w-24 md:h-24 rounded-xl object-contain shrink-0" : undefined}
+              imgWidth={post.data.thumbnailImage ? 96 : 750}
+              imgHeight={post.data.thumbnailImage ? 96 : 422}
               desc={post.data.description}
               url={"/blog/" + createSlug(post.data.title, post.slug)}
               target="_self"

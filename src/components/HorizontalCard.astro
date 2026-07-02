@@ -1,7 +1,20 @@
 ---
-const { title, img, desc, url, badge, tags, target = "_blank" } = Astro.props;
+const {
+  title,
+  img,
+  desc,
+  url,
+  badge,
+  tags,
+  target = "_blank",
+  tagLinks = true,
+  imgClass = "max-w-full md:max-w-[13rem] rounded-lg",
+  imgWidth = 750,
+  imgHeight = 422,
+} = Astro.props;
 import { Image } from "astro:assets";
 const tag_url = url.split("/").slice(0, -1).join("/") + "/tag";
+const badges = Array.isArray(badge) ? badge : badge ? [badge] : [];
 ---
 
 <div
@@ -13,30 +26,35 @@ const tag_url = url.split("/").slice(0, -1).join("/") + "/tag";
         img && (
           <Image
             src={img}
-            width={750}
-            height={422}
+            width={imgWidth}
+            height={imgHeight}
             format="webp"
             alt={title}
-            class="max-w-full md:max-w-[13rem] rounded-lg"
+            class={imgClass}
           />
         )
       }
       <div class="grow w-full">
-        <h1 class="text-xl font-bold">
-          {title}
-          {badge && <div class="badge badge-secondary mx-2">{badge}</div>}
+        <h1 class="text-xl font-bold flex flex-wrap items-center gap-2">
+          <span>{title}</span>
+          {badges.map((item) => <span class="badge badge-secondary">{item}</span>)}
         </h1>
         <p class="py-1 text-1xl">{desc}</p>
-        <div class="card-actions justify-end">
-          {
-            tags &&
-              tags.map((tag) => (
-                <a href={`${tag_url}/${tag}`} class="badge badge-outline">
-                  {tag}
-                </a>
-              ))
-          }
-        </div>
+        {
+          tags && (
+            <div class="card-actions justify-end">
+              {tags.map((tag) =>
+                tagLinks ? (
+                  <a href={`${tag_url}/${tag}`} class="badge badge-outline">
+                    {tag}
+                  </a>
+                ) : (
+                  <span class="badge badge-outline">{tag}</span>
+                )
+              )}
+            </div>
+          )
+        }
       </div>
     </div>
   </a>

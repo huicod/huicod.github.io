@@ -1,92 +1,240 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import TimeLineElement from "../components/cv/TimeLine.astro";
+
+const focusAreas = [
+  {
+    title: "Systems Engineering",
+    body: "Focusing on distributed systems, cloud services, and Go backend development, with attention to service boundaries, deployment, and maintainable APIs.",
+  },
+  {
+    title: "AI Engineering & Research Notes",
+    body: "Reading papers, comparing methods, and turning useful ideas into short notes or small runnable experiments.",
+  },
+  {
+    title: "Human-Computer Interaction",
+    body: "Exploring how interfaces, feedback, and interaction patterns shape the way people understand and control intelligent or real-time systems.",
+  },
+  {
+    title: "VR, 3D & Graphics",
+    body: "Interested in VR scenes, 3D environments, rendering basics, and graphics pipelines that make interactive agents feel grounded in space.",
+  },
+];
+
+const learningJourney = [
+  "Currently building a habit of moving from course concepts to small working systems and public notes.",
+  "Practicing how to keep projects understandable: clear boundaries, simple interfaces, reproducible setup, and honest documentation.",
+  "Keeping paper notes around multimodal understanding, interaction, system design, and virtual embodied intelligence.",
+  "Next step: connect more reading notes with runnable prototypes instead of only collecting references.",
+];
+
+const openTo = [
+  "Open-source collaboration around backend systems, AI tooling, technical blogs, or portfolio-style projects.",
+  "Paper reading groups, demo reproduction, and technical note exchange around interaction-heavy AI systems.",
+  "Feedback on project structure, engineering writing, and how to make learning projects easier to understand from the outside.",
+];
+
+const projectsAndCommunities = [
+  {
+    name: "SubspaceHunter-SAO",
+    url: "https://github.com/whx-prog/SubspaceHunter-SAO",
+    image: "/project-community/subspacehunter-sao.png",
+    imageAlt: "SubspaceHunter-SAO project preview",
+    imageClass: "h-36 w-full bg-base-200 object-cover md:h-full md:min-h-36",
+    description: "An open-source XR action game framework and art asset project inspired by SAO; I follow it as a reference for XR interaction and virtual-world tooling.",
+  },
+  {
+    name: "Project AIRI",
+    url: "https://github.com/moeru-ai/airi",
+    image: "/project-community/airi-banner.avif",
+    imageAlt: "Project AIRI banner",
+    imageClass: "h-36 w-full bg-base-200 object-cover md:h-full md:min-h-36",
+    description: "A self-hosted virtual companion project with real-time interaction; useful as a reference for virtual characters, voice, memory, and app architecture.",
+  },
+  {
+    name: "SOLAMI",
+    url: "https://github.com/AlanJiang98/SOLAMI",
+    image: "/project-community/solami-teaser.png",
+    imageAlt: "SOLAMI teaser image",
+    imageClass: "h-36 w-full bg-base-200 object-cover md:h-full md:min-h-36",
+    description: "A CVPR 2025 project on social vision-language-action modeling for immersive interaction with 3D autonomous characters.",
+  },
+  {
+    name: "CloudWeGo",
+    url: "https://github.com/cloudwego",
+    image: "/project-community/cloudwego-avatar.png",
+    imageAlt: "CloudWeGo GitHub organization avatar",
+    imageClass: "h-36 w-full bg-base-200 object-contain p-8 md:h-full md:min-h-36",
+    description: "An open-source cloud-native and microservice ecosystem that I follow for service framework design and production engineering practices.",
+  },
+];
+
+const motivationNotes = [
+  {
+    quote: "A distributed system is one in which the failure of a computer you didn't even know existed can render your own computer unusable.",
+    attribution: "Leslie Lamport, email on distributed systems, 1987",
+    url: "https://lamport.azurewebsites.net/pubs/distributed-system.txt",
+  },
+  {
+    quote: "The ultimate display would, of course, be a room within which the computer can control the existence of matter.",
+    attribution: "Ivan E. Sutherland, The Ultimate Display, 1965",
+    url: "https://worrydream.com/refs/Sutherland_1965_-_The_Ultimate_Display.pdf",
+  },
+  {
+    quote: "I want to build systems where agents can perceive, reason, act, and stay understandable inside shared 3D spaces.",
+    attribution: "Personal motivation",
+  },
+];
+
+const skillGroups = [
+  {
+    title: "Languages",
+    items: ["Go", "Python", "JavaScript/TypeScript", "Java"],
+  },
+  {
+    title: "Backend",
+    items: ["Kratos", "RPC", "Microservices", "MySQL", "Redis"],
+  },
+  {
+    title: "AI & Research",
+    items: ["Model Merging", "Multimodal", "Agents", "Machine Learning"],
+  },
+  {
+    title: "Engineering Practices",
+    items: ["Git", "Linux", "Docker", "Technical Writing", "Project Documentation"],
+  },
+];
 ---
 
-<BaseLayout title="Resume" sideBarActiveItemID="cv">
-  <div class="mb-5">
-    <div class="text-3xl w-full font-bold">Profile</div>
-  </div>
+<BaseLayout title="CV" sideBarActiveItemID="cv">
+  <section class="mb-10">
+    <div class="mb-5">
+      <div class="text-3xl w-full font-bold">Profile</div>
+    </div>
+    <div class="grid gap-4 text-lg leading-8">
+      <p>
+        I'm huicod, currently studying at Sun Yat-sen University. I use this site as a public notebook for
+        projects, paper notes, and engineering experiments.
+      </p>
+      <p>
+        I care about building things that are understandable from both the code side and the user side. Long term,
+        I hope to build interactive agents that can live, reason, and respond naturally inside 3D environments.
+      </p>
+    </div>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a class="btn btn-sm" href="mailto:hui10w01@163.com">Email me</a>
+      <a class="btn btn-sm btn-outline" href="https://github.com/huicod" target="_blank" rel="noreferrer">
+        GitHub
+      </a>
+    </div>
+  </section>
 
-  <div class="mb-10 text-justify">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-    aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis
-    aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-    cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  </div>
+  <section class="mb-10">
+    <div class="mb-5">
+      <div class="text-3xl w-full font-bold">Education</div>
+    </div>
+    <div class="border-l-4 border-primary pl-5 py-1">
+      <div class="text-xl font-bold">Currently studying at Sun Yat-sen University</div>
+      <p class="mt-2 text-base-content/80">
+        Relevant coursework includes Compiler Principles, Database Systems, Human-Computer Interaction,
+        Computer Networks, Operating Systems, Data Structures and Algorithms, Software Engineering, and other related courses.
+      </p>
+    </div>
+  </section>
 
-  <div class="mb-5">
-    <div class="text-3xl w-full font-bold">Education</div>
-  </div>
+  <section class="mb-10">
+    <div class="mb-5">
+      <div class="text-3xl w-full font-bold">Current Focus</div>
+    </div>
+    <div class="grid gap-4 md:grid-cols-2">
+      {focusAreas.map((area) => (
+        <div class="rounded-lg border border-base-300 bg-base-100 p-5">
+          <div class="text-xl font-bold">{area.title}</div>
+          <p class="mt-2 text-base-content/80">{area.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
 
-  <div class="time-line-container grid gap-4 mb-10">
-    <TimeLineElement
-      title="Title Name"
-      subtitle="[start year] to [end year] at [Study Center Name], [City], [Country]"
-    />
-    <TimeLineElement
-      title="Title Name"
-      subtitle="[start year] to [end year] at [Study Center Name], [City], [Country]"
-    />
-  </div>
+  <section class="mb-10">
+    <div class="mb-5">
+      <div class="text-3xl w-full font-bold">Learning Journey</div>
+    </div>
+    <ul class="list-disc mx-6 grid gap-2 text-base-content/90">
+      {learningJourney.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
 
-  <div class="mb-5">
-    <div class="text-3xl w-full font-bold">Experience</div>
-  </div>
+  <section class="mb-10">
+    <div class="mb-5">
+      <div class="text-3xl w-full font-bold">I'm Open To</div>
+    </div>
+    <ul class="list-disc mx-6 grid gap-2 text-base-content/90">
+      {openTo.map((item) => <li>{item}</li>)}
+    </ul>
+  </section>
 
-  <div class="time-line-container mb-10">
-    <TimeLineElement
-      title="Job Title at Project or Company Name"
-      subtitle="From [Start Date] to [End Date] at [Company], [City], [Country]"
-    >
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
-    </TimeLineElement>
-    <TimeLineElement
-      title="Job Title at Project or Company Name"
-      subtitle="From [Start Date] to [End Date] at [Company], [City], [Country]"
-    >
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
-    </TimeLineElement>
-    <TimeLineElement
-      title="Job Title at Project or Company Name"
-      subtitle="From [Start Date] to [End Date] at [Company], [City], [Country]"
-    >
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.
-    </TimeLineElement>
-  </div>
+  <section class="mb-10">
+    <div class="mb-5">
+      <div class="text-3xl w-full font-bold">Projects & Communities I Follow</div>
+    </div>
+    <div class="grid gap-4">
+      {projectsAndCommunities.map((project) => (
+        <div class="overflow-hidden rounded-lg border border-base-300 bg-base-100">
+          <div class="grid md:grid-cols-[13rem_1fr]">
+            <a href={project.url} target="_blank" rel="noreferrer" aria-label={project.name}>
+              <img class={project.imageClass} src={project.image} alt={project.imageAlt} loading="lazy" />
+            </a>
+            <div class="p-5">
+              <a class="link text-xl font-bold" href={project.url} target="_blank" rel="noreferrer">
+                {project.name}
+              </a>
+              <p class="mt-2 text-base-content/80">{project.description}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+    <a class="btn btn-sm btn-outline mt-5" href="/projects">View my project page</a>
+  </section>
 
-  <div class="mb-5">
-    <div class="text-3xl w-full font-bold">Certifications</div>
-  </div>
+  <section class="mb-10">
+    <div class="mb-5">
+      <div class="text-3xl w-full font-bold">Motivation</div>
+    </div>
+    <div class="grid gap-4">
+      {motivationNotes.map((item) => (
+        <div class="rounded-lg border border-base-300 bg-base-100 p-5">
+          <blockquote class="text-xl font-bold leading-8">"{item.quote}"</blockquote>
+          <div class="mt-3 text-sm text-base-content/60">
+            — {item.url ? <a class="link" href={item.url} target="_blank" rel="noreferrer">{item.attribution}</a> : item.attribution}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
 
-  <ul class="list-disc mx-6 mb-10 grid gap-2">
-    <li>
-      <a href="#" target="_blank"> Certification Name (with link)</a>
-    </li>
-    <li>
-      <a href="#" target="_blank"> Certification Name (with link)</a>
-    </li>
-  </ul>
+  <section class="mb-10">
+    <div class="mb-5">
+      <div class="text-3xl w-full font-bold">Skills</div>
+    </div>
+    <div class="grid gap-4 md:grid-cols-2">
+      {skillGroups.map((group) => (
+        <div class="rounded-lg border border-base-300 bg-base-100 p-5">
+          <div class="text-xl font-bold">{group.title}</div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {group.items.map((item) => <span class="badge badge-outline">{item}</span>)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
 
-  <div class="mb-5">
-    <div class="text-3xl w-full font-bold">Skills</div>
-  </div>
-
-  <ul class="list-disc md:columns-5 columns-2 mx-6">
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-    <li>Skill Name</li>
-  </ul>
+  <section>
+    <div class="mb-5">
+      <div class="text-3xl w-full font-bold">Contact</div>
+    </div>
+    <p class="text-base-content/90">
+      The easiest way to reach me is by email: <a class="link" href="mailto:hui10w01@163.com">hui10w01@163.com</a>.
+    </p>
+  </section>
 </BaseLayout>
