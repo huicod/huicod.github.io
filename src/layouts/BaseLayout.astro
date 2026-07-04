@@ -15,12 +15,14 @@ const {
   sideBarActiveItemID,
   ogType,
 } = Astro.props;
+
+const pageTitle = title === SITE_TITLE ? SITE_TITLE : `${title} | huicod`;
 ---
 
 <!doctype html>
 <html lang="en" data-theme="bumblebee">
   <head>
-    <BaseHead title={title} description={description} image={image} , ogType={ogType} />
+    <BaseHead title={pageTitle} description={description} image={image} , ogType={ogType} />
     {TRANSITION_API && <ViewTransitions />}
   </head>
   <body>
