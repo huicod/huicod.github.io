@@ -1,0 +1,48 @@
+.paper-reading { line-height: 1.9; min-width: 0; }
+.paper-reading .reading-toc { padding: 1.2rem 1.5rem; margin: 1.5rem 0; border: 1px solid #b6c9bf; border-radius: .65rem; background: #f4f8f5; color: #244d3e; }
+.paper-reading .reading-toc ol { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem 1.5rem; margin: .65rem 0 0; font-size: .9rem; }
+.paper-reading .reading-toc a { color: #246b5b; font-weight: 500; }
+.paper-reading .reading-anchor { display: block; scroll-margin-top: 2rem; }
+.paper-reading h2 { border-top: 1px solid #b6c9bf; padding-top: 1.3rem; }
+.paper-reading h3 { line-height: 1.65; }
+.paper-reading table { display: block; width: 100%; overflow-x: auto; font-size: .83rem; line-height: 1.8; }
+.paper-reading th, .paper-reading td { padding: .65rem .75rem; min-width: 4.5rem; }
+.paper-reading img { width: 100%; height: auto; }
+.paper-reading p:has(>em:only-child) { font-size: .8rem; line-height: 1.8; }
+.paper-reading details { border: 1px solid #b6c9bf; border-radius: .5rem; margin: 1rem 0; padding: .8rem 1rem; }
+.paper-reading summary { cursor: pointer; font-size: .95rem; font-weight: 650; }
+.paper-reading details p { font-size: .9rem; }
+.paper-reading .equation { overflow-x: auto; padding: 1.2rem; margin: 1.5rem 0; background: #f1f6f2; color: #253e33; border-radius: .5rem; text-align: center; font: 1.1rem/1.8 Georgia, serif; white-space: nowrap; }
+.paper-reading .pipeline { display: flex; align-items: stretch; gap: .35rem; margin: 1.5rem 0; }
+.paper-reading .pipeline > div { flex: 1; padding: .8rem .45rem; text-align: center; background: #eef4ef; color: #244d3e; border: 1px solid #b6c9bf; border-radius: .5rem; }
+.paper-reading .pipeline b { display: block; font-size: .8rem; }
+.paper-reading .pipeline span { display: block; font-size: .7rem; margin-top: .4rem; }
+.paper-reading .pipeline .accent { background: #dbeedd; }
+.paper-reading .pipeline i { align-self: center; font-style: normal; }
+.paper-reading .explorer { padding: 1.4rem; margin: 1.6rem 0; border: 1px solid #a5bfb0; border-radius: .7rem; background: #f7fbf7; color: #2e493b; }
+.paper-reading .explorer h4 { margin: 0; color: #245849; }
+.paper-reading .explorer .caption { font-size: .75rem; margin: .4rem 0 1rem; }
+.paper-reading .steps { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.paper-reading .steps button { border: 1px solid #b6c9bf; padding: .45rem .7rem; border-radius: .4rem; background: white; color: #355c49; font: inherit; font-size: .78rem; cursor: pointer; }
+.paper-reading .steps button[aria-pressed="true"] { background: #246b5b; border-color: #246b5b; color: white; }
+.paper-reading .steps button:focus-visible { outline: 2px solid #246b5b; outline-offset: 3px; }
+.paper-reading .time-note { font-size: .85rem; min-height: 4rem; }
+.paper-reading .lane-label { font-size: .75rem; margin-bottom: .3rem; }
+.paper-reading .track { position: relative; height: 2.7rem; background: #e8eee7; border-radius: .25rem; margin-bottom: .65rem; overflow: hidden; }
+.paper-reading .segment { position: absolute; top: 0; height: 100%; display: flex; align-items: center; justify-content: center; font-size: .68rem; color: #284735; border-right: 1px solid white; white-space: nowrap; overflow: hidden; }
+.paper-reading .segment.base { background: #dce8db; }
+.paper-reading .segment.source { background: #edc898; color: #68451c; }
+.paper-reading .segment.wait { background: #acd6d3; color: #285954; }
+.paper-reading .segment.target { background: repeating-linear-gradient(135deg,#d5e5c4,#d5e5c4 6px,#e7efdf 6px,#e7efdf 12px); }
+.paper-reading .axis { display: flex; justify-content: space-between; font-size: .7rem; margin: -.2rem 0 1rem; }
+.paper-reading .legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-size: .7rem; }
+.paper-reading .legend b { font-weight: 500; }
+.paper-reading .legend i { display: inline-block; width: .6rem; height: .6rem; border-radius: 2px; margin-right: .3rem; }
+@media (max-width: 600px) {
+  .paper-reading .reading-toc ol { grid-template-columns: 1fr; }
+  .paper-reading .pipeline { flex-wrap: wrap; }
+  .paper-reading .pipeline > div { flex-basis: 42%; }
+  .paper-reading .pipeline i:nth-of-type(2) { display: none; }
+  .paper-reading .explorer { padding: 1rem; }
+  .paper-reading .time-note { min-height: 6rem; }
+}
