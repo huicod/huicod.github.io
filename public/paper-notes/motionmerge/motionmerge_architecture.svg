@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1490" viewBox="0 0 1040 1490" role="img" aria-labelledby="title desc">
+<title id="title">MotionMERGE 完整架构：训练准备与推理流程</title>
+<desc id="desc">上方展示动作 VQ-VAE 训练后冻结，以及 T5 的 RAGS 预训练和任务指令微调。下方展示源动作和文字的两条输入路径，经统一序列送入 T5，按任务输出文字、目标动作 token 或含中间动作的分步序列，动作 token 经冻结码本和解码器恢复连续动作。虚线表示训练后参数的复用。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8Z" fill="#536c62"/></marker><marker id="dashed-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8Z" fill="#94733f"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;fill:#243e34} .small{fill:#52665f} .arrow{fill:none;stroke:#536c62;stroke-width:2;marker-end:url(#arrow)} .reuse{fill:none;stroke:#94733f;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#dashed-arrow)}</style>
+<rect width="1040" height="1490" fill="#fff"/>
+
+<text x="40" y="43" font-size="30" font-weight="700" text-anchor="start" class="">MotionMERGE · 完整架构示意</text>
+<text x="40" y="77" font-size="19" font-weight="400" text-anchor="start" class="small">先建立动作词表，再训练语言模型；推理时统一处理文字与动作 token。</text>
+<rect x="24" y="100" width="992" height="344" rx="14" fill="#f6f8f6" stroke="#d3ded7" stroke-width="1.5"/>
+<text x="48" y="135" font-size="24" font-weight="700" text-anchor="start" class="">A  训练准备</text>
+<text x="992" y="134" font-size="18" font-weight="400" text-anchor="end" class="small">更新 T5；VQ-VAE 训练后保持冻结</text>
+<rect x="48" y="156" width="252" height="216" rx="10" fill="#edf3f9" stroke="#a9c0d3" stroke-width="1.5"/>
+<text x="174" y="190" font-size="23" font-weight="700" text-anchor="middle" class="">动作词表准备</text>
+<text x="174" y="222" font-size="20" font-weight="400" text-anchor="middle" class="">VQ-VAE 重建训练</text>
+<text x="174" y="254" font-size="19" font-weight="400" text-anchor="middle" class="">动作 → 编码 → 量化</text>
+<text x="174" y="282" font-size="19" font-weight="400" text-anchor="middle" class="">→ 解码 → 重建动作</text>
+<text x="174" y="320" font-size="19" font-weight="600" text-anchor="middle" class="">训练后：编解码器</text>
+<text x="174" y="346" font-size="19" font-weight="600" text-anchor="middle" class="">与码本均冻结</text>
+<rect x="334" y="156" width="362" height="216" rx="10" fill="#eaf4ed" stroke="#91b69f" stroke-width="1.5"/>
+<text x="515" y="190" font-size="23" font-weight="700" text-anchor="middle" class="">RAGS 预训练（T5）</text>
+<text x="515" y="222" font-size="18" font-weight="400" text-anchor="middle" class="small">从语言预训练权重开始</text>
+<text x="515" y="254" font-size="20" font-weight="400" text-anchor="middle" class="">粗细对齐 + 时间定位</text>
+<text x="515" y="282" font-size="20" font-weight="400" text-anchor="middle" class="">局部对齐 + 动作连贯</text>
+<text x="515" y="310" font-size="20" font-weight="400" text-anchor="middle" class="">分步动作监督</text>
+<text x="515" y="346" font-size="18" font-weight="600" text-anchor="middle" class="">共 31 个训练任务</text>
+<rect x="730" y="156" width="262" height="216" rx="10" fill="#eaf4ed" stroke="#91b69f" stroke-width="1.5"/>
+<text x="861" y="190" font-size="23" font-weight="700" text-anchor="middle" class="">任务指令微调</text>
+<text x="861" y="240" font-size="21" font-weight="600" text-anchor="middle" class="">继续更新 T5</text>
+<text x="861" y="280" font-size="19" font-weight="400" text-anchor="middle" class="">按生成 / 描述 / 编辑</text>
+<text x="861" y="309" font-size="19" font-weight="400" text-anchor="middle" class="">等任务适配</text>
+<text x="861" y="346" font-size="18" font-weight="400" text-anchor="middle" class="small">获得任务适配后的模型</text>
+<path d="M696 264 H730" class="arrow"/>
+<text x="48" y="411" font-size="19" font-weight="400" text-anchor="start" class="small">语言模型监督：动作–文本数据 + MotionFineEdit（参与 RAGS 与任务适配）</text>
+<rect x="24" y="464" width="992" height="976" rx="14" fill="#fcfdfb" stroke="#d3ded7" stroke-width="1.5"/>
+<text x="48" y="505" font-size="24" font-weight="700" text-anchor="start" class="">B  推理流程</text>
+<text x="992" y="505" font-size="18" font-weight="400" text-anchor="end" class="small">以源动作编辑为主线，按任务选择输入与输出</text>
+<rect x="48" y="542" width="440" height="80" rx="10" fill="#fff4e6" stroke="#d7bd95" stroke-width="1.5"/>
+<text x="268" y="576" font-size="23" font-weight="700" text-anchor="middle" class="">源动作 Msrc</text>
+<text x="268" y="605" font-size="18" font-weight="400" text-anchor="middle" class="small">连续动作序列 · 编辑 / 描述等条件任务</text>
+<rect x="552" y="542" width="440" height="80" rx="10" fill="#fff4e6" stroke="#d7bd95" stroke-width="1.5"/>
+<text x="772" y="576" font-size="23" font-weight="700" text-anchor="middle" class="">任务提示 + 文字指令</text>
+<text x="772" y="605" font-size="18" font-weight="400" text-anchor="middle" class="small">例如：取消指定时间段的右手运动</text>
+<path d="M268 622 V660" class="arrow"/>
+<path d="M772 622 V660" class="arrow"/>
+<rect x="48" y="660" width="440" height="80" rx="10" fill="#edf3f9" stroke="#a9c0d3" stroke-width="1.5"/>
+<text x="268" y="694" font-size="22" font-weight="700" text-anchor="middle" class="">冻结 VQ 编码器 + 码本量化</text>
+<text x="268" y="723" font-size="18" font-weight="400" text-anchor="middle" class="small">连续动作 → 压缩特征 → 源动作 token</text>
+<rect x="552" y="660" width="440" height="80" rx="10" fill="#fff" stroke="#bdc9c2" stroke-width="1.5"/>
+<text x="772" y="694" font-size="22" font-weight="700" text-anchor="middle" class="">文本分词</text>
+<text x="772" y="723" font-size="18" font-weight="400" text-anchor="middle" class="small">任务提示与指令 → 文字 token</text>
+<path d="M268 740 V770 H500 V795" class="arrow"/>
+<path d="M772 740 V770 H540 V795" class="arrow"/>
+<rect x="244" y="795" width="552" height="70" rx="10" fill="#fff4e6" stroke="#d7bd95" stroke-width="1.5"/>
+<text x="520" y="825" font-size="22" font-weight="700" text-anchor="middle" class="">统一输入序列</text>
+<text x="520" y="851" font-size="19" font-weight="400" text-anchor="middle" class="">任务提示 + 源动作 token + 编辑文字</text>
+<path d="M520 865 V903" class="arrow"/>
+<rect x="244" y="903" width="552" height="88" rx="10" fill="#e0f0e5" stroke="#7fa68f" stroke-width="1.5"/>
+<text x="520" y="938" font-size="23" font-weight="700" text-anchor="middle" class="">训练后的 T5（编码器 → 解码器）</text>
+<text x="520" y="970" font-size="19" font-weight="400" text-anchor="middle" class="">统一词表：文字 + 动作 token + 特殊标记</text>
+<path d="M861 372 V453 H1027 V947 H796" class="reuse"/>
+<text x="907" y="924" font-size="17" font-weight="400" text-anchor="middle" class="small">复用训练后参数</text>
+<path d="M520 991 V1029" class="arrow"/>
+<rect x="48" y="1029" width="944" height="100" rx="10" fill="#fff4e6" stroke="#d7bd95" stroke-width="1.5"/>
+<text x="520" y="1060" font-size="23" font-weight="700" text-anchor="middle" class="">按任务生成输出序列</text>
+<text x="520" y="1089" font-size="20" font-weight="400" text-anchor="middle" class="">普通形式：目标动作 token 或文字 token</text>
+<text x="520" y="1116" font-size="19" font-weight="400" text-anchor="middle" class="">可选分步形式：步骤文字₁ + 中间动作 token → … → 最终动作 token</text>
+<path d="M268 1129 V1166" class="arrow"/>
+<path d="M772 1129 V1166" class="arrow"/>
+<rect x="48" y="1166" width="440" height="80" rx="10" fill="#fff" stroke="#bdc9c2" stroke-width="1.5"/>
+<text x="268" y="1200" font-size="22" font-weight="700" text-anchor="middle" class="">文字 token → 文字输出</text>
+<text x="268" y="1229" font-size="19" font-weight="400" text-anchor="middle" class="small">步骤说明 / 动作描述</text>
+<rect x="552" y="1166" width="440" height="80" rx="10" fill="#edf3f9" stroke="#a9c0d3" stroke-width="1.5"/>
+<text x="772" y="1200" font-size="22" font-weight="700" text-anchor="middle" class="">动作 token → 连续动作</text>
+<text x="772" y="1229" font-size="19" font-weight="400" text-anchor="middle" class="small">冻结码本查表 → 冻结 VQ 解码器</text>
+<path d="M772 1246 V1282" class="arrow"/>
+<rect x="552" y="1282" width="440" height="76" rx="10" fill="#eaf4ed" stroke="#91b69f" stroke-width="1.5"/>
+<text x="772" y="1314" font-size="23" font-weight="700" text-anchor="middle" class="">目标动作 / 对应中间动作</text>
+<text x="772" y="1342" font-size="19" font-weight="400" text-anchor="middle" class="small">恢复为连续逐帧动作特征</text>
+<text x="48" y="1300" font-size="19" font-weight="400" text-anchor="start" class="small">生成：可仅输入文字。</text>
+<text x="48" y="1329" font-size="19" font-weight="400" text-anchor="start" class="small">描述：输出文字。</text>
+<text x="48" y="1358" font-size="19" font-weight="400" text-anchor="start" class="small">分步编辑：交错输出文字与动作 token。</text>
+<text x="48" y="1406" font-size="18" font-weight="400" text-anchor="start" class="small">实线：区域内的处理流程     虚线：训练后参数复用     蓝色：冻结的动作编解码组件</text>
+<text x="40" y="1474" font-size="18" font-weight="400" text-anchor="start" class="small">根据 MotionMERGE §III、§IV-C 与附录 D 重绘的教学示意；分步输出不是外部工具调用。</text>
+</svg>

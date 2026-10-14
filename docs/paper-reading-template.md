@@ -1,6 +1,6 @@
 # 论文解读模板
 
-版本：v2 · 2026-10-14。用于网站后续论文解读。
+版本：v2.1 · 2026-10-14。用于网站后续论文解读。
 
 参考 [Paper-Notes 的 LaMoGen 解读](https://papernotes.org/CVPR2026/human_understanding/lamogen_language_to_motion_generation_through_llm-guided_symbolic_inference/)及其[源仓库](https://github.com/zhaoyang97/Paper-Notes)，采用相同的章节顺序与讲解方式：背景分六点，方法按关键设计拆解，实验直接展示数据，相关工作用项目符号说明关系与区别。内容根据原论文重新撰写。
 
@@ -33,9 +33,17 @@
 
 ### 整体框架
 
-先用连贯段落讲清输入、主要处理阶段与输出，说明各部分如何协作。可配论文框架图或原创流程图；图中箭头对应实际传递的信息。图下用简短阅读提示帮助读者找到主线。
+先用一段话概括各部分如何协作，随后给出一张**完整架构示意图**，放在“关键设计”之前。图应让读者沿箭头走完“输入 → 编码/中间表示 → 核心模块 → 输出/解码”，不能只画几个贡献名称。
 
-训练阶段与推理阶段在叙述和图示中清楚标注。原图注明图号与来源，原创图注明教学示意。
+- **按阶段分组**：将训练、数据构建与推理分区；训练提供的监督或参数用明确的支线连接，避免画成推理时的必经步骤。
+- **保留关键分支**：多路输入分别画出，标明在哪里汇合；多类输出、可选分步过程或迭代关系按论文实际机制展示。
+- **节点与箭头各司其职**：节点写“模块名称 + 一行职责”，箭头写传递的表示或关系；标出冻结、可训练、复用或可选部件。
+- **图后给阅读顺序**：用简短段落说明先看哪里、如何读主线；解释实线、虚线与颜色含义，并给出原文章节/图号。
+- **保持可读和可维护**：优先使用可编辑 SVG，或将 Mermaid 渲染成图后嵌入；中文字号应在正文宽度下可读，复杂图提供大图入口。不能只展示未渲染的 Mermaid 代码。
+
+参考示例：[LaMoGen](https://papernotes.org/CVPR2026/human_understanding/lamogen_language_to_motion_generation_through_llm-guided_symbolic_inference/)用主干与训练/数据库支线；[MotionGPT3](https://github.com/zhaoyang97/Paper-Notes/blob/main/docs/ICLR2026/human_understanding/motiongpt3_human_motion_as_a_second_modality.md)用分组展示双路输入与输出；[Miburi](https://papernotes.org/CVPR2026/human_understanding/miburi_towards_expressive_interactive_gesture_synthesis/)用模块内部子步骤与训练监督虚线。借鉴这些组织方式，具体连线仍以待解读论文为准。
+
+原论文框架图可以一并保留作对照，注明图号与来源；自行绘制的总览标为教学示意，避免与作者原图或实际运行结果混淆。
 
 ### 关键设计
 
@@ -131,6 +139,8 @@
 ## 方法详解
 
 ### 整体框架
+
+总览段落 + 完整架构示意图 + 读图顺序与来源。
 
 ### 关键设计
 

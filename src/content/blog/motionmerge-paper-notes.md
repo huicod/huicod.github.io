@@ -57,15 +57,17 @@ tags: ["MotionMERGE", "Motion-Editing", "Paper-Notes"]
 
 ## 方法详解
 
-### 先看整条链路
+### 整体框架
 
-对于编辑任务，核心流程可以写成：
+先把 MotionMERGE 看成上下两层：**训练层**准备动作词表，并通过 RAGS 预训练与任务指令微调学习动作和文字的对应；**推理层**以编辑任务为例，将源动作和编辑要求编码为统一序列，交给 T5 生成输出，再把动作 token 解码回连续动作。
 
-<div class="pipeline" role="img" aria-label="源动作经过冻结的动作编码器得到动作token，与编辑指令一起输入T5，输出目标动作token，再经冻结的解码器还原连续动作">
-<div><b>源动作</b><span>连续运动序列</span></div><i>→</i><div><b>VQ 编码器</b><span>动作压缩为 token</span></div><i>→</i><div class="accent"><b>T5 + 编辑指令</b><span>预测目标动作 token</span></div><i>→</i><div><b>VQ 解码器</b><span>还原连续动作</span></div>
-</div>
+[![MotionMERGE 完整架构示意：训练准备、双路输入、T5、分步输出与动作解码](/paper-notes/motionmerge/motionmerge_architecture.svg)](/paper-notes/motionmerge/motionmerge_architecture.svg)
 
-这是讲解用简图。T5 的输入同时包含任务提示、源动作 token 和编辑文字；输出 token 经过码本与解码器才变成可播放的动作。论文使用 HumanML3D 的 **263 维逐帧表示**。263 是动作特征维度，不是关节数。[原文 §III-A、§V-A](https://arxiv.org/html/2605.18956v1#S3.SS1)
+*完整架构教学示意，点击可查看大图。实线表示各区域内的处理流程，虚线表示训练后参数的复用；蓝色标出冻结的动作组件。根据[原文 §III](https://arxiv.org/html/2605.18956v1#S3)、[§IV-C](https://arxiv.org/html/2605.18956v1#S4.SS3)与[附录 D](https://arxiv.org/html/2605.18956v1#A4)重新绘制。*
+
+**读图顺序。** 先看上方：VQ-VAE 训练后冻结，后续 RAGS 与指令微调更新的是 T5；MotionFineEdit 等数据提供训练监督。再看下方：源动作走动作编码路径，指令走文字分词路径，两者在 T5 输入端汇合；输出按任务分为文字和动作 token。复杂编辑还可以交错生成步骤文字与中间动作 token，各段动作使用同一套码本和解码器还原。
+
+对于编辑任务，T5 的输入同时包含任务提示、源动作 token 和编辑文字；输出中的动作 token 经过码本与解码器还原为连续动作。论文使用 HumanML3D 的 **263 维逐帧表示**。263 是动作特征维度，不是关节数。[原文 §III-A、§V-A](https://arxiv.org/html/2605.18956v1#S3.SS1)
 
 ![论文图2：VQ-VAE 与 T5 的统一动作语言框架](/paper-notes/motionmerge/paper_overview.png)
 
