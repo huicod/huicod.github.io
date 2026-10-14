@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1500" viewBox="0 0 1040 1500" role="img" aria-labelledby="title desc"><title id="title">DisCoRD · 将离散 token 解码为连续动作</title><desc id="desc">保留原有动作词表和 token 生成器，用条件 Rectified Flow 替换原来的前馈动作解码器。</desc><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8Z" fill="#577064"/></marker><marker id="control" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8Z" fill="#99703c"/></marker></defs><style>text{font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;fill:#243e34}.muted{fill:#596c63}.arrow{fill:none;stroke:#577064;stroke-width:2;marker-end:url(#arrow)}.control{fill:none;stroke:#99703c;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#control)}</style><rect width="1040" height="1500" fill="#fff"/>
+<text x="40" y="44" font-size="29" font-weight="700" text-anchor="start" class="">DisCoRD · 将离散 token 解码为连续动作</text>
+<text x="40" y="78" font-size="18" font-weight="400" text-anchor="start" class="muted">保留原有动作词表和 token 生成器，用条件 Rectified Flow 替换原来的前馈动作解码器。</text>
+<rect x="24" y="100" width="992" height="596" rx="14" fill="#f8faf7" stroke="#d2ded6" stroke-width="1.5"/>
+<text x="48" y="136" font-size="23" font-weight="700" text-anchor="start" class="">A  训练新解码器</text>
+<text x="992" y="136" font-size="17" font-weight="400" text-anchor="end" class="muted">蓝色：复用组件   绿色：本阶段训练组件</text>
+<rect x="48" y="162" width="440" height="70" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="268.0" y="193" font-size="21" font-weight="700" text-anchor="middle" class="">真实动作 X₁</text>
+<text x="268.0" y="217" font-size="18" font-weight="400" text-anchor="middle" class="muted">监督目标，也是提取训练 token 的来源</text>
+<rect x="552" y="162" width="440" height="70" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="772.0" y="193" font-size="21" font-weight="700" text-anchor="middle" class="">独立高斯噪声 X₀ + 时间 t</text>
+<text x="772.0" y="217" font-size="18" font-weight="400" text-anchor="middle" class="muted">t 在 [0, 1] 采样</text>
+<path d="M268 232 V270" class="arrow"/>
+<path d="M772 232 V270" class="arrow"/>
+<rect x="48" y="270" width="440" height="80" rx="10" fill="#edf3fa" stroke="#a9bfd3" stroke-width="1.5"/>
+<text x="268.0" y="301" font-size="21" font-weight="700" text-anchor="middle" class="">VQ 编码器 + 量化器（冻结）</text>
+<text x="268.0" y="325" font-size="18" font-weight="400" text-anchor="middle" class="muted">保持既有动作词表 · 得到量化嵌入 Z</text>
+<rect x="552" y="270" width="440" height="80" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="772.0" y="301" font-size="21" font-weight="700" text-anchor="middle" class="">构造插值动作 Xₜ</text>
+<text x="772.0" y="325" font-size="18" font-weight="400" text-anchor="middle" class="muted">Xₜ = (1 − t) X₀ + t X₁</text>
+<path d="M488 197 H520 V310 H552" class="arrow"/>
+<path d="M268 350 V388" class="arrow"/>
+<rect x="48" y="388" width="440" height="91" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="268.0" y="419" font-size="21" font-weight="700" text-anchor="middle" class="">Condition Projection</text>
+<text x="268.0" y="443" font-size="18" font-weight="400" text-anchor="middle" class="muted">每个 token 对应 q 个不同的逐帧条件</text>
+<text x="268.0" y="466" font-size="18" font-weight="400" text-anchor="middle" class="muted">重复 → 堆叠 → 线性投影 → 拆分</text>
+<path d="M268 479 V507 H500 V539" class="arrow"/>
+<path d="M772 350 V507 H540 V539" class="arrow"/>
+<rect x="244" y="539" width="552" height="80" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="520.0" y="570" font-size="21" font-weight="700" text-anchor="middle" class="">1D U-Net 速度场 vθ(Xₜ, t, C)</text>
+<text x="520.0" y="594" font-size="18" font-weight="400" text-anchor="middle" class="muted">Xₜ 与逐帧条件 C 按通道拼接</text>
+<text x="520" y="652" font-size="19" font-weight="400" text-anchor="middle" class="">监督：MSE 匹配目标速度 X₁ − X₀；滑动短窗口训练以适应新 token 组合。</text>
+<rect x="24" y="720" width="992" height="724" rx="14" fill="#f8faf7" stroke="#d2ded6" stroke-width="1.5"/>
+<text x="48" y="756" font-size="23" font-weight="700" text-anchor="start" class="">B  推理：接入已有离散动作生成模型</text>
+<text x="992" y="756" font-size="17" font-weight="400" text-anchor="end" class="muted">论文默认 16 步 Euler；t 从 0 走向 1</text>
+<rect x="48" y="782" width="440" height="74" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="268.0" y="813" font-size="21" font-weight="700" text-anchor="middle" class="">条件信号</text>
+<text x="268.0" y="837" font-size="18" font-weight="400" text-anchor="middle" class="muted">文字 / 语音 / 音乐 · 依原模型而定</text>
+<rect x="552" y="782" width="440" height="74" rx="10" fill="#edf3fa" stroke="#a9bfd3" stroke-width="1.5"/>
+<text x="772.0" y="813" font-size="21" font-weight="700" text-anchor="middle" class="">原 token 生成器（预训练）</text>
+<text x="772.0" y="837" font-size="18" font-weight="400" text-anchor="middle" class="muted">保持原有条件建模，预测离散索引</text>
+<path d="M488 819 H552" class="arrow"/>
+<path d="M772 856 V889 H520 V918" class="arrow"/>
+<rect x="244" y="918" width="552" height="68" rx="10" fill="#edf3fa" stroke="#a9bfd3" stroke-width="1.5"/>
+<text x="520.0" y="949" font-size="21" font-weight="700" text-anchor="middle" class="">原码本查表 → 量化嵌入 Ẑ</text>
+<path d="M520 986 V1022" class="arrow"/>
+<rect x="244" y="1022" width="552" height="78" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="520.0" y="1053" font-size="21" font-weight="700" text-anchor="middle" class="">训练后的 Condition Projection</text>
+<text x="520.0" y="1077" font-size="18" font-weight="400" text-anchor="middle" class="muted">得到与动作帧一一对应的条件 Ĉ</text>
+<path d="M520 1100 V1142" class="arrow"/>
+<rect x="244" y="1142" width="552" height="98" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="520.0" y="1173" font-size="21" font-weight="700" text-anchor="middle" class="">Rectified Flow 解码器 + Euler 积分</text>
+<text x="520.0" y="1197" font-size="18" font-weight="400" text-anchor="middle" class="muted">每步由当前动作状态、时间与 Ĉ 预测速度</text>
+<text x="520.0" y="1220" font-size="18" font-weight="400" text-anchor="middle" class="muted">在连续的原始动作空间更新 Xₜ</text>
+<rect x="48" y="1150" width="160" height="80" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="128.0" y="1181" font-size="20" font-weight="700" text-anchor="middle" class="">高斯噪声</text>
+<text x="128.0" y="1205" font-size="18" font-weight="400" text-anchor="middle" class="muted">X₀ ∼ N(0,I)</text>
+<path d="M208 1190 H244" class="arrow"/>
+<path d="M796 1202 H931 V1120 H748 V1142" class="arrow"/>
+<text x="913" y="1097" font-size="17" font-weight="400" text-anchor="middle" class="muted">重复至 t = 1</text>
+<path d="M520 1240 V1284" class="arrow"/>
+<rect x="244" y="1284" width="552" height="78" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="520.0" y="1315" font-size="21" font-weight="700" text-anchor="middle" class="">输出：生成的连续动作</text>
+<text x="520.0" y="1339" font-size="18" font-weight="400" text-anchor="middle" class="muted">直接生成动作特征；不经过旧前馈解码器</text>
+<text x="48" y="1415" font-size="18" font-weight="400" text-anchor="start" class="muted">训练 token 来自真实动作；生成 token 来自既有预测器。重建质量与生成质量分别评估。</text>
+<text x="40" y="1482" font-size="18" font-weight="400" text-anchor="start" class="muted">依据 ICCV 2025 正文 §3 与补充材料 A 重绘的教学示意；t 是生成过程时间，不是动作帧号。</text>
+</svg>

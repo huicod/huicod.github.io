@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1430" viewBox="0 0 1040 1430" role="img" aria-labelledby="title desc"><title id="title">MoTok · 从语义规划到运动学控制</title><desc id="desc">上方建立可生成细节的动作词表；下方让粗、细轨迹条件进入不同阶段。</desc><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8Z" fill="#577064"/></marker><marker id="control" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L8 4 L0 8Z" fill="#99703c"/></marker></defs><style>text{font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;fill:#243e34}.muted{fill:#596c63}.arrow{fill:none;stroke:#577064;stroke-width:2;marker-end:url(#arrow)}.control{fill:none;stroke:#99703c;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#control)}</style><rect width="1040" height="1430" fill="#fff"/>
+<text x="40" y="44" font-size="29" font-weight="700" text-anchor="start" class="">MoTok · 从语义规划到运动学控制</text>
+<text x="40" y="78" font-size="18" font-weight="400" text-anchor="start" class="muted">上方建立可生成细节的动作词表；下方让粗、细轨迹条件进入不同阶段。</text>
+<rect x="24" y="100" width="992" height="300" rx="14" fill="#f8faf7" stroke="#d2ded6" stroke-width="1.5"/>
+<text x="48" y="136" font-size="23" font-weight="700" text-anchor="start" class="">A  训练：扩散式动作 tokenizer</text>
+<text x="992" y="136" font-size="17" font-weight="400" text-anchor="end" class="muted">整体端到端训练；下游另训练 token 规划器</text>
+<rect x="48" y="160" width="260" height="128" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="178.0" y="191" font-size="21" font-weight="700" text-anchor="middle" class="">动作编码与单层 VQ</text>
+<text x="178.0" y="215" font-size="18" font-weight="400" text-anchor="middle" class="muted">真实动作 → 卷积编码器</text>
+<text x="178.0" y="238" font-size="18" font-weight="400" text-anchor="middle" class="muted">最近邻量化 · 码本 K=1024</text>
+<text x="178.0" y="261" font-size="18" font-weight="400" text-anchor="middle" class="muted">得到压缩 token / 码本向量</text>
+<rect x="348" y="160" width="302" height="128" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="499.0" y="191" font-size="21" font-weight="700" text-anchor="middle" class="">卷积解码器 D</text>
+<text x="499.0" y="215" font-size="18" font-weight="400" text-anchor="middle" class="muted">对量化特征做时间上采样</text>
+<text x="499.0" y="238" font-size="18" font-weight="400" text-anchor="middle" class="muted">输出逐帧条件 s₁:T</text>
+<text x="499.0" y="261" font-size="18" font-weight="400" text-anchor="middle" class="muted">这里还没有得到最终动作</text>
+<rect x="690" y="160" width="302" height="128" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="841.0" y="191" font-size="21" font-weight="700" text-anchor="middle" class="">条件扩散重建</text>
+<text x="841.0" y="215" font-size="18" font-weight="400" text-anchor="middle" class="muted">接收：带噪动作 + 时间 + s</text>
+<text x="841.0" y="238" font-size="18" font-weight="400" text-anchor="middle" class="muted">预测干净动作 x̂₀</text>
+<text x="841.0" y="261" font-size="18" font-weight="400" text-anchor="middle" class="muted">真实动作提供重建监督</text>
+<path d="M308 224 H348" class="arrow"/>
+<path d="M650 224 H690" class="arrow"/>
+<text x="48" y="328" font-size="20" font-weight="400" text-anchor="start" class="">训练目标：扩散重建损失 + 0.02 × VQ commitment loss。</text>
+<text x="48" y="366" font-size="18" font-weight="400" text-anchor="start" class="muted">下游规划器以动作 token 为预测目标，学习语义条件与轨迹特征到 token 序列的映射。</text>
+<rect x="24" y="424" width="992" height="950" rx="14" fill="#f8faf7" stroke="#d2ded6" stroke-width="1.5"/>
+<text x="48" y="460" font-size="23" font-weight="700" text-anchor="start" class="">B  推理：Perception → Planning → Control</text>
+<text x="992" y="460" font-size="17" font-weight="400" text-anchor="end" class="muted">以文字 + 关节轨迹控制为例</text>
+<rect x="48" y="486" width="440" height="72" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="268.0" y="517" font-size="21" font-weight="700" text-anchor="middle" class="">文字描述</text>
+<text x="268.0" y="541" font-size="18" font-weight="400" text-anchor="middle" class="muted">全局语义：要做什么动作</text>
+<rect x="552" y="486" width="440" height="72" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="772.0" y="517" font-size="21" font-weight="700" text-anchor="middle" class="">关节轨迹 / 时刻约束</text>
+<text x="772.0" y="541" font-size="18" font-weight="400" text-anchor="middle" class="muted">局部条件：哪些关节在何时到达哪里</text>
+<path d="M268 558 V594" class="arrow"/>
+<path d="M772 558 V594" class="arrow"/>
+<rect x="48" y="594" width="440" height="82" rx="10" fill="#edf3fa" stroke="#a9bfd3" stroke-width="1.5"/>
+<text x="268.0" y="625" font-size="21" font-weight="700" text-anchor="middle" class="">CLIP 文本编码器</text>
+<text x="268.0" y="649" font-size="18" font-weight="400" text-anchor="middle" class="muted">得到全局特征 · 放在规划序列首位</text>
+<rect x="552" y="594" width="440" height="82" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="772.0" y="625" font-size="21" font-weight="700" text-anchor="middle" class="">独立轨迹编码器</text>
+<text x="772.0" y="649" font-size="18" font-weight="400" text-anchor="middle" class="muted">降采样到 token 长度 · 形成对齐特征</text>
+<path d="M268 676 V706 H500 V733" class="arrow"/>
+<path d="M772 676 V706 H540 V733" class="arrow"/>
+<rect x="244" y="733" width="552" height="86" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="520.0" y="764" font-size="21" font-weight="700" text-anchor="middle" class="">离散 token 规划器 · DDM 或 AR</text>
+<text x="520.0" y="788" font-size="18" font-weight="400" text-anchor="middle" class="muted">全局语义 + token 对齐的粗粒度轨迹条件</text>
+<text x="520.0" y="811" font-size="18" font-weight="400" text-anchor="middle" class="muted">AR 按因果顺序预测；DDM 迭代补全掩码</text>
+<path d="M520 819 V853" class="arrow"/>
+<rect x="244" y="853" width="552" height="66" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="520.0" y="884" font-size="21" font-weight="700" text-anchor="middle" class="">紧凑单层动作 token 序列 z₁:N</text>
+<path d="M520 919 V953" class="arrow"/>
+<rect x="244" y="953" width="552" height="80" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="520.0" y="984" font-size="21" font-weight="700" text-anchor="middle" class="">码本查表 → 卷积解码器 D</text>
+<text x="520.0" y="1008" font-size="18" font-weight="400" text-anchor="middle" class="muted">把压缩 token 变成逐帧条件 s₁:T</text>
+<path d="M520 1033 V1075" class="arrow"/>
+<rect x="244" y="1075" width="552" height="111" rx="10" fill="#e5f2e9" stroke="#8fb29a" stroke-width="1.5"/>
+<text x="520.0" y="1106" font-size="21" font-weight="700" text-anchor="middle" class="">条件扩散解码 / 连续运动控制</text>
+<text x="520.0" y="1130" font-size="18" font-weight="400" text-anchor="middle" class="muted">从噪声开始，逐步预测当前干净动作</text>
+<text x="520.0" y="1153" font-size="18" font-weight="400" text-anchor="middle" class="muted">根据精细轨迹计算控制损失并做梯度修正</text>
+<text x="520.0" y="1176" font-size="18" font-weight="400" text-anchor="middle" class="muted">继续反向扩散，恢复细节</text>
+<rect x="48" y="1075" width="160" height="82" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="128.0" y="1106" font-size="20" font-weight="700" text-anchor="middle" class="">高斯噪声</text>
+<text x="128.0" y="1130" font-size="18" font-weight="400" text-anchor="middle" class="muted">初始动作状态</text>
+<path d="M208 1116 H244" class="arrow"/>
+<path d="M992 522 H1026 V1130 H796" class="control"/>
+<text x="905" y="1047" font-size="17" font-weight="400" text-anchor="middle" class="muted">精细轨迹支路</text>
+<text x="905" y="1074" font-size="17" font-weight="400" text-anchor="middle" class="muted">每步控制优化</text>
+<path d="M520 1186 V1234" class="arrow"/>
+<rect x="244" y="1234" width="552" height="74" rx="10" fill="#fff3e3" stroke="#d4b98f" stroke-width="1.5"/>
+<text x="520.0" y="1265" font-size="21" font-weight="700" text-anchor="middle" class="">输出：连续人体动作</text>
+<text x="520.0" y="1289" font-size="18" font-weight="400" text-anchor="middle" class="muted">同时评估语义匹配、轨迹误差与动作质量</text>
+<text x="48" y="1346" font-size="18" font-weight="400" text-anchor="start" class="muted">实线：数据处理主线     虚线：精细控制支路     纯文本生成时省略轨迹分支</text>
+<text x="40" y="1412" font-size="18" font-weight="400" text-anchor="start" class="muted">依据论文 §3 与附录 D 重绘的教学示意；图中的控制优化不代表任意约束都能零误差满足。</text>
+</svg>
