@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1810" viewBox="0 0 1200 1810" role="img" aria-labelledby="title desc">
+<title id="title">CoMo 完整架构：规则姿态码、文本生成与语言编辑</title>
+<desc id="desc">训练先从真实动作按规则提取70类392码，学习码本向量和动作解码器；文本生成用GPT-4补充关键词，经冻结CLIP和自回归生成器预测码；编辑直接将源动作编码，提示GPT-4选择时间、类别并改码，保留未改码后经冻结解码器输出。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4L0 8Z" fill="#47665a"/></marker><marker id="dash" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4L0 8Z" fill="#95703c"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;fill:#203c31}.line{fill:none;stroke:#47665a;stroke-width:2.1;marker-end:url(#arrow)}.dash{fill:none;stroke:#95703c;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#dash)}.muted{fill:#61746a}</style><rect width="1200" height="1810" fill="white"/>
+<text x="52" y="44" font-size="30" font-weight="700" text-anchor="start" class="">CoMo · 先把动作变成可读状态，再生成或编辑</text>
+<text x="52" y="78" font-size="20" font-weight="400" text-anchor="start" class="muted">三条流程共用同一套语义码表与动作解码器；GPT-4 为提示调用，不做任务微调。</text>
+<rect x="46" y="105" width="1110" height="438" rx="16" fill="#f8faf7" stroke="#d3ded6" stroke-width="1.4"/>
+<text x="68" y="140" font-size="24" font-weight="700" text-anchor="start" class="">A  学习码本向量与动作解码器</text>
+<text x="1130" y="140" font-size="17" font-weight="400" text-anchor="end" class="muted">绿色：训练参数   紫色：预定义规则</text>
+<rect x="72" y="170" width="250" height="82" rx="11" fill="#fff3e3" stroke="#d5b88d" stroke-width="1.5"/>
+<text x="197.0" y="201" font-size="22" font-weight="700" text-anchor="middle" class="">真实动作 X</text>
+<text x="197.0" y="227" font-size="19" font-weight="400" text-anchor="middle" class="muted">原始连续骨架序列</text>
+<rect x="382" y="170" width="342" height="82" rx="11" fill="#f5f1fb" stroke="#b7a6cb" stroke-width="1.5"/>
+<text x="553.0" y="201" font-size="22" font-weight="700" text-anchor="middle" class="">规则解析器 P</text>
+<text x="553.0" y="227" font-size="19" font-weight="400" text-anchor="middle" class="muted">每 4 帧采样，计算几何属性</text>
+<rect x="784" y="170" width="346" height="82" rx="11" fill="#fff3e3" stroke="#d5b88d" stroke-width="1.5"/>
+<text x="957.0" y="201" font-size="22" font-weight="700" text-anchor="middle" class="">姿态码 Z</text>
+<text x="957.0" y="227" font-size="19" font-weight="400" text-anchor="middle" class="muted">70 类属性 / 392 维 K-hot</text>
+<path d="M322 211H382" class="line"/>
+<path d="M724 211H784" class="line"/>
+<path d="M957 252V292" class="line"/>
+<rect x="382" y="292" width="748" height="112" rx="11" fill="#e4f2e9" stroke="#85ad95" stroke-width="1.5"/>
+<text x="756.0" y="323" font-size="22" font-weight="700" text-anchor="middle" class="">可学习码本 C + 时序卷积解码器 D</text>
+<text x="756.0" y="349" font-size="19" font-weight="400" text-anchor="middle" class="muted">392 × 512 码本：每时刻将 70 个激活向量相加</text>
+<text x="756.0" y="374" font-size="19" font-weight="400" text-anchor="middle" class="muted">时间卷积与上采样 → 恢复完整连续动作</text>
+<rect x="72" y="307" width="250" height="82" rx="11" fill="#fff3e3" stroke="#d5b88d" stroke-width="1.5"/>
+<text x="197.0" y="338" font-size="22" font-weight="700" text-anchor="middle" class="">重建动作 Xrec</text>
+<text x="197.0" y="364" font-size="19" font-weight="400" text-anchor="middle" class="muted">与真实动作比较</text>
+<path d="M382 348H322" class="line"/>
+<rect x="382" y="450" width="748" height="62" rx="11" fill="#e4f2e9" stroke="#85ad95" stroke-width="1.5"/>
+<text x="756.0" y="481" font-size="21" font-weight="700" text-anchor="middle" class="">SmoothL1 动作重建 + 0.5 × 速度重建</text>
+<path d="M197 389V481H382" class="dash"/>
+<path d="M197 252V278H350V436H620V450" class="dash"/>
+<path d="M957 450V404" class="dash"/>
+<rect x="46" y="569" width="1110" height="446" rx="16" fill="#f8faf7" stroke="#d3ded6" stroke-width="1.4"/>
+<text x="68" y="604" font-size="24" font-weight="700" text-anchor="start" class="">B  从文本生成动作</text>
+<text x="1130" y="604" font-size="17" font-weight="400" text-anchor="end" class="muted">另训练 AR 生成器；文本编码器与动作解码器冻结</text>
+<rect x="72" y="650" width="250" height="80" rx="11" fill="#fff3e3" stroke="#d5b88d" stroke-width="1.5"/>
+<text x="197.0" y="681" font-size="22" font-weight="700" text-anchor="middle" class="">文本描述</text>
+<text x="197.0" y="707" font-size="19" font-weight="400" text-anchor="middle" class="muted">例如：一个人蹲下</text>
+<rect x="382" y="650" width="342" height="80" rx="11" fill="#fff4df" stroke="#d4ac61" stroke-width="1.5"/>
+<text x="553.0" y="681" font-size="22" font-weight="700" text-anchor="middle" class="">GPT-4 提示式补充</text>
+<text x="553.0" y="707" font-size="19" font-weight="400" text-anchor="middle" class="muted">10 部位关键词 + 1 mood</text>
+<rect x="784" y="650" width="346" height="80" rx="11" fill="#edf3fb" stroke="#9eb7ce" stroke-width="1.5"/>
+<text x="957.0" y="681" font-size="22" font-weight="700" text-anchor="middle" class="">CLIP（冻结）</text>
+<text x="957.0" y="707" font-size="19" font-weight="400" text-anchor="middle" class="muted">原文 + 11 关键词 → 条件前缀</text>
+<path d="M322 690H382" class="line"/>
+<path d="M724 690H784" class="line"/>
+<path d="M197 650V624H957V650" class="line"/>
+<text x="562" y="619" font-size="17" font-weight="400" text-anchor="middle" class="muted">原始文字也保留</text>
+<path d="M957 730V778" class="line"/>
+<rect x="784" y="778" width="346" height="94" rx="11" fill="#e4f2e9" stroke="#85ad95" stroke-width="1.5"/>
+<text x="957.0" y="809" font-size="21" font-weight="700" text-anchor="middle" class="">自回归 Transformer</text>
+<text x="957.0" y="835" font-size="19" font-weight="400" text-anchor="middle" class="muted">逐时刻预测姿态属性与结束标记</text>
+<text x="957.0" y="860" font-size="19" font-weight="400" text-anchor="middle" class="muted">训练：真实姿态码 + BCE</text>
+<rect x="382" y="778" width="342" height="94" rx="11" fill="#fff3e3" stroke="#d5b88d" stroke-width="1.5"/>
+<text x="553.0" y="809" font-size="22" font-weight="700" text-anchor="middle" class="">类别内选取或采样</text>
+<text x="553.0" y="835" font-size="19" font-weight="400" text-anchor="middle" class="muted">每类保留 1 个状态</text>
+<text x="553.0" y="860" font-size="19" font-weight="400" text-anchor="middle" class="muted">组成新的 K-hot 序列</text>
+<rect x="72" y="778" width="250" height="94" rx="11" fill="#edf3fb" stroke="#9eb7ce" stroke-width="1.5"/>
+<text x="197.0" y="809" font-size="22" font-weight="700" text-anchor="middle" class="">冻结 C + D</text>
+<text x="197.0" y="835" font-size="19" font-weight="400" text-anchor="middle" class="muted">激活码向量相加</text>
+<text x="197.0" y="860" font-size="19" font-weight="400" text-anchor="middle" class="muted">时间卷积解码</text>
+<path d="M784 825H724" class="line"/>
+<path d="M382 825H322" class="line"/>
+<path d="M197 872V915" class="line"/>
+<rect x="72" y="915" width="250" height="70" rx="11" fill="#fff3e3" stroke="#d5b88d" stroke-width="1.5"/>
+<text x="197.0" y="946" font-size="21" font-weight="700" text-anchor="middle" class="">新生成的连续动作</text>
+<text x="382" y="942" font-size="20" font-weight="400" text-anchor="start" class="">生成器输出的是几何状态序列，不是完整动作名称。</text>
+<text x="382" y="977" font-size="19" font-weight="400" text-anchor="start" class="muted">训练时以 A 中提取的真实姿态码作为监督。</text>
+<path d="M1130 211H1180V825H1130" class="dash"/>
+<text x="1165" y="550" font-size="16" font-weight="400" text-anchor="end" class="muted">码监督</text>
+<rect x="46" y="1042" width="1110" height="680" rx="16" fill="#f8faf7" stroke="#d3ded6" stroke-width="1.4"/>
+<text x="68" y="1077" font-size="24" font-weight="700" text-anchor="start" class="">C  编辑已有动作</text>
+<text x="1130" y="1077" font-size="17" font-weight="400" text-anchor="end" class="muted">无需重新调用 B 的文本动作生成器</text>
+<rect x="72" y="1134" width="250" height="83" rx="11" fill="#fff3e3" stroke="#d5b88d" stroke-width="1.5"/>
+<text x="197.0" y="1165" font-size="22" font-weight="700" text-anchor="middle" class="">源动作</text>
+<text x="197.0" y="1191" font-size="19" font-weight="400" text-anchor="middle" class="muted">真实或此前生成的动作</text>
+<rect x="382" y="1134" width="342" height="83" rx="11" fill="#fff3e3" stroke="#d5b88d" stroke-width="1.5"/>
+<text x="553.0" y="1165" font-size="22" font-weight="700" text-anchor="middle" class="">编辑指令 + 原描述</text>
+<text x="553.0" y="1191" font-size="19" font-weight="400" text-anchor="middle" class="muted">例如：拾取位置稍高一点</text>
+<rect x="784" y="1134" width="346" height="83" rx="11" fill="#f5f1fb" stroke="#b7a6cb" stroke-width="1.5"/>
+<text x="957.0" y="1165" font-size="22" font-weight="700" text-anchor="middle" class="">姿态类别与码语义表</text>
+<text x="957.0" y="1191" font-size="19" font-weight="400" text-anchor="middle" class="muted">类别含义、可用码与格式</text>
+<path d="M197 1217V1260" class="line"/>
+<rect x="72" y="1260" width="250" height="105" rx="11" fill="#f5f1fb" stroke="#b7a6cb" stroke-width="1.5"/>
+<text x="197.0" y="1291" font-size="21" font-weight="700" text-anchor="middle" class="">规则解析器 P</text>
+<text x="197.0" y="1317" font-size="19" font-weight="400" text-anchor="middle" class="muted">源动作 → 原始码序列</text>
+<text x="197.0" y="1342" font-size="19" font-weight="400" text-anchor="middle" class="muted">同一套 70 类 / 392 码</text>
+<rect x="382" y="1260" width="748" height="105" rx="11" fill="#fff4df" stroke="#d4ac61" stroke-width="1.5"/>
+<text x="756.0" y="1291" font-size="23" font-weight="700" text-anchor="middle" class="">GPT-4 顺序提示编辑（不微调）</text>
+<text x="756.0" y="1317" font-size="19" font-weight="400" text-anchor="middle" class="muted">① 定位时间段  →  ② 选择姿态类别  →  ③ 逐类替换码</text>
+<text x="756.0" y="1342" font-size="19" font-weight="400" text-anchor="middle" class="muted">可由用户直接指定时间范围；输出被选片段的合法码</text>
+<path d="M553 1217V1260" class="line"/>
+<path d="M957 1217V1260" class="line"/>
+<path d="M322 1312H382" class="line"/>
+<path d="M756 1365V1432" class="line"/>
+<text x="844" y="1407" font-size="18" font-weight="400" text-anchor="middle" class="muted">修改后的码片段</text>
+<rect x="382" y="1432" width="748" height="87" rx="11" fill="#fff3e3" stroke="#d5b88d" stroke-width="1.5"/>
+<text x="756.0" y="1463" font-size="22" font-weight="700" text-anchor="middle" class="">合并成完整姿态码序列</text>
+<text x="756.0" y="1489" font-size="19" font-weight="400" text-anchor="middle" class="muted">只替换选定片段；未修改的码从源序列保留</text>
+<path d="M197 1365V1476H382" class="line"/>
+<text x="205" y="1432" font-size="18" font-weight="400" text-anchor="start" class="muted">未改码旁路</text>
+<path d="M553 1519V1580" class="line"/>
+<rect x="382" y="1580" width="342" height="85" rx="11" fill="#edf3fb" stroke="#9eb7ce" stroke-width="1.5"/>
+<text x="553.0" y="1611" font-size="22" font-weight="700" text-anchor="middle" class="">冻结 C + D</text>
+<text x="553.0" y="1637" font-size="19" font-weight="400" text-anchor="middle" class="muted">复用 A 学到的码本与解码器</text>
+<rect x="784" y="1580" width="346" height="85" rx="11" fill="#fff3e3" stroke="#d5b88d" stroke-width="1.5"/>
+<text x="957.0" y="1611" font-size="22" font-weight="700" text-anchor="middle" class="">编辑后的连续动作</text>
+<text x="957.0" y="1637" font-size="19" font-weight="400" text-anchor="middle" class="muted">可作为下一轮编辑的源动作</text>
+<path d="M724 1622H784" class="line"/>
+<text x="72" y="1701" font-size="19" font-weight="400" text-anchor="start" class="muted">保留离散码 ≠ 对应关节轨迹逐帧不变；最终约束需要在连续动作上另行检查。</text>
+<path d="M382 348H346V557H26V1622H382" class="dash"/>
+<path d="M26 825H72" class="dash"/>
+<text x="52" y="1757" font-size="18" font-weight="400" text-anchor="start" class="muted">实线：数据处理   虚线：训练监督 / 冻结模块复用   依据正文图2–3、§3与附录A整理</text>
+<text x="52" y="1787" font-size="18" font-weight="400" text-anchor="start" class="muted">教学架构图；不是本次实际运行记录。70个姿态类别与10个身体部位关键词属于不同层级。</text>
+</svg>

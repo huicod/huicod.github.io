@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1160" viewBox="0 0 1280 1160" role="img" aria-labelledby="title desc">
+<title id="title">SMD 完整架构：规则描述、LoRA 微调与文字推理</title>
+<desc id="desc">关节角度与全局轨迹由固定规则转为结构化文本。训练仅更新语言模型的 LoRA，推理生成问答答案或动作描述，不生成动作。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#52667a"/></marker><marker id="greenarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#16816a"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans SC",sans-serif;fill:#1f3548}.title{font-size:31px;font-weight:700}.group{font-size:25px;font-weight:700}.node{font-size:22px;font-weight:700}.body{font-size:20px}.small{font-size:18px}.arrow{fill:none;stroke:#52667a;stroke-width:2.7;marker-end:url(#arrow)}.dash{fill:none;stroke:#16816a;stroke-width:2.7;stroke-dasharray:8 6;marker-end:url(#greenarrow)}</style>
+<rect width="1280" height="1160" rx="20" fill="#fff"/>
+
+<text x="40" y="46" class="title">SMD：把运动证据写成文字，再学习理解任务</text>
+<text x="40" y="77" class="small">确定性转换无需训练；LLM 通过 LoRA 适配。输入和输出的含义沿箭头保持明确。</text>
+<rect x="35" y="100" width="1210" height="430" rx="18" fill="#f6faff" stroke="#cbdbe7" stroke-width="1.5"/>
+<text x="58" y="137" class="group">① 规则转换  ·  无可训练参数</text>
+<rect x="58" y="248" width="202" height="122" rx="14" fill="#eaf3fb" stroke="#a6c6df" stroke-width="1.5"/>
+<text x="159.0" y="282" class="node" text-anchor="middle">输入骨架序列</text>
+<text x="159.0" y="313" class="body" text-anchor="middle">T × 22 × 3 坐标</text>
+<text x="159.0" y="341" class="body" text-anchor="middle">帧率与坐标约定</text>
+<rect x="320" y="170" width="285" height="132" rx="14" fill="#eaf3fb" stroke="#a6c6df" stroke-width="1.5"/>
+<text x="462.5" y="204" class="node" text-anchor="middle">关节角度计算</text>
+<text x="462.5" y="235" class="body" text-anchor="middle">13 个身体部位组</text>
+<text x="462.5" y="263" class="body" text-anchor="middle">26 个角度通道</text>
+<text x="462.5" y="291" class="body" text-anchor="middle">局部参考系与骨骼向量</text>
+<rect x="320" y="348" width="285" height="116" rx="14" fill="#eaf3fb" stroke="#a6c6df" stroke-width="1.5"/>
+<text x="462.5" y="382" class="node" text-anchor="middle">全局轨迹提取</text>
+<text x="462.5" y="413" class="body" text-anchor="middle">骨盆：前后 / 左右 / 高度</text>
+<text x="462.5" y="441" class="body" text-anchor="middle">身体朝向：yaw</text>
+<rect x="650" y="170" width="255" height="132" rx="14" fill="#eaf3fb" stroke="#a6c6df" stroke-width="1.5"/>
+<text x="777.5" y="204" class="node" text-anchor="middle">角度时间分段</text>
+<text x="777.5" y="235" class="body" text-anchor="middle">平滑 + 峰谷 + 静止检测</text>
+<text x="777.5" y="263" class="body" text-anchor="middle">增 / 减 / 保持 / 周期</text>
+<text x="777.5" y="291" class="body" text-anchor="middle">保留角度与时间边界</text>
+<rect x="650" y="348" width="255" height="116" rx="14" fill="#eaf3fb" stroke="#a6c6df" stroke-width="1.5"/>
+<text x="777.5" y="382" class="node" text-anchor="middle">轨迹时间分段</text>
+<text x="777.5" y="413" class="body" text-anchor="middle">位移 / 高度 / 转向区间</text>
+<text x="777.5" y="441" class="body" text-anchor="middle">保留位置、朝向与时间</text>
+<rect x="955" y="226" width="260" height="193" rx="14" fill="#eaf3fb" stroke="#a6c6df" stroke-width="1.5"/>
+<text x="1085.0" y="260" class="node" text-anchor="middle">SMD 结构化文本</text>
+<text x="1085.0" y="291" class="body" text-anchor="middle">时长、帧数与帧率</text>
+<text x="1085.0" y="319" class="body" text-anchor="middle">全局轨迹摘要与区间</text>
+<text x="1085.0" y="347" class="body" text-anchor="middle">按部位组织角度片段</text>
+<text x="1085.0" y="375" class="body" text-anchor="middle">All-26 或 Top-K 通道</text>
+<path d="M 260 278 H 285 V 236 H 320" class="arrow"/>
+<path d="M 260 336 H 285 V 405 H 320" class="arrow"/>
+<path d="M 605 236 H 650" class="arrow"/>
+<path d="M 605 405 H 650" class="arrow"/>
+<path d="M 905 236 H 930 V 277 H 955" class="arrow"/>
+<path d="M 905 406 H 930 V 367 H 955" class="arrow"/>
+<text x="58" y="502" class="small">例：左髋屈曲 3° → 81°，时间 0.0–0.9 秒；文本描述的是已观测动作。</text>
+<rect x="35" y="562" width="1210" height="245" rx="18" fill="#f6fbf8" stroke="#c9dfd3" stroke-width="1.5"/>
+<text x="58" y="601" class="group">② 任务微调  ·  QA 与动作描述分别训练 adapter</text>
+<rect x="58" y="639" width="272" height="111" rx="14" fill="#eaf3fb" stroke="#a6c6df" stroke-width="1.5"/>
+<text x="194.0" y="673" class="node" text-anchor="middle">训练输入</text>
+<text x="194.0" y="704" class="body" text-anchor="middle">SMD + 任务指令</text>
+<text x="194.0" y="732" class="body" text-anchor="middle">QA 另加问题与候选项</text>
+<rect x="392" y="625" width="360" height="140" rx="14" fill="#f0f2f5" stroke="#c7ced7" stroke-width="1.5"/>
+<text x="572" y="660" class="node" text-anchor="middle">预训练 LLM 主干：冻结</text>
+<rect x="419" y="683" width="306" height="57" rx="14" fill="#dff3e8" stroke="#70b99a" stroke-width="1.5"/>
+<text x="572" y="719" class="node" text-anchor="middle">LoRA：只更新适配参数</text>
+<rect x="815" y="639" width="400" height="111" rx="14" fill="#fff5df" stroke="#dfc582" stroke-width="1.5"/>
+<text x="1015.0" y="673" class="node" text-anchor="middle">目标答案 / 参考动作描述</text>
+<text x="1015.0" y="704" class="body" text-anchor="middle">只对回复 token 计算语言损失</text>
+<text x="1015.0" y="732" class="body" text-anchor="middle">SMD 与提示词不参与损失</text>
+<path d="M 330 695 H 392" class="arrow"/>
+<path d="M 752 663 H 815" class="arrow"/>
+<path d="M 1015 750 V 779 H 572 V 740" class="dash"/>
+<text x="781" y="800" class="small" text-anchor="middle" style="fill:#16816a">监督更新 LoRA</text>
+<path d="M 1087 419 V 546 H 48 V 695 H 58" class="arrow"/>
+<text x="1101" y="552" class="small">SMD 输入</text>
+<rect x="35" y="842" width="1210" height="247" rx="18" fill="#fbf9f3" stroke="#e2dac4" stroke-width="1.5"/>
+<text x="58" y="880" class="group">③ 推理  ·  读取新动作，生成文字结果</text>
+<rect x="58" y="923" width="272" height="111" rx="14" fill="#eaf3fb" stroke="#a6c6df" stroke-width="1.5"/>
+<text x="194.0" y="957" class="node" text-anchor="middle">新动作 → 同一规则流程</text>
+<text x="194.0" y="988" class="body" text-anchor="middle">生成 SMD</text>
+<text x="194.0" y="1016" class="body" text-anchor="middle">再加本次任务提示</text>
+<rect x="392" y="923" width="360" height="111" rx="14" fill="#e8f5ed" stroke="#96c4a9" stroke-width="1.5"/>
+<text x="572.0" y="957" class="node" text-anchor="middle">冻结 LLM + 已训练 LoRA</text>
+<text x="572.0" y="988" class="body" text-anchor="middle">读取结构化运动证据</text>
+<text x="572.0" y="1016" class="body" text-anchor="middle">自回归生成任务回复</text>
+<rect x="815" y="903" width="400" height="78" rx="14" fill="#fff5df" stroke="#dfc582" stroke-width="1.5"/>
+<text x="1015.0" y="937" class="node" text-anchor="middle">动作问答</text>
+<text x="1015.0" y="968" class="body" text-anchor="middle">答案短语：如“左腿”</text>
+<rect x="815" y="991" width="400" height="77" rx="14" fill="#fff5df" stroke="#dfc582" stroke-width="1.5"/>
+<text x="1015.0" y="1022" class="node" text-anchor="middle">动作描述</text>
+<text x="1015.0" y="1051" class="body" text-anchor="middle">如“一个人用左腿向前踢”</text>
+<path d="M 330 978 H 392" class="arrow"/>
+<path d="M 752 956 H 783 V 942 H 815" class="arrow"/>
+<path d="M 752 1002 H 783 V 1033 H 815" class="arrow"/>
+<path d="M 420 741 V 819 H 775 V 906 H 572 V 923" class="dash"/>
+<text x="578" y="837" class="small">复用训练后的 adapter</text>
+<text x="40" y="1123" class="small">蓝色：规则模块    灰色：冻结主干    绿色：LoRA    虚线：训练关系 / 参数复用</text>
+<text x="40" y="1151" class="small">依据论文图 2、§3 与附录 A 重绘；输出为文字，本图不包含动作生成或反向解码。</text>
+</svg>

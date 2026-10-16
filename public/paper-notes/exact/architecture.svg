@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1940" viewBox="0 0 1040 1940" role="img" aria-labelledby="title desc">
+<title id="title">ExAct：合成监督、动作解析与可执行行为表示</title>
+<desc id="desc">人工定义程序语言；预训练 Meta Motivo 执行奖励生成程序动作对；训练 ST-GCN 与 Qwen LoRA 解析器；真实训练集按标签聚合程序成 EBR；分别用于合成分割数据和程序距离评估。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9Z" fill="#52695e"/></marker><marker id="dasharrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9Z" fill="#a27946"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;fill:#233d32}.sub{fill:#586b61}.line{fill:none;stroke:#52695e;stroke-width:2.2;marker-end:url(#arrow)}.dash{fill:none;stroke:#a27946;stroke-width:2.2;stroke-dasharray:7 5;marker-end:url(#dasharrow)}</style><rect width="1040" height="1940" fill="#fff"/>
+<text x="40" y="45" font-size="30" font-weight="700" text-anchor="start" class="">ExAct · 从可执行程序到动作理解</text>
+<text x="40" y="80" font-size="19" font-weight="400" text-anchor="start" class="sub">程序指定部分位置目标；控制先验补足动作；解析器再把观察转回程序。</text>
+<rect x="24" y="110" width="992" height="510" rx="15" fill="#f8faf7" stroke="#d7e2d9" stroke-width="1.5"/>
+<text x="48" y="145" font-size="23" font-weight="700" text-anchor="start" class="">A  构建合成监督</text>
+<text x="990" y="145" font-size="17" font-weight="400" text-anchor="end" class="sub">控制模型预训练后复用，不逐个任务重新训练</text>
+<rect x="60" y="175" width="270" height="102" rx="12" fill="#fff" stroke="#becdc2" stroke-width="1.6"/>
+<text x="195.0" y="205" font-size="21" font-weight="700" text-anchor="middle" class="">人工定义 ExAct DSL</text>
+<text x="195.0" y="232" font-size="18" font-weight="400" text-anchor="middle" class="sub">节点 + 坐标轴 + 目标值</text>
+<text x="195.0" y="256" font-size="18" font-weight="400" text-anchor="middle" class="sub">时间区间与顺序组合</text>
+<rect x="385" y="175" width="270" height="102" rx="12" fill="#fff3e4" stroke="#d2b995" stroke-width="1.6"/>
+<text x="520.0" y="205" font-size="21" font-weight="700" text-anchor="middle" class="">采样程序</text>
+<text x="520.0" y="232" font-size="18" font-weight="400" text-anchor="middle" class="sub">变化片段数、谓词与时长</text>
+<text x="520.0" y="256" font-size="18" font-weight="400" text-anchor="middle" class="sub">保留程序作为监督答案</text>
+<rect x="710" y="175" width="270" height="102" rx="12" fill="#fff" stroke="#becdc2" stroke-width="1.6"/>
+<text x="845.0" y="205" font-size="21" font-weight="700" text-anchor="middle" class="">程序编译为奖励</text>
+<text x="845.0" y="232" font-size="18" font-weight="400" text-anchor="middle" class="sub">当前节点位置接近目标</text>
+<text x="845.0" y="256" font-size="18" font-weight="400" text-anchor="middle" class="sub">同段多个目标共同约束</text>
+<path d="M330 226 H385" class="line"/>
+<path d="M655 226 H710" class="line"/>
+<rect x="60" y="330" width="300" height="112" rx="12" fill="#eaf1fa" stroke="#9db7d0" stroke-width="1.6"/>
+<text x="210.0" y="360" font-size="21" font-weight="700" text-anchor="middle" class="">Meta Motivo 控制先验</text>
+<text x="210.0" y="387" font-size="18" font-weight="400" text-anchor="middle" class="sub">预训练 F/B 表示 + 策略</text>
+<text x="210.0" y="411" font-size="18" font-weight="400" text-anchor="middle" class="sub">复用 50 万状态推理缓存</text>
+<text x="210.0" y="435" font-size="18" font-weight="400" text-anchor="middle" class="sub">不属于新训练的解析器</text>
+<rect x="425" y="330" width="555" height="112" rx="12" fill="#eaf1fa" stroke="#9db7d0" stroke-width="1.6"/>
+<text x="702.5" y="360" font-size="21" font-weight="700" text-anchor="middle" class="">奖励重标定 → 行为条件 z → 仿真执行</text>
+<text x="702.5" y="387" font-size="18" font-weight="400" text-anchor="middle" class="sub">策略读取当前状态与 z，HumEnv 推进身体</text>
+<text x="702.5" y="411" font-size="18" font-weight="400" text-anchor="middle" class="sub">生成完整动作，未指定部位由先验补足</text>
+<path d="M845 277 V330" class="line"/>
+<path d="M360 386 H425" class="line"/>
+<rect x="425" y="490" width="555" height="88" rx="12" fill="#fff3e4" stroke="#d2b995" stroke-width="1.6"/>
+<text x="702.5" y="520" font-size="21" font-weight="700" text-anchor="middle" class="">合成的程序—动作配对数据</text>
+<text x="702.5" y="547" font-size="18" font-weight="400" text-anchor="middle" class="sub">论文：50K 训练对 + 3K 超参数选择数据</text>
+<path d="M703 442 V490" class="line"/>
+<path d="M520 277 V305 H390 V534 H425" class="dash"/>
+<rect x="254.5" y="514" width="103" height="25" fill="#fff" rx="4"/>
+<text x="306" y="532" font-size="17" font-weight="400" text-anchor="middle" class="sub">保留原程序</text>
+<rect x="24" y="646" width="992" height="362" rx="15" fill="#f8faf7" stroke="#d7e2d9" stroke-width="1.5"/>
+<text x="48" y="681" font-size="23" font-weight="700" text-anchor="start" class="">B  训练动作到程序的解析器</text>
+<text x="990" y="681" font-size="17" font-weight="400" text-anchor="end" class="sub">动作输入；程序文本提供监督</text>
+<rect x="350" y="702" width="340" height="68" rx="12" fill="#fff3e4" stroke="#d2b995" stroke-width="1.6"/>
+<text x="520.0" y="732" font-size="21" font-weight="700" text-anchor="middle" class="">合成动作 + 对应程序</text>
+<path d="M702 578 V632 H520 V702" class="line"/>
+<rect x="60" y="822" width="265" height="92" rx="12" fill="#e8f4eb" stroke="#8fb79b" stroke-width="1.6"/>
+<text x="192.5" y="852" font-size="21" font-weight="700" text-anchor="middle" class="">ST-GCN 动作编码器</text>
+<text x="192.5" y="879" font-size="18" font-weight="400" text-anchor="middle" class="sub">骨架关系 + 时间变化</text>
+<text x="192.5" y="903" font-size="18" font-weight="400" text-anchor="middle" class="sub">全参数训练</text>
+<rect x="385" y="822" width="295" height="92" rx="12" fill="#e8f4eb" stroke="#8fb79b" stroke-width="1.6"/>
+<text x="532.5" y="852" font-size="21" font-weight="700" text-anchor="middle" class="">Qwen2.5-Coder-3B</text>
+<text x="532.5" y="879" font-size="18" font-weight="400" text-anchor="middle" class="sub">动作特征作为前缀</text>
+<text x="532.5" y="903" font-size="18" font-weight="400" text-anchor="middle" class="sub">LoRA 微调 + 语法约束</text>
+<rect x="740" y="822" width="240" height="92" rx="12" fill="#fff3e4" stroke="#d2b995" stroke-width="1.6"/>
+<text x="860.0" y="852" font-size="21" font-weight="700" text-anchor="middle" class="">预测程序文本</text>
+<text x="860.0" y="879" font-size="18" font-weight="400" text-anchor="middle" class="sub">输出节点、目标、区间</text>
+<text x="860.0" y="903" font-size="18" font-weight="400" text-anchor="middle" class="sub">语法合法 ≠ 语义正确</text>
+<path d="M390 770 V793 H192 V822" class="line"/>
+<rect x="225.0" y="772" width="52" height="25" fill="#fff" rx="4"/>
+<text x="251" y="790" font-size="17" font-weight="400" text-anchor="middle" class="sub">动作</text>
+<path d="M325 867 H385" class="line"/>
+<path d="M680 867 H740" class="line"/>
+<path d="M650 770 V793 H1000 V953 H941" class="dash"/>
+<text x="520" y="955" font-size="19" font-weight="400" text-anchor="middle" class="">训练损失：程序语言建模 + 0.15 × 动作—语言 InfoNCE 对齐</text>
+<rect x="851.0" y="771" width="120" height="25" fill="#fff" rx="4"/>
+<text x="911" y="789" font-size="17" font-weight="400" text-anchor="middle" class="sub">目标程序监督</text>
+<rect x="24" y="1035" width="992" height="345" rx="15" fill="#f8faf7" stroke="#d7e2d9" stroke-width="1.5"/>
+<text x="48" y="1070" font-size="23" font-weight="700" text-anchor="start" class="">C  从真实训练集建立 EBR</text>
+<text x="990" y="1070" font-size="17" font-weight="400" text-anchor="end" class="sub">解析器已训练；动作标签只用于分组</text>
+<rect x="60" y="1110" width="270" height="83" rx="12" fill="#fff3e4" stroke="#d2b995" stroke-width="1.6"/>
+<text x="195.0" y="1140" font-size="21" font-weight="700" text-anchor="middle" class="">真实训练集 MoCap</text>
+<text x="195.0" y="1167" font-size="18" font-weight="400" text-anchor="middle" class="sub">输入骨架运动序列</text>
+<rect x="385" y="1110" width="295" height="83" rx="12" fill="#e8f4eb" stroke="#8fb79b" stroke-width="1.6"/>
+<text x="532.5" y="1140" font-size="21" font-weight="700" text-anchor="middle" class="">训练好的解析器</text>
+<text x="532.5" y="1167" font-size="18" font-weight="400" text-anchor="middle" class="sub">ST-GCN → Qwen → 程序</text>
+<rect x="735" y="1110" width="245" height="83" rx="12" fill="#fff3e4" stroke="#d2b995" stroke-width="1.6"/>
+<text x="857.5" y="1140" font-size="21" font-weight="700" text-anchor="middle" class="">每段动作的程序</text>
+<text x="857.5" y="1167" font-size="18" font-weight="400" text-anchor="middle" class="sub">由模型预测，不是真值</text>
+<path d="M330 1151 H385" class="line"/>
+<path d="M680 1151 H735" class="line"/>
+<path d="M530 914 V930 H38 V1022 H530 V1110" class="dash"/>
+<rect x="298.5" y="1009" width="103" height="25" fill="#fff" rx="4"/>
+<text x="350" y="1027" font-size="17" font-weight="400" text-anchor="middle" class="sub">训练后复用</text>
+<rect x="60" y="1250" width="270" height="83" rx="12" fill="#fff3e4" stroke="#d2b995" stroke-width="1.6"/>
+<text x="195.0" y="1280" font-size="21" font-weight="700" text-anchor="middle" class="">对应的动作标签</text>
+<text x="195.0" y="1307" font-size="18" font-weight="400" text-anchor="middle" class="sub">例如：walk / cut / stir</text>
+<rect x="540" y="1250" width="440" height="83" rx="12" fill="#fff" stroke="#becdc2" stroke-width="1.6"/>
+<text x="760.0" y="1280" font-size="21" font-weight="700" text-anchor="middle" class="">按标签选取与聚合程序 → EBR</text>
+<text x="760.0" y="1307" font-size="18" font-weight="400" text-anchor="middle" class="sub">保留多样程序；可执行的类别表示</text>
+<path d="M330 1291 H540" class="line"/>
+<path d="M857 1193 V1223 H760 V1250" class="line"/>
+<rect x="24" y="1406" width="992" height="442" rx="15" fill="#f8faf7" stroke="#d7e2d9" stroke-width="1.5"/>
+<text x="48" y="1441" font-size="23" font-weight="700" text-anchor="start" class="">D  两条不同的使用路径</text>
+<text x="990" y="1441" font-size="17" font-weight="400" text-anchor="end" class="sub">程序集合相同，应用计算不同</text>
+<rect x="60" y="1470" width="430" height="104" rx="12" fill="#eaf1fa" stroke="#9db7d0" stroke-width="1.6"/>
+<text x="275.0" y="1500" font-size="21" font-weight="700" text-anchor="middle" class="">执行路径：奖励 + 控制先验</text>
+<text x="275.0" y="1527" font-size="18" font-weight="400" text-anchor="middle" class="sub">EBR 编译奖励，复用 Meta Motivo</text>
+<text x="275.0" y="1551" font-size="18" font-weight="400" text-anchor="middle" class="sub">在 HumEnv 中生成新的动作样本</text>
+<rect x="550" y="1470" width="430" height="104" rx="12" fill="#e8f4eb" stroke="#8fb79b" stroke-width="1.6"/>
+<text x="765.0" y="1500" font-size="21" font-weight="700" text-anchor="middle" class="">评估路径：查询 MoCap</text>
+<text x="765.0" y="1527" font-size="18" font-weight="400" text-anchor="middle" class="sub">同一解析器输出查询程序</text>
+<text x="765.0" y="1551" font-size="18" font-weight="400" text-anchor="middle" class="sub">不需要仿真重演查询动作</text>
+<path d="M660 1333 V1393 H510 V1454 H275 V1470" class="line"/>
+<rect x="60" y="1617" width="430" height="98" rx="12" fill="#fff3e4" stroke="#d2b995" stroke-width="1.6"/>
+<text x="275.0" y="1647" font-size="21" font-weight="700" text-anchor="middle" class="">原数据 + EBR 合成数据</text>
+<text x="275.0" y="1674" font-size="18" font-weight="400" text-anchor="middle" class="sub">论文增强组加入 1K 合成示例</text>
+<text x="275.0" y="1698" font-size="18" font-weight="400" text-anchor="middle" class="sub">另行训练动作分割模型</text>
+<rect x="550" y="1617" width="430" height="98" rx="12" fill="#fff" stroke="#becdc2" stroke-width="1.6"/>
+<text x="765.0" y="1647" font-size="21" font-weight="700" text-anchor="middle" class="">查询程序 ↔ EBR 程序集合</text>
+<text x="765.0" y="1674" font-size="18" font-weight="400" text-anchor="middle" class="sub">计算树编辑距离与 sigmoid 评分</text>
+<text x="765.0" y="1698" font-size="18" font-weight="400" text-anchor="middle" class="sub">mean-σ / min-σ 聚合</text>
+<path d="M275 1574 V1617" class="line"/>
+<path d="M765 1574 V1617" class="line"/>
+<path d="M870 1333 V1393 H1001 V1665 H980" class="line"/>
+<rect x="60" y="1757" width="430" height="65" rx="12" fill="#fff3e4" stroke="#d2b995" stroke-width="1.6"/>
+<text x="275.0" y="1787" font-size="21" font-weight="700" text-anchor="middle" class="">分割评测：Segmental F1 / PR-AUC</text>
+<rect x="550" y="1757" width="430" height="65" rx="12" fill="#fff3e4" stroke="#d2b995" stroke-width="1.6"/>
+<text x="765.0" y="1787" font-size="21" font-weight="700" text-anchor="middle" class="">类别关系评测：AUROC 矩阵</text>
+<path d="M275 1715 V1757" class="line"/>
+<path d="M765 1715 V1757" class="line"/>
+<text x="40" y="1890" font-size="17" font-weight="400" text-anchor="start" class="sub">实线：数据与执行流程　虚线：监督或训练后复用　蓝色：预训练先验　绿色：解析器</text>
+<text x="40" y="1922" font-size="17" font-weight="400" text-anchor="start" class="sub">依据 arXiv v2 图 1、§3–4 和公开实现重绘；这是规划组件，不代表完整世界模型或通用动作编辑器。</text>
+</svg>
