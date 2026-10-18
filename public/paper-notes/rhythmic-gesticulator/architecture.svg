@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1710" viewBox="0 0 1120 1710" role="img" aria-labelledby="title desc">
+<title id="title">Rhythmic Gesticulator 完整架构教学示意</title>
+<desc id="desc">语音节拍归一化；音频分层特征与文本特征；离线学习手势词汇、生成器和两个解释器；推理时多路条件共同生成动作，再恢复原始时间轴。</desc>
+<defs><marker id="arr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9" fill="#526a78"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748} .heading{font-size:25px;font-weight:700} .title{font-size:31px;font-weight:700} .body{font-size:22px} .small{font-size:20px} .muted{fill:#506976}</style>
+<rect width="1120" height="1710" fill="#fff"/>
+<text x="34" y="46" class="title" text-anchor="start">Rhythmic Gesticulator</text>
+<text x="34" y="78" class="body" text-anchor="start">先统一节奏坐标，再分层生成动作；最后回到原始语音时间轴</text>
+<rect x="25" y="105" width="1070" height="352" rx="12" fill="#f1f7fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="142" class="heading" text-anchor="start">A  数据准备与特征提取</text>
+<rect x="50" y="165" width="185" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="66" y="199" class="heading" text-anchor="start">语音音频</text>
+<text x="66" y="232" class="small" text-anchor="start">重音 / 停顿</text>
+<rect x="280" y="165" width="285" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="296" y="199" class="heading" text-anchor="start">节拍切分 + 时间归一</text>
+<text x="296" y="232" class="small" text-anchor="start">过滤近拍、插入伪拍</text>
+<rect x="615" y="165" width="450" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="631" y="199" class="heading" text-anchor="start">分层音频编码器</text>
+<text x="631" y="232" class="small" text-anchor="start">vq-wav2vec：第 2 层 Aˡᵒʷ / 末层 Aʰⁱᵍʰ</text>
+<path d="M235,215 L280,215" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M565,215 L615,215" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<text x="295" y="291" class="small" text-anchor="start">TSM 保持音高；按块重算音频特征</text>
+<rect x="50" y="318" width="185" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="66" y="352" class="heading" text-anchor="start">同步转录</text>
+<text x="66" y="385" class="small" text-anchor="start">推理时可选</text>
+<rect x="280" y="318" width="285" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="296" y="352" class="heading" text-anchor="start">BERT + 时间对齐</text>
+<text x="296" y="385" class="small" text-anchor="start">每帧文本特征 T</text>
+<rect x="615" y="318" width="245" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="631" y="352" class="heading" text-anchor="start">分层表征预训练</text>
+<text x="631" y="385" class="small" text-anchor="start">BERT 对比监督音频层</text>
+<rect x="900" y="318" width="165" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="916" y="352" class="heading" text-anchor="start">可选 ID</text>
+<text x="916" y="385" class="small" text-anchor="start">one-hot I</text>
+<path d="M235,368 L280,368" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M565,368 L615,368" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M740,318 L740,265" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="25" y="482" width="1070" height="398" rx="12" fill="#f4f0fb" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="522" class="heading" text-anchor="start">B  离线学习：先固定类别，再学习变化与语音映射</text>
+<rect x="50" y="555" width="305" height="250" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="66" y="589" class="heading" text-anchor="start">① 学习手势词汇 S</text>
+<text x="66" y="622" class="small" text-anchor="start">归一化真实动作块 M</text>
+<text x="66" y="651" class="small" text-anchor="start">→ VQ-VAE 编码 / 最近邻量化</text>
+<text x="66" y="680" class="small" text-anchor="start">→ 重建动作 + 码本训练</text>
+<text x="66" y="709" class="small" text-anchor="start">得到每块的 lexeme s</text>
+<text x="66" y="738" class="small" text-anchor="start">训练后固定词汇与动作编码器</text>
+<text x="66" y="767" class="small" text-anchor="start">Trinity / TED：50 / 100 类</text>
+<rect x="408" y="555" width="305" height="250" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="424" y="589" class="heading" text-anchor="start">② 学习动作生成器 G</text>
+<text x="424" y="622" class="small" text-anchor="start">固定 s；每块 z 可训练</text>
+<text x="424" y="651" class="small" text-anchor="start">历史动作 + 低层音频 + P</text>
+<text x="424" y="680" class="small" text-anchor="start">→ 联合优化 G、编码器与 z</text>
+<text x="424" y="709" class="small" text-anchor="start">重建 / 感知 / lexeme 损失</text>
+<text x="424" y="738" class="small" text-anchor="start">KL 正则约束风格码分布</text>
+<text x="424" y="767" class="small" text-anchor="start">保留各训练块的 s、z 标签</text>
+<text x="424" y="796" class="small" text-anchor="start">训练中加入静默块增强</text>
+<rect x="766" y="555" width="305" height="250" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="782" y="589" class="heading" text-anchor="start">③ 学习两个解释器</text>
+<text x="782" y="622" class="small" text-anchor="start">语音特征 + 历史状态</text>
+<text x="782" y="651" class="small" text-anchor="start">→ Lexeme Interpreter Pₛ</text>
+<text x="782" y="680" class="small" text-anchor="start">交叉熵监督：预测类别 s</text>
+<text x="782" y="709" class="small" text-anchor="start">→ Style Interpreter P𝓏</text>
+<text x="782" y="738" class="small" text-anchor="start">MSE 监督：回归风格码 z</text>
+<text x="782" y="767" class="small" text-anchor="start">静默提示监督词元选择</text>
+<path d="M355,680 L408,680" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M713,680 L766,680" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="52" y="849" class="small" text-anchor="start">虚线表示训练监督或参数复用；① 的 VQ 词汇与 G 内部的分组量化是两个层次。</text>
+<rect x="25" y="906" width="1070" height="735" rx="12" fill="#eef8f3" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="947" class="heading" text-anchor="start">C  推理（复用 B）：类别、风格与低层音频共同驱动生成器</text>
+<rect x="50" y="980" width="305" height="290" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="66" y="1014" class="heading" text-anchor="start">当前语音上下文</text>
+<text x="66" y="1047" class="small" text-anchor="start">来自 A 的归一化特征</text>
+<text x="66" y="1076" class="small" text-anchor="start">Aʰⁱᵍʰ + T + 可选 I</text>
+<text x="66" y="1105" class="small" text-anchor="start">→ 类别解释器</text>
+<text x="66" y="1134" class="small" text-anchor="start"></text>
+<text x="66" y="1163" class="small" text-anchor="start">Aˡᵒʷ + T</text>
+<text x="66" y="1192" class="small" text-anchor="start">→ 风格解释器</text>
+<text x="66" y="1221" class="small" text-anchor="start">音频均取前 / 当前 / 后 3 块</text>
+<rect x="410" y="980" width="305" height="110" rx="12" fill="#fff6d8" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="426" y="1014" class="heading" text-anchor="start">类别解释器 Pₛ</text>
+<text x="426" y="1047" class="small" text-anchor="start">含上一块 s；分类选取</text>
+<text x="426" y="1076" class="small" text-anchor="start">固定词汇 S 中的一个向量</text>
+<rect x="775" y="980" width="290" height="110" rx="12" fill="#fff6d8" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="791" y="1014" class="heading" text-anchor="start">当前 lexeme sᵢ</text>
+<text x="791" y="1047" class="small" text-anchor="start">学习得到的动作类别</text>
+<text x="791" y="1076" class="small" text-anchor="start">不是人工命名的动作词</text>
+<path d="M355,1035 L410,1035" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M715,1035 L775,1035" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="410" y="1150" width="305" height="110" rx="12" fill="#fff6d8" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="426" y="1184" class="heading" text-anchor="start">风格解释器 P𝓏</text>
+<text x="426" y="1217" class="small" text-anchor="start">含上一块 z 与当前 sᵢ</text>
+<text x="426" y="1246" class="small" text-anchor="start">回归连续风格向量</text>
+<rect x="775" y="1150" width="290" height="110" rx="12" fill="#fff6d8" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="791" y="1184" class="heading" text-anchor="start">当前风格码 zᵢ</text>
+<text x="791" y="1217" class="small" text-anchor="start">刻画同类动作内的变化</text>
+<text x="791" y="1246" class="small" text-anchor="start">由语音与历史推断</text>
+<path d="M355,1205 L410,1205" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M715,1205 L775,1205" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M920,1090 L920,1120 L562,1120 L562,1150" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="50" y="1330" width="305" height="150" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="66" y="1364" class="heading" text-anchor="start">连续条件旁路</text>
+<text x="66" y="1397" class="small" text-anchor="start">前 / 当前 / 后 Aˡᵒʷ → Eₐ</text>
+<text x="66" y="1426" class="small" text-anchor="start">上一动作块 Mᵢ₋₁ → Eₘ</text>
+<text x="66" y="1455" class="small" text-anchor="start">块内位置编码 P</text>
+<rect x="410" y="1330" width="655" height="150" rx="12" fill="#d8efe2" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="426" y="1364" class="heading" text-anchor="start">生成器 G：输出归一化动作块 Mᵢ</text>
+<text x="426" y="1397" class="small" text-anchor="start">拼接：低层音频 + 历史动作 + sᵢ + zᵢ + P</text>
+<text x="426" y="1426" class="small" text-anchor="start">MLP → 64 组 × 128 类的 Gumbel-softmax 量化</text>
+<text x="426" y="1455" class="small" text-anchor="start">→ LSTM 解码为连续关节动作</text>
+<path d="M355,1405 L410,1405" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M1065,1035 L1081,1035 L1081,1360 L1065,1360" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M920,1260 L920,1330" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M1065,1440 L1080,1440 L1080,1507 L38,1507 L38,1405 L50,1405" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<text x="55" y="1307" class="small" text-anchor="start">按块自回归：将新动作块用于下一步</text>
+<rect x="50" y="1540" width="305" height="80" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="66" y="1574" class="heading" text-anchor="start">保留的原始块时长</text>
+<text x="66" y="1600" class="small" text-anchor="start">由节拍切分阶段记录</text>
+<rect x="410" y="1540" width="655" height="80" rx="12" fill="#d8efe2" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="426" y="1574" class="heading" text-anchor="start">反归一化 → 高斯平滑 → 3D 上半身手势</text>
+<text x="426" y="1600" class="small" text-anchor="start">恢复各块原始时长，与原语音节拍重新对齐</text>
+<path d="M738,1480 L738,1540" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M355,1580 L410,1580" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<text x="35" y="1675" class="small" text-anchor="start">依据论文图 2、图 4、图 7 与 §4–6 重绘；教学示意，展示论文完整模型。</text>
+<text x="35" y="1702" class="small" text-anchor="start">公开 Simplified_Version 删除了文本、静默提示和风格码，不能等同于上图。</text>
+</svg>
