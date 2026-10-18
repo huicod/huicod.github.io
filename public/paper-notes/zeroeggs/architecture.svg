@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1690" viewBox="0 0 1120 1690" role="img" aria-labelledby="title desc">
+<title id="title">ZeroEGGS 完整架构教学示意</title>
+<desc id="desc">语音编码为逐帧条件；参考三维动作经变分风格编码器采样连续风格向量。风格、初始姿态与目标朝向初始化GRU；解码器按帧自回归生成动作、积分更新根状态。训练时配对语音动作监督重建，KL正则约束风格空间。</desc>
+<defs><marker id="arr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9" fill="#526a78"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.heading{font-size:25px;font-weight:700}.title{font-size:31px;font-weight:700}.body{font-size:22px}.small{font-size:20px}.muted{fill:#506976}</style>
+<rect width="1120" height="1690" fill="#fff"/>
+<text x="34" y="46" class="title" text-anchor="start">ZeroEGGS：语音节奏 × 示例风格</text>
+<text x="34" y="80" class="body" text-anchor="start">连续风格向量控制生成；不复制示例的逐帧动作，也不预测离散动作 token</text>
+<rect x="25" y="105" width="1070" height="490" rx="12" fill="#f1f7fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="143" class="heading" text-anchor="start">A  两路条件编码（推理时复用训练好的网络）</text>
+<rect x="55" y="165" width="450" height="85" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="199" class="heading" text-anchor="start">语音音频</text>
+<text x="71" y="232" class="small" text-anchor="start">新台词 / 新声音；无须文字转录</text>
+<rect x="615" y="165" width="450" height="85" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="631" y="199" class="heading" text-anchor="start">参考三维动作 A</text>
+<text x="631" y="232" class="small" text-anchor="start">关节局部变换与速度 + 根局部速度</text>
+<rect x="55" y="285" width="450" height="145" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="319" class="heading" text-anchor="start">Speech Encoder</text>
+<text x="71" y="352" class="small" text-anchor="start">80 维 log-mel + 逐帧能量</text>
+<text x="71" y="381" class="small" text-anchor="start">重采样至 60 fps → 2 层 Conv1D + ELU</text>
+<text x="71" y="410" class="small" text-anchor="start">→ 逐帧线性映射；约 1 秒语音感受野</text>
+<rect x="615" y="285" width="450" height="145" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="631" y="319" class="heading" text-anchor="start">Style Encoder</text>
+<text x="631" y="352" class="small" text-anchor="start">2 层 Conv1D + 位置编码</text>
+<text x="631" y="381" class="small" text-anchor="start">→ 4 头自注意力 Transformer</text>
+<text x="631" y="410" class="small" text-anchor="start">→ 沿时间平均 → 高斯参数 μ、σ</text>
+<path d="M280,250 L280,285" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M840,250 L840,285" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="55" y="465" width="450" height="95" rx="12" fill="#e3f0fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="499" class="heading" text-anchor="start">逐帧语音条件 sᵢ</text>
+<text x="71" y="532" class="small" text-anchor="start">S ∈ Rᵀ×⁶⁴；每帧取对应向量</text>
+<rect x="615" y="465" width="450" height="110" rx="12" fill="#fff4d8" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="631" y="499" class="heading" text-anchor="start">连续风格向量 e ∈ R⁶⁴</text>
+<text x="631" y="532" class="small" text-anchor="start">从 q(e | A) 采样：同一输入可生成变体</text>
+<text x="631" y="561" class="small" text-anchor="start">可选：混合多个 e / 在 PCA 空间调整</text>
+<path d="M280,430 L280,465" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M840,430 L840,465" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="25" y="625" width="1070" height="660" rx="12" fill="#eef8f3" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="663" class="heading" text-anchor="start">B  按帧自回归：初始化一次，循环生成与更新状态</text>
+<rect x="55" y="690" width="450" height="125" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="724" class="heading" text-anchor="start">初始姿态 y₀ + 目标朝向</text>
+<text x="71" y="757" class="small" text-anchor="start">目标朝向转到角色根坐标系</text>
+<text x="71" y="786" class="small" text-anchor="start">论文推理默认目标为世界 +Z 方向</text>
+<rect x="615" y="690" width="450" height="125" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="631" y="724" class="heading" text-anchor="start">Hidden State Initializer</text>
+<text x="631" y="757" class="small" text-anchor="start">初始姿态 + 目标朝向 + 风格 e</text>
+<text x="631" y="786" class="small" text-anchor="start">3 层 MLP → 两层 GRU 的初始隐状态</text>
+<path d="M505,750 L615,750" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M840,575 L840,690" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<text x="615" y="614" class="small" text-anchor="start">e → 初始化</text>
+<rect x="325" y="875" width="740" height="135" rx="12" fill="#d8efe2" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="341" y="909" class="heading" text-anchor="start">Recurrent Decoder：2 层 GRU（每层 1024）</text>
+<text x="341" y="942" class="small" text-anchor="start">当前 sᵢ + 风格 e + 前一帧姿态 yᵢ₋₁ + 局部目标朝向</text>
+<text x="341" y="971" class="small" text-anchor="start">携带上一步隐状态，输出当前关节姿态与速度</text>
+<text x="341" y="1000" class="small" text-anchor="start">初始帧以 y₀ 为种子；此后反馈自身生成的状态</text>
+<path d="M840,815 L840,875" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M280,560 L280,610 L12,610 L12,853 L360,853 L360,875" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<text x="66" y="842" class="small" text-anchor="start">sᵢ：每帧变化</text>
+<path d="M1065,515 L1080,515 L1080,920 L1065,920" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M55,752 L40,752 L40,944 L325,944" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<text x="58" y="925" class="small" text-anchor="start">初始 / 上一帧状态</text>
+<rect x="325" y="1055" width="740" height="115" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="341" y="1089" class="heading" text-anchor="start">Update Character State</text>
+<text x="341" y="1122" class="small" text-anchor="start">反归一化；积分预测根速度，更新根位置与朝向</text>
+<text x="341" y="1151" class="small" text-anchor="start">得到当前 yᵢ；重新换算下一帧的局部目标朝向</text>
+<path d="M695,1010 L695,1055" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M325,1110 L170,1110 L170,970 L325,970" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<text x="55" y="1152" class="small" text-anchor="start">反馈 yᵢ → 下一步</text>
+<rect x="325" y="1210" width="740" height="55" rx="12" fill="#d8efe2" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="341" y="1244" class="heading" text-anchor="start">输出：全身 + 手指的连续三维动作序列</text>
+<path d="M695,1170 L695,1210" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="25" y="1315" width="1070" height="290" rx="12" fill="#f4f0fb" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="1355" class="heading" text-anchor="start">C  训练支线：全部网络联合优化，无须风格类别标签</text>
+<rect x="55" y="1380" width="305" height="170" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="1414" class="heading" text-anchor="start">配对语音与真实动作</text>
+<text x="71" y="1447" class="small" text-anchor="start">目标片段：256 帧</text>
+<text x="71" y="1476" class="small" text-anchor="start">同源参考：256–512 帧</text>
+<text x="71" y="1505" class="small" text-anchor="start">参考包含目标片段</text>
+<text x="71" y="1534" class="small" text-anchor="start">镜像与 10% 速度扰动</text>
+<rect x="410" y="1380" width="305" height="170" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="426" y="1414" class="heading" text-anchor="start">复用 A + B 前向过程</text>
+<text x="426" y="1447" class="small" text-anchor="start">训练也反馈预测动作</text>
+<text x="426" y="1476" class="small" text-anchor="start">不使用 teacher forcing</text>
+<text x="426" y="1505" class="small" text-anchor="start">生成动作与真实动作比较</text>
+<text x="426" y="1534" class="small" text-anchor="start">风格后验与标准高斯比较</text>
+<rect x="765" y="1380" width="300" height="170" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="781" y="1414" class="heading" text-anchor="start">重建损失 + KL 正则</text>
+<text x="781" y="1447" class="small" text-anchor="start">局部 / 世界姿态与速度</text>
+<text x="781" y="1476" class="small" text-anchor="start">有限差分速度、目标朝向</text>
+<text x="781" y="1505" class="small" text-anchor="start">KL 权重逐渐引入</text>
+<text x="781" y="1534" class="small" text-anchor="start">反向更新 A 与 B 全部网络</text>
+<path d="M360,1465 L410,1465" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M715,1465 L765,1465" fill="none" stroke="#526a78" stroke-width="2.3" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="55" y="1583" class="small" text-anchor="start">训练的“参考包含目标”用于重建学习；推理时，参考动作无需与新语音对应或对齐。</text>
+<text x="35" y="1640" class="small" text-anchor="start">据 CGF 正式版图 2–4、§3–4 重绘；实线：推理数据流，虚线：训练数据 / 监督。</text>
+<text x="35" y="1673" class="small" text-anchor="start">目标朝向用于抑制旋转漂移，不是眼球注视、物体指向或精确接触约束。</text>
+</svg>
