@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1210" viewBox="0 0 1280 1210" role="img" aria-labelledby="t d"><title id="t">DanceChat 完整架构</title><desc id="d">音乐、节拍与LLM生成的编舞文字融合，训练条件扩散模型，推理输出连续舞蹈。</desc><defs><marker id="a" markerWidth="8" markerHeight="8" refX="9" refY="5" orient="auto" viewBox="0 0 10 10"><path d="M0 0L10 5L0 10" fill="#52667a"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans SC',sans-serif;fill:#243b50}.title{font-size:30px;font-weight:700}.h{font-size:24px;font-weight:700}.b{font-size:20px}.small{font-size:18px}path.line{fill:none;stroke:#52667a;stroke-width:2.5;marker-end:url(#a)}path.dash{fill:none;stroke:#16816a;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#a)}</style><rect width="1280" height="1210" rx="18" fill="white"/>
+<text x="40" y="43" class="title" text-anchor="start">DanceChat：音乐 → 伪编舞建议 → 条件扩散舞蹈</text>
+<text x="40" y="76" class="small" text-anchor="start">LLM 生成一种合理的动作意图；扩散模型负责把多模态条件变成连续动作。</text>
+<rect x="35" y="100" width="1210" height="505" rx="13" fill="#f7faff" stroke="#b4c9da"/>
+<text x="60" y="137" class="h" text-anchor="start">① 同一段音乐的三路条件处理</text>
+<rect x="65" y="166" width="330" height="114" rx="13" fill="#f0f2f5" stroke="#b4c9da"/>
+<text x="230.0" y="198" class="h" text-anchor="middle">音乐内容支路</text>
+<text x="230.0" y="230" class="b" text-anchor="middle">原始音频 → Jukebox</text>
+<text x="230.0" y="257" class="b" text-anchor="middle">预训练主干冻结</text>
+<rect x="475" y="166" width="330" height="114" rx="13" fill="#e9f3fb" stroke="#b4c9da"/>
+<text x="640.0" y="198" class="h" text-anchor="middle">节奏支路</text>
+<text x="640.0" y="230" class="b" text-anchor="middle">Librosa 提取 beat / downbeat</text>
+<text x="640.0" y="257" class="b" text-anchor="middle">离散节拍位置</text>
+<rect x="885" y="166" width="330" height="114" rx="13" fill="#e9f3fb" stroke="#b4c9da"/>
+<text x="1050.0" y="198" class="h" text-anchor="middle">动作语义支路</text>
+<text x="1050.0" y="230" class="b" text-anchor="middle">音乐属性 + 时长 + 舞种</text>
+<text x="1050.0" y="257" class="b" text-anchor="middle">模板提示 → GPT-4o 建议句</text>
+<rect x="65" y="331" width="330" height="114" rx="13" fill="#e7f5ed" stroke="#b4c9da"/>
+<text x="230.0" y="363" class="h" text-anchor="middle">音乐适配</text>
+<text x="230.0" y="395" class="b" text-anchor="middle">可训练 2 层 Transformer</text>
+<text x="230.0" y="422" class="b" text-anchor="middle">音乐特征 Eₘ</text>
+<rect x="475" y="331" width="330" height="114" rx="13" fill="#e7f5ed" stroke="#b4c9da"/>
+<text x="640.0" y="363" class="h" text-anchor="middle">逐帧节拍条件</text>
+<text x="640.0" y="395" class="b" text-anchor="middle">高斯形节拍脉冲 + 线性投影</text>
+<text x="640.0" y="422" class="b" text-anchor="middle">节拍特征 Eᵦ</text>
+<rect x="885" y="331" width="330" height="114" rx="13" fill="#e7f5ed" stroke="#b4c9da"/>
+<text x="1050.0" y="363" class="h" text-anchor="middle">文字编码与适配</text>
+<text x="1050.0" y="395" class="b" text-anchor="middle">冻结 CLIP + 4 层 Transformer</text>
+<text x="1050.0" y="422" class="b" text-anchor="middle">文字特征 Eₜ</text>
+<path d="M230 280 V331" class="line"/>
+<path d="M640 280 V331" class="line"/>
+<path d="M1050 280 V331" class="line"/>
+<rect x="350" y="500" width="580" height="86" rx="13" fill="#e7f5ed" stroke="#b4c9da"/>
+<text x="640.0" y="532" class="h" text-anchor="middle">分层融合形成条件 Eꜰ</text>
+<text x="640.0" y="564" class="b" text-anchor="middle">先 Eₘ + Eᵦ，再拼接 Eₜ</text>
+<path d="M230 445 V474 H470 V500" class="line"/>
+<path d="M640 445 V500" class="line"/>
+<path d="M1050 445 V474 H810 V500" class="line"/>
+<rect x="35" y="640" width="1210" height="247" rx="13" fill="#f6faf7" stroke="#b4c9da"/>
+<text x="60" y="678" class="h" text-anchor="start">② 训练：真实舞蹈监督 + 运动学与跨模态约束</text>
+<rect x="65" y="716" width="235" height="108" rx="13" fill="#e9f3fb" stroke="#b4c9da"/>
+<text x="182.5" y="748" class="h" text-anchor="middle">真实舞蹈 x₀</text>
+<text x="182.5" y="780" class="b" text-anchor="middle">SMPL 24 关节</text>
+<text x="182.5" y="807" class="b" text-anchor="middle">每帧 151 维</text>
+<rect x="350" y="716" width="235" height="108" rx="13" fill="#e9f3fb" stroke="#b4c9da"/>
+<text x="467.5" y="748" class="h" text-anchor="middle">随机时刻加噪</text>
+<text x="467.5" y="780" class="b" text-anchor="middle">x₀ + 高斯噪声</text>
+<text x="467.5" y="807" class="b" text-anchor="middle">得到 zₜ</text>
+<rect x="635" y="716" width="270" height="108" rx="13" fill="#e7f5ed" stroke="#b4c9da"/>
+<text x="770.0" y="748" class="h" text-anchor="middle">条件去噪模型</text>
+<text x="770.0" y="780" class="b" text-anchor="middle">输入 zₜ、t、Eꜰ</text>
+<text x="770.0" y="807" class="b" text-anchor="middle">预测干净动作 x̂₀</text>
+<rect x="955" y="705" width="260" height="143" rx="13" fill="#fff3db" stroke="#b4c9da"/>
+<text x="1085.0" y="737" class="h" text-anchor="middle">训练损失</text>
+<text x="1085.0" y="769" class="b" text-anchor="middle">重建 + 位置 / 速度 / 接触</text>
+<text x="1085.0" y="796" class="b" text-anchor="middle">文字↔音乐、文字↔动作</text>
+<text x="1085.0" y="823" class="b" text-anchor="middle">余弦对齐</text>
+<path d="M300 770 H350" class="line"/>
+<path d="M585 770 H635" class="line"/>
+<path d="M905 770 H955" class="line"/>
+<path d="M890 586 V619 H920 V698 H770 V716" class="line"/>
+<path d="M1085 848 V866 H770 V824" class="dash"/>
+<text x="1075" y="880" class="small" text-anchor="middle">监督更新生成模型</text>
+<rect x="35" y="925" width="1210" height="216" rx="13" fill="#fbf8f2" stroke="#b4c9da"/>
+<text x="60" y="963" class="h" text-anchor="start">③ 推理：新音乐的条件保持，动作状态逐步去噪</text>
+<rect x="65" y="993" width="280" height="108" rx="13" fill="#e9f3fb" stroke="#b4c9da"/>
+<text x="205.0" y="1025" class="h" text-anchor="middle">新音乐 → 同一三路流程</text>
+<text x="205.0" y="1057" class="b" text-anchor="middle">得到 Eꜰ</text>
+<text x="205.0" y="1084" class="b" text-anchor="middle">不需要真实舞蹈</text>
+<rect x="405" y="993" width="350" height="108" rx="13" fill="#e7f5ed" stroke="#b4c9da"/>
+<text x="580.0" y="1025" class="h" text-anchor="middle">从高斯噪声开始</text>
+<text x="580.0" y="1057" class="b" text-anchor="middle">已训练模型 + Eꜰ</text>
+<text x="580.0" y="1084" class="b" text-anchor="middle">多步反向扩散</text>
+<rect x="815" y="993" width="400" height="108" rx="13" fill="#e9f3fb" stroke="#b4c9da"/>
+<text x="1015.0" y="1025" class="h" text-anchor="middle">连续舞蹈输出</text>
+<text x="1015.0" y="1057" class="b" text-anchor="middle">关节旋转 + 根平移 + 接触标记</text>
+<text x="1015.0" y="1084" class="b" text-anchor="middle">五秒 / 30 FPS：150 × 151</text>
+<path d="M345 1047 H405" class="line"/>
+<path d="M755 1047 H815" class="line"/>
+<path d="M770 824 V908 H780 V1047 H755" class="dash"/>
+<text x="40" y="1174" class="small" text-anchor="start">实线：数据流；虚线：训练更新 / 参数复用。文本指导属于软条件，不是逐条执行保证。</text>
+<text x="40" y="1200" class="small" text-anchor="start">依据原文图 2、§3 重绘；损失支路仅训练使用，推理不包含动作真值。</text>
+</svg>

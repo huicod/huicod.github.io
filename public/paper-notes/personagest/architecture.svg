@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="2700" viewBox="0 0 1040 2700" role="img" aria-labelledby="title desc">
+<title id="title">PersonaGest 中文架构：语义内容和参考风格分层生成</title>
+<desc id="desc">上部训练语义分区的四部位动作表示，再冻结表示训练内容和风格生成器。下部语音、文本和说话人条件产生内容，参考动作产生风格条件；三路身体经七层风格残差生成，面部不生成风格残差，四路内容经音频融合及跨部位注意力后解码。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0 0 L8 4.5 L0 9 Z" fill="#64758d"/></marker></defs>
+<rect width="1040" height="2700" fill="#ffffff"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<text x="520" y="43" font-size="31" font-weight="750" fill="#223147" text-anchor="middle">PersonaGest：先生成内容，再补全参考风格</text>
+<text x="520" y="76" font-size="19" font-weight="400" fill="#5c6d81" text-anchor="middle">中文教学示意 · 依据论文 §3、图 2/3 与附录 B · 非实际运行截图</text>
+<rect x="30" y="100" width="980" height="835" rx="22" fill="#eef5ff" stroke="#cdd7e2" stroke-width="2"/>
+<text x="55" y="136" font-size="27" font-weight="700" fill="#223147" text-anchor="start">A · 第一阶段：学习语义与风格分层的动作表示</text>
+<text x="55" y="165" font-size="19" font-weight="400" fill="#56667a" text-anchor="start">训练用配对数据；面部采用普通 VQ，身体采用八层 RVQ。</text>
+<rect x="80" y="190" width="880" height="86" rx="16" fill="#ffffff" stroke="#9cb0c6" stroke-width="2"/>
+<text x="520.0" y="224" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">配对训练数据</text>
+<text x="520.0" y="255" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">语音与转录 · 四部位动作 · 语义类型/强度 · 说话人身份 · 音素</text>
+<rect x="80" y="325" width="300" height="100" rx="16" fill="#e6f1ff" stroke="#9cb0c6" stroke-width="2"/>
+<text x="230.0" y="359" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">语义预测器 ψ</text>
+<text x="230.0" y="390" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">音频 + 转录 → 语义分数</text>
+<text x="230.0" y="418" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">五类语义；强度调节采样</text>
+<rect x="430" y="325" width="530" height="100" rx="16" fill="#e6f1ff" stroke="#9cb0c6" stroke-width="2"/>
+<text x="695.0" y="359" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">四路动作编码器</text>
+<text x="695.0" y="390" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">上身 / 双手 / 下身 / 面部</text>
+<text x="695.0" y="418" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">时间压缩 4 倍；得到连续潜变量</text>
+<path d="M230 276 V325" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="230" y="307" font-size="18" font-weight="500" fill="#52617a" text-anchor="middle">音频 + 文本</text>
+<path d="M695 276 V325" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="695" y="307" font-size="18" font-weight="500" fill="#52617a" text-anchor="middle">动作序列</text>
+<rect x="80" y="485" width="580" height="108" rx="16" fill="#ddf3ee" stroke="#7eb9ab" stroke-width="2"/>
+<text x="370.0" y="519" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">身体三路：语义 RVQ</text>
+<text x="370.0" y="550" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">第一层：SMoC 语义内容码</text>
+<text x="370.0" y="578" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">后七层：残差风格码</text>
+<rect x="710" y="485" width="250" height="108" rx="16" fill="#fff1dc" stroke="#d4b478" stroke-width="2"/>
+<text x="835.0" y="519" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">面部：普通 VQ</text>
+<text x="835.0" y="550" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">仅内容码</text>
+<text x="835.0" y="578" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">显式风格项 = 0</text>
+<path d="M230 425 V485" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="230" y="463" font-size="18" font-weight="500" fill="#52617a" text-anchor="middle">分区路由</text>
+<path d="M695 425 V452 H500 V485" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M695 452 H835 V485" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="80" y="660" width="880" height="108" rx="16" fill="#e4eafa" stroke="#a2a9cf" stroke-width="2"/>
+<text x="520.0" y="694" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">内容重新融合，风格保留为残差支路</text>
+<text x="520.0" y="725" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">四路内容 + 多尺度音频 → MSAF → CPA 跨部位协调</text>
+<text x="520.0" y="753" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">三路身体风格保留；面部无风格残差</text>
+<path d="M370 593 V660" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="370" y="637" font-size="18" font-weight="500" fill="#52617a" text-anchor="middle">内容 + 风格</text>
+<path d="M835 593 V660" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="835" y="637" font-size="18" font-weight="500" fill="#52617a" text-anchor="middle">面部内容</text>
+<rect x="80" y="815" width="880" height="90" rx="16" fill="#ffffff" stroke="#9cb0c6" stroke-width="2"/>
+<text x="520.0" y="849" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">分部位解码与训练监督</text>
+<text x="520.0" y="880" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">重建 / 速度 / VQ · 语义分类 · 同说话人风格对比 · 内容音素预测</text>
+<path d="M520 768 V815" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="520" y="797" font-size="18" font-weight="500" fill="#52617a" text-anchor="middle">融合内容 + 风格 → 动作重建</text>
+<rect x="30" y="975" width="980" height="250" rx="22" fill="#f2f7f4" stroke="#cdd7e2" stroke-width="2"/>
+<text x="55" y="1011" font-size="27" font-weight="700" fill="#223147" text-anchor="start">B · 第二阶段：冻结表示，学习生成</text>
+<text x="55" y="1040" font-size="19" font-weight="400" fill="#56667a" text-anchor="start">CMT 学内容；SRT 学风格残差。两者不是自然语言大模型。</text>
+<rect x="75" y="1070" width="270" height="110" rx="16" fill="#e7f1eb" stroke="#9cb0c6" stroke-width="2"/>
+<text x="210.0" y="1104" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">冻结已训练 tokenizer</text>
+<text x="210.0" y="1135" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">提供目标内容/风格码</text>
+<text x="210.0" y="1163" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">复用编码器、融合与解码器</text>
+<rect x="390" y="1070" width="260" height="110" rx="16" fill="#e6f1ff" stroke="#9cb0c6" stroke-width="2"/>
+<text x="520.0" y="1104" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">CMT 内容训练</text>
+<text x="520.0" y="1135" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">语音 + 身份 + 掩码码序列</text>
+<text x="520.0" y="1163" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">预测遮蔽位置；语义引导</text>
+<rect x="695" y="1070" width="270" height="110" rx="16" fill="#ffefdc" stroke="#9cb0c6" stroke-width="2"/>
+<text x="830.0" y="1104" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">SRT 风格训练</text>
+<text x="830.0" y="1135" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">随机选一层残差作为目标</text>
+<text x="830.0" y="1163" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">内容 + 先前层 + 参考风格</text>
+<path d="M210 935 V975" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<path d="M345 1125 H390" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M345 1154 H365 V1198 H677 V1125 H695" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M520 1225 V1270" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<text x="680" y="1255" font-size="18" font-weight="500" fill="#52617a" text-anchor="middle">训练完成后复用参数</text>
+<rect x="30" y="1270" width="980" height="1365" rx="22" fill="#fffaf1" stroke="#cdd7e2" stroke-width="2"/>
+<text x="55" y="1306" font-size="27" font-weight="700" fill="#223147" text-anchor="start">C · 推理：语音内容与参考风格在解码端合流</text>
+<text x="55" y="1335" font-size="19" font-weight="400" fill="#56667a" text-anchor="start">实线：数据流；虚线：训练参数复用。面部分支只有 CMT，没有 SRT。</text>
+<rect x="70" y="1365" width="290" height="92" rx="16" fill="#e6f1ff" stroke="#9cb0c6" stroke-width="2"/>
+<text x="215.0" y="1399" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">新语音 + 转录文本</text>
+<text x="215.0" y="1430" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">语音节奏与语义线索</text>
+<rect x="405" y="1365" width="225" height="92" rx="16" fill="#e6f1ff" stroke="#9cb0c6" stroke-width="2"/>
+<text x="517.5" y="1399" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">说话人条件</text>
+<text x="517.5" y="1430" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">可学习 ID 嵌入</text>
+<rect x="680" y="1365" width="300" height="92" rx="16" fill="#ffefdc" stroke="#9cb0c6" stroke-width="2"/>
+<text x="830.0" y="1399" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">参考动作</text>
+<text x="830.0" y="1430" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">可按部位组合不同来源</text>
+<rect x="70" y="1515" width="560" height="122" rx="16" fill="#e6f1ff" stroke="#9cb0c6" stroke-width="2"/>
+<text x="350.0" y="1549" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">生成条件与语义分数</text>
+<text x="350.0" y="1580" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">语音 → 冻结 Whisper-base 特征</text>
+<text x="350.0" y="1608" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">音频 + 转录 → ψ；ID → 身份嵌入</text>
+<rect x="680" y="1515" width="300" height="122" rx="16" fill="#ffefdc" stroke="#9cb0c6" stroke-width="2"/>
+<text x="830.0" y="1549" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">冻结参考编码与 RVQ</text>
+<text x="830.0" y="1580" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">提取上身 / 手 / 下身</text>
+<text x="830.0" y="1608" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">七层风格残差 token</text>
+<path d="M215 1457 V1515" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M517 1457 V1515" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M830 1457 V1515" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="70" y="1695" width="560" height="126" rx="16" fill="#e6f1ff" stroke="#9cb0c6" stroke-width="2"/>
+<text x="350.0" y="1729" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">四路 CMT：内容掩码 Transformer</text>
+<text x="350.0" y="1760" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">18 轮预测与重新遮蔽；时间位置并行</text>
+<text x="350.0" y="1788" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">优先修正语义和预测均不可靠的位置</text>
+<rect x="680" y="1695" width="300" height="126" rx="16" fill="#ffefdc" stroke="#9cb0c6" stroke-width="2"/>
+<text x="830.0" y="1729" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">参考风格条件</text>
+<text x="830.0" y="1760" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">风格前缀 + 全局风格 token</text>
+<text x="830.0" y="1788" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">只提供给三路身体 SRT</text>
+<path d="M350 1637 V1695" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="350" y="1676" font-size="18" font-weight="500" fill="#52617a" text-anchor="middle">音频、身份、语义分数</text>
+<path d="M830 1637 V1695" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="70" y="1875" width="560" height="90" rx="16" fill="#dceef9" stroke="#9cb0c6" stroke-width="2"/>
+<text x="350.0" y="1909" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">四路生成内容码</text>
+<text x="350.0" y="1940" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">上身 / 手 / 下身 / 面部</text>
+<rect x="680" y="1875" width="300" height="126" rx="16" fill="#ffefdc" stroke="#9cb0c6" stroke-width="2"/>
+<text x="830.0" y="1909" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">三路 SRT：逐残差层生成</text>
+<text x="830.0" y="1940" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">第 1 → 第 7 层</text>
+<text x="830.0" y="1968" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">内容 + 先前残差 + 参考</text>
+<path d="M350 1821 V1875" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M830 1821 V1875" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M630 1920 H680" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="70" y="2030" width="560" height="100" rx="16" fill="#e7e9fa" stroke="#9cb0c6" stroke-width="2"/>
+<text x="350.0" y="2064" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">MSAF：解码前的多尺度音频融合</text>
+<text x="350.0" y="2095" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">手：速度查询；其他部位：全局查询</text>
+<text x="350.0" y="2123" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">音频尺度 1× / 2× / 4×；门控残差</text>
+<rect x="680" y="2080" width="300" height="110" rx="16" fill="#ffefdc" stroke="#9cb0c6" stroke-width="2"/>
+<text x="830.0" y="2114" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">身体风格残差之和</text>
+<text x="830.0" y="2145" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">三路各自累加七层</text>
+<text x="830.0" y="2173" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">面部风格项恒为 0</text>
+<path d="M350 1965 V2030" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M830 2001 V2080" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M70 1410 H48 V2080 H70" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="37" y="1800" font-size="18" font-weight="500" fill="#52617a" text-anchor="middle">音频</text>
+<rect x="70" y="2190" width="560" height="90" rx="16" fill="#e7e9fa" stroke="#9cb0c6" stroke-width="2"/>
+<text x="350.0" y="2224" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">CPA：四部位注意力</text>
+<text x="350.0" y="2255" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">同一时刻的部位间交换上下文</text>
+<path d="M350 2130 V2190" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="70" y="2350" width="910" height="100" rx="16" fill="#ddf3ee" stroke="#7eb9ab" stroke-width="2"/>
+<text x="525.0" y="2384" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">融合内容 + 身体风格 → 各部位解码器</text>
+<text x="525.0" y="2415" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">上身、手、下身：内容 + 风格；面部：内容 + 0</text>
+<path d="M350 2280 V2350" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M830 2190 V2350" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="830" y="2280" font-size="18" font-weight="500" fill="#52617a" text-anchor="middle">三路身体风格</text>
+<rect x="70" y="2500" width="910" height="100" rx="16" fill="#ddf3ee" stroke="#7eb9ab" stroke-width="2"/>
+<text x="525.0" y="2534" font-size="24" font-weight="650" fill="#223147" text-anchor="middle">全身共语动作与面部输出</text>
+<text x="525.0" y="2565" font-size="20" font-weight="400" fill="#223147" text-anchor="middle">长语音：重叠窗口；仅锁内容前缀；Hann 融合；平移后处理</text>
+<path d="M520 2450 V2500" fill="none" stroke="#64758d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="520" y="2674" font-size="20" font-weight="500" fill="#596a7b" text-anchor="middle">边界：粗粒度语义与参考风格控制 ≠ 精确指向、轨迹约束或源动作逐帧保持</text>
+</g></svg>

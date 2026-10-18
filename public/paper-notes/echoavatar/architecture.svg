@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="2260" viewBox="0 0 1040 2260" role="img" aria-labelledby="title desc"><title id="title">EchoAvatar：训练、双路流式生成与同步</title><desc id="desc">身体因果 RVQ 与 Qwen 经分层扰动和可选偏好优化；脸部独立训练。音频分流到身体和面部生成器，再按同一块编号合并为声音、姿态、平移、表情系数。</desc><defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L9 4.5L0 9Z" fill="#49675a"/></marker></defs><style>text{font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;fill:#244034}.line{fill:none;stroke:#49675a;stroke-width:2.2;marker-end:url(#a)}.dash{fill:none;stroke:#a17b48;stroke-width:2.2;stroke-dasharray:7 5;marker-end:url(#a)}</style><rect width="1040" height="2260" fill="white"/>
+<text x="40" y="45" font-size="28" font-weight="700" text-anchor="start">EchoAvatar · 持续听音频，双路生成虚拟人动作</text>
+<text x="40" y="80" font-size="19" font-weight="400" text-anchor="start">身体与脸部独立学习和生成；共享音频时钟，最后按块编号合流。</text>
+<rect x="24" y="110" width="992" height="555" rx="15" fill="#f8faf7" stroke="#d8e2d8"/>
+<text x="48" y="146" font-size="23" font-weight="700" text-anchor="start">A  训练：身体生成器与面部生成器分别学习</text>
+<rect x="60" y="180" width="270" height="140" rx="12" fill="#fff3e5" stroke="#d3ba96" stroke-width="1.5"/>
+<text x="195.0" y="211" font-size="21" font-weight="700" text-anchor="middle">ZeroEGGS + Motorica</text>
+<text x="195.0" y="239" font-size="18" font-weight="400" text-anchor="middle">说话与音乐配对动作</text>
+<text x="195.0" y="264" font-size="18" font-weight="400" text-anchor="middle">统一骨架 / 手指补全</text>
+<text x="195.0" y="289" font-size="18" font-weight="400" text-anchor="middle">分上身、下身、手部</text>
+<rect x="385" y="180" width="295" height="140" rx="12" fill="#e8f4ea" stroke="#93b79d" stroke-width="1.5"/>
+<text x="532.5" y="211" font-size="21" font-weight="700" text-anchor="middle">因果注意力动作 tokenizer</text>
+<text x="532.5" y="239" font-size="18" font-weight="400" text-anchor="middle">双路径时间重采样</text>
+<text x="532.5" y="264" font-size="18" font-weight="400" text-anchor="middle">三部位 × 六层 RVQ</text>
+<text x="532.5" y="289" font-size="18" font-weight="400" text-anchor="middle">重建 + FK / 足部辅助损失</text>
+<rect x="735" y="180" width="245" height="140" rx="12" fill="#fff3e5" stroke="#d3ba96" stroke-width="1.5"/>
+<text x="857.5" y="211" font-size="21" font-weight="700" text-anchor="middle">动作码与音频码</text>
+<text x="857.5" y="239" font-size="18" font-weight="400" text-anchor="middle">生成目标：完整 RVQ 层级</text>
+<text x="857.5" y="264" font-size="18" font-weight="400" text-anchor="middle">音频：因果 EnCodec</text>
+<path d="M330 250 H385" class="line"/>
+<path d="M680 250 H735" class="line"/>
+<rect x="60" y="370" width="620" height="140" rx="12" fill="#e8f4ea" stroke="#93b79d" stroke-width="1.5"/>
+<text x="370.0" y="401" font-size="21" font-weight="700" text-anchor="middle">Qwen 三阶段适配 + 分层历史扰动</text>
+<text x="370.0" y="429" font-size="18" font-weight="400" text-anchor="middle">词表对齐 → 音频到动作 → 示例控制</text>
+<text x="370.0" y="454" font-size="18" font-weight="400" text-anchor="middle">按 RVQ 深度扰动历史，保留正确目标监督</text>
+<text x="370.0" y="479" font-size="18" font-weight="400" text-anchor="middle">损失对深层残差逐步降权</text>
+<rect x="735" y="370" width="245" height="150" rx="12" fill="#e8f4ea" stroke="#93b79d" stroke-width="1.5"/>
+<text x="857.5" y="401" font-size="21" font-weight="700" text-anchor="middle">可选后训练路径</text>
+<text x="857.5" y="429" font-size="18" font-weight="400" text-anchor="middle">GRPO：质量 + 对齐奖励</text>
+<text x="857.5" y="454" font-size="18" font-weight="400" text-anchor="middle">或 DPO：人工优劣配对</text>
+<text x="857.5" y="479" font-size="18" font-weight="400" text-anchor="middle">也可保留无 RL 模型</text>
+<path d="M857 320 V344 H370 V370" class="line"/>
+<path d="M680 440 H735" class="line"/>
+<rect x="60" y="555" width="920" height="80" rx="12" fill="#e8f4ea" stroke="#93b79d" stroke-width="1.5"/>
+<text x="520.0" y="586" font-size="21" font-weight="700" text-anchor="middle">独立面部训练：约 1 小时音频—ARKit 配对 → HuBERT + 因果 GPT + Flow Matching</text>
+<text x="520.0" y="614" font-size="18" font-weight="400" text-anchor="middle">52 维 blendshape，MSE；不与身体 token 联合生成</text>
+<rect x="24" y="730" width="992" height="1400" rx="15" fill="#f8faf7" stroke="#d8e2d8"/>
+<text x="48" y="766" font-size="23" font-weight="700" text-anchor="start">B  推理：同一音频分流，身体与脸部分别计算</text>
+<rect x="335" y="805" width="370" height="80" rx="12" fill="#fff3e5" stroke="#d3ba96" stroke-width="1.5"/>
+<text x="520.0" y="836" font-size="21" font-weight="700" text-anchor="middle">输入语音 / 音乐流</text>
+<text x="520.0" y="864" font-size="18" font-weight="400" text-anchor="middle">上游语音代理或其他音频源</text>
+<path d="M520 885 V920 H275 V960" class="line"/>
+<path d="M520 920 H795 V960" class="line"/>
+<rect x="60" y="960" width="430" height="90" rx="12" fill="#eaf2fb" stroke="#a4bad0" stroke-width="1.5"/>
+<text x="275.0" y="991" font-size="21" font-weight="700" text-anchor="middle">因果 EnCodec</text>
+<text x="275.0" y="1019" font-size="18" font-weight="400" text-anchor="middle">增量音频 → 音频 token / 滑动窗口</text>
+<rect x="610" y="960" width="370" height="90" rx="12" fill="#eaf2fb" stroke="#a4bad0" stroke-width="1.5"/>
+<text x="795.0" y="991" font-size="21" font-weight="700" text-anchor="middle">多语言 HuBERT</text>
+<text x="795.0" y="1019" font-size="18" font-weight="400" text-anchor="middle">同一音频块 → 连续音频特征</text>
+<rect x="60" y="1090" width="240" height="80" rx="12" fill="#f2edfa" stroke="#b9abd0" stroke-width="1.5"/>
+<text x="180.0" y="1121" font-size="21" font-weight="700" text-anchor="middle">可选动作调用</text>
+<text x="180.0" y="1149" font-size="18" font-weight="400" text-anchor="middle">动作名 → 查参考基层码</text>
+<rect x="330" y="1090" width="160" height="80" rx="12" fill="#fff3e5" stroke="#d3ba96" stroke-width="1.5"/>
+<text x="410.0" y="1121" font-size="21" font-weight="700" text-anchor="middle">动作历史</text>
+<text x="410.0" y="1149" font-size="18" font-weight="400" text-anchor="middle">最近动作 token</text>
+<rect x="60" y="1220" width="430" height="100" rx="12" fill="#eaf2fb" stroke="#a4bad0" stroke-width="1.5"/>
+<text x="275.0" y="1251" font-size="21" font-weight="700" text-anchor="middle">Qwen 自回归身体生成</text>
+<text x="275.0" y="1279" font-size="18" font-weight="400" text-anchor="middle">音频 + 历史 + 可选示例</text>
+<text x="275.0" y="1304" font-size="18" font-weight="400" text-anchor="middle">输出三部位的完整 RVQ 层级</text>
+<path d="M490 1005 H540 V1270 H490" class="line"/>
+<path d="M180 1170 V1220" class="line"/>
+<path d="M410 1170 V1220" class="line"/>
+<rect x="610" y="1120" width="370" height="100" rx="12" fill="#eaf2fb" stroke="#a4bad0" stroke-width="1.5"/>
+<text x="795.0" y="1151" font-size="21" font-weight="700" text-anchor="middle">面部因果 GPT</text>
+<text x="795.0" y="1179" font-size="18" font-weight="400" text-anchor="middle">音频条件 + 历史表情帧</text>
+<path d="M795 1050 V1120" class="line"/>
+<rect x="610" y="1280" width="370" height="100" rx="12" fill="#eaf2fb" stroke="#a4bad0" stroke-width="1.5"/>
+<text x="795.0" y="1311" font-size="21" font-weight="700" text-anchor="middle">Flow Matching 表情头</text>
+<text x="795.0" y="1339" font-size="18" font-weight="400" text-anchor="middle">3 步采样，CFG = 2</text>
+<text x="795.0" y="1364" font-size="18" font-weight="400" text-anchor="middle">逐块生成连续表情系数</text>
+<path d="M795 1220 V1280" class="line"/>
+<rect x="60" y="1380" width="430" height="90" rx="12" fill="#fff3e5" stroke="#d3ba96" stroke-width="1.5"/>
+<text x="275.0" y="1411" font-size="21" font-weight="700" text-anchor="middle">按时间与部位还原 RVQ 码</text>
+<text x="275.0" y="1439" font-size="18" font-weight="400" text-anchor="middle">三个身体分区，每区六层残差</text>
+<path d="M275 1320 V1380" class="line"/>
+<rect x="610" y="1440" width="370" height="90" rx="12" fill="#fff3e5" stroke="#d3ba96" stroke-width="1.5"/>
+<text x="795.0" y="1471" font-size="21" font-weight="700" text-anchor="middle">52 维 ARKit blendshape</text>
+<text x="795.0" y="1499" font-size="18" font-weight="400" text-anchor="middle">独立面部输出，无身体 latent 输入</text>
+<path d="M795 1380 V1440" class="line"/>
+<rect x="60" y="1530" width="430" height="105" rx="12" fill="#eaf2fb" stroke="#a4bad0" stroke-width="1.5"/>
+<text x="275.0" y="1561" font-size="21" font-weight="700" text-anchor="middle">上身 / 下身 / 手部解码器</text>
+<text x="275.0" y="1589" font-size="18" font-weight="400" text-anchor="middle">因果解码并组合</text>
+<text x="275.0" y="1614" font-size="18" font-weight="400" text-anchor="middle">输出关节姿态与根平移</text>
+<path d="M275 1470 V1530" class="line"/>
+<rect x="60" y="1690" width="430" height="85" rx="12" fill="#eaf2fb" stroke="#a4bad0" stroke-width="1.5"/>
+<text x="275.0" y="1721" font-size="21" font-weight="700" text-anchor="middle">轻量 IK 与插值</text>
+<text x="275.0" y="1749" font-size="18" font-weight="400" text-anchor="middle">缓解手穿躯干；30 FPS → 60 FPS</text>
+<rect x="610" y="1690" width="370" height="85" rx="12" fill="#eaf2fb" stroke="#a4bad0" stroke-width="1.5"/>
+<text x="795.0" y="1721" font-size="21" font-weight="700" text-anchor="middle">面部平滑与插值</text>
+<text x="795.0" y="1749" font-size="18" font-weight="400" text-anchor="middle">30 FPS → 60 FPS</text>
+<path d="M275 1635 V1690" class="line"/>
+<path d="M795 1530 V1690" class="line"/>
+<rect x="290" y="1850" width="460" height="105" rx="12" fill="#fff3e5" stroke="#d3ba96" stroke-width="1.5"/>
+<text x="520.0" y="1881" font-size="21" font-weight="700" text-anchor="middle">按 chunk_id 等待两路齐备</text>
+<text x="520.0" y="1909" font-size="18" font-weight="400" text-anchor="middle">身体缓冲 + 面部缓冲；顺序合流</text>
+<text x="520.0" y="1934" font-size="18" font-weight="400" text-anchor="middle">声音 / pose / trans / blendshape</text>
+<path d="M275 1775 V1815 H520 V1850" class="line"/>
+<path d="M795 1775 V1815 H520" class="line"/>
+<rect x="290" y="2020" width="460" height="75" rx="12" fill="#f2edfa" stroke="#b9abd0" stroke-width="1.5"/>
+<text x="520.0" y="2051" font-size="21" font-weight="700" text-anchor="middle">Unity 客户端同步播放虚拟人</text>
+<path d="M520 1955 V2020" class="line"/>
+<path d="M857 520 V690 H38 V1270 H60" class="dash"/>
+<rect x="307.0" y="677" width="186" height="25" rx="4" fill="white"/>
+<text x="400" y="695" font-size="17" font-weight="400" text-anchor="middle">训练后的身体参数复用</text>
+<path d="M980 595 H1000 V1170 H980" class="dash"/>
+<text x="40" y="2172" font-size="18" font-weight="400" text-anchor="start">论文测量：266 ms / 8 帧；当前代码：400 ms / 12 帧，身体启动先积累 4 秒音频。</text>
+<text x="40" y="2207" font-size="18" font-weight="400" text-anchor="start">绿色：训练　蓝色：复用　紫色：外部系统　虚线：参数复用；合流不等于联合语义生成。</text>
+</svg>

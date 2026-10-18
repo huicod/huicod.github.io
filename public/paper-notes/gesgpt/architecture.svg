@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2090" viewBox="0 0 1200 2090" role="img" aria-labelledby="title desc"><title id="title">GesGPT 完整教学架构</title><desc id="desc">文本提示解析与动作词典搜索、音频基础动作和时间对齐、动作边界融合。</desc><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#52657e"/></marker></defs><rect width="1200" height="2090" fill="#f7fafc"/>
+<text x="45" y="52" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="29" font-weight="bold" fill="#22364d">GesGPT：语言选动作，音频提供基础运动与时间</text>
+<text x="45" y="85" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="normal" fill="#22364d">依据原文 §III–IV、图 1–4 自绘 · 实线：数据流；虚线：离线模型与资源复用</text>
+<rect x="25" y="115" width="1150" height="450" rx="18" fill="white" stroke="#cbd5e1"/>
+<text x="50" y="153" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="25" font-weight="bold" fill="#22364d">A  离线准备与训练（ChatGPT 使用提示，不做本文任务微调）</text>
+<rect x="60" y="185" width="520" height="115" rx="12" fill="#f2ebff" stroke="#7e9ab6"/>
+<text x="76" y="216" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">BEAT 动捕 / ZHUBO 视频</text>
+<text x="76" y="246" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">肘与腕的帧间变化 → 检测起止位置</text>
+<text x="76" y="273" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">片段从静止开始并回到静止；补充人工标注</text>
+<rect x="620" y="185" width="520" height="115" rx="12" fill="#e9f2ff" stroke="#7e9ab6"/>
+<text x="636" y="216" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">配对音频与基础动作监督</text>
+<text x="636" y="246" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">训练一维卷积 U-Net</text>
+<text x="636" y="273" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">姿态 + 一阶、二阶变化的 L1 损失</text>
+<polyline points="320,300 320,340" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<polyline points="880,300 880,340" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="60" y="340" width="520" height="140" rx="12" fill="#f2ebff" stroke="#7e9ab6"/>
+<text x="76" y="371" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">带语义标注的专业动作词典</text>
+<text x="76" y="401" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">文本解析生成标签 → 专业讲者人工修订</text>
+<text x="76" y="428" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">每个片段：意图；部分片段：语义词</text>
+<text x="76" y="455" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">保存完整动作序列，不是 VQ 码本</text>
+<rect x="620" y="340" width="520" height="140" rx="12" fill="#e9f2ff" stroke="#7e9ab6"/>
+<text x="636" y="371" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">基础动作模型</text>
+<text x="636" y="401" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">学习与音频节律相关的身体摆动</text>
+<text x="636" y="428" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">训练配置与预算未完整披露</text>
+<text x="636" y="455" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">推理时复用网络参数</text>
+<text x="65" y="530" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">词典、预训练 ChatGPT 与基础动作 U-Net 各有来源，不是端到端联合训练。</text>
+<rect x="25" y="600" width="1150" height="1405" rx="18" fill="white" stroke="#cbd5e1"/>
+<text x="50" y="638" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="25" font-weight="bold" fill="#22364d">B  推理与可选人工编辑</text>
+<rect x="60" y="675" width="330" height="90" rx="12" fill="#f2ebff" stroke="#7e9ab6"/>
+<text x="76" y="706" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">句子文本</text>
+<text x="76" y="736" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">逐句输入；假设一意图/句</text>
+<rect x="435" y="675" width="330" height="90" rx="12" fill="#fff4df" stroke="#7e9ab6"/>
+<text x="451" y="706" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">音频 + 文本</text>
+<text x="451" y="736" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">MFA 获得词时间</text>
+<rect x="810" y="675" width="330" height="90" rx="12" fill="#e9f2ff" stroke="#7e9ab6"/>
+<text x="826" y="706" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">语音音频</text>
+<text x="826" y="736" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">持续驱动基础身体运动</text>
+<polyline points="225,765 225,810" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<polyline points="600,765 600,810" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<polyline points="975,765 975,810" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="60" y="810" width="330" height="140" rx="12" fill="#f2ebff" stroke="#7e9ab6"/>
+<text x="76" y="841" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">ChatGPT 提示解析</text>
+<text x="76" y="871" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">意图 intention（12 类）</text>
+<text x="76" y="898" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">强调词 stroke</text>
+<text x="76" y="925" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">语义词 semantic</text>
+<rect x="435" y="810" width="330" height="140" rx="12" fill="#fff4df" stroke="#7e9ab6"/>
+<text x="451" y="841" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">词位置 → 音频时间</text>
+<text x="451" y="871" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">使用同步转录的词时刻</text>
+<text x="451" y="898" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">可视化采用强调词前 3 帧</text>
+<text x="451" y="925" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">不等同精确动作峰值约束</text>
+<rect x="810" y="810" width="330" height="140" rx="12" fill="#e9f2ff" stroke="#7e9ab6"/>
+<text x="826" y="841" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">一维 U-Net</text>
+<text x="826" y="871" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">生成基础动作 Gᴮ</text>
+<text x="826" y="898" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">音频是独立的信息通道</text>
+<text x="826" y="925" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">不是语言脚本的附属标签</text>
+<polyline points="225,950 225,995" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<polyline points="975,950 975,995" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="60" y="995" width="330" height="115" rx="12" fill="#f2ebff" stroke="#7e9ab6"/>
+<text x="76" y="1026" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">三字段解析脚本</text>
+<text x="76" y="1056" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">保存意图、语义词与强调词</text>
+<text x="76" y="1083" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">用户可审查、修订</text>
+<rect x="810" y="995" width="330" height="115" rx="12" fill="#e9f2ff" stroke="#7e9ab6"/>
+<text x="826" y="1026" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">One Euro 滤波</text>
+<text x="826" y="1056" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">平滑基础动作</text>
+<text x="826" y="1083" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">不是物理或碰撞约束</text>
+<polyline points="390,1050 600,1050" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<text x="410" y="1032" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="normal" fill="#22364d">强调词位置</text>
+<polyline points="225,1110 225,1155" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="60" y="1155" width="330" height="145" rx="12" fill="#f2ebff" stroke="#7e9ab6"/>
+<text x="76" y="1186" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">规则搜索动作词典</text>
+<text x="76" y="1216" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">先匹配 semantic 关键词</text>
+<text x="76" y="1243" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">未命中 → 回退 intention</text>
+<text x="76" y="1270" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">多候选 → 随机选择</text>
+<polyline points="225,1300 225,1345" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="60" y="1345" width="330" height="110" rx="12" fill="#f2ebff" stroke="#7e9ab6"/>
+<text x="76" y="1376" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">所选专业动作 Gᴾ</text>
+<text x="76" y="1406" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">完整素材片段</text>
+<text x="76" y="1433" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">内部保留原动作表达</text>
+<polyline points="225,1455 225,1500 435,1500" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<polyline points="600,950 600,1445" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<polyline points="975,1110 975,1500 765,1500" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="435" y="1445" width="330" height="150" rx="12" fill="#e8f6ed" stroke="#7e9ab6"/>
+<text x="451" y="1476" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">按强调词安排与融合</text>
+<text x="451" y="1506" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">专业片段内部不混合 Gᴮ</text>
+<text x="451" y="1533" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">前后各 j=6 帧做插值</text>
+<text x="451" y="1560" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">动捕旋转转四元数后插值</text>
+<polyline points="600,1595 600,1640" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)"/>
+<rect x="435" y="1640" width="330" height="115" rx="12" fill="#e8f6ed" stroke="#7e9ab6"/>
+<text x="451" y="1671" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="22" font-weight="bold" fill="#22364d">最终连续手势动画</text>
+<text x="451" y="1701" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">明确表达动作 + 基础摆动</text>
+<text x="451" y="1728" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">修改脚本可改变选择和放置</text>
+<polyline points="320,565 320,600" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)" stroke-dasharray="7 5"/>
+<polyline points="880,565 880,600" fill="none" stroke="#52657e" stroke-width="2.5" marker-end="url(#a)" stroke-dasharray="7 5"/>
+<text x="65" y="1830" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="bold" fill="#22364d">三种信息均保留：脚本决定语义选择，音频决定基础节律，动作库提供具体运动形状。</text>
+<text x="65" y="1875" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">未建立：任意源动作编辑、目标点精确到达、碰撞/接触约束、全局连续性硬保证。</text>
+<text x="65" y="1920" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="19" font-weight="normal" fill="#22364d">没有独立模块消融；图中的可选脚本修改不能被解读为已量化验证的编辑成功率。</text>
+<text x="45" y="2055" font-family="Microsoft YaHei,Noto Sans CJK SC,sans-serif" font-size="18" font-weight="normal" fill="#22364d">教学重绘 · 核验 2026-10-18 · 未运行模型；公开实现与权重未获确认。</text>
+</svg>
