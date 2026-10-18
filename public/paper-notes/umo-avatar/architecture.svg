@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2400" viewBox="0 0 1120 2400" role="img" aria-labelledby="title desc">
+<title id="title">UMo Avatar 完整架构教学示意</title>
+<desc id="desc">语音经HuBERT及聚类离散化，结合文本与四部位关键帧历史，输入T5稀疏专家模型。模型按块生成关键帧并反馈历史；独立插值器补全稠密token，冻结VQ解码器输出连续动作。目标音频前视与独立训练边界明确标注。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#526a78"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:31px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:22px}.small{font-size:20px}</style>
+<rect width="1120" height="2400" fill="white"/>
+<text x="35" y="48" class="title">UMo Avatar：稀疏预测，密集还原</text>
+<text x="35" y="83" class="body">重语言模型预测关键帧；轻插值器补全；冻结 VQ 解码器输出连续动作</text>
+<rect x="25" y="110" width="1070" height="450" rx="12" fill="#f4f0fb" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="150" class="head">A  参数来源与训练（推理前完成）</text>
+<rect x="55" y="180" width="480" height="109" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="214" class="head">Flan-T5-Base → sparse upcycling</text>
+<text x="70" y="246" class="small">复制原 FFN 初始化专家；每层 FFN 改为 MoE</text>
+<text x="70" y="275" class="small">保留注意力、LayerNorm 与 embedding</text>
+<rect x="585" y="180" width="480" height="109" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="600" y="214" class="head">LoM 预训练四路 VQ 表示</text>
+<text x="600" y="246" class="small">脸 / 手 / 上身 / 下身；每路码本 256</text>
+<text x="600" y="275" class="small">编码器与解码器冻结；密集动作 30 token/s</text>
+<rect x="55" y="325" width="310" height="153" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="359" class="head">预训练</text>
+<text x="70" y="391" class="small">稀疏动作建模</text>
+<text x="70" y="420" class="small">a2t / t2a 多模态对齐</text>
+<text x="70" y="449" class="small">token CE；平衡权重 0</text>
+<rect x="405" y="325" width="310" height="153" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="420" y="359" class="head">后训练 1</text>
+<text x="420" y="391" class="small">a2m + t2m</text>
+<text x="420" y="420" class="small">窗口内监督</text>
+<text x="420" y="449" class="small">加入负载均衡 λ = 0.01</text>
+<rect x="755" y="325" width="310" height="153" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="770" y="359" class="head">后训练 2</text>
+<text x="770" y="391" class="small">关键帧块自回归</text>
+<text x="770" y="420" class="small">部位 / 全身目标</text>
+<text x="770" y="449" class="small">同一动作搭配 5 种 TTS 音色</text>
+<path d="M365,405 L405,405" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M715,405 L755,405" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M290,289 L290,325" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="55" y="524" class="small">另行训练插值器：真实密集 token → 保留锚点 / 其余 MASK → CE + 嵌入差分平滑。</text>
+<rect x="25" y="590" width="1070" height="1100" rx="12" fill="#f1f7fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="630" class="head">B  分块推理：已知音频窗口 + 关键帧历史</text>
+<rect x="55" y="660" width="310" height="147" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="694" class="head">任务文字</text>
+<text x="70" y="726" class="small">任务模板</text>
+<text x="70" y="755" class="small">可选文字条件</text>
+<text x="70" y="784" class="small">外部语音作为驱动输入</text>
+<rect x="405" y="660" width="310" height="147" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="420" y="694" class="head">音频离散化</text>
+<text x="420" y="726" class="small">HuBERT 第 9 层 + k-means</text>
+<text x="420" y="755" class="small">K = 500；16 kHz</text>
+<text x="420" y="784" class="small">得到 50 token/s</text>
+<rect x="755" y="660" width="310" height="147" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="770" y="694" class="head">关键帧历史缓冲区</text>
+<text x="770" y="726" class="small">四部位各最近 P = 10 步</text>
+<text x="770" y="755" class="small">首块评测由 GT 关键帧预填</text>
+<text x="770" y="784" class="small">每块提交后更新历史</text>
+<rect x="205" y="875" width="760" height="120" rx="12" fill="#e3effb" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="909" class="head">打包模型输入</text>
+<text x="220" y="941" class="small">文本 + 音频（历史及目标区间）+ 四部位关键帧历史</text>
+<text x="220" y="970" class="small">目标音频前视是已实现协议的一部分；不是零前视输入</text>
+<path d="M210,807 L210,840 L350,840 L350,875" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M560,807 L560,875" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M910,807 L910,875" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1045" width="760" height="231" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1079" class="head">训练后的 T5-MoE 主干</text>
+<text x="220" y="1111" class="small">Encoder：在给定窗口内双向注意力</text>
+<text x="220" y="1140" class="small">Decoder：按因果顺序自回归生成输出 token</text>
+<text x="220" y="1169" class="small">每层 FFN：hidden → router → top-1 专家 → 共享残差流</text>
+<text x="220" y="1198" class="small">4 个专家动态路由；每个 token 只激活 1 个</text>
+<text x="220" y="1227" class="small">专家不固定绑定脸、手、上身、下身</text>
+<path d="M585,995 L585,1045" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M1065,405 L1080,405 L1080,1145 L965,1145" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="205" y="1335" width="760" height="145" rx="12" fill="#e3effb" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1369" class="head">生成四部位的新关键帧</text>
+<text x="220" y="1401" class="small">每块 N = 5 个关键帧步；默认 stride s = 6</text>
+<text x="220" y="1430" class="small">30 Hz 密集 token → 约 5 Hz 关键帧网格</text>
+<text x="220" y="1459" class="small">输出是离散码本 ID，不是关节坐标或可读动作指令</text>
+<path d="M585,1276 L585,1335" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M965,1405 L1030,1405 L1030,840 L1060,840 L1060,807" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="1530" class="small">新关键帧从右侧反馈历史缓冲区；不会将全部密集插值帧计作 P = 10。</text>
+<text x="55" y="1571" class="small">音频覆盖目标窗口，关键帧按块生成；首帧延迟与稳定输出速度需分别看。</text>
+<text x="55" y="1612" class="small">a2t / t2a 是训练对齐任务；部署时语音仍从外部提供。</text>
+<text x="55" y="1653" class="small">图中 GT = 真实动作；首块使用 GT 历史不等于验证从空历史启动。</text>
+<rect x="25" y="1720" width="1070" height="540" rx="12" fill="#eef8f3" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="1760" class="head">C  当前窗口补全与连续解码</text>
+<rect x="205" y="1790" width="760" height="97" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1824" class="head">固定关键帧锚点 + 最后有效帧</text>
+<text x="220" y="1856" class="small">其他位置置为 MASK；音频不直接输入插值器</text>
+<path d="M585,1480 L585,1510 L12,1510 L12,1835 L205,1835" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1930" width="760" height="116" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1964" class="head">独立训练的轻量插值器</text>
+<text x="220" y="1996" class="small">部位 embedding → 时间双向注意力 → 帧内部位注意力</text>
+<text x="220" y="2025" class="small">四路预测头补全 MASK；用原 token 覆盖锚点位置</text>
+<path d="M585,1887 L585,1930" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="2088" width="760" height="139" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="2122" class="head">冻结的四路 VQ decoders</text>
+<text x="220" y="2154" class="small">密集 token → 脸 / 手 / 身体连续参数 → 合并 SMPL-X</text>
+<text x="220" y="2183" class="small">锚点保持发生在 token 层面，不自动保证世界坐标硬约束</text>
+<text x="220" y="2212" class="small">此后可重定向到角色；不是本次复现结果</text>
+<path d="M585,2046 L585,2088" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="35" y="2304" class="small">据 arXiv:2605.14731v1 图2–5、式6–27与实现说明重绘；教学示意，非作者原图。</text>
+<text x="35" y="2340" class="small">实线：推理数据流；虚线：训练参数来源。主干与插值器分别优化。</text>
+<text x="35" y="2376" class="small">默认 N = 5 指关键帧步数，不能换算为 5 个原始动作帧或 166 ms。</text>
+</svg>

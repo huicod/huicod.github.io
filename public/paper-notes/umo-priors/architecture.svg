@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2020" viewBox="0 0 1120 2020" role="img" aria-labelledby="title desc">
+<title id="title">UMO Priors 完整架构教学示意</title>
+<desc id="desc">源动作和逐帧操作向量经上下文编码，与当前流状态的特征逐帧相加。文本条件引导微调后的HY-Motion主干预测速度场，迭代得到连续动作。下方独立展示多任务训练和离线几何数据构建。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#526a78"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:31px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:22px}.small{font-size:20px}</style>
+<rect width="1120" height="2020" fill="white"/>
+<text x="35" y="48" class="title">UMO Priors：把动作上下文接入基础模型</text>
+<text x="35" y="83" class="body">P / G / E 指定帧的意图；连续 flow 生成，不经过离散动作码本</text>
+<rect x="25" y="110" width="1070" height="550" rx="12" fill="#f1f7fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="150" class="head">A  条件输入：动作上下文与文本分开编码</text>
+<rect x="55" y="177" width="560" height="144" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="211" class="head">源动作 s + 每帧操作 τ</text>
+<text x="70" y="243" class="small">P 保留 / E 编辑：sᵢ = 已有动作帧</text>
+<text x="70" y="272" class="small">G 生成：sᵢ = 0；三个操作均为可学习向量</text>
+<text x="70" y="301" class="small">每帧 201 维；操作作用于该帧整个人体</text>
+<rect x="665" y="177" width="400" height="144" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="680" y="211" class="head">文本条件</text>
+<text x="680" y="243" class="small">自然描述 / 编辑指令</text>
+<text x="680" y="272" class="small">参数化曲线字符串</text>
+<text x="680" y="301" class="small">障碍物位置与半径</text>
+<rect x="55" y="361" width="560" height="112" rx="12" fill="#e3effb" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="395" class="head">逐帧构造上下文</text>
+<text x="70" y="427" class="small">s̃ = s + Emb(τ)</text>
+<text x="70" y="456" class="small">例如补间：P…P / G…G / P…P</text>
+<rect x="665" y="361" width="400" height="112" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="680" y="395" class="head">继承的文本编码路径</text>
+<text x="680" y="427" class="small">Qwen3-8B + CLIP</text>
+<text x="680" y="456" class="small">得到文本条件特征</text>
+<path d="M330,321 L330,361" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M865,321 L865,361" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="55" y="513" width="560" height="111" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="547" class="head">E_ctx：上下文 MLP</text>
+<text x="70" y="579" class="small">从原输入 MLP E_in 复制权重初始化</text>
+<text x="70" y="608" class="small">随后作为独立上下文编码分支</text>
+<path d="M330,473 L330,513" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="680" y="526" class="small">文字参数经学习转成动作条件，</text>
+<text x="680" y="555" class="small">没有在线几何求解器。</text>
+<text x="680" y="601" class="small">操作向量也不是 LLM 动作指令。</text>
+<rect x="25" y="690" width="1070" height="850" rx="12" fill="#eef8f3" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="730" class="head">B  推理主线：特征融合 → 速度预测 → 迭代更新</text>
+<rect x="55" y="770" width="450" height="106" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="804" class="head">当前流状态 xₜ</text>
+<text x="70" y="836" class="small">初始 x₀ 为高斯噪声；形状 T × 201</text>
+<text x="70" y="865" class="small">经原输入 MLP E_in 得到逐帧特征</text>
+<rect x="615" y="770" width="450" height="106" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="630" y="804" class="head">Temporal Fusion</text>
+<text x="630" y="836" class="small">hₜ = E_in(xₜ) + E_ctx(s̃)</text>
+<text x="630" y="865" class="small">逐帧相加，序列长度仍为 T</text>
+<path d="M505,824 L615,824" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M330,624 L330,677 L840,677 L840,770" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="940" width="860" height="145" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="974" class="head">HY-Motion-Lite 460M / MMDiT</text>
+<text x="220" y="1006" class="small">UMO 多任务监督微调后的主干</text>
+<text x="220" y="1035" class="small">输入融合特征 hₜ + 文本条件 + flow 时间 t</text>
+<text x="220" y="1064" class="small">输出动作表示空间的 flow 速度 vθ；新增参数量不等于训练参数量</text>
+<path d="M840,876 L840,940" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M1065,416 L1080,416 L1080,1008 L1065,1008" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="205" y="919" class="small">条件文本从右侧输入；时间 t 每步更新</text>
+<rect x="205" y="1135" width="860" height="105" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1169" class="head">Euler 更新</text>
+<text x="220" y="1201" class="small">xₜ₊Δₜ = xₜ + Δt · vθ</text>
+<text x="220" y="1230" class="small">50 步；CFG = 2.0；t 从 0 走到 1</text>
+<path d="M630,1085 L630,1135" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M205,1185 L40,1185 L40,824 L55,824" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="61" y="1100" class="small">更新状态</text>
+<text x="61" y="1130" class="small">再预测</text>
+<rect x="205" y="1290" width="860" height="108" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1324" class="head">输出：30 fps 连续三维动作</text>
+<text x="220" y="1356" class="small">根平移 / 旋转 + 局部关节旋转 / 位置</text>
+<text x="220" y="1385" class="small">保留帧由模型学习遵循；没有输出硬拷贝或强制几何投影</text>
+<path d="M630,1240 L630,1290" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="1445" class="small">反应生成：以另一人的动作作为 E 上下文，生成待响应者的动作。</text>
+<text x="55" y="1481" class="small">新增参数量 ≠ 全部可训练参数量；in-context 在这里也不意味着免训练。</text>
+<rect x="25" y="1570" width="1070" height="345" rx="12" fill="#f4f0fb" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="1610" class="head">C  训练支线：混合任务监督与离线几何数据</text>
+<rect x="55" y="1640" width="310" height="165" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="1674" class="head">训练配对</text>
+<text x="70" y="1706" class="small">HumanML3D：文本 / 补全</text>
+<text x="70" y="1735" class="small">MotionFix：编辑</text>
+<text x="70" y="1764" class="small">Inter-X / InterHuman：反应</text>
+<text x="70" y="1793" class="small">几何轨迹 / 避障：各 2000 条</text>
+<rect x="405" y="1640" width="310" height="165" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="420" y="1674" class="head">Flow matching</text>
+<text x="420" y="1706" class="small">干净目标 x₁ + 随机噪声 x₀</text>
+<text x="420" y="1735" class="small">xₜ = (1−t)x₀ + tx₁</text>
+<text x="420" y="1764" class="small">目标速度：x₁ − x₀</text>
+<text x="420" y="1793" class="small">MSE 监督上方模型</text>
+<rect x="755" y="1640" width="310" height="165" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="770" y="1674" class="head">多任务微调</text>
+<text x="770" y="1706" class="small">4 × B200，batch 256</text>
+<text x="770" y="1735" class="small">统一模型：100k steps</text>
+<text x="770" y="1764" class="small">单任务专家：6k steps</text>
+<text x="770" y="1793" class="small">两者训练预算不同</text>
+<path d="M365,1720 L405,1720" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M715,1720 L755,1720" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M1010,1640 L1010,1555 L1080,1555 L1080,1050 L1065,1050" stroke="#526a78" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="55" y="1844" class="small">仅用于几何训练数据：参数曲线 → TLControl 离线生成 → IK → SMPL+H 配对。</text>
+<text x="55" y="1880" class="small">源动作、操作标签和文本作为条件；目标动作提供监督。TLControl 不参与 UMO 推理。</text>
+<text x="35" y="1955" class="small">据 arXiv:2603.15975v1 §3、图3(a)、表1–2与附录D重绘；非作者原图或实测输出。</text>
+<text x="35" y="1991" class="small">实线：推理数据流；虚线：训练监督。上下文编码器仅在初始化时复制 E_in 权重。</text>
+</svg>
