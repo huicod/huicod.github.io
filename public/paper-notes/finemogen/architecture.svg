@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2590" viewBox="0 0 1120 2590" role="img" aria-labelledby="title desc">
+<title id="title">FineMoGen 完整架构教学示意</title>
+<desc id="desc">可选GPT-4将需求或编辑要求转成阶段与部位描述。冻结CLIP和可训练文本网络编码条件，带噪动作按部位编码，经包含并联时间与空间分支的SAMI生成干净动作估计，迭代得到连续骨骼动作。训练以真实动作重建监督；编辑重新采样，没有源动作保留分支。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#536d7c"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:31px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:22px}.small{font-size:20px}</style>
+<rect width="1120" height="2590" fill="white"/>
+<text x="35" y="48" class="title">FineMoGen：用部位与时间组织文本条件</text>
+<text x="35" y="85" class="body">NeurIPS 2023 · 论文方法总览；编辑描述后，从噪声重新生成整段动作</text>
+<rect x="25" y="120" width="1070" height="425" rx="12" fill="#f4f0fb" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="160" class="head">A  可选语言交互：得到可编辑的描述表</text>
+<rect x="55" y="180" width="465" height="105" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="214" class="head">初次生成需求</text>
+<text x="70" y="246" class="small">例如：先看手机，再向前走并挥手</text>
+<text x="70" y="275" class="small">已有细粒度描述时，可直接输入下方表格</text>
+<rect x="560" y="180" width="505" height="105" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="575" y="214" class="head">编辑：当前描述 + 新要求</text>
+<text x="575" y="246" class="small">例如：把右手挥得更高，持续更久</text>
+<text x="575" y="275" class="small">LLM 接收描述文本，没有源动作编码输入</text>
+<rect x="55" y="335" width="360" height="145" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="369" class="head">ChatGPT-4 提示交互</text>
+<text x="70" y="401" class="small">按规定格式拆解或修改描述</text>
+<text x="70" y="430" class="small">使用预训练模型</text>
+<text x="70" y="459" class="small">不在本文训练中微调 GPT-4</text>
+<rect x="475" y="335" width="590" height="145" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="490" y="369" class="head">阶段总体描述 + 7 组描述 + 帧数</text>
+<text x="490" y="401" class="small">头 / 躯干 / 左右臂 / 左右腿 / 骨盆轨迹</text>
+<text x="490" y="430" class="small">每阶段长度明确；附录提示按 30 fps 计帧</text>
+<text x="490" y="459" class="small">例如：第二阶段 60 → 90 帧，右手改为举高</text>
+<path d="M280,285 L280,335" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M810,285 L810,310 L400,310 L400,335" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M415,410 L475,410" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="520" class="small">编辑修改条件后重新采样：描述没改的阶段，生成的姿态细节仍可能变化。</text>
+<rect x="25" y="575" width="1070" height="915" rx="12" fill="#f1f7fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="615" class="head">B  条件扩散推理：文本条件与当前带噪状态汇合</text>
+<rect x="55" y="650" width="450" height="120" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="684" class="head">冻结 CLIP ViT-B/32</text>
+<text x="70" y="716" class="small">按阶段与部位编码描述</text>
+<text x="70" y="745" class="small">得到文本特征；帧数另提供时间范围</text>
+<rect x="615" y="650" width="450" height="120" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="630" y="684" class="head">当前带噪动作 xₜ</text>
+<text x="630" y="716" class="small">第一次：高斯噪声 x_T</text>
+<text x="630" y="745" class="small">xₜ 是采样状态，不是上一版源动作</text>
+<path d="M770,480 L770,560 L280,560 L280,650" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="55" y="810" width="450" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="844" class="head">可训练的文本 Transformer</text>
+<text x="70" y="876" class="small">2 层；细化特征以适配动作生成</text>
+<rect x="615" y="810" width="450" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="630" y="844" class="head">按身体 / 轨迹组拆分与投影</text>
+<text x="630" y="876" class="small">论文 7 组；各组独立线性编码</text>
+<path d="M280,770 L280,810" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M840,770 L840,810" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="960" class="small">阶段帧数 → 时间范围 / 模板时间偏移；扩散步 t → 条件调制。</text>
+<rect x="205" y="1010" width="860" height="160" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1044" class="head">4 层 Motion Transformer</text>
+<text x="220" y="1076" class="small">每层：SAMI（时间分支 + 空间分支）→ 分组 FFN</text>
+<text x="220" y="1105" class="small">残差连接与条件调制；文本路由到对应部位的模板</text>
+<text x="220" y="1134" class="small">动作时间位置 xₖ 与扩散去噪步 t 是两个不同的时间变量</text>
+<path d="M280,910 L280,930 L40,930 L40,1090 L205,1090" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M840,910 L840,1010" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1220" width="860" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1254" class="head">输出投影 → 干净动作估计 x̂0</text>
+<text x="220" y="1286" class="small">根据 x̂0 更新带噪状态 xₜ；默认 50 步采样</text>
+<path d="M635,1170 L635,1220" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M1065,1270 L1080,1270 L1080,710 L1065,710" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="50" y="1248" class="small">右侧回路：</text>
+<text x="50" y="1277" class="small">继续去噪</text>
+<rect x="205" y="1370" width="860" height="80" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1404" class="head">最终输出：连续 3D 骨骼动作</text>
+<path d="M635,1320 L635,1370" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="1470" class="small">不经过离散动作码本；论文没有源姿态拷贝、接触锁定或硬几何约束支路。</text>
+<rect x="25" y="1520" width="1070" height="595" rx="12" fill="#eef8f3" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="1560" class="head">C  展开上方 SAMI：时间与空间并联，再相加</text>
+<rect x="55" y="1600" width="510" height="175" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="1634" class="head">时间分支：对应部位的全局模板</text>
+<text x="70" y="1666" class="small">动作特征经稀疏 MoE 投影</text>
+<text x="70" y="1695" class="small">与文本投影形成 K / V，汇聚为模板 G</text>
+<text x="70" y="1724" class="small">G = softmax(K) V</text>
+<text x="70" y="1753" class="small">每组多个模板，携带不同时间的信息</text>
+<rect x="625" y="1600" width="440" height="175" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="640" y="1634" class="head">空间分支：部位间的信息交换</text>
+<text x="640" y="1666" class="small">动作特征经 MoE → 部位特征 B</text>
+<text x="640" y="1695" class="small">共享、可学习的关系矩阵 ω</text>
+<text x="640" y="1724" class="small">将不同部位的特征加权组合</text>
+<text x="640" y="1753" class="small">身体分组不等于部位完全隔离</text>
+<rect x="55" y="1815" width="510" height="155" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="1849" class="head">模板 → 时间锚点 τ / 状态 s / 变化率 v</text>
+<text x="70" y="1881" class="small">论文式 4：s + v · (xₖ − τ)</text>
+<text x="70" y="1910" class="small">按离时间锚点的距离归一化权重</text>
+<text x="70" y="1939" class="small">混合各时间信号，得到 Yᵀ</text>
+<rect x="625" y="1815" width="440" height="155" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="640" y="1849" class="head">空间加权 → Yˢ</text>
+<text x="640" y="1881" class="small">Yˢₖ,ᵢ = Σⱼ ωᵢ,ⱼ Bₖ,ⱼ</text>
+<text x="640" y="1910" class="small">权重在帧间共享</text>
+<text x="640" y="1939" class="small">用于身体部位协作</text>
+<path d="M310,1775 L310,1815" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M845,1775 L845,1815" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="2010" width="760" height="80" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="2044" class="head">SAMI 输出：Y = Yᵀ + Yˢ</text>
+<path d="M310,1970 L310,2010" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M845,1970 L845,2010" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="25" y="2145" width="1070" height="345" rx="12" fill="#fbf5ea" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="2185" class="head">D  训练支线：动作与文本监督，不训练交互 LLM</text>
+<rect x="55" y="2220" width="310" height="160" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="2254" class="head">配对训练数据</text>
+<text x="70" y="2286" class="small">真实动作 x₀ + 文本</text>
+<text x="70" y="2315" class="small">可用整体或细粒度描述</text>
+<text x="70" y="2344" class="small">HuMMan-MoGen 提供</text>
+<text x="70" y="2373" class="small">阶段 × 部位标注</text>
+<rect x="405" y="2220" width="310" height="160" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="420" y="2254" class="head">构造扩散训练样本</text>
+<text x="420" y="2286" class="small">采样噪声与扩散步 t</text>
+<text x="420" y="2315" class="small">真实 x₀ 加噪 → xₜ</text>
+<text x="420" y="2344" class="small">随机屏蔽 10% 文本</text>
+<text x="420" y="2373" class="small">送入同一去噪模型</text>
+<rect x="755" y="2220" width="310" height="160" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="770" y="2254" class="head">重建监督</text>
+<text x="770" y="2286" class="small">x̂0 与 x₀ 的 MSE</text>
+<text x="770" y="2315" class="small">更新可训练模块</text>
+<text x="770" y="2344" class="small">CLIP 始终冻结</text>
+<text x="770" y="2373" class="small">GPT-4 不参与该损失</text>
+<path d="M365,2295 L405,2295" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M715,2295 L755,2295" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M1065,2295 L1090,2295 L1090,1135 L1065,1135" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="55" y="2420" class="small">1000 是训练用扩散噪声日程的步数，不是优化迭代次数。</text>
+<text x="55" y="2460" class="small">组合 zero-shot：把训练中未提供的细粒度组合条件用于已训练的生成器。</text>
+<text x="35" y="2529" class="small">依据正式主文图 2–3、§3 与附录 D 重绘；教学示意，非作者原图或模型实测。</text>
+<text x="35" y="2565" class="small">实线为推理数据流；虚线为训练关系。s / v 是特征变量，不是显式关节位置 / 速度。</text>
+</svg>
