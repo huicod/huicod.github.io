@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2520" viewBox="0 0 1120 2520" role="img" aria-labelledby="title"><title id="title">DART：短动作基元 + 自回归扩散 + 可选控制</title>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#536d7c"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:31px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1120" height="2520" fill="white"/>
+<text x="35" y="48" class="title">DART：短动作基元 + 自回归扩散 + 可选控制</text>
+<text x="35" y="85" class="body">ICLR 2025 · H = 2 历史帧，F = 8 新帧；基础模型输出运动学动作</text>
+<rect x="25" y="120" width="1070" height="515" rx="12" fill="#fbf5ea" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="160" class="head">A  离线训练：先学连续潜变量，再训练扩散模型</text>
+<rect x="55" y="190" width="310" height="135" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="224" class="head">真实动作与文本</text>
+<text x="70" y="255" class="small">切成 H + X 动作基元</text>
+<text x="70" y="284" class="small">局部坐标化</text>
+<text x="70" y="313" class="small">X 是训练时的真实未来</text>
+<rect x="405" y="190" width="310" height="135" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="420" y="224" class="head">VAE 编码器 E</text>
+<text x="420" y="255" class="small">输入 H + X</text>
+<text x="420" y="284" class="small">输出 μ、σ → 采样 z</text>
+<text x="420" y="313" class="small">256D 连续 latent</text>
+<rect x="755" y="190" width="310" height="135" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="770" y="224" class="head">VAE 解码器 D</text>
+<text x="770" y="255" class="small">输入 H + z + 零 token</text>
+<text x="770" y="284" class="small">重建未来 8 帧</text>
+<text x="770" y="313" class="small">重建 / KL / 运动学损失</text>
+<path d="M365,255 L405,255" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M715,255 L755,255" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="55" y="365" width="1010" height="115" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="399" class="head">冻结 E / D，训练 latent 去噪器 G</text>
+<text x="70" y="430" class="small">E 产生 z₀ → 加噪 zₜ；G 接收 zₜ、历史 H、CLIP 文本、扩散步 t</text>
+<text x="70" y="459" class="small">预测 ẑ₀；以 latent 与解码后的运动学特征监督 G，推理不需要 E</text>
+<path d="M565,325 L565,365" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="55" y="515" width="1010" height="90" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="549" class="head">Scheduled sampling：让训练接触生成误差</text>
+<text x="70" y="580" class="small">真实历史 → 混合历史 → 预测历史；取上轮尾 2 帧并重新坐标化，断开梯度</text>
+<path d="M565,480 L565,515" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="25" y="665" width="1070" height="930" rx="12" fill="#f1f7fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="705" class="head">B  普通在线推理：历史同时进入 G 与 D</text>
+<rect x="75" y="745" width="450" height="125" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="90" y="779" class="head">初始 2 帧 / 上轮尾 2 帧</text>
+<text x="90" y="810" class="small">以人体局部坐标表示 → Hᵢ</text>
+<text x="90" y="839" class="small">保留坐标变换 Tᵢ 供输出还原</text>
+<rect x="615" y="745" width="450" height="125" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="630" y="779" class="head">当前文本 cᵢ</text>
+<text x="630" y="810" class="small">冻结 CLIP → 文本特征</text>
+<text x="630" y="839" class="small">下一轮可更新描述</text>
+<rect x="315" y="930" width="750" height="135" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="330" y="964" class="head">latent diffusion：去噪器 G</text>
+<text x="330" y="995" class="small">标准高斯 zT + Hᵢ + 文本 + t</text>
+<text x="330" y="1024" class="small">默认 10 步采样 / 文本 CFG</text>
+<text x="330" y="1053" class="small">输出干净的连续潜变量 z₀</text>
+<path d="M430,870 L430,930" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M840,870 L840,930" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M1065,1010 L1080,1010 L1080,900 L995,900 L995,930" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="315" y="1110" width="750" height="110" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="330" y="1144" class="head">冻结 VAE 解码器 D</text>
+<text x="330" y="1175" class="small">z₀ + 历史 Hᵢ + 8 个零 token → 局部未来 Xᵢ</text>
+<text x="330" y="1204" class="small">同一历史直接提供短时运动状态</text>
+<path d="M690,1065 L690,1110" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M190,870 L190,1165 L315,1165" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="75" y="1050" class="small">历史旁路 Hᵢ</text>
+<rect x="315" y="1265" width="750" height="105" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="330" y="1299" class="head">还原到世界坐标并追加 8 帧</text>
+<text x="330" y="1330" class="small">应用保存的逆坐标变换；第一次保留给定 seed</text>
+<text x="330" y="1359" class="small">取最新 2 帧，开始下一轮</text>
+<path d="M690,1220 L690,1265" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M315,1325 L45,1325 L45,805 L75,805" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="75" y="1415" class="small">回环携带的是最近 2 帧动作，不是整段历史缓存或 LLM 隐藏状态。</text>
+<rect x="75" y="1450" width="990" height="105" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="90" y="1484" class="head">替换初始噪声 zT，即可复用下方两条控制路径</text>
+<text x="90" y="1515" class="small">模型参数 G / D 在控制时固定；目标与场景不直接输入基础 G</text>
+<text x="90" y="1544" class="small">C 与 D 是替代方案；普通文本生成不需要先做优化或训练策略</text>
+<rect x="25" y="1625" width="1070" height="355" rx="12" fill="#f5f0fb" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="1665" class="head">C  可选：梯度优化初始噪声（不属于实时基本采样）</text>
+<rect x="55" y="1700" width="300" height="135" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="1734" class="head">多基元噪声 ZT</text>
+<text x="70" y="1765" class="small">给定历史、文本</text>
+<text x="70" y="1794" class="small">优化变量是初始噪声</text>
+<text x="70" y="1823" class="small">网络参数不更新</text>
+<rect x="405" y="1700" width="300" height="135" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="420" y="1734" class="head">确定性 DDIM rollout</text>
+<text x="420" y="1765" class="small">复用 B 的 G / D</text>
+<text x="420" y="1794" class="small">多步动作 M</text>
+<text x="420" y="1823" class="small">保留完整采样链</text>
+<rect x="755" y="1700" width="310" height="135" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="770" y="1734" class="head">可微目标与惩罚</text>
+<text x="770" y="1765" class="small">目标姿态 / 轨迹误差</text>
+<text x="770" y="1794" class="small">可选场景 SDF</text>
+<text x="770" y="1823" class="small">脚接触 / 碰撞惩罚</text>
+<path d="M355,1765 L405,1765" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M705,1765 L755,1765" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M910,1835 L910,1875 L205,1875 L205,1835" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="350" y="1910" class="small">反向求梯度 → 更新 ZT → 重跑 rollout</text>
+<text x="55" y="1955" class="small">论文示例：60 帧动作，100 次优化约 74 秒；不能沿用基础生成的 FPS。</text>
+<rect x="25" y="2010" width="1070" height="360" rx="12" fill="#eef8f3" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="2050" class="head">D  可选：强化学习策略一次选择噪声</text>
+<rect x="55" y="2085" width="310" height="140" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="2119" class="head">策略观测</text>
+<text x="70" y="2150" class="small">Hᵢ + 文本特征</text>
+<text x="70" y="2179" class="small">相对目标距离 / 方向</text>
+<text x="70" y="2208" class="small">场景观测（实验为平地）</text>
+<rect x="405" y="2085" width="300" height="140" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="420" y="2119" class="head">Actor π → zT</text>
+<text x="420" y="2150" class="small">PPO 预先训练策略</text>
+<text x="420" y="2179" class="small">推理只运行 Actor</text>
+<text x="420" y="2208" class="small">噪声就是 latent action</text>
+<rect x="755" y="2085" width="310" height="140" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="770" y="2119" class="head">冻结 DART rollout</text>
+<text x="770" y="2150" class="small">复用 B 的 G / D</text>
+<text x="770" y="2179" class="small">生成 8 帧</text>
+<text x="770" y="2208" class="small">更新历史与目标状态</text>
+<path d="M365,2155 L405,2155" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M705,2155 L755,2155" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M910,2225 L910,2260 L205,2260 L205,2225" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="2305" class="small">仅训练策略时：目标接近 / 成功、方向、脚滑与地板奖励 → PPO 更新。</text>
+<text x="55" y="2345" class="small">论文 RL 控制 240 FPS（RTX 4090）；额外的 PHC 物理跟踪是外部模块。</text>
+<text x="35" y="2420" class="small">依据正式论文图 1–2、算法 1–5、附录 A–H 重绘；教学示意，非作者原图。</text>
+<text x="35" y="2460" class="small">实线：推理数据流 / 控制回环；虚线：离线训练。图中时长与速度均非本机实测。</text>
+</svg>

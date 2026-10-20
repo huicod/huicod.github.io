@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2680" viewBox="0 0 1120 2680" role="img" aria-labelledby="title"><title id="title">ARDY：显式 root 与身体 latent 的交错扩散</title>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#536d7c"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:31px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1120" height="2680" fill="white"/>
+<text x="35" y="48" class="title">ARDY：显式 root 与身体 latent 的交错扩散</text>
+<text x="35" y="85" class="body">SIGGRAPH 2026 · 图示为论文 Bones 默认配置；40 帧 / 20 FPS / patch = 4</text>
+<rect x="25" y="120" width="1070" height="560" rx="12" fill="#fbf5ea" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="160" class="head">A  离线学习 hybrid 表示与条件生成</text>
+<rect x="55" y="195" width="465" height="145" rx="12" fill="#eaf3ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="229" class="head">显式 root：5 维 / 帧</text>
+<text x="70" y="260" class="small">位置 xyz + 朝向 cos / sin</text>
+<text x="70" y="289" class="small">每 4 帧拼成 20 维</text>
+<text x="70" y="318" class="small">不经过 body encoder</text>
+<rect x="560" y="195" width="505" height="145" rx="12" fill="#e6f3ec" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="575" y="229" class="head">身体特征 → 因果编码器 → FSQ</text>
+<text x="575" y="260" class="small">关节位置 / 旋转 / 速度 / 足接触</text>
+<text x="575" y="289" class="small">128D 身体 latent；每标量 64 个等级</text>
+<text x="575" y="318" class="small">量化向量，不是 64 类动作编号</text>
+<rect x="205" y="385" width="860" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="419" class="head">Hybrid token：20D root ⊕ 128D body = 148D</text>
+<text x="220" y="450" class="small">身体 decoder 以 root 的局部速度 / 高度等为条件，重建 body</text>
+<path d="M285,340 L285,385" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M810,340 L810,385" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="55" y="530" width="1010" height="120" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="564" class="head">第二阶段：复用 tokenizer，训练 root / body denoiser</text>
+<text x="70" y="595" class="small">真实序列划分历史、当前生成窗、未来约束区；抽取目标与 mask，当前 token 加噪</text>
+<text x="70" y="624" class="small">监督 hybrid、解码身体、目标约束与 FK 一致性；重建 / 足滑损失用于表示学习</text>
+<path d="M635,485 L635,530" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="25" y="710" width="1070" height="1370" rx="12" fill="#f1f7fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="750" class="head">B  在线生成：每一次去噪都先预测 root，再预测 body</text>
+<rect x="55" y="785" width="465" height="120" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="819" class="head">文本 → 预训练 LLM2Vec</text>
+<text x="70" y="850" class="small">得到文本特征，供两个 Transformer 使用</text>
+<text x="70" y="879" class="small">LLM 在此是编码器，不输出动作计划</text>
+<rect x="560" y="785" width="505" height="120" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="575" y="819" class="head">可变历史 tokens</text>
+<text x="575" y="850" class="small">已承诺 / 已播放动作；可为空</text>
+<text x="575" y="879" class="small">提供时序上下文，论文最大约 8 秒</text>
+<rect x="55" y="945" width="465" height="145" rx="12" fill="#eaf3ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="979" class="head">当前窗口：40 帧 / 10 tokens</text>
+<text x="70" y="1010" class="small">从 Gaussian noise 开始</text>
+<text x="70" y="1039" class="small">窗口内稀疏目标 + mask</text>
+<text x="70" y="1068" class="small">覆盖 noisy root 中被约束的维度</text>
+<rect x="560" y="945" width="505" height="145" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="575" y="979" class="head">窗口外未来目标 + mask</text>
+<text x="575" y="1010" class="small">root / 全身关键帧 / 关节位置旋转</text>
+<text x="575" y="1039" class="small">仅提供目标，没有真实未来动作</text>
+<text x="575" y="1068" class="small">当前 2 秒 + 最多 8 秒超窗目标</text>
+<path d="M285,905 L285,925 L540,925 L540,1140" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M810,905 L810,925 L540,925 L540,1140" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1140" width="860" height="125" rx="12" fill="#eaf3ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1174" class="head">Root Transformer → clean root 预测</text>
+<text x="220" y="1205" class="small">读取文本、历史、扩散步 k、当前 noisy hybrid 与目标、未来目标</text>
+<text x="220" y="1234" class="small">显式 root 转换为 local root，作为下一个 Body 模块的条件</text>
+<path d="M285,1090 L285,1140" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M810,1090 L810,1140" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1320" width="860" height="140" rx="12" fill="#e6f3ec" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1354" class="head">Body Transformer → clean body latent 预测</text>
+<text x="220" y="1385" class="small">读取文本、历史、扩散步 k、带噪 body 与目标、未来目标</text>
+<text x="220" y="1414" class="small">增加本步 clean root 条件；训练时在 root→body 处 stop-gradient</text>
+<text x="220" y="1443" class="small">前向信息仍然相通；不是先完成整条 root 采样后再独立生成 body</text>
+<path d="M635,1265 L635,1320" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1515" width="860" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1549" class="head">拼接 clean hybrid → diffusion 更新</text>
+<text x="220" y="1580" class="small">生成下一步带噪状态；重复 4 / 10 个去噪步</text>
+<path d="M635,1460 L635,1515" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M205,1565 L40,1565 L40,1015 L55,1015" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="65" y="1405" class="small">去噪回环</text>
+<rect x="205" y="1670" width="860" height="145" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1704" class="head">最后一步 → 复用 tokenizer decoder</text>
+<text x="220" y="1735" class="small">FSQ 版本按实现重新量化 body；显式 root 沿独立分支输出</text>
+<text x="220" y="1764" class="small">body latent + local root 条件 → 身体姿态 / 接触特征</text>
+<text x="220" y="1793" class="small">得到 40 帧运动；2 秒是动作内容长度，不是必须等待的时间</text>
+<path d="M635,1615 L635,1670" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1870" width="860" height="155" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1904" class="head">发布代码可选：MotionCorrection 后处理</text>
+<text x="220" y="1935" class="small">轨迹校正 / IK 等，减少脚滑并改善目标跟随</text>
+<text x="220" y="1964" class="small">交互 demo 默认关闭；启用会增加计算量</text>
+<text x="220" y="1993" class="small">约束输入覆盖 ≠ 所有解码后关节严格满足目标；误差需测量</text>
+<path d="M635,1815 L635,1870" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="2050" class="small">上方两级 Transformer 与解码器均复用训练完成的参数；不必逐任务训练 RL。</text>
+<rect x="25" y="2110" width="1070" height="435" rx="12" fill="#eef8f3" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="2150" class="head">C  交互执行与下一次规划</text>
+<rect x="55" y="2190" width="465" height="145" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="2224" class="head">播放动作 / 可选短缓冲</text>
+<text x="70" y="2255" class="small">文本或空间目标变化时重规划</text>
+<text x="70" y="2284" class="small">取已承诺动作更新 history</text>
+<text x="70" y="2313" class="small">无需等完整 2 秒内容播放完再响应</text>
+<rect x="560" y="2190" width="505" height="145" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="575" y="2224" class="head">回到 B：更新条件并再次生成</text>
+<text x="575" y="2255" class="small">新文本 + 新目标 + 历史</text>
+<text x="575" y="2284" class="small">未来目标随时间进入当前窗口</text>
+<text x="575" y="2313" class="small">短历史更灵活，长历史更稳定</text>
+<path d="M635,2025 L635,2095 L40,2095 L40,2260 L55,2260" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M520,2260 L560,2260" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="2390" class="small">论文 RTX 4090：4 步平均 33 ms / 10 步平均 63 ms，指一次生成调用。</text>
+<text x="55" y="2430" class="small">计时各组成未完整拆分；不应直接视为含输入、渲染与网络的端到端延迟。</text>
+<text x="55" y="2470" class="small">实时响应的实机能力仍需验证；SONIC 机器人跟踪是外部演示系统。</text>
+<text x="55" y="2510" class="small">HumanML3D 对比使用 vanilla AE；图中 FSQ 属于 Bones 默认模型。</text>
+<text x="35" y="2590" class="small">依据论文 §3、图 2–5 与公开代码重绘；教学示意，非作者原图或本机实测。</text>
+<text x="35" y="2630" class="small">实线：在线数据流；虚线：离线训练。10 月新 SOMA / KimodoRep 配置另见正文。</text>
+</svg>
