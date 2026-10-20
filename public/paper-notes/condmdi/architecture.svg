@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2140" viewBox="0 0 1120 2140" role="img" aria-labelledby="title"><title id="title">CondMDI：把稀疏动作条件带入每一步去噪</title>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#536d7c"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:31px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1120" height="2140" fill="white"/>
+<text x="35" y="48" class="title">CondMDI：把稀疏动作条件带入每一步去噪</text>
+<text x="35" y="85" class="body">SIGGRAPH 2024 · 连续动作扩散；输入覆盖 + 特征级 mask + 随机条件训练</text>
+<rect x="25" y="120" width="1070" height="610" rx="12" fill="#fbf5ea" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="160" class="head">A  离线训练：让模型学会理解不同位置、密度的观测</text>
+<rect x="55" y="195" width="1010" height="105" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="229" class="head">真实完整动作 x₀ + 对应文本</text>
+<text x="70" y="260" class="small">HumanML3D 263 维：root 朝向 / 平面位置用绝对表示，其余局部特征保留</text>
+<rect x="55" y="345" width="465" height="110" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="379" class="head">随机扩散步 t + 高斯噪声</text>
+<text x="70" y="410" class="small">对完整动作加噪 → xₜ</text>
+<rect x="560" y="345" width="505" height="110" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="575" y="379" class="head">随机帧与关节 → 条件 c + mask m</text>
+<text x="575" y="410" class="small">条件来自训练真值；局部关节条件包含 root</text>
+<path d="M285,300 L285,345" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M810,300 L810,345" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="55" y="500" width="1010" height="110" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="534" class="head">复用下方 B 的条件去噪网络，预测干净动作 x0_pred</text>
+<text x="70" y="565" class="small">clean c 覆盖 noisy 输入 → 拼接 m → U-Net；CLIP 文本编码器冻结</text>
+<path d="M285,455 L285,500" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M810,455 L810,500" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="55" y="650" class="small">完整动作重建 MSE：x̂₀ 对齐 x₀ → 更新 U-Net；不是只监督未知位置。</text>
+<text x="55" y="690" class="small">论文训练：1M iterations；10% 丢文本、10% 丢关键帧条件。</text>
+<path d="M1065,555 L1080,555 L1080,665 L1020,665" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="25" y="760" width="1070" height="1010" rx="12" fill="#f1f7fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="800" class="head">B  推理：同时生成整个片段，反复去噪 1000 步</text>
+<rect x="55" y="840" width="465" height="125" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="874" class="head">用户关键帧 / 局部关节条件</text>
+<text x="70" y="905" class="small">c + 特征级 mask m</text>
+<text x="70" y="934" class="small">稀疏完整姿态，或 root / 指定关节轨迹</text>
+<rect x="560" y="840" width="505" height="125" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="575" y="874" class="head">用户文本 + 当前扩散步 t</text>
+<text x="575" y="905" class="small">冻结 CLIP → 文本特征</text>
+<text x="575" y="934" class="small">与 timestep embedding 共同调制网络</text>
+<rect x="55" y="1015" width="1010" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="1049" class="head">当前整段带噪动作 xₜ（首次从高斯噪声 xT 开始）</text>
+<text x="70" y="1080" class="small">已知位置用 clean 观测替换：x̃ₜ = m ⊙ c + (1 − m) ⊙ xₜ</text>
+<path d="M285,965 L285,1015" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1170" width="860" height="125" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1204" class="head">填充后动作 + mask → 1D U-Net + AdaGN</text>
+<text x="220" y="1235" class="small">预测完整动作 x̂₀；mask 告诉网络哪些值是观测</text>
+<text x="220" y="1264" class="small">文本 CFG：有 / 无文本两次预测均保留同一关键帧条件</text>
+<path d="M635,1115 L635,1170" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M1065,900 L1080,900 L1080,1230 L1065,1230" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1350" width="860" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1384" class="head">DDPM 后验更新 → xₜ₋₁</text>
+<text x="220" y="1415" class="small">论文默认文本 guidance w = 2.5；继续下一去噪步</text>
+<path d="M635,1295 L635,1350" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M205,1400 L40,1400 L40,1065 L55,1065" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="1285" class="small">去噪回环</text>
+<rect x="205" y="1505" width="860" height="115" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1539" class="head">最后一步 → 连续动作特征 → 关节动作</text>
+<text x="220" y="1570" class="small">反归一化与关节恢复；无需 VAE 或离散 token 解码器</text>
+<text x="220" y="1599" class="small">改变初始噪声，可以生成不同的中间运动</text>
+<path d="M635,1450 L635,1505" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="1670" class="small">输入覆盖 ≠ 输出硬复制：默认主线没有最后恢复全部已知姿态的投影。</text>
+<text x="55" y="1715" class="small">论文 RTX 2070 单序列平均 54.39 秒（1000 步）；不是实时交互模型。</text>
+<rect x="25" y="1800" width="1070" height="220" rx="12" fill="#f5f0fb" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="1840" class="head">C  单独的对照路线：推理时施加约束</text>
+<text x="55" y="1890" class="small">无关键帧条件训练的扩散模型 → x̂₀ → 重建梯度引导 / 已知值 imputation</text>
+<text x="55" y="1930" class="small">→ DDPM 更新。干预发生在预测结果处，与 B 的输入条件训练不同。</text>
+<text x="55" y="1970" class="small">代码也提供可选组合开关；它们不是论文默认 CondMDI 的必经步骤。</text>
+<text x="35" y="2070" class="small">依据论文图 2、算法 1–3、附录 A–G 与固定版本代码重绘；非作者原图。</text>
+<text x="35" y="2110" class="small">实线：推理数据流；虚线：离线训练。速度为论文报告，非本机测量。</text>
+</svg>

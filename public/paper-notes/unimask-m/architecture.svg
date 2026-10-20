@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2410" viewBox="0 0 1120 2410" role="img" aria-labelledby="title"><title id="title">UNIMASK-M：用身体部位 patch 统一动作补全</title>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#536d7c"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:31px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1120" height="2410" fill="white"/>
+<text x="35" y="48" class="title">UNIMASK-M：用身体部位 patch 统一动作补全</text>
+<text x="35" y="85" class="body">AAAI 2024 · 连续特征 + 可见 / 缺失标记；一次前向重建，不含扩散采样</text>
+<rect x="25" y="120" width="1070" height="465" rx="12" fill="#f1f7fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="160" class="head">A  统一输入接口：可见姿态 Xg 与缺失位置</text>
+<rect x="55" y="195" width="465" height="130" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="229" class="head">不同任务用不同 mask</text>
+<text x="70" y="260" class="small">预测：已知过去，未来全缺失</text>
+<text x="70" y="289" class="small">插帧：已知过去与未来关键帧</text>
+<text x="70" y="318" class="small">补全：未来只给若干部位</text>
+<rect x="560" y="195" width="505" height="130" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="575" y="229" class="head">同一接口也描述局部遮挡</text>
+<text x="575" y="260" class="small">重建：任意时刻缺失部分身体</text>
+<text x="575" y="289" class="small">这里表示任务接口</text>
+<text x="575" y="318" class="small">不代表四种任务共用同一已验证权重</text>
+<rect x="55" y="375" width="465" height="150" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="409" class="head">先填补缺失值 → Xfill</text>
+<text x="70" y="440" class="small">有两侧锚点时插值</text>
+<text x="70" y="469" class="small">无未来锚点时重复末次观测</text>
+<text x="70" y="498" class="small">填充后的 token 也进入 encoder</text>
+<rect x="560" y="375" width="505" height="150" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="575" y="409" class="head">参考动作 Xref</text>
+<text x="575" y="440" class="small">提供残差预测的参考</text>
+<text x="575" y="469" class="small">旁路送至输出加法节点</text>
+<text x="575" y="498" class="small">缺失标记另送 mixed embeddings</text>
+<path d="M285,325 L285,375" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M810,325 L810,375" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="25" y="615" width="1070" height="1160" rx="12" fill="#eef8f3" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="655" class="head">B  一次前向：完整 token 序列经过 Encoder 与 Decoder</text>
+<rect x="205" y="695" width="860" height="145" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="729" class="head">Pose Decomposition：每一帧拆成 5 个身体部位</text>
+<text x="220" y="760" class="small">左臂 / 右臂 / 左腿 / 右腿 / 躯干</text>
+<text x="220" y="789" class="small">每部位独立线性投影 → D 维；T 帧展平为 5T 个连续 token</text>
+<text x="220" y="818" class="small">一个 token 是一帧中的一个部位，不是多个时间帧的 patch</text>
+<path d="M285,525 L285,695" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="890" width="860" height="125" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="924" class="head">加 mixed embeddings（Encoder / Decoder 共用）</text>
+<text x="220" y="955" class="small">展平序列位置：sinusoidal；身体部位：可学习标识</text>
+<text x="220" y="984" class="small">缺失位置：额外可学习标记；已知 / 填充值不会混为一谈</text>
+<path d="M635,840 L635,890" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M55,260 L40,260 L40,950 L205,950" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="865" class="small">缺失标记</text>
+<rect x="205" y="1065" width="860" height="110" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1099" class="head">ViT Encoder → ViT Decoder</text>
+<text x="220" y="1130" class="small">self-attention 建立跨部位、跨时刻联系</text>
+<text x="220" y="1159" class="small">全部 token 保留；不是只编码可见 token 的 MAE</text>
+<path d="M635,1015 L635,1065" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1225" width="860" height="140" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1259" class="head">Pose Aggregation：恢复全身协调</text>
+<text x="220" y="1290" class="small">每帧 5 个 D 维 token 拼接为 5D</text>
+<text x="220" y="1319" class="small">两层 FC + GELU → D 维整帧特征</text>
+<text x="220" y="1348" class="small">关节投影头 → 动作残差 ΔX</text>
+<path d="M635,1175 L635,1225" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="205" y="1420" width="860" height="115" rx="12" fill="#dcefe4" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="220" y="1454" class="head">残差加参考：Y = ΔX + Xref</text>
+<text x="220" y="1485" class="small">输出连续关节位置 / 旋转形式的整段动作</text>
+<text x="220" y="1514" class="small">论文公式没有额外的最终观测硬投影</text>
+<path d="M635,1365 L635,1420" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M1065,450 L1080,450 L1080,1475 L1065,1475" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="1590" class="small">Xref 旁路是残差参考；它不等于把每个已知关节原样锁定在输出中。</text>
+<rect x="55" y="1630" width="1010" height="110" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="1664" class="head">Human3.6M 专用适配（不属于 LaFAN1 默认主干）</text>
+<text x="70" y="1695" class="small">Xfill → DCT → 上述网络 → Temporal MLP → IDCT → 加参考</text>
+<text x="70" y="1724" class="small">TempMLP 在解码后的整帧特征上做时间维细化</text>
+<rect x="25" y="1805" width="1070" height="460" rx="12" fill="#fbf5ea" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="45" y="1845" class="head">C  训练：完整动作监督重建，mask 决定当前任务</text>
+<rect x="55" y="1880" width="465" height="135" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="1914" class="head">真实完整动作 → 任务 mask</text>
+<text x="70" y="1945" class="small">构造 A 的可见输入</text>
+<text x="70" y="1974" class="small">B 的预测与真实动作比较</text>
+<text x="70" y="2003" class="small">更新重建网络</text>
+<rect x="560" y="1880" width="505" height="135" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="575" y="1914" class="head">多数主实验：按任务 / 数据训练</text>
+<text x="575" y="1945" class="small">同一网络设计，不是所有表同一checkpoint</text>
+<text x="575" y="1974" class="small">LaFAN1 的 50 / 70 帧长过渡</text>
+<text x="575" y="2003" class="small">使用重新训练的长过渡模型</text>
+<path d="M520,1945 L560,1945" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="55" y="2060" width="1010" height="155" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="2094" class="head">真正的同模型多任务证据：Human3.6M 表 4</text>
+<text x="70" y="2125" class="small">统一训练时，未来 patch 缺失概率从 0.85 逐步增至 1</text>
+<text x="70" y="2154" class="small">同一模型测试 forecasting 与 completion；与单任务模型单独比较</text>
+<text x="70" y="2183" class="small">未据此证明跨数据集、全部四任务都能零微调通用</text>
+<text x="35" y="2320" class="small">依据论文 arXiv v2 Fig. 2–4、方法与实验重绘；教学示意，非作者原图。</text>
+<text x="35" y="2360" class="small">实线：前向数据流；虚线：训练联系。未取得模型实现，未运行推理。</text>
+</svg>
