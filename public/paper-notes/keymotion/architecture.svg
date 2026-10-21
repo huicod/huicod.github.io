@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2835" viewBox="0 0 1120 2835" role="img" aria-labelledby="title"><title id="title">KeyMotion：先生成关键姿态及时间，再补全动作</title>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#536d7c"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:31px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1120" height="2835" fill="white"/>
+<text x="35" y="48" class="title">KeyMotion：先生成关键姿态及时间，再补全动作</text>
+<text x="35" y="85" class="body">论文机制教学图 · 训练、文本生成主线与附录 H 的外部模型组合分开展示</text>
+<rect x="25" y="112" width="1070" height="520" rx="12" fill="#f4f8fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="48" y="151" class="head">A · 离线抽帧与三个训练模块</text>
+<rect x="55" y="178" width="270" height="94" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="212" class="head">真值完整动作 X</text>
+<text x="70" y="243" class="small">配对文本 c；序列长度 N</text>
+<rect x="395" y="178" width="650" height="94" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="410" y="212" class="head">MDO：最大距离动态规划</text>
+<text x="410" y="243" class="small">按时间顺序选 K 帧 → 关键姿态 F + 原序列索引 P</text>
+<path d="M325,222 L395,222" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="55" y="294" width="990" height="92" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="328" class="head">① 联合关键帧 VAE</text>
+<text x="70" y="359" class="small">F 的嵌入 256 + P 的嵌入 16 → 编码 / 采样 / 解码；重建、KL、骨长、索引损失</text>
+<rect x="55" y="405" width="990" height="92" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="439" class="head">② PST 隐空间扩散</text>
+<text x="70" y="470" class="small">已学关键帧隐变量 z0 加噪 → 双流去噪器；文本 + 时间步条件，监督预测噪声</text>
+<rect x="55" y="516" width="990" height="92" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="550" class="head">③ 文本条件 MMAE：均匀稀疏观测训练</text>
+<text x="70" y="581" class="small">观测帧按时间放置，其余填 0 → 全帧监督；重建、关节位置、骨长、速度损失</text>
+<rect x="25" y="662" width="1070" height="1555" rx="12" fill="#fafcfd" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="48" y="702" class="head">B · 常规文本生成：推理时不需要真值动作或 MDO</text>
+<rect x="85" y="734" width="430" height="90" rx="12" fill="#eaf2ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="100" y="768" class="head">用户文本 c</text>
+<text x="100" y="799" class="small">例如：向前走，然后转身挥手</text>
+<rect x="640" y="734" width="380" height="90" rx="12" fill="#fff2df" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="655" y="768" class="head">高斯隐空间噪声 zT</text>
+<text x="655" y="799" class="small">噪声位于关键帧 latent 空间</text>
+<rect x="85" y="850" width="430" height="90" rx="12" fill="#eaf2ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="100" y="884" class="head">冻结的 CLIP 文本编码器</text>
+<text x="100" y="915" class="small">文字特征同时送入 PST 与 MMAE</text>
+<path d="M300,824 L300,850" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M830,824 L830,1006" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M300,940 L300,1006" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="75" y="972" width="970" height="525" rx="12" fill="#eef4fa" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="95" y="1005" class="head">PST · Parallel Skip Transformer</text>
+<rect x="115" y="1029" width="395" height="105" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="130" y="1063" class="head">条件流：文本 + 时间步 t</text>
+<text x="130" y="1094" class="small">先经过 2 层 Transformer</text>
+<text x="130" y="1123" class="small">条件特征参与后续跨模态交互</text>
+<rect x="610" y="1029" width="395" height="105" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="625" y="1063" class="head">动作流：当前 noisy latent</text>
+<text x="625" y="1094" class="small">zt 也先经过 2 层 Transformer</text>
+<text x="625" y="1123" class="small">与条件流并行编码、更新</text>
+<path d="M300,1134 L300,1170" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M808,1134 L808,1170" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="115" y="1170" width="395" height="135" rx="12" fill="#e4edff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="130" y="1204" class="head">条件侧 Cross-Transformer</text>
+<text x="130" y="1235" class="small">两流通过 cross-attention 交互</text>
+<text x="130" y="1264" class="small">共 5 层跨模态模块</text>
+<rect x="610" y="1170" width="395" height="135" rx="12" fill="#ffeed6" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="625" y="1204" class="head">动作侧 Cross-Transformer</text>
+<text x="625" y="1235" class="small">关键帧隐表征逐层被条件化</text>
+<text x="625" y="1264" class="small">并行不是一次独立生成每一帧</text>
+<path d="M510,1202 L610,1202" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M610,1258 L510,1258" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M125,1190 L95,1190 L95,1285 L115,1285" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<path d="M990,1190 L1025,1190 L1025,1285 L1005,1285" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="180" y="1348" class="small">浅层 → 对应深层长跳连：两流均使用 concat + MLP</text>
+<path d="M300,1305 L300,1374 L430,1374 L430,1390" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M808,1305 L808,1374 L680,1374 L680,1390" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="255" y="1390" width="610" height="83" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="270" y="1424" class="head">两流拼接 + 投影 → 预测噪声</text>
+<text x="270" y="1455" class="small">训练时对照已知噪声；推理时供反向采样使用</text>
+<rect x="255" y="1530" width="610" height="94" rx="12" fill="#e8f5ee" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="270" y="1564" class="head">文本引导 CFG + 反向采样更新</text>
+<text x="270" y="1595" class="small">根据预测噪声更新 zt → z(t−1)，多步循环至 z0</text>
+<path d="M560,1473 L560,1530" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M865,1575 L1068,1575 L1068,1078 L1005,1078" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="892" y="1530" class="small">扩散循环</text>
+<rect x="175" y="1660" width="790" height="102" rx="12" fill="#fff2df" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="190" y="1694" class="head">复用关键帧 VAE decoder</text>
+<text x="190" y="1725" class="small">去噪后的 z0 → 生成关键姿态 F 与原序列时间索引 P</text>
+<text x="190" y="1754" class="small">一个联合 VAE；时间索引也要预测</text>
+<path d="M560,1624 L560,1660" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="175" y="1797" width="790" height="102" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="190" y="1831" class="head">按生成索引放回全长序列</text>
+<text x="190" y="1862" class="small">观测位置放关键帧，其余位置填 0</text>
+<text x="190" y="1891" class="small">论文未明确索引取整、排序、越界或重复位置的处理</text>
+<path d="M560,1762 L560,1797" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="175" y="1934" width="790" height="114" rx="12" fill="#e8f5ee" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="190" y="1968" class="head">文本条件 MMAE · 8 层 residual Transformer</text>
+<text x="190" y="1999" class="small">CLIP 文字特征在每一层重复注入</text>
+<text x="190" y="2028" class="small">预测整个序列：包括缺失帧，也包括输入关键帧</text>
+<path d="M560,1899 L560,1934" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M85,895 L48,895 L48,1991 L175,1991" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="58" y="1915" class="small">文本直达补全器</text>
+<rect x="175" y="2083" width="790" height="103" rx="12" fill="#eaf2ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="190" y="2117" class="head">输出完整动作序列</text>
+<text x="190" y="2148" class="small">允许关键帧纠错，不是硬锁关键帧；骨长 / 速度损失为软约束</text>
+<text x="190" y="2177" class="small">常规推理不先生成整段动作，不需要真实关键帧作为输入</text>
+<path d="M560,2048 L560,2083" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="25" y="2245" width="1070" height="430" rx="12" fill="#fff9ef" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="48" y="2287" class="head">C · 附录 H 的另一种用法：为现成生成器补全动作</text>
+<rect x="60" y="2317" width="300" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="75" y="2351" class="head">同一文本 → MDM / MLD</text>
+<text x="75" y="2382" class="small">先由外部模型生成完整动作</text>
+<text x="75" y="2411" class="small">这不是 B 的前置步骤</text>
+<rect x="425" y="2317" width="615" height="100" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="440" y="2351" class="head">从外部生成动作中抽取关键帧</text>
+<text x="440" y="2382" class="small">保留与本文实验匹配的关键帧数量</text>
+<text x="440" y="2411" class="small">附录 H 未充分披露该路线的具体选帧策略</text>
+<path d="M360,2365 L425,2365" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="425" y="2460" width="615" height="91" rx="12" fill="#e8f5ee" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="440" y="2494" class="head">MMAE + 同一文本 → 新的完整动作</text>
+<text x="440" y="2525" class="small">不经过 B 中的 PST → VAE 关键帧生成路径</text>
+<path d="M730,2417 L730,2460" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="60" y="2595" class="body">表 XII：FID 改善，但语义检索与同文本多样性不保证同时改善。</text>
+<text x="60" y="2636" class="body">例如 MLD + MMAE 的 FID 下降，R@1/2/3 与多模态距离反而略退步。</text>
+<text x="35" y="2720" class="small">证据边界：MDO 最大化特征距离，不是语义事件标注，也不是碰撞检测。</text>
+<text x="35" y="2755" class="small">来源：arXiv:2405.15439v1，Fig. 2–3、§III–V、附录 C / H；教学重绘，非作者原图。</text>
+<text x="35" y="2790" class="small">公开仓库尚不完整；本图描述论文方法，不代表已复现或已验证的可运行系统。</text>
+</svg>
