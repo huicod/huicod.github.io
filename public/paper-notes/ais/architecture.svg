@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1730" viewBox="0 0 1200 1730" role="img" aria-labelledby="title desc">
+<title id="title">AIS-BiLSTM：训练、插值与合成、Maya写回</title><desc id="desc">教学架构图。训练的DBA选帧和真值监督与推理分开。双向LSTM产生alpha、合成姿态与beta，已知前后姿态进入插值路径。公开插件只写缺失帧，保留已有关键帧。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9" fill="#51647b"/></marker><marker id="purple" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9" fill="#8b5ca6"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#172d45} .title{font-size:29px;font-weight:700}.group{font-size:22px;font-weight:700}.head{font-size:21px;font-weight:700}.body{font-size:18px}.small{font-size:17px}.edge{fill:none;stroke:#51647b;stroke-width:2.5;marker-end:url(#arrow)}.train{fill:none;stroke:#8b5ca6;stroke-width:2.4;stroke-dasharray:8 6;marker-end:url(#purple)}</style>
+<rect width="1200" height="1730" fill="#fff"/>
+<text x="600" y="45" text-anchor="middle" class="title">AIS-BiLSTM：从人工关键姿态到可编辑补间</text>
+<rect x="20" y="75" width="1160" height="315" rx="18" fill="#f5f0fa" stroke="#d9e2ec"/>
+<text x="42" y="109" text-anchor="start" class="group">A  训练数据与监督｜单角色完成动画，联合训练全部网络</text>
+<rect x="50" y="140" width="235" height="90" rx="12" fill="#fff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="167.5" y="171" text-anchor="middle" class="head">完成动画真值</text>
+<text x="167.5" y="199" text-anchor="middle" class="body">连续控制器序列</text>
+<rect x="330" y="140" width="220" height="90" rx="12" fill="#fff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="440.0" y="171" text-anchor="middle" class="head">DBA 选帧</text>
+<text x="440.0" y="199" text-anchor="middle" class="body">多尺度速度局部极小值</text>
+<rect x="595" y="140" width="235" height="90" rx="12" fill="#fff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="712.5" y="171" text-anchor="middle" class="head">日程增强</text>
+<text x="712.5" y="199" text-anchor="middle" class="body">加 / 删 / 平移 / 抖动</text>
+<rect x="875" y="140" width="260" height="90" rx="12" fill="#fff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="1005.0" y="171" text-anchor="middle" class="head">训练稀疏输入</text>
+<text x="1005.0" y="199" text-anchor="middle" class="body">已知姿态 + 整帧 mask</text>
+<path d="M285 185 H330" class="edge"/>
+<path d="M550 185 H595" class="edge"/>
+<path d="M830 185 H875" class="edge"/>
+<rect x="50" y="275" width="305" height="85" rx="12" fill="#ede2f7" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="202.5" y="306" text-anchor="middle" class="head">自适应加权 L1</text>
+<text x="202.5" y="334" text-anchor="middle" class="body">完整真值监督最终姿态</text>
+<path d="M167 230 V275" class="train"/>
+<text x="585" y="306" text-anchor="middle" class="body">损失共同更新 BiLSTM、α 头、合成头与 β 头</text>
+<text x="585" y="338" text-anchor="middle" class="small">没有门控人工标签；没有冻结的预训练模块</text>
+<rect x="20" y="415" width="1160" height="205" rx="18" fill="#eef7fb" stroke="#d9e2ec"/>
+<text x="42" y="449" text-anchor="start" class="group">B  用户推理输入｜不运行 DBA；未来关键姿态已知</text>
+<rect x="60" y="480" width="290" height="100" rx="12" fill="#fff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="205.0" y="511" text-anchor="middle" class="head">人工 blocking + 帧号</text>
+<text x="205.0" y="539" text-anchor="middle" class="body">至少首尾两帧；可不等间隔</text>
+<text x="205.0" y="564" text-anchor="middle" class="body">每个关键帧提供完整姿态</text>
+<rect x="400" y="480" width="360" height="100" rx="12" fill="#fff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="580.0" y="511" text-anchor="middle" class="head">连续控制器向量化</text>
+<text x="580.0" y="539" text-anchor="middle" class="body">旋转 → 6D；平移 / 缩放归一化</text>
+<text x="580.0" y="564" text-anchor="middle" class="body">根相对首帧；公开配置 D = 596</text>
+<rect x="810" y="480" width="325" height="100" rx="12" fill="#fff6e5" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="972.5" y="511" text-anchor="middle" class="head">离散属性分开处理</text>
+<text x="972.5" y="539" text-anchor="middle" class="body">FK/IK 开关、面部选择器</text>
+<text x="972.5" y="564" text-anchor="middle" class="body">不由网络学习生成</text>
+<path d="M350 530 H400" class="edge"/>
+<path d="M205 480 V465 H972 V480" class="edge"/>
+<rect x="20" y="650" width="1160" height="605" rx="18" fill="#f1f6fc" stroke="#d9e2ec"/>
+<text x="42" y="684" text-anchor="start" class="group">C  共享 AIS-BiLSTM｜训练与推理使用同一网络</text>
+<rect x="60" y="720" width="300" height="100" rx="12" fill="#e6f5f1" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="210.0" y="751" text-anchor="middle" class="head">最近已知前 / 后姿态</text>
+<text x="210.0" y="779" text-anchor="middle" class="body">p_prev、p_next</text>
+<text x="210.0" y="804" text-anchor="middle" class="body">来自原输入的直接旁路</text>
+<rect x="430" y="720" width="390" height="100" rx="12" fill="#e7efff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="625.0" y="751" text-anchor="middle" class="head">零填缺帧 → 双向 LSTM</text>
+<text x="625.0" y="779" text-anchor="middle" class="body">mask：0 已知 / 1 缺失</text>
+<text x="625.0" y="804" text-anchor="middle" class="body">上下文隐藏状态 h</text>
+<path d="M580 580 V625 H625 V720" class="edge"/>
+<path d="M460 580 V635 H550 V705 H210 V720" class="edge"/>
+<path d="M1005 230 V430 H1160 V690 H625 V720" class="train"/>
+<path d="M625 690 H550 V705 H210 V720" class="train"/>
+<text x="1032" y="672" text-anchor="middle" class="small">训练输入复用</text>
+<path d="M625 820 V855 H210 V890" class="edge"/>
+<path d="M625 820 V890" class="edge"/>
+<path d="M625 855 H995 V890" class="edge"/>
+<rect x="60" y="890" width="300" height="90" rx="12" fill="#dff3eb" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="210.0" y="921" text-anchor="middle" class="head">α 预测头 + sigmoid</text>
+<text x="210.0" y="949" text-anchor="middle" class="body">逐帧、逐维插值系数</text>
+<rect x="465" y="890" width="320" height="90" rx="12" fill="#ffeddb" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="625.0" y="921" text-anchor="middle" class="head">姿态合成 MLP</text>
+<text x="625.0" y="949" text-anchor="middle" class="body">p_synth：可超出端点范围</text>
+<rect x="850" y="890" width="290" height="90" rx="12" fill="#e9e5fb" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="995.0" y="921" text-anchor="middle" class="head">β 预测头 + sigmoid</text>
+<text x="995.0" y="949" text-anchor="middle" class="body">逐帧、逐维软混合系数</text>
+<rect x="60" y="1030" width="330" height="100" rx="12" fill="#dff3eb" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="225.0" y="1061" text-anchor="middle" class="head">可学习插值 p_interp</text>
+<text x="225.0" y="1089" text-anchor="middle" class="body">(1 − α) ⊙ p_prev</text>
+<text x="225.0" y="1114" text-anchor="middle" class="body">+ α ⊙ p_next</text>
+<path d="M210 980 V1030" class="edge"/>
+<path d="M60 770 H42 V1080 H60" class="edge"/>
+<rect x="465" y="1130" width="370" height="95" rx="12" fill="#e7efff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="650.0" y="1161" text-anchor="middle" class="head">自适应软混合</text>
+<text x="650.0" y="1189" text-anchor="middle" class="body">p_pred = (1 − β) ⊙ p_interp</text>
+<text x="650.0" y="1214" text-anchor="middle" class="body">+ β ⊙ p_synth</text>
+<path d="M390 1080 H425 V1177 H465" class="edge"/>
+<path d="M625 980 V1130" class="edge"/>
+<path d="M995 980 V1177 H835" class="edge"/>
+<path d="M835 1210 H1190 V320 H1135" class="train"/>
+<path d="M1135 320 H835 V370 H355 V320" class="train"/>
+<rect x="20" y="1280" width="1160" height="385" rx="18" fill="#f2f8f4" stroke="#d9e2ec"/>
+<text x="42" y="1314" text-anchor="start" class="group">D  输出与制作接口｜网络预测和关键帧保留分开</text>
+<rect x="465" y="1345" width="370" height="90" rx="12" fill="#fff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="650.0" y="1376" text-anchor="middle" class="head">恢复连续控制器</text>
+<text x="650.0" y="1404" text-anchor="middle" class="body">6D → 旋转；反归一化；恢复根</text>
+<path d="M650 1225 V1345" class="edge"/>
+<rect x="860" y="1345" width="290" height="90" rx="12" fill="#fff6e5" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="1005.0" y="1376" text-anchor="middle" class="head">论文离散通道规则</text>
+<text x="1005.0" y="1404" text-anchor="middle" class="body">保持前一关键姿态的值</text>
+<path d="M1135 550 H1170 V1390 H1150" class="edge"/>
+<rect x="60" y="1510" width="390" height="105" rx="12" fill="#fff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="255.0" y="1541" text-anchor="middle" class="head">论文完整动画</text>
+<text x="255.0" y="1569" text-anchor="middle" class="body">连续预测 + 离散规则</text>
+<text x="255.0" y="1594" text-anchor="middle" class="body">仍需检查接触、穿插与节奏</text>
+<rect x="570" y="1510" width="565" height="120" rx="12" fill="#fff" stroke="#c2cdda" stroke-width="1.5"/>
+<text x="852.5" y="1541" text-anchor="middle" class="head">当前公开 Maya 插件</text>
+<text x="852.5" y="1569" text-anchor="middle" class="body">仅返回并写入缺失帧的 breakdown key</text>
+<text x="852.5" y="1594" text-anchor="middle" class="body">原 key 留在场景中；离散曲线由场景管理</text>
+<text x="852.5" y="1619" text-anchor="middle" class="body">动画师检查和返修</text>
+<path d="M600 1435 V1470 H255 V1510" class="edge"/>
+<path d="M725 1435 V1470 H850 V1510" class="edge"/>
+<path d="M1005 1435 V1488 H480 V1555 H450" class="edge"/>
+<path d="M60 555 H30 V1640 H545 V1580 H570" class="edge"/>
+<text x="255" y="1633" text-anchor="middle" class="small">原关键帧直接留在 Maya 场景</text>
+<text x="600" y="1692" text-anchor="middle" class="small">实线：数据流  ·  紫色虚线：训练路径 / 监督  ·  教学重绘：论文 §3、Fig.2–3 与公开插件</text>
+<text x="600" y="1717" text-anchor="middle" class="small">软混合本身没有关键帧硬投影；α 符号按论文定义。3.5× 是人工工作流收益，不是推理速度。</text>
+</svg>

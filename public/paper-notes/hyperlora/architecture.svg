@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2700" viewBox="0 0 1120 2700" role="img" aria-labelledby="title"><title id="title">HyperLoRA：参考风格 → 低秩适配 → 文本动作生成</title>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#536d7c"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:31px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1120" height="2700" fill="white"/>
+<text x="35" y="48" class="title">HyperLoRA：参考风格 → 低秩适配 → 文本动作生成</text>
+<text x="35" y="85" class="body">论文机制教学图 · 冻结生成底座；训练风格适配器；推理时优化隐变量</text>
+<rect x="25" y="112" width="1070" height="350" rx="12" fill="#f4f8fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="48" y="151" class="head">A · 训练：同风格、不同内容的动作配对</text>
+<rect x="55" y="178" width="480" height="110" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="212" class="head">冻结：预训练 SALAD + ST-VAE</text>
+<text x="70" y="243" class="small">底座文本动作知识来自预训练</text>
+<text x="70" y="272" class="small">目标动作 latent 加噪，监督扩散 v 预测</text>
+<rect x="570" y="178" width="475" height="110" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="585" y="212" class="head">训练：风格编码器 + 超网络</text>
+<text x="585" y="243" class="small">参考与目标共享风格，内容不同</text>
+<text x="585" y="272" class="small">SupCon 拉近同风格、推远不同风格</text>
+<rect x="55" y="314" width="990" height="118" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="348" class="head">总损失 = v 预测误差 + λ · 有监督对比损失</text>
+<text x="70" y="379" class="small">只训练新增适配模块；训练仍使用风格标签</text>
+<text x="70" y="408" class="small">论文 2.47 小时 / A5000 24 GB 指单次适配训练，不含底座预训练</text>
+<rect x="25" y="488" width="1070" height="1520" rx="12" fill="#fafcfd" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="48" y="530" class="head">B · 常规推理：内容来自文本，风格来自 3D 参考动作</text>
+<rect x="55" y="560" width="300" height="91" rx="12" fill="#fff2df" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="594" class="head">风格参考 x_ref</text>
+<text x="70" y="625" class="small">一段 3D motion</text>
+<rect x="405" y="560" width="300" height="91" rx="12" fill="#fff2df" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="420" y="594" class="head">ST-VAE encoder</text>
+<text x="420" y="625" class="small">结构化参考 latent</text>
+<rect x="755" y="560" width="290" height="91" rx="12" fill="#fff2df" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="770" y="594" class="head">风格编码器</text>
+<text x="770" y="625" class="small">MLP + 全局池化 → s</text>
+<path d="M355,605 L405,605" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M705,605 L755,605" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="565" y="692" width="480" height="113" rx="12" fill="#fff2df" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="580" y="726" class="head">超网络：s → A(s)、B(s)</text>
+<text x="580" y="757" class="small">为各 FiLM 投影生成低秩更新</text>
+<text x="580" y="786" class="small">固定参考的 A、B 不随扩散步改变</text>
+<path d="M900,651 L900,692" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="55" y="692" width="430" height="113" rx="12" fill="#eaf2ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="726" class="head">文字 c → 冻结 CLIP</text>
+<text x="70" y="757" class="small">目标动作内容，例如：走路后踢腿</text>
+<text x="70" y="786" class="small">文字与参考不需要时间对齐</text>
+<rect x="55" y="851" width="430" height="104" rx="12" fill="#eaf2ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="885" class="head">高斯噪声 zT → 当前隐变量 zt</text>
+<text x="70" y="916" class="small">噪声位于运动 latent 空间</text>
+<text x="70" y="945" class="small">常规生成不需要源动作</text>
+<rect x="565" y="851" width="480" height="104" rx="12" fill="#fff2df" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="580" y="885" class="head">时间步 et → 风格条件 FiLM</text>
+<text x="580" y="916" class="small">(γ, β) = split((W + BA) SiLU(et) + b)</text>
+<text x="580" y="945" class="small">W 冻结；风格改变特征调制</text>
+<path d="M805,805 L805,851" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="75" y="993" width="970" height="372" rx="12" fill="#eef4fa" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="98" y="1030" class="head">冻结 SALAD 去噪器 + HyperLoRA 调制</text>
+<rect x="115" y="1055" width="890" height="99" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="130" y="1089" class="head">时间 / 骨架 / 文本交互 → 预测扩散 v</text>
+<text x="130" y="1120" class="small">FiLM 作用于去噪特征；不是默认修改所有 attention 的 Q/K/V</text>
+<path d="M270,955 L270,1055" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M805,955 L805,1055" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M55,744 L40,744 L40,1110 L115,1110" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="115" y="1188" width="890" height="141" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="130" y="1222" class="head">三路 CFG：无条件 / 仅文本 / 文本 + 风格</text>
+<text x="130" y="1253" class="small">v̂ = v_uncond + w_text (v_text − v_uncond)</text>
+<text x="130" y="1282" class="small">                      + w_style (v_text+style − v_text)</text>
+<text x="130" y="1311" class="small">主文权重：w_text=7.5，w_style=1.5</text>
+<path d="M560,1154 L560,1188" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="115" y="1403" width="890" height="100" rx="12" fill="#e8f5ee" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="130" y="1437" class="head">恢复预测的干净隐变量 ẑ0 = αt zt − σt v̂</text>
+<text x="130" y="1468" class="small">v 是扩散参数化，不是人物关节的物理速度</text>
+<path d="M560,1329 L560,1403" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="115" y="1540" width="890" height="123" rx="12" fill="#e8f5ee" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="130" y="1574" class="head">风格梯度：ẑ0 → 同一风格编码器 → ŝ</text>
+<text x="130" y="1605" class="small">比较 ŝ 与参考 s；梯度回传到当前 noisy latent zt</text>
+<text x="130" y="1634" class="small">论文：zt_guided = zt − λ_style · g / (‖g‖ + ε)</text>
+<path d="M560,1503 L560,1540" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M1045,605 L1080,605 L1080,1598 L1005,1598" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="914" y="1518" class="small">参考 s</text>
+<rect x="115" y="1700" width="890" height="95" rx="12" fill="#e8f5ee" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="130" y="1734" class="head">用修正后的 zt 与预测 v̂ 进行反向采样</text>
+<text x="130" y="1765" class="small">更新至 z(t−1)，重复去噪；模型权重不在此处优化</text>
+<path d="M560,1663 L560,1700" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M115,1748 L30,1748 L30,902 L55,902" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<rect x="115" y="1840" width="890" height="118" rx="12" fill="#eaf2ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="130" y="1874" class="head">最终 z0 → ST-VAE decoder → 风格化完整动作</text>
+<text x="130" y="1905" class="small">风格梯度本身在 latent 中计算，不需要先解码成动作</text>
+<text x="130" y="1934" class="small">若启用几何约束，才走下方 C 中的动作解码与误差支路</text>
+<path d="M560,1795 L560,1840" stroke="#536d7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="25" y="2038" width="1070" height="510" rx="12" fill="#fff9ef" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="48" y="2081" class="head">C · 可选扩展：与常规生成区分</text>
+<rect x="55" y="2112" width="990" height="160" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="2146" class="head">轨迹 / 关键帧约束：在每步预测的干净动作上计算误差</text>
+<text x="70" y="2177" class="small">ẑ0 → ST-VAE decode → 根轨迹 / 稀疏姿态误差 → latent 梯度</text>
+<text x="70" y="2206" class="small">与风格引导一起更新采样；是软约束，没有硬锁已知帧的保证</text>
+<text x="70" y="2235" class="small">论文 Fig.8 为定性示例，未给出完整精确满足率表</text>
+<rect x="55" y="2303" width="990" height="210" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="70" y="2337" class="head">已有动作风格迁移：用反演结果替代随机噪声起点</text>
+<text x="70" y="2368" class="small">源动作 → ST-VAE encode → DDIM inversion → 初始 noisy latent</text>
+<text x="70" y="2397" class="small">再进入 B 的文本 + 目标风格反向生成流程</text>
+<text x="70" y="2426" class="small">源结构由反演起点提供；不等于逐帧、逐关节保持不变</text>
+<text x="70" y="2455" class="small">这不是常规文本生成的必需前置步骤</text>
+<text x="35" y="2590" class="small">依据：arXiv:2605.13333v1，Fig.2–3、§3–4、§6；教学重绘，非作者原图。</text>
+<text x="35" y="2626" class="small">公开代码在参数计算与梯度归一化上有实现差异，详见正文；尚未运行验证。</text>
+<text x="35" y="2662" class="small">有限风格实验评测已见 / 未见混合的 47 类，不能据此宣称任意风格泛化。</text>
+</svg>

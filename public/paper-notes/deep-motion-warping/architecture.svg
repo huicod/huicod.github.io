@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="3480" viewBox="0 0 1200 3480" role="img" aria-labelledby="title">
+<title id="title">Deep Motion Warping：相位、根运动与细节的条件编辑</title>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#567182"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:30px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:22px}.small{font-size:21px}</style>
+<rect width="1200" height="3480" fill="white"/>
+<text x="35" y="48" class="title">Deep Motion Warping：分开控制结构、根运动与细节</text>
+<text x="35" y="88" class="body">SIGGRAPH 2026 · 论文机制教学图；源动作编辑，不包含文本或 LLM 分支</text>
+<rect x="25" y="120" width="1150" height="590" rx="12" fill="#f2f7fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="48" y="161" class="head">A · 训练：不需要成对的“原动作—编辑动作”</text>
+<rect x="55" y="188" width="1090" height="113" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="223" class="head">HumanML3D 原始动作（不使用文本标注）</text>
+<text x="71" y="257" class="small">① 局部关节速度 → 上 / 下身 BP-PAE：卷积 → FFT + 线性层 → A / F / B / S</text>
+<text x="71" y="288" class="small">正弦曲线重建 → 部位 decoder → 速度重建监督；滑窗提取逐帧相位 P</text>
+<rect x="55" y="325" width="1090" height="145" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="360" class="head">② 条件编码器与扩散去噪器联合训练</text>
+<text x="71" y="394" class="small">x0 与原条件 P / v → 残差编码器 → 全局 z；x0 加噪得到 xt</text>
+<text x="71" y="425" class="small">Hybrid DiT(xt, P, v, z, t) → 预测干净动作 x0 → 对照真实动作的平方误差</text>
+<text x="71" y="456" class="small">另有几何损失；具体项及权重在本次未取得的补充材料中</text>
+<rect x="55" y="494" width="1090" height="113" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="529" class="head">③ 速度—幅度联合统计模型 GMM</text>
+<text x="71" y="563" class="small">训练数据的根速度 v 与相位幅度 A → 拟合联合分布 p(v, A)</text>
+<text x="71" y="594" class="small">推理时读取条件均值 / 方差，协调新速度与身体幅度；不是物理求解器</text>
+<text x="55" y="656" class="small">未将 BP-PAE 后续冻结策略、网络宽度或采样步数补写成已知设置。</text>
+<rect x="25" y="745" width="1150" height="555" rx="12" fill="#fafcfd" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="48" y="787" class="head">B · 编码源动作：条件也进入细节编码器</text>
+<rect x="400" y="815" width="400" height="87" rx="12" fill="#eaf2ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="416" y="850" class="head">源动作 x_source</text>
+<text x="416" y="884" class="small">含身体姿态与原根运动</text>
+<rect x="65" y="940" width="470" height="115" rx="12" fill="#e8f5ee" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="81" y="975" class="head">BP-PAE：上 / 下身 K = 2</text>
+<text x="81" y="1009" class="small">局部关节速度滑窗 → 各通道 A、S</text>
+<text x="81" y="1040" class="small">P0 = [A sin(2πS), A cos(2πS)]</text>
+<rect x="665" y="940" width="470" height="115" rx="12" fill="#fff2df" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="681" y="975" class="head">提取根速度 v0</text>
+<text x="681" y="1009" class="small">xz 平面线速度 + 绕 y 轴角速度</text>
+<text x="681" y="1040" class="small">逐帧 3 维，描述全局移动与转向</text>
+<path d="M470,902 L470,920 L300,920 L300,940" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<path d="M730,902 L730,920 L900,920 L900,940" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<rect x="220" y="1110" width="760" height="125" rx="12" fill="#eef0fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="236" y="1145" class="head">条件残差编码器 Eφ</text>
+<text x="236" y="1179" class="small">hx = Conv(x_source)；hcond = Project(P0, v0)</text>
+<text x="236" y="1210" class="small">hx − hcond → Transformer → 时间平均 → 全局细节 z0</text>
+<path d="M300,1055 L300,1082 L425,1082 L425,1110" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<path d="M900,1055 L900,1082 L775,1082 L775,1110" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<path d="M400,856 L45,856 L45,1165 L220,1165" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<text x="65" y="1100" class="small">源动作直达</text>
+<text x="65" y="1270" class="small">输出供编辑的三组信息：P0（结构）、v0（根运动）、z0（剩余细节）</text>
+<path d="M600,1300 L600,1355" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<rect x="25" y="1355" width="1150" height="685" rx="12" fill="#fff9ef" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="48" y="1397" class="head">C · 选择编辑操作；四个选项不是必须顺序执行</text>
+<rect x="55" y="1430" width="530" height="155" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="1465" class="head">根运动编辑</text>
+<text x="71" y="1499" class="small">指定新 ṽ；GMM(v0, A0, ṽ) → 新幅度 Ã</text>
+<text x="71" y="1530" class="small">保留相位推进，重组 P̃</text>
+<text x="71" y="1561" class="small">均值迁移 + 方差缩放后的源幅度残差</text>
+<rect x="615" y="1430" width="530" height="155" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="631" y="1465" class="head">幅度编辑 / 动作夸张</text>
+<text x="631" y="1499" class="small">分别缩放上、下身 P 的幅度</text>
+<text x="631" y="1530" class="small">保留相位时序；允许其他部位受关联影响</text>
+<text x="631" y="1561" class="small">下身划分包含脊柱，不是单关节硬隔离</text>
+<rect x="55" y="1610" width="530" height="155" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="1645" class="head">时间变形</text>
+<text x="71" y="1679" class="small">P̃(t) = P0(W(t))</text>
+<text x="71" y="1710" class="small">ṽ(t) = d[r0(W(t))] / dt</text>
+<text x="71" y="1741" class="small">根轨迹与相位同步重定时</text>
+<rect x="615" y="1610" width="530" height="155" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="631" y="1645" class="head">参考动作风格迁移</text>
+<text x="631" y="1679" class="small">另一个参考动作 → 其 P / v + Eφ → z_ref</text>
+<text x="631" y="1710" class="small">用 z_ref 替换 z0，保留源 P0 / v0</text>
+<text x="631" y="1741" class="small">复用已训练模型，无需目标风格微调</text>
+<text x="55" y="1808" class="small">按选定操作整理输出；未编辑的条件继续复用源值。</text>
+<rect x="65" y="1843" width="500" height="125" rx="12" fill="#e8f5ee" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="81" y="1878" class="head">逐帧条件：P̃ 与 ṽ</text>
+<text x="81" y="1912" class="small">结构、幅度、时序与根运动</text>
+<text x="81" y="1943" class="small">拼接 + 投影 → c_seq</text>
+<rect x="635" y="1843" width="500" height="125" rx="12" fill="#eef0fc" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="651" y="1878" class="head">全局条件：z_selected 与 t</text>
+<text x="651" y="1912" class="small">源 z0 或参考 z_ref；t 为扩散步</text>
+<text x="651" y="1943" class="small">分别投影后相加 → c_global</text>
+<path d="M315,1818 L315,1843" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<path d="M885,1818 L885,1843" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<rect x="25" y="2080" width="1150" height="1110" rx="12" fill="#f4f9f8" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="48" y="2122" class="head">D · 扩散解码：完整动作空间，预测干净动作</text>
+<rect x="355" y="2155" width="490" height="90" rx="12" fill="#fff2df" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="371" y="2190" class="head">高斯动作噪声 xT</text>
+<text x="371" y="2224" class="small">不是 z 空间扩散；不需源噪声反演</text>
+<rect x="180" y="2295" width="840" height="405" rx="12" fill="#edf3f8" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="205" y="2336" class="head">Hybrid DiT 去噪器（重复多个 block）</text>
+<rect x="285" y="2370" width="630" height="80" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="301" y="2405" class="head">Self-attention</text>
+<text x="301" y="2439" class="small">处理当前带噪动作的时间依赖</text>
+<rect x="285" y="2480" width="630" height="80" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="301" y="2515" class="head">Cross-attention</text>
+<text x="301" y="2549" class="small">读取逐帧条件 c_seq：P̃ / ṽ</text>
+<rect x="285" y="2590" width="630" height="80" rx="12" fill="#fff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="301" y="2625" class="head">Feed-forward</text>
+<text x="301" y="2659" class="small">上述三层前均由 c_global 调节 AdaLN</text>
+<path d="M600,2245 L600,2370" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<path d="M600,2450 L600,2480" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<path d="M600,2560 L600,2590" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<path d="M315,1968 L315,2012 L35,2012 L35,2520 L285,2520" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<text x="80" y="2265" class="small">逐帧条件</text>
+<path d="M885,1968 L885,2012 L1125,2012 L1125,2630 L915,2630" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<text x="945" y="2265" class="small">z + 扩散步</text>
+<rect x="310" y="2750" width="580" height="95" rx="12" fill="#e8f5ee" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="326" y="2785" class="head">预测 x̂0 → 反向采样更新</text>
+<text x="326" y="2819" class="small">由 xt 更新至下一步；多步循环至完整动作</text>
+<path d="M600,2670 L600,2750" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<path d="M890,2795 L1050,2795 L1050,2410 L915,2410" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="945" y="2750" class="small">去噪循环</text>
+<rect x="55" y="2880" width="470" height="150" rx="12" fill="#fff2df" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="71" y="2915" class="head">根控制旁路：diffusion inpainting</text>
+<text x="71" y="2949" class="small">目标 ṽ → 采样中的根速度控制</text>
+<text x="71" y="2980" class="small">表 1 的零轨迹误差来自此机制</text>
+<text x="71" y="3011" class="small">正文未披露精确覆盖步序</text>
+<path d="M35,2520 L35,2835 L290,2835 L290,2880" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<rect x="655" y="2880" width="480" height="150" rx="12" fill="#eaf2ff" stroke="#aac0cb" stroke-width="1.5"/>
+<text x="671" y="2915" class="head">输出完整编辑动作</text>
+<text x="671" y="2949" class="small">新轨迹 / 幅度 / 时序 / 风格</text>
+<text x="671" y="2980" class="small">身体姿态会适应新条件</text>
+<text x="671" y="3011" class="small">没有逐关节复制源动作的硬保持</text>
+<path d="M600,2845 L600,2863 L895,2863 L895,2880" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<path d="M525,2940 L575,2940 L575,2858 L500,2858 L500,2845" stroke="#567182" stroke-width="2.4" fill="none" marker-end="url(#arr)"/>
+<text x="55" y="3072" class="small">inpainting 是采样控制旁路；图将其单列解释，不代表单独的事后物理修复。</text>
+<text x="55" y="3120" class="small">相位 / GMM 改善协调；它们不保证接触、无碰撞、动力学平衡或任意编辑可行。</text>
+<text x="35" y="3250" class="small">实线：信息或条件传递；虚线：迭代回环。训练中监督不作为新编辑目标输入。</text>
+<text x="35" y="3295" class="small">结构保持 ≠ 每个关节数值不变；根控制精确 ≠ 全身物理约束全部成立。</text>
+<text x="35" y="3340" class="small">来源：正式 SIGGRAPH 2026 论文图 2、§3–4；DOI 10.1145/3799902.3811144。</text>
+<text x="35" y="3385" class="small">本图为教学重绘；无模型运行。独立补充材料和官方核心实现尚未核实。</text>
+</svg>
