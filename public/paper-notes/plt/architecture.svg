@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="2130" viewBox="0 0 1100 2130" role="img" aria-labelledby="title desc"><title id="title">PLT 分部位物理动作先验的训练、控制与适配</title><desc id="desc">模仿训练由专家监督学生，学习分部位RVQ和全身修正。任务阶段高层选择首层码字，经过冻结的修正及部位低层输出PD目标，物理仿真反馈新状态。可选适配只更新目标部位先验与部分修正参数。</desc><defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#536d86"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#21354a}.title{font-size:29px;font-weight:700}.section{font-size:24px;font-weight:700}.node{font-size:21px;font-weight:700}.body{font-size:18px}.note{font-size:17px;fill:#4f6579}.edge{fill:none;stroke:#536d86;stroke-width:2.4;marker-end:url(#a)}.dash{fill:none;stroke:#9466a9;stroke-width:2.3;stroke-dasharray:7 5;marker-end:url(#a)}</style><rect width="1100" height="2130" fill="#f5f8fc"/>
+<text x="40" y="48" class="title" text-anchor="start">PLT：分开学习局部技能，用全身状态维持协调</text>
+<text x="40" y="82" class="note" text-anchor="start">教学重绘 · 实线：数据流　虚线：监督 / 参数复用　输出是物理控制，不是离线动画片段</text>
+<rect x="30" y="110" width="1040" height="590" rx="18" fill="white" stroke="#d4dfec"/>
+<text x="53" y="148" class="section" text-anchor="start">A  模仿训练：专家监督学生，学习可组合的身体先验</text>
+<rect x="65" y="175" width="600" height="95" rx="12" fill="#eaf2ff" stroke="#bdcbd9"/>
+<text x="365.0" y="206" class="node" text-anchor="middle">当前全身状态 s + 未来参考动作</text>
+<text x="365.0" y="235" class="body" text-anchor="middle">学生在仿真里采样状态；动捕提供参考目标</text>
+<rect x="760" y="175" width="260" height="95" rx="12" fill="#fff3df" stroke="#bdcbd9"/>
+<text x="890.0" y="206" class="node" text-anchor="middle">预训练专家</text>
+<text x="890.0" y="235" class="body" text-anchor="middle">提供目标控制动作</text>
+<polyline points="665,220 760,220" class="edge"/>
+<rect x="65" y="315" width="600" height="95" rx="12" fill="#eaf2ff" stroke="#bdcbd9"/>
+<text x="365.0" y="346" class="node" text-anchor="middle">共享编码器 → 按身体部位切分潜向量</text>
+<text x="365.0" y="375" class="body" text-anchor="middle">PLT-5：躯干 / 左臂 / 右臂 / 左腿 / 右腿</text>
+<polyline points="365,270 365,315" class="edge"/>
+<rect x="65" y="455" width="600" height="95" rx="12" fill="#e7f5ee" stroke="#bdcbd9"/>
+<text x="365.0" y="486" class="node" text-anchor="middle">部位 RVQ → 全身 refinement → 部位低层</text>
+<text x="365.0" y="515" class="body" text-anchor="middle">模仿使用 8 层 × 1,024 码字；修正量带范数惩罚</text>
+<polyline points="365,410 365,455" class="edge"/>
+<rect x="760" y="455" width="260" height="95" rx="12" fill="#f1eafa" stroke="#bdcbd9"/>
+<text x="890.0" y="486" class="node" text-anchor="middle">蒸馏与正则损失</text>
+<text x="890.0" y="515" class="body" text-anchor="middle">专家动作误差</text>
+<text x="890.0" y="541" class="body" text-anchor="middle">平滑 / 量化 / 修正</text>
+<polyline points="890,270 890,455" class="dash"/>
+<polyline points="665,500 760,500" class="dash"/>
+<rect x="65" y="595" width="600" height="75" rx="12" fill="#fff3df" stroke="#bdcbd9"/>
+<text x="365.0" y="626" class="node" text-anchor="middle">PD 关节目标 → 物理仿真 → 新状态</text>
+<polyline points="365,550 365,595" class="edge"/>
+<polyline points="65,630 47,630 47,220 65,220" class="edge"/>
+<text x="770" y="623" class="note" text-anchor="middle">学到的码本、协调层、低层</text>
+<text x="770" y="650" class="note" text-anchor="middle">供 B 阶段冻结复用</text>
+<rect x="30" y="760" width="1040" height="820" rx="18" fill="white" stroke="#d4dfec"/>
+<text x="53" y="798" class="section" text-anchor="start">B  任务训练与运行：高层选技能，低层形成物理反馈闭环</text>
+<rect x="65" y="825" width="470" height="95" rx="12" fill="#eaf2ff" stroke="#bdcbd9"/>
+<text x="300.0" y="856" class="node" text-anchor="middle">当前全身状态 s</text>
+<text x="300.0" y="885" class="body" text-anchor="middle">关节、根部、速度等角色状态</text>
+<rect x="625" y="825" width="395" height="95" rx="12" fill="#eaf2ff" stroke="#bdcbd9"/>
+<text x="822.5" y="856" class="node" text-anchor="middle">任务目标 g</text>
+<text x="822.5" y="885" class="body" text-anchor="middle">跟踪目标 / 导航目标 / 其他任务</text>
+<rect x="220" y="975" width="640" height="95" rx="12" fill="#eaf2ff" stroke="#bdcbd9"/>
+<text x="540.0" y="1006" class="node" text-anchor="middle">单个高层 PPO 策略：K 个离散输出头</text>
+<text x="540.0" y="1035" class="body" text-anchor="middle">每个部位选择 1 个编号；任务训练仅更新高层</text>
+<polyline points="300,920 300,948 450,948 450,975" class="edge"/>
+<polyline points="820,920 820,948 630,948 630,975" class="edge"/>
+<rect x="220" y="1125" width="640" height="95" rx="12" fill="#e7f5ee" stroke="#bdcbd9"/>
+<text x="540.0" y="1156" class="node" text-anchor="middle">查各部位 RVQ 首层码本 → z[1] … z[K]</text>
+<text x="540.0" y="1185" class="body" text-anchor="middle">码本冻结；下游不选择完整 8 层残差编码</text>
+<polyline points="540,1070 540,1125" class="edge"/>
+<polyline points="365,550 365,575 1040,575 1040,1170 860,1170" class="dash"/>
+<rect x="220" y="1275" width="640" height="95" rx="12" fill="#e7f5ee" stroke="#bdcbd9"/>
+<text x="540.0" y="1306" class="node" text-anchor="middle">全身 refinement：部位 token + 全身修正</text>
+<text x="540.0" y="1335" class="body" text-anchor="middle">读取 s 和所有部位 token；协调网络冻结</text>
+<polyline points="540,1220 540,1275" class="edge"/>
+<polyline points="65,870 50,870 50,1320 220,1320" class="edge"/>
+<rect x="220" y="1420" width="640" height="105" rx="12" fill="#fff3df" stroke="#bdcbd9"/>
+<text x="540.0" y="1451" class="node" text-anchor="middle">部位低层策略 → PD 目标 → 物理仿真</text>
+<text x="540.0" y="1480" class="body" text-anchor="middle">各低层读取 s 和修正 token，输出其控制关节的目标</text>
+<text x="540.0" y="1506" class="body" text-anchor="middle">低层冻结；仿真产生实际动作与下一步全身状态</text>
+<polyline points="540,1370 540,1420" class="edge"/>
+<polyline points="50,1320 50,1470 220,1470" class="edge"/>
+<polyline points="860,1475 1055,1475 1055,812 300,812 300,825" class="edge"/>
+<text x="965" y="1548" class="note" text-anchor="end">状态反馈；高层 / 低层均 30 Hz</text>
+<rect x="30" y="1640" width="1040" height="420" rx="18" fill="white" stroke="#d4dfec"/>
+<text x="53" y="1678" class="section" text-anchor="start">C  可选局部适配：用新的混合动作参考扩展指定部位技能</text>
+<rect x="65" y="1710" width="430" height="100" rx="12" fill="#eaf2ff" stroke="#bdcbd9"/>
+<text x="280.0" y="1741" class="node" text-anchor="middle">已有先验 + 新旧部位组合参考</text>
+<text x="280.0" y="1770" class="body" text-anchor="middle">例：上身瞄准 + 下身蹲伏 / 侧移</text>
+<text x="280.0" y="1796" class="body" text-anchor="middle">编码器与非目标部位先验冻结</text>
+<rect x="620" y="1710" width="400" height="100" rx="12" fill="#f1eafa" stroke="#bdcbd9"/>
+<text x="820.0" y="1741" class="node" text-anchor="middle">PPO 适配目标部位</text>
+<text x="820.0" y="1770" class="body" text-anchor="middle">更新目标码本 + 对应低层</text>
+<text x="820.0" y="1796" class="body" text-anchor="middle">论文：另解冻 refinement 首层</text>
+<polyline points="495,1760 620,1760" class="edge"/>
+<rect x="220" y="1865" width="640" height="95" rx="12" fill="#fff3df" stroke="#bdcbd9"/>
+<text x="540.0" y="1896" class="node" text-anchor="middle">更新后的先验 → 仿真执行与新旧能力评测</text>
+<text x="540.0" y="1925" class="body" text-anchor="middle">仍需训练；冻结其他参数不保证其他部位轨迹不变</text>
+<polyline points="820,1810 820,1837 540,1837 540,1865" class="edge"/>
+<text x="65" y="2010" class="note" text-anchor="start">复现提示：公开默认适配配置选择 refinement 输出层；首层需另一分支。详见正文审计。</text>
+<text x="40" y="2100" class="note" text-anchor="start">依据原论文图 3、§3–5 与独立附录重绘；训练阶段的专家不在常规部署闭环中。</text>
+</svg>

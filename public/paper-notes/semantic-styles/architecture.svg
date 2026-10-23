@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="2520" viewBox="0 0 1180 2520" role="img" aria-labelledby="title desc">
+<title id="title">用文本对齐动作内容与参考风格：训练、SASI 与推理</title>
+<desc id="desc">两阶段训练冻结基础文本生成器，通过自参考重建及髋部速度损失训练风格适配器。推理将文本、参考动作与噪声送入多尺度去噪器，SASI 用两张文本注意力的矩阵乘积选择风格。下方区分论文的风格迁移与关键帧补间演示。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#52667a"/></marker><marker id="dasharrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#8893a1"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#20344b}.t{font-size:23px}.small{font-size:20px}.head{font-size:27px;font-weight:700}.nodehead{font-size:24px;font-weight:700}.line{fill:none;stroke:#52667a;stroke-width:2.5;marker-end:url(#arrow)}.dash{fill:none;stroke:#8893a1;stroke-width:2.4;stroke-dasharray:8 6;marker-end:url(#dasharrow)}</style>
+<rect width="1180" height="2520" fill="#ffffff"/>
+<text x="590" y="48" class="head" text-anchor="middle">用文本对齐动作内容与参考风格</text>
+<text x="590" y="84" class="small" text-anchor="middle">SIGGRAPH 2025 · SASI 是风格注入模块 · 根据原文重绘的教学示意</text>
+<rect x="25" y="120" width="1130" height="585" rx="20" fill="#fafcfe" stroke="#c9d6e2" stroke-width="2"/>
+<text x="52" y="160" class="head" text-anchor="start">A  两阶段训练：风格标签不参与基础适配器训练</text>
+<text x="52" y="193" class="small" text-anchor="start">单张 RTX 4090 · batch 64　蓝：基础模型　橙：风格分支　虚线：复用/监督</text>
+<rect x="60" y="220" width="270" height="100" rx="13" fill="#eef6ff" stroke="#94b8df" stroke-width="1.8"/>
+<text x="195.0" y="248.0" class="nodehead" text-anchor="middle">HumanML3D 配对数据</text>
+<text x="195.0" y="278.0" class="t" text-anchor="middle">动作 x₀ 加噪得 xₜ</text>
+<text x="195.0" y="308.0" class="t" text-anchor="middle">文本编码 + 时间 t</text>
+<rect x="420" y="220" width="325" height="100" rx="13" fill="#eef6ff" stroke="#94b8df" stroke-width="1.8"/>
+<text x="582.5" y="248.0" class="nodehead" text-anchor="middle">阶段一：文本扩散模型</text>
+<text x="582.5" y="278.0" class="t" text-anchor="middle">9 层 Conv1D U-Net</text>
+<text x="582.5" y="308.0" class="t" text-anchor="middle">20 万步 · 学习文本对齐</text>
+<rect x="835" y="220" width="265" height="100" rx="13" fill="#eaf7f1" stroke="#80bba3" stroke-width="1.8"/>
+<text x="967.5" y="248.0" class="nodehead" text-anchor="middle">预测干净动作 x̂₀</text>
+<text x="967.5" y="278.0" class="t" text-anchor="middle">与真实 x₀ 比较</text>
+<text x="967.5" y="308.0" class="t" text-anchor="middle">重建 MSE</text>
+<path d="M330 270 H420" class="line"/>
+<path d="M745 270 H835" class="line"/>
+<text x="63" y="367" class="nodehead" text-anchor="start">阶段二：冻结基础模型，训练 CNN 风格编码器与 SASI 新分支</text>
+<rect x="60" y="398" width="310" height="105" rx="13" fill="#fff4e6" stroke="#d4ab75" stroke-width="1.8"/>
+<text x="215.0" y="428.5" class="nodehead" text-anchor="middle">目标动作的部分片段</text>
+<text x="215.0" y="458.5" class="t" text-anchor="middle">论文：随机保留 50%–75%</text>
+<text x="215.0" y="488.5" class="t" text-anchor="middle">作为同风格自参考</text>
+<rect x="440" y="398" width="310" height="105" rx="13" fill="#fff4e6" stroke="#d4ab75" stroke-width="1.8"/>
+<text x="595.0" y="428.5" class="nodehead" text-anchor="middle">风格金字塔 + SASI</text>
+<text x="595.0" y="458.5" class="t" text-anchor="middle">结合 xₜ、t、内容文本</text>
+<text x="595.0" y="488.5" class="t" text-anchor="middle">8 万步 · 重建目标动作</text>
+<rect x="60" y="540" width="310" height="105" rx="13" fill="#fff4e6" stroke="#d4ab75" stroke-width="1.8"/>
+<text x="215.0" y="570.5" class="nodehead" text-anchor="middle">随机另一条训练动作</text>
+<text x="215.0" y="600.5" class="t" text-anchor="middle">作为不同内容的参考</text>
+<text x="215.0" y="630.5" class="t" text-anchor="middle">同一 xₜ、t、内容文本</text>
+<rect x="440" y="540" width="310" height="105" rx="13" fill="#f4f6f9" stroke="#b5bfca" stroke-width="1.8"/>
+<text x="595.0" y="570.5" class="nodehead" text-anchor="middle">基础路径 vs 风格路径</text>
+<text x="595.0" y="600.5" class="t" text-anchor="middle">比较预测的 hip velocity</text>
+<text x="595.0" y="630.5" class="t" text-anchor="middle">约束内容与节奏</text>
+<rect x="835" y="420" width="265" height="200" rx="13" fill="#eaf7f1" stroke="#80bba3" stroke-width="1.8"/>
+<text x="967.5" y="483.0" class="nodehead" text-anchor="middle">联合训练目标</text>
+<text x="967.5" y="513.0" class="t" text-anchor="middle">重建 MSE</text>
+<text x="967.5" y="543.0" class="t" text-anchor="middle">+ 0.5 × 内容损失</text>
+<text x="967.5" y="573.0" class="t" text-anchor="middle">软约束，不锁定全部姿态</text>
+<path d="M370 450 H440" class="line"/>
+<path d="M370 592 H440" class="line"/>
+<path d="M745 270 H790 V386 H595 V398" class="dash"/>
+<path d="M750 450 H795 V470 H835" class="line"/>
+<path d="M750 592 H835" class="line"/>
+<text x="590" y="681" class="small" text-anchor="middle">SASI 复用冻结 Q/K；公开实现还训练风格归一化与零初始化输出卷积。</text>
+<rect x="25" y="740" width="1130" height="1255" rx="20" fill="#fafcfe" stroke="#c9d6e2" stroke-width="2"/>
+<text x="52" y="780" class="head" text-anchor="start">B  默认推理：文本决定内容，参考动作提供风格</text>
+<text x="52" y="813" class="small" text-anchor="start">训练完成后复用模型；不输入真实目标动作，也不需要风格类别标签。</text>
+<rect x="60" y="850" width="300" height="85" rx="13" fill="#eef6ff" stroke="#94b8df" stroke-width="1.8"/>
+<text x="210.0" y="885.5" class="nodehead" text-anchor="middle">内容文本</text>
+<text x="210.0" y="915.5" class="t" text-anchor="middle">例如：出拳 → 闪避 → 后退</text>
+<rect x="430" y="850" width="300" height="85" rx="13" fill="#fff4e6" stroke="#d4ab75" stroke-width="1.8"/>
+<text x="580.0" y="885.5" class="nodehead" text-anchor="middle">参考动作序列</text>
+<text x="580.0" y="915.5" class="t" text-anchor="middle">例如：职业拳击手动作</text>
+<rect x="800" y="850" width="300" height="85" rx="13" fill="#f4f6f9" stroke="#b5bfca" stroke-width="1.8"/>
+<text x="950.0" y="885.5" class="nodehead" text-anchor="middle">随机高斯噪声 xT</text>
+<text x="950.0" y="915.5" class="t" text-anchor="middle">指定目标动作长度</text>
+<rect x="60" y="980" width="300" height="90" rx="13" fill="#eef6ff" stroke="#94b8df" stroke-width="1.8"/>
+<text x="210.0" y="1018.0" class="nodehead" text-anchor="middle">文本编码 cₜ</text>
+<text x="210.0" y="1048.0" class="t" text-anchor="middle">保留 token 级语义</text>
+<rect x="430" y="980" width="300" height="90" rx="13" fill="#fff4e6" stroke="#d4ab75" stroke-width="1.8"/>
+<text x="580.0" y="1018.0" class="nodehead" text-anchor="middle">5 层 CNN 风格金字塔</text>
+<text x="580.0" y="1048.0" class="t" text-anchor="middle">多时间尺度特征 cₛⁱ</text>
+<rect x="800" y="980" width="300" height="90" rx="13" fill="#f4f6f9" stroke="#b5bfca" stroke-width="1.8"/>
+<text x="950.0" y="1018.0" class="nodehead" text-anchor="middle">当前带噪动作 xₜ + t</text>
+<text x="950.0" y="1048.0" class="t" text-anchor="middle">U-Net 中间特征 xⁱ</text>
+<path d="M210 935 V980" class="line"/>
+<path d="M580 935 V980" class="line"/>
+<path d="M950 935 V980" class="line"/>
+<rect x="60" y="1140" width="1040" height="130" rx="13" fill="#eef6ff" stroke="#94b8df" stroke-width="1.8"/>
+<text x="580.0" y="1183.0" class="nodehead" text-anchor="middle">SASI 内部：在相同文本空间中比较两段动作</text>
+<text x="580.0" y="1213.0" class="t" text-anchor="middle">Aₓ = softmax(Qₓ Kₜᵀ / √d)      Aₛ = softmax(Qₛ Kₜᵀ / √d)</text>
+<text x="580.0" y="1243.0" class="t" text-anchor="middle">两路共用基础模型的冻结 WQ、WK；不是直接对参考帧做硬匹配</text>
+<path d="M210 1070 V1140" class="line"/>
+<path d="M580 1070 V1140" class="line"/>
+<path d="M950 1070 V1140" class="line"/>
+<rect x="80" y="1330" width="430" height="90" rx="13" fill="#eef6ff" stroke="#94b8df" stroke-width="1.8"/>
+<text x="295.0" y="1368.0" class="nodehead" text-anchor="middle">动作—风格对应 B</text>
+<text x="295.0" y="1398.0" class="t" text-anchor="middle">B = row-normalize(Aₓ Aₛᵀ)</text>
+<rect x="650" y="1330" width="430" height="90" rx="13" fill="#fff4e6" stroke="#d4ab75" stroke-width="1.8"/>
+<text x="865.0" y="1368.0" class="nodehead" text-anchor="middle">风格 value 特征 Vₛ</text>
+<text x="865.0" y="1398.0" class="t" text-anchor="middle">参考 cₛⁱ → 可学习投影</text>
+<path d="M295 1270 V1330" class="line"/>
+<path d="M865 1270 V1330" class="line"/>
+<text x="690" y="1310" class="small" text-anchor="middle">参考 cₛⁱ 送入 value 分支</text>
+<rect x="350" y="1480" width="460" height="95" rx="13" fill="#fff4e6" stroke="#d4ab75" stroke-width="1.8"/>
+<text x="580.0" y="1520.5" class="nodehead" text-anchor="middle">风格特征加权读取</text>
+<text x="580.0" y="1550.5" class="t" text-anchor="middle">x_style = B Vₛ</text>
+<path d="M295 1420 V1450 H480 V1480" class="line"/>
+<path d="M865 1420 V1450 H680 V1480" class="line"/>
+<rect x="350" y="1630" width="460" height="95" rx="13" fill="#eef6ff" stroke="#94b8df" stroke-width="1.8"/>
+<text x="580.0" y="1670.5" class="nodehead" text-anchor="middle">注入对应尺度的 U-Net 层</text>
+<text x="580.0" y="1700.5" class="t" text-anchor="middle">x_out = x + x_text + x_style</text>
+<path d="M580 1575 V1630" class="line"/>
+<path d="M60 1205 H43 V1677 H350" class="line"/>
+<text x="195" y="1613" class="small" text-anchor="middle">基础动作 / 文本残差</text>
+<rect x="350" y="1780" width="460" height="85" rx="13" fill="#f4f6f9" stroke="#b5bfca" stroke-width="1.8"/>
+<text x="580.0" y="1815.5" class="nodehead" text-anchor="middle">预测干净动作</text>
+<text x="580.0" y="1845.5" class="t" text-anchor="middle">扩散调度器更新 xₜ₋₁</text>
+<path d="M580 1725 V1780" class="line"/>
+<path d="M810 1822 H1138 V957 H950 V980" class="line"/>
+<text x="973" y="1777" class="small" text-anchor="middle">迭代去噪</text>
+<text x="973" y="1810" class="small" text-anchor="middle">代码默认 DDIM 50 步</text>
+<rect x="350" y="1910" width="460" height="60" rx="13" fill="#eaf7f1" stroke="#80bba3" stroke-width="1.8"/>
+<text x="580.0" y="1948.0" class="nodehead" text-anchor="middle">输出完整风格化动作</text>
+<path d="M580 1865 V1910" class="line"/>
+<rect x="25" y="2030" width="1130" height="380" rx="20" fill="#fafcfe" stroke="#c9d6e2" stroke-width="2"/>
+<text x="52" y="2070" class="head" text-anchor="start">C  论文扩展应用：改变噪声起点或添加关键帧条件</text>
+<text x="52" y="2103" class="small" text-anchor="start">图 5–6 主要为定性演示；公开主要 demo 未提供两条应用的完整调用入口。</text>
+<rect x="60" y="2135" width="500" height="64" rx="13" fill="#f3edfc" stroke="#b39bd1" stroke-width="1.8"/>
+<text x="310.0" y="2175.0" class="nodehead" text-anchor="middle">源动作 + 内容文本 + 风格参考</text>
+<rect x="620" y="2135" width="500" height="64" rx="13" fill="#f3edfc" stroke="#b39bd1" stroke-width="1.8"/>
+<text x="870.0" y="2175.0" class="nodehead" text-anchor="middle">关键帧 + 内容文本 + 风格参考</text>
+<rect x="60" y="2240" width="500" height="64" rx="13" fill="#f3edfc" stroke="#b39bd1" stroke-width="1.8"/>
+<text x="310.0" y="2280.0" class="nodehead" text-anchor="middle">DDIM inversion → 源动作对应噪声</text>
+<rect x="620" y="2240" width="500" height="64" rx="13" fill="#f3edfc" stroke="#b39bd1" stroke-width="1.8"/>
+<text x="870.0" y="2280.0" class="nodehead" text-anchor="middle">imputation / inpainting 约束补间</text>
+<rect x="60" y="2340" width="500" height="50" rx="13" fill="#eaf7f1" stroke="#80bba3" stroke-width="1.8"/>
+<text x="310.0" y="2373.0" class="nodehead" text-anchor="middle">风格迁移：保留内容的定性示例</text>
+<rect x="620" y="2340" width="500" height="50" rx="13" fill="#eaf7f1" stroke="#80bba3" stroke-width="1.8"/>
+<text x="870.0" y="2373.0" class="nodehead" text-anchor="middle">风格化补间 / 风格过渡示例</text>
+<path d="M310 2199 V2240" class="dash"/>
+<path d="M870 2199 V2240" class="dash"/>
+<path d="M310 2304 V2340" class="dash"/>
+<path d="M870 2304 V2340" class="dash"/>
+<text x="590" y="2450" class="small" text-anchor="middle">无监督只针对风格标签；SRA 评估与可选分类器引导仍使用风格标签。</text>
+<text x="590" y="2485" class="small" text-anchor="middle">软语义对应和内容损失 ≠ 精确关键帧、轨迹、接触或未编辑区域保持保证。</text>
+</svg>

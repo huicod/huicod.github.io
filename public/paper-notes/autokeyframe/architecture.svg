@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="3540" viewBox="0 0 1200 3540" role="img" aria-labelledby="title">
+<title id="title">AutoKeyframe：关键帧数据、扩散生成、空间引导和局部编辑</title>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#526e7c"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203748}.title{font-size:31px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:22px}.small{font-size:21px}</style>
+<rect width="1200" height="3540" fill="white"/>
+<text x="35" y="48" class="title">AutoKeyframe：先生成关键姿态，再补齐连续动作</text>
+<text x="35" y="87" class="body">SIGGRAPH 2025 · 依据论文方法重绘；用户指定时间与控制，模型逐个生成姿态</text>
+<rect x="25" y="120" width="1150" height="595" rx="12" fill="#eff8f1" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="48" y="162" class="head">A · 离线构建训练数据：选帧，不是推理时间规划</text>
+<rect x="65" y="190" width="1070" height="85" rx="12" fill="#fff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="82" y="225" class="head">LaFAN1：7 秒完整动作序列</text>
+<text x="82" y="260" class="small">原动作 + 首 / 末帧初始化；目标是少量姿态足以重建运动</text>
+<rect x="65" y="325" width="465" height="140" rx="12" fill="#fff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="82" y="360" class="head">Double DQN 选帧策略</text>
+<text x="82" y="395" class="small">状态：原动作、已选帧、重建结果</text>
+<text x="82" y="426" class="small">动作：加入一个未选帧</text>
+<text x="82" y="457" class="small">奖励：误差改善 − 选帧成本</text>
+<rect x="670" y="325" width="465" height="140" rx="12" fill="#fff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="687" y="360" class="head">预训练动作补间器</text>
+<text x="687" y="395" class="small">由已选帧重建完整序列</text>
+<text x="687" y="426" class="small">与原动作比较 → 重建误差 δ</text>
+<text x="687" y="457" class="small">误差低于 0.9 cm 则结束选帧</text>
+<path d="M315,275 L315,325" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M530,368 L670,368" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="548" y="352" class="small">已选帧</text>
+<path d="M900,465 L900,495 L310,495 L310,465" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="530" y="486" class="small">误差 / 奖励反馈</text>
+<rect x="65" y="535" width="1070" height="140" rx="12" fill="#fff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="82" y="570" class="head">得到关键帧监督；构造 AKDM 训练对</text>
+<text x="82" y="605" class="small">当前目标：选出的关键帧 xⁱ；前姿态：从其前 5–40 帧随机采样（主文设置）</text>
+<text x="82" y="636" class="small">同一原动作提供根轨迹、动作类别与两帧间隔</text>
+<text x="82" y="667" class="small">不要求动画师逐条标注；也不要求推理时再次执行这个选帧循环</text>
+<path d="M1135,400 L1150,400 L1150,605 L1135,605" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="25" y="745" width="1150" height="610" rx="12" fill="#f1f7fc" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="48" y="787" class="head">B · 训练 AKDM：先统一前姿态与目标的朝向</text>
+<rect x="65" y="820" width="500" height="125" rx="12" fill="#e9f2ff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="82" y="855" class="head">真实目标姿态 xⁱ + 随机噪声</text>
+<text x="82" y="890" class="small">采样扩散步 t，得到带噪姿态 xⁱₜ</text>
+<text x="82" y="921" class="small">每个关节是一个 6D 旋转表示</text>
+<rect x="635" y="820" width="500" height="125" rx="12" fill="#fff4e5" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="652" y="855" class="head">前姿态 + 类别 + 轨迹条件</text>
+<text x="652" y="890" class="small">前姿态以 0.1 概率置空</text>
+<text x="652" y="921" class="small">轨迹提取：间隔 / 位移 / 速度 / 高度</text>
+<path d="M600,675 L600,730 L45,730 L45,802 L315,802 L315,820" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M315,802 L885,802 L885,820" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="140" y="1000" width="920" height="125" rx="12" fill="#fff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="157" y="1035" class="head">独立条件嵌入 + 关节序列 → Transformer encoder</text>
+<text x="157" y="1070" class="small">带噪关节、前姿态、动作类别、四类控制及扩散步分别编码后拼接</text>
+<text x="157" y="1101" class="small">预测干净关键姿态 x̂ⁱ₀；不是预测整段动作或离散动作码本</text>
+<path d="M315,945 L315,975 L390,975 L390,1000" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M885,945 L885,975 L810,975 L810,1000" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="140" y="1175" width="920" height="125" rx="12" fill="#fff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="157" y="1210" class="head">与真实目标对齐：联合损失</text>
+<text x="157" y="1245" class="small">旋转扩散 MSE + FK 全局关节位置 MSE + 全局关节旋转 MSE</text>
+<text x="157" y="1276" class="small">优化 AKDM 参数；几何监督不等于推理时硬投影或物理约束</text>
+<path d="M600,1125 L600,1175" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="25" y="1390" width="1150" height="1325" rx="12" fill="#f8fafc" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="48" y="1432" class="head">C · 推理循环：按指定时刻，一次生成一个关键帧</text>
+<rect x="65" y="1470" width="500" height="125" rx="12" fill="#fff4e5" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="82" y="1505" class="head">完整根轨迹 T + 关键帧时刻 kᵢ</text>
+<text x="82" y="1540" class="small">提取间隔、位移、当前速度、高度</text>
+<text x="82" y="1571" class="small">根位置 T(kᵢ) 另行保留</text>
+<rect x="635" y="1470" width="500" height="125" rx="12" fill="#fff4e5" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="652" y="1505" class="head">动作类别 a + 上一关键帧 xⁱ⁻¹</text>
+<text x="652" y="1540" class="small">上一姿态来自已有或刚生成结果</text>
+<text x="652" y="1571" class="small">先规范化朝向；首帧缺前姿态</text>
+<rect x="360" y="1660" width="480" height="85" rx="12" fill="#e9f2ff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="377" y="1695" class="head">高斯噪声：一副关节姿态</text>
+<text x="377" y="1730" class="small">从 xⁱ_T 开始多步去噪</text>
+<rect x="140" y="1810" width="920" height="145" rx="12" fill="#e9f2ff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="157" y="1845" class="head">复用 AKDM：条件嵌入 → Transformer → 干净姿态</text>
+<text x="157" y="1880" class="small">输入：当前带噪姿态、扩散步、前姿态、动作类别、四类轨迹控制</text>
+<text x="157" y="1911" class="small">CFG 调节前姿态条件；首帧使用无前姿态分支</text>
+<text x="157" y="1942" class="small">由干净姿态预测计算当前扩散更新的均值 μ′ₜ</text>
+<path d="M315,1595 L315,1625 L110,1625 L110,1865 L140,1865" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M885,1595 L885,1625 L1090,1625 L1090,1865 L1060,1865" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M600,1745 L600,1810" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M1060,1060 L1160,1060 L1160,1900 L1060,1900" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="835" y="1788" class="small">虚线：训练参数复用</text>
+<rect x="65" y="2020" width="450" height="180" rx="12" fill="#f1ebfc" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="82" y="2055" class="head">可选：用户空间目标 p</text>
+<text x="82" y="2090" class="small">指定时刻、指定关节、目标位置</text>
+<text x="82" y="2121" class="small">例：腾空时把右脚抬高</text>
+<text x="82" y="2152" class="small">p + FK(μ′ₜ) → 位置距离 G</text>
+<text x="82" y="2183" class="small">对旋转求梯度 ∇G</text>
+<rect x="625" y="2020" width="510" height="180" rx="12" fill="#f1ebfc" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="642" y="2055" class="head">骨架梯度引导（论文设计）</text>
+<text x="642" y="2090" class="small">μₜ = μ′ₜ − M(t) · w · Σₜ · ∇G</text>
+<text x="642" y="2121" class="small">早期：根关节 → 中期：躯干</text>
+<text x="642" y="2152" class="small">后期：全身；按扩散步改变 mask</text>
+<text x="642" y="2183" class="small">未给空间目标时直接常规更新</text>
+<path d="M600,1955 L600,1985 L880,1985 L880,2020" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M515,2110 L625,2110" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<rect x="360" y="2260" width="480" height="85" rx="12" fill="#e9f2ff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="377" y="2295" class="head">反向采样更新 → xⁱₜ₋₁</text>
+<text x="377" y="2330" class="small">重复去噪直至得到关键帧旋转</text>
+<path d="M880,2200 L880,2228 L600,2228 L600,2260" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M840,2302 L1160,2302 L1160,1770 L600,1770 L600,1810" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="985" y="2260" class="small">多步循环</text>
+<rect x="230" y="2425" width="740" height="125" rx="12" fill="#e7f5ed" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="247" y="2460" class="head">输出第 i 个关键帧</text>
+<text x="247" y="2495" class="small">还原根朝向；完整关节旋转 + 根位置 T(kᵢ)</text>
+<text x="247" y="2526" class="small">作为下一关键帧的前姿态；继续至全部指定时刻</text>
+<path d="M600,2345 L600,2425" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M65,1530 L45,1530 L45,2490 L230,2490" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<text x="65" y="2388" class="small">根位置旁路</text>
+<path d="M970,2490 L1140,2490 L1140,1560 L1135,1560" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="450" y="2605" class="small">自回归反馈；时间表不是模型在这里自动规划</text>
+<text x="65" y="2660" class="small">空间目标通过软梯度实现，不是覆盖关节位置；没有场景碰撞 / 动力学保证。</text>
+<rect x="25" y="2750" width="1150" height="565" rx="12" fill="#fff9ef" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="48" y="2792" class="head">D · 补齐动作，并在关键帧层面继续编辑</text>
+<rect x="65" y="2830" width="500" height="130" rx="12" fill="#e9f2ff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="82" y="2865" class="head">关键帧序列 → 独立补间器</text>
+<text x="82" y="2900" class="small">论文接 Qin 2022 或 Tang 2022</text>
+<text x="82" y="2931" class="small">补出两个关键姿态之间的连续运动</text>
+<text x="82" y="2962" class="small">得到完整动作序列</text>
+<rect x="635" y="2830" width="500" height="130" rx="12" fill="#f1ebfc" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="652" y="2865" class="head">可选：选中旧关键帧或插入新帧</text>
+<text x="652" y="2900" class="small">未选关键帧继续作为锚点</text>
+<text x="652" y="2931" class="small">新目标 / 上一姿态 → 重新执行 C</text>
+<text x="652" y="2962" class="small">重新补齐受影响的相邻过渡</text>
+<path d="M600,2550 L600,2730 L45,2730 L45,2895 L65,2895" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M565,2895 L635,2895" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)"/>
+<path d="M1135,2920 L1185,2920 L1185,2000 L285,2000 L285,2020" stroke="#526e7c" stroke-width="2.3" fill="none" marker-end="url(#arr)" stroke-dasharray="7 5"/>
+<text x="65" y="3030" class="small">保留关键帧锚点 ≠ 所有过渡帧、速度、接触或未编辑关节逐帧不变。</text>
+<rect x="65" y="3075" width="1070" height="160" rx="12" fill="#fff" stroke="#acc0cb" stroke-width="1.5"/>
+<text x="82" y="3110" class="head">发布与验证边界</text>
+<text x="82" y="3145" class="small">当前开源只含关键帧模块；论文 MIB 未包含，需要另接补间模型。</text>
+<text x="82" y="3176" class="small">当前代码中段梯度 mask 与论文顺序不同；主图表达论文设计。</text>
+<text x="82" y="3207" class="small">本次仅全文与源码静态检查，没有运行模型，也没有验证权重兼容或性能。</text>
+<text x="35" y="3370" class="small">实线：数据 / 生成过程　虚线：参数复用或可选反馈　绿色：训练　蓝色：生成</text>
+<text x="35" y="3410" class="small">橙色：用户控制　紫色：空间约束 / 编辑　依据：主文 §3、图2、公式1–10；补充 §1–2</text>
+<text x="35" y="3450" class="small">教学重绘 · 2026-10-23 · 完整动作质量与保留能力须在补间后的输出上评价。</text>
+</svg>

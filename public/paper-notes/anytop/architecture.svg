@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1980" viewBox="0 0 1200 1980" role="img" aria-labelledby="title desc"><title id="title">AnyTop 跨拓扑条件扩散架构</title><desc id="desc">骨架的静止姿态、图关系距离及冻结T5关节名进入共享STT去噪器；训练用加噪真实动作和重建旋转监督，推理从噪声100步生成连续动作，可在干净预测覆写固定时空部分；最后反归一化和IK恢复动画。</desc><defs><marker id="arr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9Z" fill="#526782"/></marker><marker id="dasharr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9Z" fill="#9262a8"/></marker></defs><rect width="1200" height="1980" fill="#f7f9fc"/><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#20334c}.title{font-size:30px;font-weight:700}.section{font-size:24px;font-weight:700}.node{font-size:21px;font-weight:700}.body{font-size:18px}.note{font-size:18px;fill:#5b6d80}.small{font-size:16px}.edge{fill:none;stroke:#526782;stroke-width:2.5;marker-end:url(#arr)}.dash{fill:none;stroke:#9262a8;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#dasharr)}</style>
+<text x="40" y="48" class="title" text-anchor="start">AnyTop：让骨架成为条件，复用一个动作扩散模型</text>
+<text x="40" y="82" class="note" text-anchor="start">教学重绘 · 实线：数据流　虚线：训练监督 / 可选编辑　连续关节特征，不是离散动作码</text>
+<rect x="35" y="110" width="1130" height="400" rx="18" fill="#fff" stroke="#d8e1ed"/>
+<text x="57" y="148" class="section" text-anchor="start">A  骨架条件准备：几何、连接关系和语义分别表达</text>
+<rect x="60" y="180" width="460" height="100" rx="13" fill="#eaf2ff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="290.0" y="211" class="node" text-anchor="middle">目标骨架资产（BVH / FBX）</text>
+<text x="290.0" y="239" class="body" text-anchor="middle">层级 G + 骨骼偏移 O + 自然姿态 + 关节名</text>
+<rect x="660" y="180" width="470" height="100" rx="13" fill="#eaf2ff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="895.0" y="211" class="node" text-anchor="middle">预处理并形成条件 S</text>
+<text x="895.0" y="239" class="body" text-anchor="middle">朝向与尺度对齐、名称清理、归一化统计</text>
+<polyline points="520,230 660,230" class="edge"/>
+<rect x="60" y="360" width="300" height="110" rx="13" fill="#fff3df" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="210.0" y="391" class="node" text-anchor="middle">静止姿态 P</text>
+<text x="210.0" y="419" class="body" text-anchor="middle">转成与动作帧一致的特征</text>
+<text x="210.0" y="444" class="body" text-anchor="middle">几何基准 / 自然旋转基准</text>
+<rect x="420" y="360" width="390" height="110" rx="13" fill="#e9f6f1" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="615.0" y="391" class="node" text-anchor="middle">图条件：关系 R + 距离 D</text>
+<text x="615.0" y="419" class="body" text-anchor="middle">父子、兄弟、末端等 6 类关系</text>
+<text x="615.0" y="444" class="body" text-anchor="middle">图距离档位，论文 dmax=5</text>
+<rect x="870" y="360" width="260" height="110" rx="13" fill="#f1eaff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="1000.0" y="391" class="node" text-anchor="middle">关节名称 N</text>
+<text x="1000.0" y="419" class="body" text-anchor="middle">冻结 T5 → 部位语义</text>
+<text x="1000.0" y="444" class="body" text-anchor="middle">例如 Left Wing</text>
+<polyline points="895,280 895,320 210,320 210,360" class="edge"/>
+<polyline points="895,320 615,320 615,360" class="edge"/>
+<polyline points="895,320 1000,320 1000,360" class="edge"/>
+<rect x="35" y="570" width="1130" height="430" rx="18" fill="#fff" stroke="#d8e1ed"/>
+<text x="57" y="608" class="section" text-anchor="start">B  共享去噪网络</text>
+<rect x="60" y="640" width="240" height="110" rx="13" fill="#eaf2ff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="180.0" y="671" class="node" text-anchor="middle">带噪动作 Xₜ</text>
+<text x="180.0" y="699" class="body" text-anchor="middle">时间 N × 关节 J × 13</text>
+<text x="180.0" y="724" class="body" text-anchor="middle">每关节连续动作特征</text>
+<rect x="365" y="640" width="355" height="150" rx="13" fill="#fff3df" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="542.5" y="671" class="node" text-anchor="middle">Enrichment Block</text>
+<text x="542.5" y="699" class="body" text-anchor="middle">逐关节线性投影</text>
+<text x="542.5" y="724" class="body" text-anchor="middle">P 追加为时间帧 0</text>
+<text x="542.5" y="749" class="body" text-anchor="middle">T5(N) 加到各帧对应关节</text>
+<polyline points="300,695 365,695" class="edge"/>
+<rect x="790" y="640" width="340" height="220" rx="13" fill="#e9f6f1" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="960.0" y="671" class="node" text-anchor="middle">4 层 STT</text>
+<text x="960.0" y="699" class="body" text-anchor="middle">全关节骨架注意力</text>
+<text x="960.0" y="724" class="body" text-anchor="middle">分数加入 R / D 关系项</text>
+<text x="960.0" y="749" class="body" text-anchor="middle">↓</text>
+<text x="960.0" y="774" class="body" text-anchor="middle">逐关节 31 帧时间注意力</text>
+<text x="960.0" y="799" class="body" text-anchor="middle">↓ 前馈网络</text>
+<polyline points="720,715 790,715" class="edge"/>
+<polyline points="210,470 210,535 445,535 445,640" class="edge"/>
+<polyline points="1000,470 1000,550 670,550 670,640" class="edge"/>
+<polyline points="615,470 615,520 765,520 765,685 790,685" class="edge"/>
+<rect x="60" y="850" width="240" height="75" rx="13" fill="#f1eaff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="180.0" y="881" class="node" text-anchor="middle">扩散步 t 编码</text>
+<polyline points="300,887 750,887 750,810 790,810" class="edge"/>
+<rect x="790" y="895" width="340" height="75" rx="13" fill="#eaf2ff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="960.0" y="926" class="node" text-anchor="middle">投影 → 干净动作预测</text>
+<polyline points="960,860 960,895" class="edge"/>
+<text x="60" y="982" class="note" text-anchor="start">空间注意力看全骨架；时间窗口不代表因果流式。</text>
+<rect x="35" y="1040" width="1130" height="320" rx="18" fill="#fff" stroke="#d8e1ed"/>
+<text x="57" y="1078" class="section" text-anchor="start">C  训练：真实动作加噪，学习跨骨架共享的去噪参数</text>
+<rect x="60" y="1110" width="275" height="95" rx="13" fill="#eaf2ff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="197.5" y="1141" class="node" text-anchor="middle">多骨架真实动作 X₀</text>
+<text x="197.5" y="1169" class="body" text-anchor="middle">Truebones：70 种骨架</text>
+<rect x="400" y="1110" width="340" height="95" rx="13" fill="#fff3df" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="570.0" y="1141" class="node" text-anchor="middle">均衡采样 + 骨架增删</text>
+<text x="570.0" y="1169" class="body" text-anchor="middle">更新 P / R / D / N 条件</text>
+<rect x="805" y="1110" width="325" height="95" rx="13" fill="#eaf2ff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="967.5" y="1141" class="node" text-anchor="middle">随机 t + 高斯噪声</text>
+<text x="967.5" y="1169" class="body" text-anchor="middle">形成 Xₜ</text>
+<polyline points="335,1157 400,1157" class="edge"/>
+<polyline points="740,1157 805,1157" class="edge"/>
+<rect x="400" y="1260" width="340" height="65" rx="13" fill="#e9f6f1" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="570.0" y="1291" class="node" text-anchor="middle">调用 B 中的共享去噪器</text>
+<rect x="805" y="1260" width="325" height="65" rx="13" fill="#f1eaff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="967.5" y="1291" class="node" text-anchor="middle">MSE + 旋转测地损失</text>
+<polyline points="967,1205 967,1235 570,1235 570,1260" class="edge"/>
+<polyline points="740,1292 805,1292" class="edge"/>
+<polyline points="197,1205 197,1338 967,1338 967,1325" class="dash"/>
+<text x="205" y="1327" class="small" text-anchor="start">真实 X₀ 监督</text>
+<rect x="35" y="1400" width="1130" height="470" rx="18" fill="#fff" stroke="#d8e1ed"/>
+<text x="57" y="1438" class="section" text-anchor="start">D  推理：固定模型参数，目标骨架条件下反向扩散</text>
+<rect x="60" y="1470" width="260" height="95" rx="13" fill="#eaf2ff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="190.0" y="1501" class="node" text-anchor="middle">目标 S + 随机噪声 Xₜ</text>
+<text x="190.0" y="1529" class="body" text-anchor="middle">从 T 开始，不需动作指令</text>
+<rect x="400" y="1470" width="340" height="95" rx="13" fill="#e9f6f1" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="570.0" y="1501" class="node" text-anchor="middle">复用 B：预测干净动作</text>
+<text x="570.0" y="1529" class="body" text-anchor="middle">默认论文设置 100 次去噪</text>
+<rect x="830" y="1470" width="300" height="95" rx="13" fill="#f1eaff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="980.0" y="1501" class="node" text-anchor="middle">可选：覆写固定区域</text>
+<text x="980.0" y="1529" class="body" text-anchor="middle">源动作 + 时空掩码 M</text>
+<polyline points="320,1517 400,1517" class="edge"/>
+<polyline points="740,1517 830,1517" class="dash"/>
+<rect x="400" y="1630" width="340" height="85" rx="13" fill="#fff3df" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="570.0" y="1661" class="node" text-anchor="middle">DDPM 反向更新</text>
+<text x="570.0" y="1689" class="body" text-anchor="middle">由 X̂₀ 与 Xₜ 得到 Xₜ₋₁</text>
+<polyline points="980,1565 980,1600 570,1600 570,1630" class="edge"/>
+<polyline points="400,1672 365,1672 365,1540 400,1540" class="edge"/>
+<text x="370" y="1610" class="small" text-anchor="start">循环</text>
+<rect x="60" y="1755" width="300" height="85" rx="13" fill="#eaf2ff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="210.0" y="1786" class="node" text-anchor="middle">结束：连续动作 X₀</text>
+<text x="210.0" y="1814" class="body" text-anchor="middle">保留有效帧与关节</text>
+<rect x="440" y="1755" width="370" height="85" rx="13" fill="#fff3df" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="625.0" y="1786" class="node" text-anchor="middle">反归一化 / 位置恢复 / IK</text>
+<text x="625.0" y="1814" class="body" text-anchor="middle">改善接触并转换到骨架动画</text>
+<rect x="890" y="1755" width="240" height="85" rx="13" fill="#eaf2ff" stroke="#bdcadb" stroke-width="1.5"/>
+<text x="1010.0" y="1786" class="node" text-anchor="middle">动画序列 / BVH</text>
+<text x="1010.0" y="1814" class="body" text-anchor="middle">并非物理保证</text>
+<polyline points="570,1715 570,1735 210,1735 210,1755" class="edge"/>
+<polyline points="360,1797 440,1797" class="edge"/>
+<polyline points="810,1797 890,1797" class="edge"/>
+<text x="58" y="1907" class="note" text-anchor="start">边界：配置最多 143 关节；未见结构仍需预处理；远离训练分布会退化；不是实时控制器。</text>
+<text x="58" y="1940" class="note" text-anchor="start">依据 arXiv:2502.17327v2 Figure 2–3、§3/§5、附录 B/C；DIFT 对应分析另用单次前向特征。</text>
+<polyline points="570,1565 570,1630" class="edge"/></svg>
