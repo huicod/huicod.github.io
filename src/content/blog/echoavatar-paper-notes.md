@@ -2,6 +2,7 @@
 title: "[SIGGRAPH2026] EchoAvatar：让语音和音乐流持续驱动虚拟人的身体与表情"
 description: "解析流式语音与全身动作的分块生成、异步输出和强化学习，区分质量、延迟及公开代码的实际范围。"
 pubDate: "2026-10-18"
+updatedDate: "2026-10-23"
 badge: "Paper"
 tags: ["EchoAvatar", "Co-Speech-Gesture", "Paper-Notes"]
 ---
@@ -19,7 +20,7 @@ tags: ["EchoAvatar", "Co-Speech-Gesture", "Paper-Notes"]
 **出处：** SIGGRAPH 2026 Conference Papers，DOI：10.1145/3799902.3811066。  
 **入口：** [正式出版记录](https://doi.org/10.1145/3799902.3811066) · [arXiv 全文](https://arxiv.org/html/2605.28272v1) · [项目页](https://robinwitch.github.io/EchoAvatar-Page/) · [作者代码](https://github.com/RobinWitch/EchoAvatar)  
 **领域与关键词：** 流式虚拟人、共语手势、音乐舞蹈、因果动作 tokenizer、RVQ、Qwen、GRPO、DPO。  
-**阅读与发布状态：** 阅读 2026-05-27 的 arXiv v1，共 18 页，含附录 A–M；核查于 2026-10-18。当前有流式部署、身体/脸部权重、Unity 项目与动作 tokenizer 训练脚本；完整身体生成器训练、面部训练及 BEATv2 评测流程仍未完整发布。本次没有运行模型。
+**阅读与发布状态：** 阅读 2026-05-27 的 arXiv v1，共 18 页，含附录 A–M；重新核查于 2026-10-23：arXiv 仍只有 v1，官方代码仍为提交 `ecf2fff1a1cc`，与 10 月 18 日阅读时相同。当前有流式部署、身体/脸部权重、Unity 项目与动作 tokenizer 训练脚本；完整身体生成器训练、面部训练及 BEATv2 评测流程仍未完整发布。正式出版记录为 1–12 页，本文方法和补充实验依据 18 页 arXiv 全文；本次未取得正式 ACM PDF 作逐字版本比对，也没有运行模型。
 
 </details>
 
@@ -43,7 +44,7 @@ EchoAvatar 用因果动作 tokenizer 和自回归语言模型持续把语音或�
 
 **切入角度：** 一方面把动作编码、解码及生成改成因果形式，消除对未来动作的依赖；另一方面主动扰动训练时的动作历史，迫使模型更多依赖当前音频。示例控制与偏好优化则负责补充声音本身难以表达的语义要求和感知质量要求。
 
-**核心 idea：** 用因果注意力 RVQ 表示运动，通过三阶段适配把音频和动作接入 Qwen；训练时按 RVQ 层级破坏部分上下文，生成后可再用 GRPO 或 DPO 优化。部署时身体与脸部分别处理同一音频块，等待两路都完成后一起发送到 Unity。
+**核心 idea：** 用因果注意力 RVQ 表示运动，通过三阶段适配把音频和动作接入 Qwen；训练时按 RVQ 层级破坏部分上下文，再选择用 GRPO 或 DPO 对模型做后训练。部署时身体与脸部分别处理同一音频块，等待两路都完成后一起发送到 Unity。
 
 <span id="reading-3" class="reading-anchor"></span>
 
@@ -75,13 +76,17 @@ EchoAvatar 用因果动作 tokenizer 和自回归语言模型持续把语音或�
 
    仅把两类数据混在一起训练，会出现 conditional collapse：模型沿着“像舞蹈”的历史继续生成，即使新声音已经变成平静说话。Hierarchical Token Corruption 针对训练上下文，在被选中的时间步选择一个 RVQ 深度，随机替换该层及其后面的 token，让较粗的结构尽可能保留，同时破坏过于可靠的细节历史。
 
+   例如六层码为 q₁…q₆，若某时刻从第 4 层开始扰动，则 q₁–q₃ 保留、q₄–q₆ 替换为随机码；若起始层恰好是第 1 层，该时刻六层都会被扰动。因此它利用粗细层级来分配破坏程度，**并不保证基层在每次扰动中都保持不变**。这是按正文规则展开的教学示例。
+
    目标仍是恢复正确的后续运动，输入历史却不再完全可信，音频因而变得更有用。该策略也模拟自回归采样产生的误差，训练模型从偏离的历史中恢复。论文附录提供简化的优化分析，但实际有效性的主要证据是移除扰动后的明确失败与消融数据。[§3.2.1](https://arxiv.org/html/2605.28272v1#S3.SS2.SSS1)、[附录 C](https://arxiv.org/html/2605.28272v1#A3)
 
 3. **示例控制和工具调用：动作名查参考，不是另一个文本到动作模型。**
 
    生成时使用完整 RVQ 层级，控制提示却只取参考动作的第一层码，因为作者认为动作的主要语义集中在基层。上游语音代理通过 `send_action` 发出有限动作名称，如抬手、思考、指向左侧等，再由服务端找到对应的参考 token 集，注入同一个身体生成器。
 
-   当前代码先在客户端做动作名称归一化与白名单检查，服务端再通过 `state_dict` 查表，并更新持续的动作提示。这个路径是“名称 → 已准备的参考 token → 身体生成”，不是把任意自然语言直接交给模型执行，也不是在生成结果上叠加一段固定动作动画。
+   当前 ElevenLabs 客户端先做动作名称归一化与白名单检查，服务端再通过 `state_dict` 查表，并更新持续的动作提示。命中的条目会同时作为 system prompt 中的参考 token，并得到 `logit_bias=20.0` 的采样偏置。这是“名称 → 已准备的参考 token 和概率偏置 → 身体生成”，不是把任意自然语言直接交给模型执行，也不是在生成结果上叠加一段固定动作动画。
+
+   **客户端接受不等于服务端支持。** 当前客户端白名单含 `thinking`、`sad`、`neutral` 等名称，但部署脚本的相应映射缺失或被注释，查表会返回空参考。客户端的 `ok` 只说明消息成功发送，不能作为动作已执行的确认。论文展示的工具能力与当前实际可用条目应分别核对。[客户端检查](https://github.com/RobinWitch/EchoAvatar/blob/ecf2fff1a1cc3abb829d12b44db86c613c87ddcf/tools/elevenlab_agent_toolcall.py#L347)、[服务端查表](https://github.com/RobinWitch/EchoAvatar/blob/ecf2fff1a1cc3abb829d12b44db86c613c87ddcf/scripts/5_streaming_vllm_unity_30fps_bp_attn4_encodec2_multirvq_nbc512_motionexample_withface_ik.py#L598)
 
    因此，“point to right”并不自动包含目标物体的三维位置、手指应接触哪个像素或何时结束。若上层需要精确指向、抢占、持续时间或多个动作冲突处理，还需要额外控制协议。[§3.2.2](https://arxiv.org/html/2605.28272v1#S3.SS2.SSS2)、[附录 K](https://arxiv.org/html/2605.28272v1#A11)、[部署代码](https://github.com/RobinWitch/EchoAvatar/tree/ecf2fff1a1cc3abb829d12b44db86c613c87ddcf)
 
@@ -113,13 +118,34 @@ EchoAvatar 用因果动作 tokenizer 和自回归语言模型持续把语音或�
 
 ### 训练/推理
 
+身体 tokenizer 先学习连续运动与离散码之间的转换，之后才适配生成器。正文 §3.2 的“三阶段”特指 **Qwen 的模态适配课程**，不包含前置 tokenizer 训练，也不把 GRPO、DPO 算成第 2、3 阶段：
+
+| 阶段 | 学习目标 | 与推理的关系 |
+|---|---|---|
+| 1. Embedding Space Alignment | 将新增音频、动作码本接入 LLM 的连续表示空间 | 提供音频/动作词表接口 |
+| 2. Acoustic-Kinematic Alignment | 学习由流式音频和运动历史预测后续动作 | 建立默认音频驱动生成能力 |
+| 3. Exemplar-Driven Control | 微调模型接受参考运动作为附加控制 | 支持参考动作基层码提示 |
+| 可选后训练：GRPO **或** DPO | 用代理奖励或人工优劣配对调整生成策略 | 替换为偏好优化后的模型参数，不是每块音频到来后在线训练 |
+
+原文引用 MECo 的渐进范式，但没有逐项给出各阶段的冻结/解冻清单、步数或耗时。当前生成器训练入口也未补齐，因此不把“第一阶段只训词嵌入”等常见实现假定为本文已核配置。[§3.2–3.3](https://arxiv.org/html/2605.28272v1#S3.SS2)
+
 - **身体数据：** ZeroEGGS 约 2 小时、1 名说话人、19 种表达风格；Motorica 约 6 小时、5 名表演者、8 类舞蹈。不同骨架重定向到统一角色。Motorica 部分手指有异常，作者用 ZeroEGGS 手指训练补全模型，再用 Savitzky–Golay 滤波处理。
 - **额外优化数据：** 约 1 小时 Gemini 3 Pro 脚本加 ElevenLabs TTS 的对话，以及从 YouTube 收集的 100 首音乐，为 RL 提供额外音频。面部另外采集约 1 小时 Harvard Sentences 表演，iPhone 12/Live Link Face 记录 ARKit 系数。
 - **身体模型：** 原生 30 FPS，渲染插值到 60 FPS；动作下采样 4 倍、7.5 Hz，三个部位各 6 层 RVQ，码本大小/特征维度均为 512。4 秒窗口有 600 个音频 token、540 个动作 token。tokenizer 训练窗 64 帧；Qwen 微调 batch256、lr5×10⁻⁵；RL batch16、lr6×10⁻⁵，GRPO 每提示30个rollout、KL=.01，DPO β=.1。
 - **面部模型：** 60 FPS 采集后降到30 FPS训练，速度扰动0.9/1/1.1，Flow Matching MSE，10%音频dropout，AdamW lr2×10⁻⁴、batch128、64帧窗口、300K步；推理3步Flow Matching，CFG=2。原文采用63帧音频上下文、56帧表情历史生成8帧，当前代码改为52帧历史生成12帧。
 - **开销与公开状态：** 作者报告两张 H200、完整训练流程约30小时，没有逐阶段成本拆分。当前已公开 tokenizer 训练，但身体生成器、完整 GRPO/DPO 和面部训练流程尚不齐全；不能把现有权重文件当作全部训练实验可复现的证明。
 
-设置来自[§4.1–4.2](https://arxiv.org/html/2605.28272v1#S4.SS2)及[附录 G](https://arxiv.org/html/2605.28272v1#A7)。正文的 tokenizer commitment 权重写0.1，附录D写0.5，公开 checkpoint 名称也标0.5；这是需要复现时核对的原文设置差异。
+设置来自[§4.1–4.2](https://arxiv.org/html/2605.28272v1#S4.SS2)及[附录 G](https://arxiv.org/html/2605.28272v1#A7)。下表把论文与**当前代码静态读取值**分开；未加载 checkpoint，不能据此断言发布权重完全采用任一组配置。
+
+| 项目 | 论文披露 | 当前脚本 |
+|---|---|---|
+| 身体 tokenizer commitment 权重 | §4.2 为 0.1；附录 D.3 为 0.5 | 训练脚本默认 0.5；存在论文内部差异 |
+| 身体 tokenizer 学习率 | §4.2 为 4×10⁻⁴ | 训练脚本默认 2×10⁻⁴，命令行可覆盖 |
+| 面部 GPT 主干宽度 | 附录 G.1 为 256，4 个 block | 流式脚本构造 `Audio2FaceGPT(hidden_size=64, diffusion_num_layers=3)`；类默认 4 个 block |
+| 面部每次生成 | 56 帧表情历史 → 8 帧 | 52 帧表情历史 → 12 帧 |
+| 音频与输出块 | 266 ms / 8 帧 | 400 ms / 12 帧；身体开始输出前积累 4 秒音频 token |
+
+这里的网络宽度来自实际构造调用，不根据 checkpoint 目录名中的 `layers`、`feat` 字段猜测。具体入口见[身体 tokenizer 训练参数](https://github.com/RobinWitch/EchoAvatar/blob/ecf2fff1a1cc3abb829d12b44db86c613c87ddcf/vq_train_bp_30fps_wandb_attn_poolmlp.py#L65)、[面部模型初始化](https://github.com/RobinWitch/EchoAvatar/blob/ecf2fff1a1cc3abb829d12b44db86c613c87ddcf/scripts/5_streaming_vllm_unity_30fps_bp_attn4_encodec2_multirvq_nbc512_motionexample_withface_ik.py#L354)。
 
 <span id="reading-4" class="reading-anchor"></span>
 
@@ -145,6 +171,14 @@ EchoAvatar 用因果动作 tokenizer 和自回归语言模型持续把语音或�
 
 | 方法 | FID ↓（×10⁻¹） | BA_G ↑（×10⁻¹） | Diversity ↑ |
 |---|---:|---:|---:|
+| S2G | 28.15 | 4.683 | 5.971 |
+| Trimodal | 12.41 | 5.933 | 7.724 |
+| HA2G | 12.32 | 6.779 | 8.626 |
+| DisCo | 9.417 | 6.439 | 9.912 |
+| CaMN | 6.644 | 6.769 | 10.86 |
+| DiffStyleGesture | 8.811 | 7.241 | 11.49 |
+| Habibie et al. | 9.040 | 7.716 | 8.213 |
+| TalkShow | 6.209 | 6.947 | 13.47 |
 | EMAGE | 5.512 | 7.724 | 13.06 |
 | SynTalker | 6.413 | 7.971 | 12.72 |
 | MECo | 3.401 | 7.346 | **15.30** |
@@ -162,7 +196,21 @@ EchoAvatar 用因果动作 tokenizer 和自回归语言模型持续把语音或�
 | EDGE | 0.148±0.238 | −0.136±0.174 | 0.099±0.229 | −0.676±0.154 | −0.705±0.149 | −0.748±0.143 |
 | EchoAvatar | 0.244±0.237 | 0.337±0.188 | 0.267±0.234 | 0.588±0.150 | 0.798±0.155 | 0.816±0.137 |
 
-*研究共收集1,680个配对判断，同音频对应两个10秒片段，偏好映射为[−2,2]；不是MOS。原表的SOTA、RL和数据组成三组独立，不能跨组把分数直接相减。[原表3、§4.4](https://arxiv.org/html/2605.28272v1#S4.T3)*
+*研究共收集1,680个配对判断，同音频对应两个10秒片段，偏好映射为[−2,2]；不是MOS，也不代表有1,680名参与者。原文没有给出可据此还原的独立参与人数。原表的SOTA、RL和数据组成三组独立，不能跨组把分数直接相减。[原表3、§4.4](https://arxiv.org/html/2605.28272v1#S4.T3)*
+
+原表3剩余两组直接列于下表。RL 的两次实验各有自己的无 RL 对照；数据组成组与 SOTA、RL 组也是独立比较。
+
+| 比较组 | 方法 | 舞蹈：真实感 ↑ | 舞蹈：节拍 ↑ | 舞蹈：总偏好 ↑ | 手势：真实感 ↑ | 手势：节拍 ↑ | 手势：总偏好 ↑ |
+|---|---|---:|---:|---:|---:|---:|---:|
+| DPO 对照 | 无 RL | −0.078±0.156 | −0.028±0.137 | −0.085±0.170 | −0.231±0.262 | 0.000±0.219 | −0.169±0.269 |
+| DPO 对照 | DPO | 0.078±0.156 | 0.028±0.137 | 0.085±0.170 | 0.231±0.262 | 0.000±0.219 | 0.169±0.269 |
+| GRPO 对照 | 无 RL | −0.109±0.215 | −0.069±0.188 | −0.188±0.211 | −0.109±0.193 | −0.092±0.162 | −0.059±0.191 |
+| GRPO 对照 | GRPO | 0.109±0.215 | 0.069±0.188 | 0.188±0.211 | 0.109±0.193 | 0.092±0.162 | 0.059±0.191 |
+| 数据组成 | 仅手势 | — | — | — | −0.345±0.192 | −0.727±0.193 | −0.555±0.198 |
+| 数据组成 | 仅舞蹈 | −0.350±0.141 | −0.355±0.124 | −0.323±0.136 | — | — | — |
+| 数据组成 | 混合 | 0.350±0.141 | 0.355±0.124 | 0.323±0.136 | 0.345±0.192 | 0.727±0.193 | 0.555±0.198 |
+
+*以上均为原表均值 ± 95% 置信区间半宽。“—”是未参与该项比较，不能当成零分。[原表3](https://arxiv.org/html/2605.28272v1#S4.T3)*
 
 计算延迟，附录A原表6：266ms音频块，20个中间推理步骤的均值±标准差，单位ms。
 
@@ -174,7 +222,7 @@ EchoAvatar 用因果动作 tokenizer 和自回归语言模型持续把语音或�
 | IK后处理 | 13.990±0.940 | 20.860±2.520 |
 | 论文报告总延迟 | **177.426±1.567** | **215.823±4.887** |
 
-*这些是论文指定配置的计算测量，面部没有独立计时列，也不是用户说完到虚拟人开口的全链路延迟。另有客户端100ms同步缓冲、ElevenLabs示例约300ms网络开销。当前公开脚本实际用0.4秒/12帧块，身体先积累4秒音频token才开始输出，不能照搬266ms/8帧的首帧体验。[原表6、附录A](https://arxiv.org/html/2605.28272v1#A1.T6)*
+*表中四项均值相加分别为 169.150 ms 和 205.219 ms，与作者报告的总计 177.426 ms 和 215.823 ms 不相等；原文未单独解释差额，本文保留原表总计。这些是论文指定配置的计算测量，面部没有独立计时列，也不是用户说完到虚拟人开口的全链路延迟。另有客户端100ms同步缓冲、ElevenLabs示例约300ms网络开销。当前公开脚本实际用0.4秒/12帧块，身体先积累4秒音频token才开始输出，不能照搬266ms/8帧的首帧体验。[原表6、附录A](https://arxiv.org/html/2605.28272v1#A1.T6)*
 
 ### 消融实验
 
@@ -224,7 +272,8 @@ EchoAvatar 用因果动作 tokenizer 和自回归语言模型持续把语音或�
 3. **急停和打断还不是完整动作策略。** 音频流可停止，不代表身体自然收势；论文指出音乐突然停止时可能产生不自然运动。附录对自然打断的系统描述应与这个失败边界一起理解。
 4. **只建模说话者角色。** 缺少倾听、回应对方动作、主动点头反馈或环境感知的统一模型；不能由现有演示推导出完整双人互动能力。
 5. **后处理与奖励都不是物理保证。** 轻量肩部IK主要把手从躯干附近推出，不能解决所有自碰撞、足部接触或物体交互。合成退化奖励也可能对训练外错误不敏感。
-6. **复现仍不完整。** 当前公开MIT代码与部署权重有所增加，但完整生成器/RL/面部训练及BEATv2评测仍未齐备；偏好数据、约1小时自采面部数据也未见完整公开下载。论文计时、代码预热及设备建议需要分别验证，本次没有本地运行结论。
+6. **复现仍不完整。** 当前源码为 MIT，已公开部署与 tokenizer 训练入口，但 README 的身体生成器、面部生成器训练仍是空节，完整 GRPO/DPO 和 BEATv2 评估也未齐备。Hugging Face 清单列有 `body_g`、`body_g_d`、三部位 RVQ、面部 checkpoint 和 Unity 项目；本次核验清单，未下载大型权重或运行模型。偏好数据、约1小时自采面部数据未见完整公开下载，权重仓库也没有单独的许可证声明；不能把源码 MIT 自动扩展为所有数据和权重的许可。
+7. **可部署入口不等于已经复现实测性能。** 当前 README 为同时运行身体与面部推荐双 RTX 3090 或更高配置，论文计算表则分别报告 H200 与 RTX 4090；这两种口径不能混成硬件最低要求或本次性能验证。数据准备还使用 MotionBuilder 重定向，而论文 §4.1 写 Autodesk Maya，现有准备流程与论文原处理不应直接视为逐项等同。
 
 <span id="reading-7" class="reading-anchor"></span>
 
@@ -234,6 +283,7 @@ EchoAvatar 用因果动作 tokenizer 和自回归语言模型持续把语音或�
 - **[Causal Motion Tokenizer](https://openaccess.thecvf.com/content/ICCV2025W/I-HFM/html/Jiang_Causal_Motion_Tokenizer_for_Streaming_Motion_Generation_ICCVW_2025_paper.html)（ICCV2025 Workshop）：** 同样解决流式动作表示；EchoAvatar强调注意力与双路径重采样，并在自己的相同RVQ/损失设置下比较因果卷积。
 - **[EDGE](https://edge-dance.github.io/)：** 音乐到舞蹈的重要参照；本文尝试统一手势与舞蹈，但EDGE的音乐节拍指标在表2仍更高。
 - **[ZeroEGGS](https://github.com/ubisoft/ubisoft-laforge-ZeroEGGS)、[Motorica](https://github.com/simonalexanderson/MotoricaDanceDataset)：** 提供风格化说话与舞蹈两类数据，统一骨架和手部补全是混合训练前不可忽略的准备工作。
+- **[Super Star](https://arxiv.org/abs/2608.24909)（ACM MM2026）：** 同样从已经产生的响应语音流生成动作，但侧重在线手势、因果音频交叉注意力，以及离线交互数据合成与用户反馈循环。EchoAvatar 则侧重统一语音/音乐驱动、示例动作控制与独立面部分支。两篇的偏好机制、数据和延迟协议不同，不能直接用各自表格判断谁在同一条件下更快或更自然。
 - **[BEATs](https://arxiv.org/abs/2212.09058)：** 只在本文对齐奖励模型中提供音频表示；在线身体生成的音频tokenizer是EnCodec，面部则是HuBERT，不要把三者混为一个模块。
 - **启发：** 面向可交互虚拟人，可以把对话代理、身体生成、面部生成与渲染执行拆成明确接口；真正要补齐的是跨模块状态、时间约束、失败恢复与场景目标，而不只是再接一个动作生成模型。
 
@@ -243,7 +293,7 @@ EchoAvatar 用因果动作 tokenizer 和自回归语言模型持续把语音或�
 
 - [arXiv v1正文及附录A–M](https://arxiv.org/html/2605.28272v1)、[18页PDF](https://arxiv.org/pdf/2605.28272v1)：完整方法、表1–7、部署计时及失败讨论。
 - [正式DOI](https://doi.org/10.1145/3799902.3811066)、[作者项目](https://robinwitch.github.io/EchoAvatar-Page/)：SIGGRAPH2026 Conference Papers身份；出版记录列1–12页，arXiv另附完整补充内容。
-- [代码固定快照](https://github.com/RobinWitch/EchoAvatar/tree/ecf2fff1a1cc3abb829d12b44db86c613c87ddcf)、[权重与Unity文件](https://huggingface.co/robinwitch/EchoAvatar/tree/main)：2026-10-18核查的发布状态；代码根目录现为MIT，论文标CC BY4.0，各数据/底座按其各自许可使用。
+- [代码固定快照 ecf2fff1a1cc](https://github.com/RobinWitch/EchoAvatar/tree/ecf2fff1a1cc3abb829d12b44db86c613c87ddcf)、[权重与Unity文件固定清单](https://huggingface.co/robinwitch/EchoAvatar/tree/69cb06bf4918f1c52cc276ca796bbff97c643b70)：2026-10-23重新核查，代码与10月18日相同。源码根目录为MIT；权重仓库未提供单独许可声明，不能据此推导权重或外部数据的使用权。论文PDF标CC BY4.0。
 - 架构图为自行绘制的教学示意；公开代码静态检查不代表模型已在本地运行或性能已被复测。
 
 </div>

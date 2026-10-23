@@ -49,7 +49,7 @@
 <text x="795.0" y="1019" font-size="18" font-weight="400" text-anchor="middle">同一音频块 → 连续音频特征</text>
 <rect x="60" y="1090" width="240" height="80" rx="12" fill="#f2edfa" stroke="#b9abd0" stroke-width="1.5"/>
 <text x="180.0" y="1121" font-size="21" font-weight="700" text-anchor="middle">可选动作调用</text>
-<text x="180.0" y="1149" font-size="18" font-weight="400" text-anchor="middle">动作名 → 查参考基层码</text>
+<text x="180.0" y="1149" font-size="18" font-weight="400" text-anchor="middle">查参考码 + 采样偏置</text>
 <rect x="330" y="1090" width="160" height="80" rx="12" fill="#fff3e5" stroke="#d3ba96" stroke-width="1.5"/>
 <text x="410.0" y="1121" font-size="21" font-weight="700" text-anchor="middle">动作历史</text>
 <text x="410.0" y="1149" font-size="18" font-weight="400" text-anchor="middle">最近动作 token</text>
