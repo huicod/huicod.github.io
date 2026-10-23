@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="4520" viewBox="0 0 1320 4520" role="img" aria-labelledby="title desc">
+<title id="title">STyMo：每风格训练、静态与动态分解、预测窗口反馈及离线接触修正</title>
+<desc id="desc">纵向训练与推理架构。明确源动作居中窗口含未来帧，静态和门控模型读取平均旋转，时序编码器读取维护的预测窗口，解码器读取源运动。最后通过软残差应用与可选离线接触优化得到动作。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203747}.title{font-size:32px;font-weight:700}.section{font-size:27px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:22px}.small{font-size:20px}.label{font-size:19px;font-weight:600}</style>
+<rect width="1320" height="4520" fill="#fff"/>
+<text x="70" y="53" class="title">STyMo：保留源动作主线，分别学习姿态偏移与动态变化</text>
+<text x="70" y="94" class="body" style="fill:#5d7280">SIGGRAPH 2026 / ACM TOG · 教学重绘 · 三阶段按目标风格训练，下面复用同一组模块</text>
+<rect x="70" y="130" width="1180" height="980" rx="15" fill="#f0f7f2" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="100" y="172" class="section">A · 每个目标风格的数据构建与三阶段训练</text>
+<text x="100" y="206" class="small" style="fill:#5d7280">配对动作提供风格监督；较大的中性动作集合提供 gate 的分布外样本。</text>
+<rect x="100" y="240" width="700" height="100" rx="15" fill="#ffffff" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="274" class="head">少量配对动作：neutral source ↔ stylized target</text>
+<text x="118" y="308" class="small">同一动作的对应表现；可另外加入静态姿态对</text>
+<rect x="850" y="240" width="370" height="100" rx="15" fill="#ffffff" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="868" y="274" class="head">可用中性动作集合</text>
+<text x="868" y="308" class="small">用于与配对 source 比较距离</text>
+<rect x="100" y="395" width="1120" height="170" rx="15" fill="#ffffff" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="429" class="head">从不同输入构造三种监督</text>
+<text x="118" y="463" class="small">配对序列 → K 个 chunk 的平均旋转 / 骨盆偏移，以及去除均值后的动态残差</text>
+<text x="118" y="492" class="small">中性集合 ↔ 配对 source 最近邻距离 → IQR 正 / 负标签；中间距离样本丢弃</text>
+<text x="118" y="521" class="small">实验配对可先经 phase extractor + DTW 对齐；不是每次推理的必要网络</text>
+<path d="M450,340 L450,395" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M1035,340 L1035,395" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<rect x="100" y="625" width="340" height="230" rx="15" fill="#f1ebfa" stroke="#b8cbd5" stroke-width="1.4"/>
+<rect x="100" y="639" width="5" height="202" rx="2" fill="#7763ad"/>
+<text x="118" y="659" class="head">1  静态模型 Static MLP</text>
+<text x="118" y="693" class="small">输入：窗口平均关节旋转</text>
+<text x="118" y="722" class="small">去除 root；6D 旋转表示</text>
+<text x="118" y="751" class="small">监督：对应 chunk 类别</text>
+<text x="118" y="780" class="small">交叉熵 · 100 epochs</text>
+<text x="118" y="809" class="small">保留 K 个预计算静态 delta</text>
+<rect x="490" y="625" width="340" height="230" rx="15" fill="#e6f4ee" stroke="#b8cbd5" stroke-width="1.4"/>
+<rect x="490" y="639" width="5" height="202" rx="2" fill="#43927d"/>
+<text x="508" y="659" class="head">2  门控模型 Gate MLP</text>
+<text x="508" y="693" class="small">输入：同类平均旋转特征</text>
+<text x="508" y="722" class="small">正：d ≤ Q1</text>
+<text x="508" y="751" class="small">负：d &gt; Q3 + 2.5 IQR</text>
+<text x="508" y="780" class="small">二分类 BCE · 30 epochs</text>
+<text x="508" y="809" class="small">输出是否适合施加该风格</text>
+<rect x="880" y="625" width="340" height="230" rx="15" fill="#eaf3fb" stroke="#b8cbd5" stroke-width="1.4"/>
+<rect x="880" y="639" width="5" height="202" rx="2" fill="#377fa7"/>
+<text x="898" y="659" class="head">3  时序模型 Temporal</text>
+<text x="898" y="693" class="small">输入：源特征 + 前轮目标窗</text>
+<text x="898" y="722" class="small">训练时由 GT 目标构造 x_p</text>
+<text x="898" y="751" class="small">监督：逐帧动态残差</text>
+<text x="898" y="780" class="small">加权 MSE · 100 epochs</text>
+<text x="898" y="809" class="small">共同重采样与随机特征扰动</text>
+<path d="M270,565 L270,625" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M660,565 L660,625" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M1050,565 L1050,625" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<text x="180" y="600" class="label" style="fill:#7763ad">chunk 标签</text>
+<text x="570" y="600" class="label" style="fill:#43927d">正 / 负标签</text>
+<text x="960" y="600" class="label" style="fill:#377fa7">残差目标</text>
+<rect x="100" y="920" width="1120" height="105" rx="15" fill="#ffffff" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="954" class="head">训练产物：下方推理所用的静态、门控、时序模块与 K 个静态 delta</text>
+<text x="118" y="988" class="small">每个目标 style 单独学习；不是一个通用模型在推理时零样本读取任意风格参考</text>
+<path d="M270,855 L270,920" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M660,855 L660,920" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M1050,855 L1050,920" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<text x="100" y="1070" class="small" style="fill:#5d7280">浅绿：训练；虚线：训练产物。target 只提供训练监督，不进入默认推理。</text>
+<rect x="70" y="1160" width="1180" height="890" rx="15" fill="#f7f9fc" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="100" y="1202" class="section">B · 同一源动作，提取不同的条件</text>
+<text x="100" y="1236" class="small" style="fill:#5d7280">下面各模块复用 A 中对应参数；源动作本体还会直接传到最终变形节点。</text>
+<rect x="100" y="1270" width="1120" height="100" rx="15" fill="#fff3e3" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="1304" class="head">待风格化的源骨架动作 X</text>
+<text x="118" y="1338" class="small">局部关节旋转 + root 全局位置；已有任意长度的动作序列</text>
+<rect x="100" y="1425" width="620" height="100" rx="15" fill="#ffffff" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="1459" class="head">窗口平均旋转 r̄</text>
+<text x="118" y="1493" class="small">去除 root，采用 6D 表示；供静态分类和独立 gate 使用</text>
+<rect x="790" y="1425" width="430" height="100" rx="15" fill="#ffffff" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="808" y="1459" class="head">源运动特征 x_k</text>
+<text x="808" y="1493" class="small">居中位置窗（root 局部坐标）+ 足接触</text>
+<path d="M450,1370 L450,1425" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M1005,1370 L1005,1425" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<rect x="100" y="1590" width="280" height="105" rx="15" fill="#f1ebfa" stroke="#b8cbd5" stroke-width="1.4"/>
+<rect x="100" y="1604" width="5" height="77" rx="2" fill="#7763ad"/>
+<text x="118" y="1624" class="head">Static MLP</text>
+<text x="118" y="1658" class="small">π = softmax(MLP(r̄))</text>
+<rect x="440" y="1590" width="280" height="105" rx="15" fill="#e6f4ee" stroke="#b8cbd5" stroke-width="1.4"/>
+<rect x="440" y="1604" width="5" height="77" rx="2" fill="#43927d"/>
+<text x="458" y="1624" class="head">Gate MLP</text>
+<text x="458" y="1658" class="small">γ_t ∈ [0, 1]</text>
+<path d="M410,1525 L410,1555 L240,1555 L240,1590" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M410,1555 L580,1555 L580,1590" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<rect x="100" y="1760" width="280" height="155" rx="15" fill="#f1ebfa" stroke="#b8cbd5" stroke-width="1.4"/>
+<rect x="100" y="1774" width="5" height="127" rx="2" fill="#7763ad"/>
+<text x="118" y="1794" class="head">混合静态 delta 库</text>
+<text x="118" y="1828" class="small">先平滑 chunk 概率 π</text>
+<text x="118" y="1857" class="small">旋转 SLERP / 位置线性混合</text>
+<text x="118" y="1886" class="small">得到 δ_static</text>
+<rect x="440" y="1760" width="280" height="155" rx="15" fill="#e6f4ee" stroke="#b8cbd5" stroke-width="1.4"/>
+<rect x="440" y="1774" width="5" height="127" rx="2" fill="#43927d"/>
+<text x="458" y="1794" class="head">分布外风格抑制</text>
+<text x="458" y="1828" class="small">γ 较低 → 降低风格强度</text>
+<text x="458" y="1857" class="small">不是碰撞 / 物理安全判定</text>
+<text x="458" y="1886" class="small">在 D 中调节两类 delta</text>
+<path d="M240,1695 L240,1760" fill="none" stroke="#7763ad" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M580,1695 L580,1760" fill="none" stroke="#43927d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<rect x="790" y="1590" width="430" height="205" rx="15" fill="#fff3e3" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="808" y="1624" class="head">包含未来输入：不是严格因果</text>
+<text x="808" y="1658" class="small">论文使用 W = 64 的居中源窗口</text>
+<text x="808" y="1687" class="small">当前代码范围：t−32 … t+31</text>
+<text x="808" y="1716" class="small">帧率为 60 Hz，不等于推理 FPS</text>
+<text x="808" y="1745" class="small">接触来自 source 的阈值检测</text>
+<text x="100" y="1984" class="label" style="fill:#7763ad">① 静态 delta → D</text>
+<text x="440" y="1984" class="label" style="fill:#43927d">② 门控 γ → D</text>
+<text x="820" y="1860" class="label" style="fill:#377fa7">x_k 向下进入时序 decoder</text>
+<text x="820" y="1900" class="label" style="fill:#a77740">最右侧旁路：源动作 X → D</text>
+<text x="820" y="1940" class="label" style="fill:#43927d">绿虚线：源接触标签 → 离线优化</text>
+<rect x="70" y="2100" width="1180" height="1040" rx="15" fill="#f4f9fd" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="100" y="2142" class="section">C · 动态残差：源运动与维护的预测窗口共同决定</text>
+<text x="100" y="2176" class="small" style="fill:#5d7280">每轮预测整窗，输出取中间帧；缓存反馈保留预测窗口信息，不是纯上一帧输入。</text>
+<rect x="100" y="2220" width="500" height="120" rx="15" fill="#eaf3fb" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="2254" class="head">维护的预测窗口 x_p</text>
+<text x="118" y="2288" class="small">形状 W × F；首轮全零</text>
+<text x="118" y="2317" class="small">含上一轮维护的预测，区别于单帧姿态</text>
+<rect x="790" y="2220" width="430" height="120" rx="15" fill="#eaf3fb" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="808" y="2254" class="head">当前源窗口 x_k</text>
+<text x="808" y="2288" class="small">读取 B 的位置 + 接触特征</text>
+<text x="808" y="2317" class="small">提供当前动作及其前后上下文</text>
+<rect x="100" y="2405" width="500" height="120" rx="15" fill="#eaf3fb" stroke="#b8cbd5" stroke-width="1.4"/>
+<rect x="100" y="2419" width="5" height="92" rx="2" fill="#377fa7"/>
+<text x="118" y="2439" class="head">Transformer Encoder</text>
+<text x="118" y="2473" class="small">投影 + 位置编码；从 x_p 得到 memory m</text>
+<text x="118" y="2502" class="small">作者将其联系到一次性 / 非周期模式</text>
+<rect x="790" y="2405" width="430" height="120" rx="15" fill="#eaf3fb" stroke="#b8cbd5" stroke-width="1.4"/>
+<rect x="790" y="2419" width="5" height="92" rx="2" fill="#377fa7"/>
+<text x="808" y="2439" class="head">Transformer Decoder</text>
+<text x="808" y="2473" class="small">由 x_k 构造 query，读取 memory m</text>
+<text x="808" y="2502" class="small">h ← h + α · CrossAttn(h, m)</text>
+<path d="M350,2340 L350,2405" fill="none" stroke="#377fa7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M1005,2340 L1005,2405" fill="none" stroke="#377fa7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M600,2465 L790,2465" fill="none" stroke="#377fa7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<text x="635" y="2445" class="label" style="fill:#377fa7">memory</text>
+<rect x="790" y="2590" width="430" height="120" rx="15" fill="#eaf3fb" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="808" y="2624" class="head">输出投影：预测动态 delta 窗</text>
+<text x="808" y="2658" class="small">周期变化与非周期模式共同影响输出</text>
+<text x="808" y="2687" class="small">用户 α 控制 encoder 的贡献</text>
+<path d="M1005,2525 L1005,2590" fill="none" stroke="#377fa7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<rect x="100" y="2590" width="500" height="170" rx="15" fill="#eaf3fb" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="2624" class="head">更新下一轮的窗口状态</text>
+<text x="118" y="2658" class="small">先将缓存左移一格</text>
+<text x="118" y="2687" class="small">以本轮预测的中点至末尾更新后半窗</text>
+<text x="118" y="2716" class="small">下一轮喂 encoder 前可混入诱导模式</text>
+<text x="118" y="2745" class="small">这是当前实现的预测反馈路径</text>
+<path d="M790,2650 L600,2650" fill="none" stroke="#377fa7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M100,2675 L85,2675 L85,2280 L100,2280" fill="none" stroke="#377fa7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<rect x="100" y="2830" width="500" height="190" rx="15" fill="#f1ebfa" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="2864" class="head">可选：从训练片段诱导特定动作</text>
+<text x="118" y="2898" class="small">例如选择一次拳击的 x_p 模式</text>
+<text x="118" y="2927" class="small">控制触发频率 / 播放速度 / 混合 β</text>
+<text x="118" y="2956" class="small">x′_p = (1−β)x_p + β x_p^induced</text>
+<text x="118" y="2985" class="small">可随机或手动触发；不是硬贴最终姿态</text>
+<path d="M350,2830 L350,2760" fill="none" stroke="#7763ad" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="790" y="2790" width="430" height="105" rx="15" fill="#ffffff" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="808" y="2824" class="head">只保留本轮中间帧</text>
+<text x="808" y="2858" class="small">将每一轮的中间预测接成动作序列</text>
+<path d="M1005,2710 L1005,2790" fill="none" stroke="#377fa7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<rect x="790" y="2960" width="430" height="100" rx="15" fill="#eaf3fb" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="808" y="2994" class="head">③ 动态分量 δ_temporal</text>
+<text x="808" y="3028" class="small">含 root 相关变化、骨盆与关节 delta</text>
+<path d="M1005,2895 L1005,2960" fill="none" stroke="#377fa7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<text x="100" y="3095" class="small" style="fill:#5d7280">训练 x_p 来自后移的 GT 目标窗口；推理 x_p 来自预测缓存。无模型运行证据。</text>
+<rect x="70" y="3200" width="1180" height="1140" rx="15" fill="#fffaf2" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="100" y="3242" class="section">D · 用户控制、源动作变形与可选离线修正</text>
+<text x="100" y="3276" class="small" style="fill:#5d7280">门控降低不可靠的风格强度；最终控制效果仍需在输出骨架动作上检查。</text>
+<rect x="100" y="3310" width="1120" height="130" rx="15" fill="#fff3e3" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="3344" class="head">两类风格分别调节：强度 s、gate 影响 λ，以及身体区域权重</text>
+<text x="118" y="3378" class="small">对 static / temporal 分别计算：ŝ_c = s_c · [1 − λ_c(1 − γ_t)]</text>
+<text x="118" y="3407" class="small">λ = 1：随 γ 抑制；λ = 0：忽略 gate。区域可调 spine / arms / legs。</text>
+<rect x="100" y="3520" width="1120" height="150" rx="15" fill="#ffffff" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="3554" class="head">组合两类 delta：① 静态姿态偏移 + ③ 动态变化</text>
+<text x="118" y="3588" class="small">旋转：slerp(I, δ_static, ŝ_static) ⊗ slerp(I, δ_temporal, ŝ_temporal)</text>
+<text x="118" y="3617" class="small">骨盆位置：线性缩放；旋转按顺序相乘，不是简单逐元素相加</text>
+<text x="118" y="3646" class="small">分区强度调节不等于锁定对应关节的世界空间轨迹</text>
+<path d="M660,3440 L660,3520" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<rect x="100" y="3730" width="1120" height="130" rx="15" fill="#ffffff" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="3764" class="head">将预测 delta 应用到源动作 X</text>
+<text x="118" y="3798" class="small">源动作走右侧直接旁路；神经模块学习残差，而非从噪声重新生成全动作</text>
+<text x="118" y="3827" class="small">默认允许 root 风格变化；公开代码另有 fix_root 开关，不能推成全身硬保持</text>
+<path d="M660,3670 L660,3730" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<rect x="100" y="3915" width="430" height="110" rx="15" fill="#eaf3fb" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="118" y="3949" class="head">原始风格化动作 Ŷ_raw</text>
+<text x="118" y="3983" class="small">源动作结构 + 静态 / 动态残差</text>
+<path d="M660,3860 L660,3885 L315,3885 L315,3915" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<rect x="620" y="3915" width="600" height="180" rx="15" fill="#e6f4ee" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="638" y="3949" class="head">可选：离线接触优化</text>
+<text x="638" y="3983" class="small">输入：Ŷ_raw + source 检测到的 contact</text>
+<text x="638" y="4012" class="small">接触足速度 + 相对原始预测的姿态正则</text>
+<text x="638" y="4041" class="small">+ 位置 jerk 平滑；减少脚滑与抖动</text>
+<text x="638" y="4070" class="small">不是动力学仿真 / 碰撞与力平衡保证</text>
+<path d="M530,3970 L620,3970" fill="none" stroke="#43927d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="620" y="4160" width="600" height="100" rx="15" fill="#eaf3fb" stroke="#b8cbd5" stroke-width="1.4"/>
+<text x="638" y="4194" class="head">最终骨架动作</text>
+<text x="638" y="4228" class="small">可导出、蒙皮或另行重定向；本文不生成角色 mesh</text>
+<path d="M920,4095 L920,4160" fill="none" stroke="#43927d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M315,4025 L315,4210 L620,4210" fill="none" stroke="#69818f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<text x="100" y="4110" class="label" style="fill:#5d7280">可选跳过后处理</text>
+<text x="100" y="4310" class="small" style="fill:#5d7280">预览后要改变所学风格：新增静态 pose pair 或动态 paired sequence，再回到 A 重训。</text>
+<path d="M240,1915 L240,1950 L30,1950 L30,3600 L100,3600" fill="none" stroke="#7763ad" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M580,1915 L580,2010 L55,2010 L55,3375 L100,3375" fill="none" stroke="#43927d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M1220,1475 L1260,1475 L1260,2275 L1220,2275" fill="none" stroke="#377fa7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M1220,1500 L1275,1500 L1275,4005 L1220,4005" fill="none" stroke="#43927d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M1220,1320 L1290,1320 L1290,3790 L1220,3790" fill="none" stroke="#bd8950" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<path d="M1220,3010 L1240,3010 L1240,3600 L1220,3600" fill="none" stroke="#377fa7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arr)"/>
+<text x="70" y="4400" class="small" style="fill:#5d7280">实线：数据 / 预测流　虚线：训练产物或可选支路　紫：静态 / 诱导　绿：门控 / 接触　蓝：动态</text>
+<text x="70" y="4440" class="small" style="fill:#5d7280">依据：主文图2、§3、式1–6及完整补充源码；x_p、未来窗和 root 细节按当前公开实现核验。</text>
+<text x="70" y="4480" class="small" style="fill:#5d7280">边界：每风格配对训练；居中窗含未来帧；接触优化离线；残差控制不是精确保持或物理保证。</text>
+</svg>
