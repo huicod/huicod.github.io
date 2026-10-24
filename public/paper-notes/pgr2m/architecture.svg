@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="3480" viewBox="0 0 1320 3480" role="img" aria-labelledby="title desc">
+<title id="title">PGR2M：语义姿态、残差细化与已有动作编辑</title>
+<desc id="desc">四区展示tokenizer训练、Base与Refine监督、文本生成和当前公开编辑示例。训练用动作的连续编码减去姿态编码再量化，生成按时间预测姿态并按量化阶段预测残差；公开编辑示例关闭残差，只解码修改的姿态码，不能保证连续动作硬保持。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203747}.title{font-size:32px;font-weight:700}.section{font-size:27px;font-weight:700}.head{font-size:23px;font-weight:700}.body{font-size:22px}.small{font-size:20px}.label{font-size:20px;font-weight:600}</style>
+<rect width="1320" height="3480" fill="#fff"/>
+<text x="70" y="53" class="title">PGR2M：可读姿态定结构，残差码补充动态细节</text>
+<text x="70" y="96" class="body" style="fill:#607683">arXiv v1 · 2025-12-27｜教学重绘；D 区独立注明当前公开编辑实现</text>
+<rect x="70" y="140" width="1180" height="950" rx="15" fill="#f2f7fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="183" class="section">A · 表示学习：两路编码、残差量化与动作重建</text>
+<text x="100" y="217" class="small" style="fill:#607683">训练真实动作；语义状态是人工定义，码向量、运动编码器、量化模块和解码器参与学习。</text>
+<rect x="100" y="250" width="300" height="140" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="285" class="head">真实动作 M</text>
+<text x="118" y="320" class="small">连续关节运动序列</text>
+<text x="118" y="349" class="small">同一输入分别送两路</text>
+<rect x="470" y="250" width="330" height="140" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="285" class="head">下采样 → 规则解析</text>
+<text x="488" y="320" class="small">70 个姿态关系属性</text>
+<text x="488" y="349" class="small">展开为 392 维 multi-hot</text>
+<rect x="870" y="250" width="350" height="140" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="888" y="285" class="head">姿态码本 C → p</text>
+<text x="888" y="320" class="small">激活的码向量求和</text>
+<text x="888" y="349" class="small">p = C z；每步 512 维</text>
+<path d="M400,320 L470,320" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M800,320 L870,320" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="450" width="300" height="160" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="485" class="head">1D CNN 运动编码器</text>
+<text x="118" y="520" class="small">保留局部时序信息</text>
+<text x="118" y="549" class="small">连续 latent h</text>
+<rect x="470" y="450" width="330" height="160" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="485" class="head">在 latent 中求差</text>
+<text x="488" y="520" class="small">r¹ = h − sg(p)</text>
+<text x="488" y="549" class="small">sg 只阻断此支路梯度</text>
+<text x="488" y="578" class="small">不是冻结全部姿态码本</text>
+<rect x="870" y="450" width="350" height="160" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="888" y="485" class="head">Attention RVQ · 6 级</text>
+<text x="888" y="520" class="small">每级 512 码，Q/K 匹配</text>
+<text x="888" y="549" class="small">硬选择进入下一阶段</text>
+<text x="888" y="578" class="small">r⁽ˢ⁺¹⁾ = r⁽ˢ⁾ − r̂⁽ˢ⁾</text>
+<path d="M250,390 L250,450" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M400,530 L470,530" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M800,530 L870,530" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1045,390 L1045,415 L635,415 L635,450" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="870" y="670" width="350" height="135" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="888" y="705" class="head">残差求和 → 整支路丢弃</text>
+<text x="888" y="740" class="small">训练时 τ = 0.1 概率置零</text>
+<text x="888" y="769" class="small">不是逐 token 随机删除</text>
+<rect x="470" y="670" width="330" height="135" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="705" class="head">融合特征 F</text>
+<text x="488" y="740" class="small">pose latent + 保留的残差</text>
+<text x="488" y="769" class="small">重建时使用同一解码器</text>
+<rect x="100" y="670" width="300" height="135" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="705" class="head">运动解码器 D</text>
+<text x="118" y="740" class="small">上采样 → 重建动作 M̂</text>
+<text x="118" y="769" class="small">不提供关节硬约束</text>
+<path d="M1045,610 L1045,670" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M870,738 L800,738" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M470,738 L400,738" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1220,320 L1235,320 L1235,850 L635,850 L635,805" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="865" y="841" class="small" style="fill:#3c7da7">姿态 latent 直接旁路</text>
+<rect x="100" y="910" width="1120" height="125" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="945" class="head">训练监督：重建 + 量化 + 熵</text>
+<text x="118" y="980" class="small">M 与 M̂ 的 L1；软选择辅助量化训练；样本选择明确、总体码使用分散。</text>
+<text x="118" y="1009" class="small">残差并非数学意义上的纯高频信号，也不自动与姿态语义独立。</text>
+<path d="M250,805 L250,910" fill="none" stroke="#3d9179" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M100,320 L85,320 L85,970 L100,970" fill="none" stroke="#3d9179" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="70" y="1130" width="1180" height="570" rx="15" fill="#f8f5fc" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="1173" class="section">B · 两个预测器的监督：复用 tokenizer 产生的训练目标</text>
+<text x="100" y="1207" class="small" style="fill:#607683">此区是训练；文本生成时用预测历史，不能把真实动作监督画成推理输入。</text>
+<rect x="100" y="1240" width="1120" height="115" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1275" class="head">文本条件：描述 + GPT-4 补 10 部位关键词与 1 个情绪关键词</text>
+<text x="118" y="1310" class="small">CLIP 编码句子与关键词；外部 GPT 用于补充文字，不是本文微调的动作模型。</text>
+<rect x="100" y="1420" width="530" height="150" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1455" class="head">Base Transformer · 可训练</text>
+<text x="118" y="1490" class="small">因果注意力：真实先前姿态码 → 下一步</text>
+<text x="118" y="1519" class="small">论文：状态 Bernoulli + END，二元交叉熵</text>
+<rect x="690" y="1420" width="530" height="150" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="708" y="1455" class="head">Refine Transformer · 可训练</text>
+<text x="708" y="1490" class="small">完整姿态码 + s + 前级残差 → 本级残差</text>
+<text x="708" y="1519" class="small">encoder-only；残差分类交叉熵</text>
+<path d="M365,1355 L365,1420" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M955,1355 L955,1420" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="100" y="1630" class="body">Tokenizer 提供 pose / residual 监督，码本与 decoder 在生成时复用。</text>
+<text x="100" y="1665" class="small" style="fill:#607683">当前训练代码冻结 CLIP；预测器训练不更新 tokenizer。详细版本差异见正文。</text>
+<rect x="70" y="1740" width="1180" height="850" rx="15" fill="#f1f7f3" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="1783" class="section">C · 文字生成：先沿时间生成姿态，再按层级细化残差</text>
+<text x="100" y="1817" class="small" style="fill:#607683">论文主干：生成时不需要真实源动作；Refine 按量化级递进，级内时间位置一起预测。</text>
+<rect x="100" y="1850" width="300" height="130" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1885" class="head">描述与关键词 → CLIP</text>
+<text x="118" y="1920" class="small">句子 / 关键词特征</text>
+<text x="118" y="1949" class="small">文本条件共享给两预测器</text>
+<rect x="470" y="1850" width="330" height="130" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="1885" class="head">Base Transformer</text>
+<text x="488" y="1920" class="small">因果预测姿态码序列</text>
+<text x="488" y="1949" class="small">沿时间生成，直到 END</text>
+<rect x="870" y="1850" width="350" height="130" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="888" y="1885" class="head">完整姿态码 z₁…z_T</text>
+<text x="888" y="1920" class="small">可读的离散状态组合</text>
+<text x="888" y="1949" class="small">不是普通 VQ 单个索引</text>
+<path d="M400,1915 L470,1915" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M800,1915 L870,1915" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2060" width="300" height="140" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2095" class="head">直接文本条件旁路</text>
+<text x="118" y="2130" class="small">相同句子 / 关键词特征</text>
+<text x="118" y="2159" class="small">细化时继续提供语义</text>
+<rect x="470" y="2060" width="700" height="140" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="2095" class="head">Refine：s = 1 → 2 → … → 6</text>
+<text x="488" y="2130" class="small">条件：全部 pose codes、文本、当前 s、前级 residual codes</text>
+<text x="488" y="2159" class="small">每级预测整段残差码；前级结果反馈下一量化级</text>
+<path d="M250,1980 L250,2060" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M400,2130 L470,2130" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1045,1980 L1045,2060" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1170,2170 L1225,2170 L1225,2025 L1150,2025 L1150,2060" fill="none" stroke="#b77d38" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="470" y="2280" width="330" height="145" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="2315" class="head">残差索引 → 各级向量</text>
+<text x="488" y="2350" class="small">查 RVQ value 向量</text>
+<text x="488" y="2379" class="small">Σ r̂⁽ˢ⁾</text>
+<rect x="870" y="2280" width="350" height="145" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="888" y="2315" class="head">姿态索引 → 码本求和</text>
+<text x="888" y="2350" class="small">同一学习到的码本 C</text>
+<text x="888" y="2379" class="small">p = C z</text>
+<path d="M800,2200 L800,2240 L635,2240 L635,2280" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1220,1915 L1240,1915 L1240,2350 L1220,2350" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="470" y="2470" width="750" height="80" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="2505" class="head">p + Σ r̂⁽ˢ⁾ → 同一 decoder → 生成连续动作</text>
+<path d="M635,2425 L635,2470" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1045,2425 L1045,2470" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="100" y="2350" class="label" style="fill:#3c7da7">姿态码：可解释状态</text>
+<text x="100" y="2390" class="label" style="fill:#b77d38">残差码：学习到的补差</text>
+<text x="100" y="2430" class="small" style="fill:#607683">融合不保证严格解耦</text>
+<rect x="70" y="2630" width="1180" height="760" rx="15" fill="#fff8ee" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="2673" class="section">D · 已有动作编辑：论文接口与当前公开示例分开</text>
+<text x="100" y="2707" class="small" style="fill:#607683">论文 §V-E 用 GPT-4 提议改码；没有完整规定编辑后残差的统一处理算法。</text>
+<rect x="100" y="2740" width="300" height="125" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2775" class="head">源动作</text>
+<text x="118" y="2810" class="small">需要已有动作输入</text>
+<text x="118" y="2839" class="small">与纯文本生成入口不同</text>
+<rect x="470" y="2740" width="330" height="125" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="2775" class="head">规则 pose parser</text>
+<text x="488" y="2810" class="small">取源姿态属性状态</text>
+<text x="488" y="2839" class="small">不向 LLM 直接传关节坐标</text>
+<rect x="870" y="2740" width="350" height="125" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="888" y="2775" class="head">源姿态码时间序列</text>
+<text x="888" y="2810" class="small">给出各属性当前状态</text>
+<text x="888" y="2839" class="small">复制为可修改的码序列</text>
+<path d="M400,2803 L470,2803" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M800,2803 L870,2803" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2930" width="300" height="160" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2965" class="head">编辑文字与解释表</text>
+<text x="118" y="3000" class="small">源内容描述 + 编辑指令</text>
+<text x="118" y="3029" class="small">姿态属性 / 状态含义</text>
+<rect x="470" y="2930" width="330" height="160" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="2965" class="head">外部语言模型</text>
+<text x="488" y="3000" class="small">建议属性、状态、时间段</text>
+<text x="488" y="3029" class="small">当前 notebook：GPT-5</text>
+<text x="488" y="3058" class="small">未为此微调 GPT</text>
+<rect x="870" y="2930" width="350" height="160" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="888" y="2965" class="head">修改选定的姿态码</text>
+<text x="888" y="3000" class="small">应用建议到源码副本</text>
+<text x="888" y="3029" class="small">选区外姿态码保留</text>
+<path d="M400,3010 L470,3010" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M800,3010 L870,3010" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1045,2865 L1045,2895 L635,2895 L635,2930" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1220,2803 L1235,2803 L1235,3010 L1220,3010" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="3140" width="1120" height="145" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3175" class="head">当前公开示例：仅 pose latent → decoder → 编辑动作</text>
+<text x="118" y="3210" class="small">drop_out_residual_quantization = True：绕过 motion encoder / RVQ，未调用 Refine。</text>
+<text x="118" y="3239" class="small">revision_2026 另有 retain / reencode 等后续对照；不要代替原论文未明确的策略。</text>
+<path d="M1045,3090 L1045,3140" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="100" y="3335" class="body" style="fill:#607683">保留未修改的姿态码 ≠ 连续关节、速度、接触或根轨迹逐帧硬保持。</text>
+<text x="70" y="3435" class="small" style="fill:#607683">实线：数据与阶段反馈　虚线：监督　｜　A–C：论文图 1–4；D：论文 §V-E + 代码 2385e11e</text>
+</svg>
