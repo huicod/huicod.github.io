@@ -1,0 +1,251 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="5660" viewBox="0 0 1320 5660" role="img" aria-labelledby="title desc">
+<title id="title">GestureHYDRA：共享扩散模型、语义关键帧检索与自适应时间搜索</title>
+<desc id="desc">分训练、共享模型、离线语义库、两阶段推理及编辑五区。动作与音频融合后通过动态参考和静态风格记忆注入。ASR只检索与定位，检索理想帧后重新生成并搜索时间，不是LLM或硬保持系统。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203747}.title{font-size:32px;font-weight:700}.section{font-size:27px;font-weight:700}.head{font-size:23px;font-weight:700}.body{font-size:22px}.small{font-size:20px}.label{font-size:20px;font-weight:600}</style>
+<rect width="1320" height="5660" fill="#fff"/>
+<text x="70" y="53" class="title">GestureHYDRA：用语音生成，用语义关键帧修正</text>
+<text x="70" y="96" class="body" style="fill:#607683">ICCV 2025 · 按正式论文教学重绘 · 主表为不加 RAG 的基础生成，检索修正另有实验</text>
+<rect x="70" y="140" width="1180" height="700" rx="15" fill="#f1f7f3" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="183" class="section">A · 训练：多种已知帧任务共享一个模型</text>
+<text x="100" y="217" class="small" style="fill:#607683">训练数据提供监督；离线动作重建与语义库建设，不是每次生成时都要重复的步骤。</text>
+<rect x="100" y="250" width="330" height="170" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="285" class="head">同步音频与人体动作</text>
+<text x="118" y="320" class="small">Streamer 中文主播视频</text>
+<text x="118" y="349" class="small">SHOW / HaMeR 重建流程</text>
+<text x="118" y="378" class="small">身体 + 双手；不重建表情</text>
+<rect x="490" y="250" width="330" height="170" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="285" class="head">真实目标 G → 加噪</text>
+<text x="508" y="320" class="small">1,000 步 cosine 日程</text>
+<text x="508" y="349" class="small">得到带噪手势 Gₜ</text>
+<text x="508" y="378" class="small">网络直接预测干净动作</text>
+<rect x="880" y="250" width="340" height="170" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="285" class="head">G → 四种等概率遮蔽</text>
+<text x="898" y="320" class="small">Start-Only / Start-End</text>
+<text x="898" y="349" class="small">Random-Frame / Random-Seg</text>
+<text x="898" y="378" class="small">保留帧 + mask 作为条件</text>
+<path d="M430,335 L490,335" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M655,250 L655,230 L1050,230 L1050,250" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="480" width="530" height="150" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="515" class="head">输入 B 区共享 HM-DiT</text>
+<text x="118" y="550" class="small">音频 + 带噪动作 + 已知帧 / mask</text>
+<text x="118" y="579" class="small">同人物的另一动作序列 → 风格参考</text>
+<text x="118" y="608" class="small">参考片段 shuffle，减少整段照抄</text>
+<rect x="690" y="480" width="530" height="150" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="708" y="515" class="head">预测与三项监督</text>
+<text x="708" y="550" class="small">10 × 干净动作 MSE</text>
+<text x="708" y="579" class="small">+ 速度 L1 + 三维关键点 L1</text>
+<text x="708" y="608" class="small">三维关键点最多在 1/8 稀疏帧计算</text>
+<path d="M655,420 L655,455 L365,455 L365,480" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1050,420 L1050,440 L580,440 L580,480" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M630,555 L690,555" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="690" width="1120" height="105" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="725" class="head">训练安排 → 参数复用于下方两种推理模式</text>
+<text x="118" y="760" class="small">前 120k steps 不加关键点项，后 30k 加入；4×40GB A100 / batch 512 / 作者报告约 3 天</text>
+<path d="M365,630 L365,690" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M955,630 L955,690" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="70" y="880" width="1180" height="1440" rx="15" fill="#f2f7fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="923" class="section">B · 一个共享 HM-DiT：音频、已知手势和人物风格共同生成</text>
+<text x="100" y="957" class="small" style="fill:#607683">这里展开单个去噪步骤；ASR 用于外部语义定位与建库，不进入生成主干。</text>
+<rect x="100" y="990" width="330" height="150" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1025" class="head">带噪动作 Gₜ + 时间 t</text>
+<text x="118" y="1060" class="small">Gesture Encoder E_G</text>
+<text x="118" y="1089" class="small">编码当前待恢复序列</text>
+<text x="118" y="1118" class="small">推理初始为随机噪声</text>
+<rect x="490" y="990" width="330" height="150" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="1025" class="head">已知帧 Gm + mask M</text>
+<text x="508" y="1060" class="small">通道拼接 → KeyFrame E_K</text>
+<text x="508" y="1089" class="small">明确哪些时刻有动作条件</text>
+<text x="508" y="1118" class="small">不会把零姿态当自然缺失</text>
+<rect x="880" y="990" width="340" height="150" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="1025" class="head">驱动音频</text>
+<text x="898" y="1060" class="small">wav2vec 2.0 音频编码</text>
+<text x="898" y="1089" class="small">得到逐时刻特征 A</text>
+<text x="898" y="1118" class="small">与当前动作时间轴对齐</text>
+<rect x="100" y="1210" width="720" height="120" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1245" class="head">动作特征相加 → Gᴷ</text>
+<text x="118" y="1280" class="small">E_G(Gₜ) + E_K(Gm ⊕ M)；保留当前噪声和已知帧两条信息</text>
+<path d="M265,1140 L265,1210" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M655,1140 L655,1210" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1400" width="1120" height="120" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1435" class="head">音频—动作融合 GAF</text>
+<text x="118" y="1470" class="small">Gᶠ = Gᴷ + GAF(A ⊕ Gᴷ)；GAF 为 LN + MLP 残差模块</text>
+<text x="118" y="1499" class="small">⊕ 为通道拼接；此处不使用音频—动作 cross-attention</text>
+<path d="M460,1330 L460,1400" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1050,1140 L1050,1400" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1590" width="510" height="150" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1625" class="head">动态风格 S_d：外部参考动作</text>
+<text x="118" y="1660" class="small">Style Encoder 编码参考序列</text>
+<text x="118" y="1689" class="small">训练时同人物、不同于当前目标</text>
+<text x="118" y="1718" class="small">动态指参考特征，不是物理运动残差</text>
+<rect x="710" y="1590" width="510" height="150" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="728" y="1625" class="head">静态风格 S_s：内部可学习记忆</text>
+<text x="728" y="1660" class="small">从训练数据学习的 style memory bank</text>
+<text x="728" y="1689" class="small">不是可读的数字 / 方向手势原型库</text>
+<text x="728" y="1718" class="small">静态指内部记忆，不是静止人体姿态</text>
+<rect x="100" y="1810" width="510" height="120" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1845" class="head">沿时间 / 令牌维拼接 S</text>
+<text x="118" y="1880" class="small">S = concat(S_d, S_s)</text>
+<text x="118" y="1909" class="small">作为风格注意力的 Key / Value</text>
+<path d="M355,1740 L355,1810" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M965,1740 L965,1775 L570,1775 L570,1810" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="710" y="1810" width="510" height="260" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="728" y="1845" class="head">HM-DiT Block × N</text>
+<text x="728" y="1880" class="small">Self-Attention</text>
+<text x="728" y="1909" class="small">→ Style Injection</text>
+<text x="728" y="1938" class="small">→ FFN</text>
+<text x="728" y="1967" class="small">→ Style Injection</text>
+<text x="728" y="1996" class="small">当前动作特征作 Query，S 作 K / V</text>
+<path d="M610,1870 L710,1870" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1995" width="510" height="150" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2030" class="head">风格注入的计算说明</text>
+<text x="118" y="2065" class="small">softmax(Q Sᵀ / √d) S</text>
+<text x="118" y="2094" class="small">两处注入同一风格条件</text>
+<text x="118" y="2123" class="small">不把参考动作逐帧复制到输出</text>
+<path d="M355,1930 L355,1995" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="710" y="2145" width="510" height="120" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="728" y="2180" class="head">Gesture Decoder → 干净动作 Ĝ₀</text>
+<text x="728" y="2215" class="small">采样器据此更新下一步 Gₜ₋₁</text>
+<text x="728" y="2244" class="small">常规 50 步 DDIM，最后输出动作</text>
+<path d="M965,2070 L965,2145" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="70" y="2360" width="1180" height="700" rx="15" fill="#f8f5fc" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="2403" class="section">C · 离线语义原型库：按人物整理明确的手势类别</text>
+<text x="100" y="2437" class="small" style="fill:#607683">外部语义库与 B 区可学习 style memory bank 不同；不会因名称 RAG 就引入 LLM。</text>
+<rect x="100" y="2470" width="530" height="170" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2505" class="head">主方案：手工构建</text>
+<text x="118" y="2540" class="small">每个人物覆盖 18 个预定义类别</text>
+<text x="118" y="2569" class="small">每类至少一个约 1 秒的动作片段</text>
+<text x="118" y="2598" class="small">人工标记最理想的语义关键帧</text>
+<rect x="690" y="2470" width="530" height="170" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="708" y="2505" class="head">类别与作用</text>
+<text x="708" y="2540" class="small">数字 1–10 + 六个方向 + 问候 + 否定</text>
+<text x="708" y="2569" class="small">提供“应该做什么姿态”的真实范例</text>
+<text x="708" y="2598" class="small">方向类别不等于屏幕 / 世界目标坐标</text>
+<path d="M630,2555 L690,2555" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2710" width="330" height="155" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2745" class="head">可选自动收集</text>
+<text x="118" y="2780" class="small">目标人物视频 + 音频</text>
+<text x="118" y="2809" class="small">ASR 触发词定位片段</text>
+<text x="118" y="2838" class="small">预备 18 类标准二维模板</text>
+<rect x="490" y="2710" width="330" height="155" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="2745" class="head">筛选确实做出的手势</text>
+<text x="508" y="2780" class="small">DWPose → 二维姿态</text>
+<text x="508" y="2809" class="small">与标准模板算相似度</text>
+<text x="508" y="2838" class="small">不能只凭说出了某个词</text>
+<rect x="880" y="2710" width="340" height="155" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="2745" class="head">高一致性片段 → 三维库</text>
+<text x="898" y="2780" class="small">再做人体动作重建</text>
+<text x="898" y="2809" class="small">通常每类至少两个例子</text>
+<text x="898" y="2838" class="small">稀有或缺失类别例外</text>
+<path d="M430,2788 L490,2788" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,2788 L880,2788" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2920" width="1120" height="95" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2955" class="head">语义库 → D 区检索</text>
+<text x="118" y="2990" class="small">库需要目标人物资料与预定义语义模板；没有证明任意未收录手势都可可靠检索</text>
+<path d="M1050,2865 L1050,2920" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="70" y="3100" width="1180" height="1370" rx="15" fill="#fff8ee" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="3143" class="section">D · 推理：先生成，再检索关键帧并搜索更合适的时间</text>
+<text x="100" y="3177" class="small" style="fill:#607683">两阶段复用 B 的同一模型；主表评价第一次生成，RAG 插入实验另选激活失败样本。</text>
+<rect x="100" y="3210" width="330" height="155" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3245" class="head">基础输入</text>
+<text x="118" y="3280" class="small">驱动音频 + 短种子动作</text>
+<text x="118" y="3309" class="small">人物风格参考 + 随机噪声</text>
+<text x="118" y="3338" class="small">Start-Only 已知帧条件</text>
+<rect x="490" y="3210" width="330" height="155" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="3245" class="head">第一次调用共享模型 B</text>
+<text x="508" y="3280" class="small">语音驱动手势生成</text>
+<text x="508" y="3309" class="small">50 步 DDIM</text>
+<text x="508" y="3338" class="small">得到初稿 G¹ˢᵗ</text>
+<rect x="880" y="3210" width="340" height="155" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="3245" class="head">待修正的语义片段</text>
+<text x="898" y="3280" class="small">初稿可能漏做或做错</text>
+<text x="898" y="3309" class="small">保留其他可用帧作为条件</text>
+<text x="898" y="3338" class="small">未给出完整自动失败检测器</text>
+<path d="M430,3288 L490,3288" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,3288 L880,3288" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="3435" width="330" height="155" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3470" class="head">音频另一支：ASR</text>
+<text x="118" y="3505" class="small">得到相关短语与 [ts, te]</text>
+<text x="118" y="3534" class="small">例如“请点击左上角”</text>
+<text x="118" y="3563" class="small">文本用于查库 / 定位</text>
+<rect x="490" y="3435" width="330" height="155" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="3470" class="head">查询 C 区该人物的库</text>
+<text x="508" y="3505" class="small">取对应语义片段 Gsem</text>
+<text x="508" y="3534" class="small">选取其中标注的理想帧</text>
+<text x="508" y="3563" class="small">不固定复制整段原型节奏</text>
+<rect x="880" y="3435" width="340" height="155" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="3470" class="head">初始插入时刻</text>
+<text x="898" y="3505" class="small">先用语义区间中点</text>
+<text x="898" y="3534" class="small">理想帧 + 可用原帧 + mask</text>
+<text x="898" y="3563" class="small">组成新的关键帧条件</text>
+<path d="M265,3365 L265,3435" fill="none" stroke="#b77d38" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M430,3513 L490,3513" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,3513 L880,3513" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1050,3365 L1050,3435" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="3660" width="530" height="155" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3695" class="head">再次调用共享模型 B</text>
+<text x="118" y="3730" class="small">新关键帧条件 + 原驱动音频 + 风格</text>
+<text x="118" y="3759" class="small">生成候选 Gᴿᶠ；前后动作重新生成</text>
+<text x="118" y="3788" class="small">不训练新模型，不保证逐帧硬保持</text>
+<rect x="690" y="3660" width="530" height="155" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="708" y="3695" class="head">候选时间的一致性评分</text>
+<text x="708" y="3730" class="small">生成语义片段与库中原型的 ΔBC</text>
+<text x="708" y="3759" class="small">按节奏差异记录当前最佳候选</text>
+<text x="708" y="3788" class="small">节拍评分不能替代语义类别检查</text>
+<path d="M1050,3590 L1050,3625 L365,3625 L365,3660" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M630,3738 L690,3738" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="3900" width="530" height="155" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3935" class="head">按二分搜索过程调整时刻</text>
+<text x="118" y="3970" class="small">更改注入时间 → 重新生成和评分</text>
+<text x="118" y="3999" class="small">保留当前最佳候选</text>
+<text x="118" y="4028" class="small">原文未披露完整停止 / 次数 / 延迟</text>
+<rect x="690" y="3900" width="530" height="155" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="708" y="3935" class="head">最终选择的手势结果</text>
+<text x="708" y="3970" class="small">明确姿态线索 + 当前音频节奏</text>
+<text x="708" y="3999" class="small">重生成进入与离开关键帧的运动</text>
+<text x="708" y="4028" class="small">不是原型片段直接剪贴输出</text>
+<path d="M955,3815 L955,3858 L365,3858 L365,3900" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M955,3815 L955,3900" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="4130" width="1120" height="270" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="4165" class="head">需要区分的证据边界</text>
+<text x="118" y="4200" class="small">主表：不加 RAG，SAR 已见身份 84.82% / 未见身份 81.36%。</text>
+<text x="118" y="4229" class="small">表 4：激活失败子集上比较不注入、固定中点、自适应插入；没有报告最终总体 SAR。</text>
+<text x="118" y="4258" class="small">未见身份 ≠ 无参考动作、无目标人物资料；人物库与测试段的隔离方式未详述。</text>
+<text x="118" y="4287" class="small">ASR 误识别、未收录类别、姿态误差和时间搜索成本都仍会影响实际效果。</text>
+<rect x="70" y="4510" width="1180" height="910" rx="15" fill="#f3f7f9" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="4553" class="section">E · 同一接口的编辑扩展与输出边界</text>
+<text x="100" y="4587" class="small" style="fill:#607683">以下扩展来自补充 B.2 的定性展示；不能把可用条件误读为被验证的硬保持机制。</text>
+<rect x="100" y="4620" width="330" height="175" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="4655" class="head">换风格</text>
+<text x="118" y="4690" class="small">同一音频 + 不同参考风格</text>
+<text x="118" y="4719" class="small">改变人物的动作表现</text>
+<text x="118" y="4748" class="small">不是迁移参考的逐帧轨迹</text>
+<rect x="490" y="4620" width="330" height="175" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="4655" class="head">动作补全</text>
+<text x="508" y="4690" class="small">给定音频 + 起始 / 结束帧</text>
+<text x="508" y="4719" class="small">在相应位置设置关键帧</text>
+<text x="508" y="4748" class="small">共享模型生成中间运动</text>
+<rect x="880" y="4620" width="340" height="175" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="4655" class="head">片段替换</text>
+<text x="898" y="4690" class="small">目标片段 + 其余可用原帧</text>
+<text x="898" y="4719" class="small">一起作为关键帧条件</text>
+<text x="898" y="4748" class="small">重生成替换结果与上下文</text>
+<rect x="100" y="4870" width="1120" height="150" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="4905" class="head">复用关键帧编码、音频融合、风格注入与扩散采样</text>
+<text x="118" y="4940" class="small">没有专门证明源动作全部未编辑帧零误差；默认发布推理也未启用任意关键帧硬覆盖。</text>
+<text x="118" y="4969" class="small">插入 / 替换 / 风格变化均不等于接触锁定、碰撞规避或动力学可执行。</text>
+<path d="M265,4795 L265,4870" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M655,4795 L655,4870" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M1050,4795 L1050,4870" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="100" y="5090" width="1120" height="255" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="5125" class="head">输出是什么，仍缺少什么</text>
+<text x="118" y="5160" class="small">模型生成身体与双手手势；面部表情、口型和视线不是这里已完成的预测任务。</text>
+<text x="118" y="5189" class="small">左上 / 右下是语义方向类别，没有屏幕坐标、相机或物体目标的显式绑定。</text>
+<text x="118" y="5218" class="small">正式主文 / 补充未报告实时 FPS、首帧或 ASR + 搜索 + 多次生成的端到端耗时。</text>
+<text x="118" y="5247" class="small">公开资源与完整 RAG 的可运行性分开记录；本图不是模型复现或运行截图。</text>
+<text x="70" y="5480" class="body" style="fill:#607683">实线：数据、运算、采样与搜索反馈　　虚线：训练产物复用、可选/扩展使用关系</text>
+<text x="70" y="5520" class="small" style="fill:#607683">来源：CVF 正式主文 §3 / 图 2–3；独立补充 A.1–A.2、B.2。SVG 为可编辑教学示意。</text>
+<path d="M100,1460 L85,1460 L85,1785 L1235,1785 L1235,1870 L1220,1870" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1220,2205 L1275,2205 L1275,965 L265,965 L265,990" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M100,3978 L45,3978 L45,3605 L850,3605 L850,3513 L880,3513" fill="none" stroke="#b77d38" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+</svg>
