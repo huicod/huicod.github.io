@@ -1,0 +1,236 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="4890" viewBox="0 0 1320 4890" role="img" aria-labelledby="title desc">
+<title id="title">SMooGPT：部位文字组合、运动令牌与连续扩散协调</title>
+<desc id="desc">按离线数据、模型训练、三步语言任务、连续动作生成和示例五区呈现。内容和风格分别解释为六部位文字，同一微调T5组合后生成运动码；扩散以码向量为条件从噪声生成协调特征再解码。参考风格动作可另经适配器直接进入扩散，不提供逐帧硬保持。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203747}.title{font-size:32px;font-weight:700}.section{font-size:27px;font-weight:700}.head{font-size:23px;font-weight:700}.body{font-size:22px}.small{font-size:20px}.label{font-size:20px;font-weight:600}</style>
+<rect width="1320" height="4890" fill="#fff"/>
+<text x="70" y="53" class="title">SMooGPT：先组合部位意图，再生成与协调动作</text>
+<text x="70" y="96" class="body" style="fill:#607683">arXiv v2 · 2026-01-26 · 教学重绘｜可读部位文字 ≠ 学得的运动 token ≠ 连续关节轨迹</text>
+<rect x="70" y="140" width="1180" height="670" rx="15" fill="#f1f7f3" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="183" class="section">A · 离线数据：教师标注建立文字与动作的对应</text>
+<text x="100" y="217" class="small" style="fill:#607683">ChatGPT-3.5 / MotionGPT 在此准备数据；在线执行三步任务的是微调后的 SMooGPT。</text>
+<rect x="100" y="250" width="330" height="160" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="285" class="head">HumanML3D</text>
+<text x="118" y="320" class="small">动作序列 + 全局内容描述</text>
+<text x="118" y="349" class="small">提供多种动作内容</text>
+<text x="118" y="378" class="small">不是逐关节人工文字标注</text>
+<rect x="490" y="250" width="330" height="160" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="285" class="head">ChatGPT-3.5 分解</text>
+<text x="508" y="320" class="small">全局文字 → 六部位描述</text>
+<text x="508" y="349" class="small">Root / Backbone</text>
+<text x="508" y="378" class="small">左右臂 / 左右腿</text>
+<rect x="880" y="250" width="340" height="160" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="285" class="head">内容训练样本</text>
+<text x="898" y="320" class="small">动作 ↔ 部位内容文字</text>
+<text x="898" y="349" class="small">同时保留全局描述</text>
+<text x="898" y="378" class="small">训练对齐与指令任务</text>
+<path d="M430,330 L490,330" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,330 L880,330" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="470" width="330" height="190" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="505" class="head">按协议可用的 100STYLE</text>
+<text x="118" y="540" class="small">风格动作 + 风格标签</text>
+<text x="118" y="569" class="small">MotionGPT 补全局内容</text>
+<text x="118" y="598" class="small">只用相应协议允许的子集</text>
+<rect x="490" y="470" width="330" height="190" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="505" class="head">ChatGPT-3.5 描述与组合</text>
+<text x="508" y="540" class="small">生成部位内容 / 风格文字</text>
+<text x="508" y="569" class="small">再生成统一部位描述</text>
+<text x="508" y="598" class="small">作为训练监督</text>
+<rect x="880" y="470" width="340" height="190" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="505" class="head">风格与组合训练样本</text>
+<text x="898" y="540" class="small">动作与内容—风格文字</text>
+<text x="898" y="569" class="small">不把离线标签构建</text>
+<text x="898" y="598" class="small">当作每次在线生成步骤</text>
+<path d="M430,565 L490,565" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,565 L880,565" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="710" width="1120" height="75" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="745" class="head">训练数据按实验设置区分</text>
+<text x="118" y="770" class="small">文本主表 / cross-dataset：HumanML3D-only；held-out：另加入 100STYLE 已见风格。</text>
+<rect x="70" y="850" width="1180" height="1040" rx="15" fill="#f2f7fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="893" class="section">B · 训练产物：部位 tokenizer、统一语言模型、扩散协调模块</text>
+<text x="100" y="927" class="small" style="fill:#607683">语言模型明确全参数微调；预训练 VQ 组件后续复用，所有模块的冻结 / 联调细节未完整披露。</text>
+<rect x="100" y="960" width="330" height="165" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="995" class="head">动作表示 → 六部位</text>
+<text x="118" y="1030" class="small">HumanML3D：263 维</text>
+<text x="118" y="1059" class="small">各部位独立训练 VQ-VAE</text>
+<text x="118" y="1088" class="small">时序下采样率 r = 4</text>
+<rect x="490" y="960" width="330" height="165" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="995" class="head">编码器 → 最近邻码本</text>
+<text x="508" y="1030" class="small">6 个码本，各 512 项</text>
+<text x="508" y="1059" class="small">Root 64 维；其余 128 维</text>
+<text x="508" y="1088" class="small">得到同步的部位运动码</text>
+<rect x="880" y="960" width="340" height="165" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="995" class="head">部位解码与监督</text>
+<text x="898" y="1030" class="small">重建 + 码本 + commitment</text>
+<text x="898" y="1059" class="small">学到局部运动实现</text>
+<text x="898" y="1088" class="small">解码器在生成时复用</text>
+<path d="M430,1042 L490,1042" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,1042 L880,1042" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1195" width="330" height="180" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1230" class="head">扩展统一词表</text>
+<text x="118" y="1265" class="small">原文本词表 + 6 组运动码</text>
+<text x="118" y="1294" class="small">如 left_arm_&lt;idx&gt;</text>
+<text x="118" y="1323" class="small">另有各部位起止标记</text>
+<text x="118" y="1352" class="small">运动索引不是可读动作名</text>
+<rect x="490" y="1195" width="330" height="180" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="1230" class="head">模态对齐预训练</text>
+<text x="508" y="1265" class="small">Flan-T5-Base · 220M</text>
+<text x="508" y="1294" class="small">部位运动码 ↔ 部位文字</text>
+<text x="508" y="1323" class="small">下一 token 交叉熵</text>
+<text x="508" y="1352" class="small">整个语言模型微调</text>
+<rect x="880" y="1195" width="340" height="180" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="1230" class="head">后训练与指令组合</text>
+<text x="898" y="1265" class="small">继续双向翻译任务</text>
+<text x="898" y="1294" class="small">全局描述 → 六部位文字</text>
+<text x="898" y="1323" class="small">内容 + 风格 → 统一文字</text>
+<text x="898" y="1352" class="small">整个语言模型微调</text>
+<path d="M655,1125 L655,1160 L265,1160 L265,1195" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M430,1285 L490,1285" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,1285 L880,1285" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1450" width="330" height="150" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1485" class="head">连续目标特征 + 噪声</text>
+<text x="118" y="1520" class="small">训练时构造带噪 z_t</text>
+<text x="118" y="1549" class="small">采样已知噪声 ε</text>
+<text x="118" y="1578" class="small">不是给整数 token 加噪</text>
+<rect x="490" y="1450" width="330" height="150" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="1485" class="head">条件扩散协调模块</text>
+<text x="508" y="1520" class="small">条件：LLM 运动码向量</text>
+<text x="508" y="1549" class="small">模型预测噪声 ε̂</text>
+<text x="508" y="1578" class="small">连续 latent 中协调部位</text>
+<rect x="880" y="1450" width="340" height="150" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="1485" class="head">噪声重建损失</text>
+<text x="898" y="1520" class="small">MSE(ε̂, ε)</text>
+<text x="898" y="1549" class="small">参考动作模式另接风格条件</text>
+<text x="898" y="1578" class="small">完整训练调度未详述</text>
+<path d="M430,1525 L490,1525" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,1525 L880,1525" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1050,1375 L1050,1412 L655,1412 L655,1450" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1665" width="1120" height="170" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1700" class="head">训练完成后：复用于 C / D 区推理</text>
+<text x="118" y="1735" class="small">预训练 300k + 指令训练 300k；风格增强另 50k 次迭代。</text>
+<text x="118" y="1764" class="small">batch 48；2×H200；论文没有报告完整训练墙钟时间。</text>
+<text x="118" y="1793" class="small">VQ 码本是运动表示；部位文字是意图；二者不能互相当作同一种“符号”。</text>
+<rect x="70" y="1930" width="1180" height="1120" rx="15" fill="#f8f5fc" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="1973" class="section">C · 推理前三步：共享同一个 SMooGPT，顺序执行不同任务</text>
+<text x="100" y="2007" class="small" style="fill:#607683">真实动作可被编码并解释，但变成文字后不等于逐帧细节全部保留。</text>
+<rect x="100" y="2040" width="530" height="145" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2075" class="head">内容输入：全局文字 或 源动作</text>
+<text x="118" y="2110" class="small">例如“用右手投掷”</text>
+<text x="118" y="2139" class="small">决定要完成的动作内容</text>
+<rect x="690" y="2040" width="530" height="145" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="708" y="2075" class="head">风格输入：文字 或 参考动作</text>
+<text x="708" y="2110" class="small">例如“飞机式展开”</text>
+<text x="708" y="2139" class="small">决定希望表现的动作风格</text>
+<rect x="100" y="2250" width="530" height="130" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2285" class="head">动作输入才经过部位 VQ 编码</text>
+<text x="118" y="2320" class="small">源动作 → 六部位码序列 → 扩展词表</text>
+<text x="118" y="2349" class="small">文字输入直接进入语言模型</text>
+<rect x="690" y="2250" width="530" height="130" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="708" y="2285" class="head">动作输入才经过部位 VQ 编码</text>
+<text x="708" y="2320" class="small">参考动作 → 六部位码序列 → 扩展词表</text>
+<text x="708" y="2349" class="small">文字输入直接进入语言模型</text>
+<path d="M365,2185 L365,2250" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M955,2185 L955,2250" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2440" width="530" height="155" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2475" class="head">① Reasoning：解释内容</text>
+<text x="118" y="2510" class="small">SMooGPT 输出六部位内容文字</text>
+<text x="118" y="2539" class="small">说明姿态、方向与动态模式</text>
+<text x="118" y="2568" class="small">不是直接把源动作拷贝到输出</text>
+<rect x="690" y="2440" width="530" height="155" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="708" y="2475" class="head">① Reasoning：解释风格</text>
+<text x="708" y="2510" class="small">同一 SMooGPT 输出六部位风格文字</text>
+<text x="708" y="2539" class="small">描述不同部位如何表现该风格</text>
+<text x="708" y="2568" class="small">参考特征的直接支路见 D 区</text>
+<path d="M365,2380 L365,2440" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M955,2380 L955,2440" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="330" y="2665" width="660" height="135" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="348" y="2700" class="head">② Composition：生成统一的六部位文字</text>
+<text x="348" y="2735" class="small">同一 SMooGPT 根据内容与风格处理局部冲突</text>
+<text x="348" y="2764" class="small">可检查、可修改；不是关节角或时间点的硬约束</text>
+<path d="M365,2595 L365,2630 L500,2630 L500,2665" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M955,2595 L955,2630 L820,2630 L820,2665" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="330" y="2865" width="660" height="135" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="348" y="2900" class="head">③ Generation：自回归预测六组运动 token</text>
+<text x="348" y="2935" class="small">同一 SMooGPT：部位文字 → 部位运动码序列</text>
+<text x="348" y="2964" class="small">使用训练好的运动词表；随后交给 D 区连续协调</text>
+<path d="M660,2800 L660,2865" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="70" y="3090" width="1180" height="1100" rx="15" fill="#fff8ee" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="3133" class="section">D · 连续协调与解码：v2 重要新增部分</text>
+<text x="100" y="3167" class="small" style="fill:#607683">运动码作为条件；从另一个高斯噪声 latent 开始生成，再解码为全身动作。</text>
+<rect x="100" y="3200" width="330" height="150" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3235" class="head">承接 C：六组运动 token</text>
+<text x="118" y="3270" class="small">查对应的码本向量</text>
+<text x="118" y="3299" class="small">从离散索引回到连续表示</text>
+<text x="118" y="3328" class="small">不先解码成完整动作</text>
+<rect x="490" y="3200" width="330" height="150" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="3235" class="head">Ψ：MLP 投影与拼接</text>
+<text x="508" y="3270" class="small">聚合不同部位运动特征</text>
+<text x="508" y="3299" class="small">构成统一条件 z_cond</text>
+<text x="508" y="3328" class="small">不是将整数索引直接拼接</text>
+<rect x="880" y="3200" width="340" height="150" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="3235" class="head">全程条件 z_cond</text>
+<text x="898" y="3270" class="small">指导连续去噪</text>
+<text x="898" y="3299" class="small">保留 LLM 给出的运动意图</text>
+<text x="898" y="3328" class="small">本身不充当采样初始噪声</text>
+<path d="M430,3275 L490,3275" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,3275 L880,3275" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="3430" width="330" height="170" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3465" class="head">独立高斯噪声 z_T</text>
+<text x="118" y="3500" class="small">采样开始的连续 latent</text>
+<text x="118" y="3529" class="small">按 t 逐步更新 z_t</text>
+<text x="118" y="3558" class="small">不对 token ID 加噪</text>
+<rect x="490" y="3430" width="730" height="170" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="3465" class="head">条件去噪器 εθ(z_t, t, z_cond [, s])</text>
+<text x="508" y="3500" class="small">迭代预测噪声，生成协调后的统一 latent z_0</text>
+<text x="508" y="3529" class="small">条件始终包括 LLM 运动特征；参考动作模式另加 s</text>
+<text x="508" y="3558" class="small">论文没有给出完整采样步数与所有冻结关系</text>
+<path d="M430,3515 L490,3515" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1050,3350 L1050,3430" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="3680" width="330" height="150" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3715" class="head">可选：参考风格动作</text>
+<text x="118" y="3750" class="small">motion-guided 设置</text>
+<text x="118" y="3779" class="small">高频动态经过文字可能损失</text>
+<text x="118" y="3808" class="small">保留直接动作特征路径</text>
+<rect x="490" y="3680" width="330" height="150" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="3715" class="head">风格特征 s → 轻量适配器</text>
+<text x="508" y="3750" class="small">将参考风格注入扩散头</text>
+<text x="508" y="3779" class="small">详细编码结构未充分展开</text>
+<text x="508" y="3808" class="small">不是直接覆盖最终姿态</text>
+<path d="M430,3755 L490,3755" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M655,3680 L655,3600" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="100" y="3900" width="1120" height="180" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3935" class="head">统一 z_0 → 部位分解 Ψ⁻¹ → 预训练部位解码器 → 全身连续动作</text>
+<text x="118" y="3970" class="small">输出精修的六部位特征，再由各 VQ 解码器生成对应部位并组成动作。</text>
+<text x="118" y="3999" class="small">“协调”是学习目标；没有逐帧硬保持、碰撞、接触或动力学保证。</text>
+<text x="118" y="4028" class="small">源动作的内容语义可被使用，不意味着源轨迹、细节和时长都原样保留。</text>
+<path d="M1120,3600 L1120,3900" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="100" y="4150" class="small" style="fill:#607683">旁路说明：参考风格可同时提供可读意图与直接特征；部位文字并非全部信息的唯一通道。</text>
+<rect x="70" y="4230" width="1180" height="550" rx="15" fill="#f3f7f9" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="4273" class="section">E · 读一个例子，也看清它没有保证什么</text>
+<text x="100" y="4307" class="small" style="fill:#607683">依据原文图 9 的语义冲突例子；下列中文中间描述为教学概括，不是本次运行输出。</text>
+<rect x="100" y="4340" width="330" height="160" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="4375" class="head">内容 + 风格</text>
+<text x="118" y="4410" class="small">内容：右手投掷</text>
+<text x="118" y="4439" class="small">风格：飞机式展开</text>
+<text x="118" y="4468" class="small">右臂同时收到冲突要求</text>
+<rect x="490" y="4340" width="330" height="160" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="4375" class="head">部位组合方案</text>
+<text x="508" y="4410" class="small">右臂：承担投掷任务</text>
+<text x="508" y="4439" class="small">左臂：借用飞机式伸展</text>
+<text x="508" y="4468" class="small">躯干与腿采用相容支持</text>
+<rect x="880" y="4340" width="340" height="160" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="4375" class="head">生成后仍要检查</text>
+<text x="898" y="4410" class="small">动作内容是否完成</text>
+<text x="898" y="4439" class="small">风格是否真正表现</text>
+<text x="898" y="4468" class="small">不是复制源右臂逐帧轨迹</text>
+<path d="M430,4420 L490,4420" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,4420 L880,4420" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="4565" width="1120" height="170" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="4600" class="head">原文失败例：语言意图的范围，大于运动解码器已经学会的范围</text>
+<text x="118" y="4635" class="small">急促敬礼：手臂轨迹大致正确，但急停阶段被过度平滑。</text>
+<text x="118" y="4664" class="small">飞鸟式行走：能展开双臂，却缺少清楚、周期性的拍翼动态。</text>
+<text x="118" y="4693" class="small">主表内容指标评价文字匹配，不是源动作逐关节保持或最终物理可执行性。</text>
+<text x="70" y="4835" class="small" style="fill:#607683">来源：arXiv:2509.04058v2，图 4 / 图 9，§3–4，附录 B–D / G。实线：数据与条件；虚线：可选支路。</text>
+<path d="M660,3000 L660,3070 L45,3070 L45,3275 L100,3275" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1220,3515 L1275,3515 L1275,3405 L855,3405 L855,3430" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+</svg>
