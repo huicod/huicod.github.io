@@ -1,0 +1,242 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="4950" viewBox="0 0 1320 4950" role="img" aria-labelledby="title desc">
+<title id="title">SMooDi：逐层风格适配、双引导与循环先验</title>
+<desc id="desc">教学重绘。区分双数据源适配训练、独立风格特征网络、循环先验、冻结MLD与四层可训练适配器、分类器自由与梯度风格引导、可选源动作DDIM反演。风格引导与反演不保证源动作逐帧保持。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203747}.title{font-size:32px;font-weight:700}.section{font-size:27px;font-weight:700}.head{font-size:23px;font-weight:700}.body{font-size:22px}.small{font-size:20px}.label{font-size:20px;font-weight:600}</style>
+<rect width="1320" height="4950" fill="#fff"/>
+<text x="70" y="53" class="title">SMooDi：参考动作提供风格，文本或已有动作提供内容</text>
+<text x="70" y="96" class="body" style="fill:#607683">ECCV 2024 · 依据正式主文与补充的教学重绘 · 机制遵循论文，公开实现差异另见正文</text>
+<rect x="70" y="140" width="1180" height="720" rx="15" fill="#f1f7f3" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="183" class="section">A · 训练：适配风格，保留原有内容能力</text>
+<text x="100" y="217" class="small" style="fill:#607683">绿色表示数据与监督；紫色表示新增可训练部件；蓝色表示复用并冻结的组件。</text>
+<rect x="100" y="250" width="330" height="175" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="285" class="head">100STYLE 风格数据</text>
+<text x="118" y="320" class="small">重定向到统一骨架 / 263 维</text>
+<text x="118" y="349" class="small">MotionGPT 离线生成伪文本</text>
+<text x="118" y="378" class="small">动作 s + 内容 c</text>
+<rect x="490" y="250" width="330" height="175" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="285" class="head">HumanML3D 内容数据</text>
+<text x="508" y="320" class="small">真实内容动作 + 原文本</text>
+<text x="508" y="349" class="small">动作 s′ + 内容 c′</text>
+<text x="508" y="378" class="small">不是模型生成的回放样本</text>
+<rect x="880" y="250" width="340" height="175" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="285" class="head">固定 MLD 的 VAE E</text>
+<text x="898" y="320" class="small">编码动作得到 latent</text>
+<text x="898" y="349" class="small">按噪声日程加噪</text>
+<text x="898" y="378" class="small">获得 zₜ 与真实噪声监督</text>
+<path d="M430,305 L460,305 L460,228 L1050,228 L1050,250" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,335 L880,335" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="485" width="530" height="160" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="100" y="499" width="5" height="132" rx="2" fill="#7d60b3"/>
+<text x="118" y="520" class="head">训练风格适配器</text>
+<text x="118" y="555" class="small">独立 style encoder + 4 个 Transformer 块</text>
+<text x="118" y="584" class="small">逐层 zero linear 连接；原 MLD 参数冻结</text>
+<text x="118" y="613" class="small">Lstd + λpr Lpr + λcyc Lcyc（B 区展开）</text>
+<rect x="690" y="485" width="530" height="160" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="690" y="499" width="5" height="132" rx="2" fill="#b77d38"/>
+<text x="708" y="520" class="head">独立预训练风格特征网络 f</text>
+<text x="708" y="555" class="small">100STYLE + 类别标签 → 分类器训练 100 epochs</text>
+<text x="708" y="584" class="small">移除分类头；在采样中固定参数</text>
+<text x="708" y="613" class="small">与左侧 style encoder 是不同网络</text>
+<path d="M1050,425 L1050,453 L365,453 L365,485" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M265,425 L265,440 L665,440 L665,565 L690,565" fill="none" stroke="#b77d38" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="710" width="1120" height="105" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="745" class="head">训练产物用于后续采样</text>
+<text x="118" y="780" class="small">左侧：学得的适配器和逐层连接 → C；右侧：固定特征网络 f → D 的风格距离</text>
+<path d="M365,645 L365,710" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M955,645 L955,710" fill="none" stroke="#b77d38" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="70" y="900" width="1180" height="730" rx="15" fill="#f8f5fc" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="943" class="section">B · 循环先验：先交换风格，再用合成风格回到原内容</text>
+<text x="100" y="977" class="small" style="fill:#607683">训练时使用两个数据域；没有要求真实数据里存在交叉组合的配对动作。</text>
+<rect x="100" y="1010" width="310" height="135" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1045" class="head">100STYLE 样本 S</text>
+<text x="118" y="1080" class="small">zₜ · 原内容 c · 风格 s</text>
+<text x="118" y="1109" class="small">第一程借入另一域风格 s′</text>
+<rect x="490" y="1010" width="330" height="135" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="1045" class="head">生成上路交叉组合</text>
+<text x="508" y="1080" class="small">内容 c + 风格 s′</text>
+<text x="508" y="1109" class="small">zₜˢʰ → 解码为 sˢʰ</text>
+<rect x="900" y="1010" width="320" height="135" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="918" y="1045" class="head">上路回程</text>
+<text x="918" y="1080" class="small">原内容 c + 下路风格 sʰˢ</text>
+<text x="918" y="1109" class="small">预测回程噪声 ε̂S</text>
+<rect x="100" y="1280" width="310" height="135" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1315" class="head">HumanML3D 样本 H</text>
+<text x="118" y="1350" class="small">z′ₜ · 原内容 c′ · 风格 s′</text>
+<text x="118" y="1379" class="small">第一程借入另一域风格 s</text>
+<rect x="490" y="1280" width="330" height="135" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="1315" class="head">生成下路交叉组合</text>
+<text x="508" y="1350" class="small">内容 c′ + 风格 s</text>
+<text x="508" y="1379" class="small">zₜʰˢ → 解码为 sʰˢ</text>
+<rect x="900" y="1280" width="320" height="135" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="918" y="1315" class="head">下路回程</text>
+<text x="918" y="1350" class="small">原内容 c′ + 上路风格 sˢʰ</text>
+<text x="918" y="1379" class="small">预测回程噪声 ε̂H</text>
+<path d="M410,1077 L490,1077" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,1077 L900,1077" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M410,1347 L490,1347" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,1347 L900,1347" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M655,1145 L655,1200 L1060,1200 L1060,1280" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M655,1415 L655,1445 L1235,1445 L1235,1077 L1220,1077" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="700" y="1183" class="label" style="fill:#7d60b3">上路合成风格 → 下路回程</text>
+<text x="700" y="1437" class="label" style="fill:#7d60b3">下路合成风格 → 上路回程</text>
+<rect x="100" y="1480" width="1120" height="105" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1515" class="head">原文式（6）的目标</text>
+<text x="118" y="1550" class="small">E ‖(ε̂S − ε) + (ε̂H − ε′)‖²：两路残差先求和再平方；不是两项独立 L2 之和</text>
+<path d="M1060,1415 L1060,1480" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="70" y="1670" width="1180" height="1050" rx="15" fill="#f2f7fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="1713" class="section">C · 单步噪声预测：冻结主干与内容感知风格适配器</text>
+<text x="100" y="1747" class="small" style="fill:#607683">图中四层对应补充 A.3；每个适配器块均经零初始化线性连接修正对应主干特征。</text>
+<rect x="100" y="1780" width="490" height="135" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1815" class="head">共用输入：内容 c、时间 t、噪声 zₜ</text>
+<text x="118" y="1850" class="small">冻结 CLIP 文本特征 + 时间嵌入</text>
+<text x="118" y="1879" class="small">与 zₜ 拼接；同时送入左右两分支</text>
+<rect x="730" y="1780" width="490" height="135" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="748" y="1815" class="head">风格参考 s → 独立 style encoder</text>
+<text x="748" y="1850" class="small">本分支可训练；与固定 f 不同</text>
+<text x="748" y="1879" class="small">风格嵌入加入适配器输入</text>
+<text x="150" y="1985" class="head" style="fill:#3c7da7">冻结的 MLD 去噪主干</text>
+<text x="800" y="1985" class="head" style="fill:#7d60b3">可训练适配器副本</text>
+<path d="M345,1915 L345,1940 L120,1940 L120,2015" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M500,1915 L500,1940 L1170,1940 L1170,2015" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M975,1915 L975,1925 L1100,1925 L1100,2015" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2015" width="430" height="92" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2050" class="head">MLD 对应层 1</text>
+<text x="118" y="2085" class="small">主干参数冻结 + 接收残差</text>
+<rect x="790" y="2015" width="430" height="92" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="808" y="2050" class="head">Adaptor Transformer 1</text>
+<text x="808" y="2085" class="small">由预训练主干初始化</text>
+<rect x="570" y="2033" width="180" height="56" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="586" y="2068" class="label" style="fill:#7d60b3">Zero Linear</text>
+<path d="M790,2061 L750,2061" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M570,2061 L530,2061" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M315,2107 L315,2150" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1005,2107 L1005,2150" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2150" width="430" height="92" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2185" class="head">MLD 对应层 2</text>
+<text x="118" y="2220" class="small">主干参数冻结 + 接收残差</text>
+<rect x="790" y="2150" width="430" height="92" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="808" y="2185" class="head">Adaptor Transformer 2</text>
+<text x="808" y="2220" class="small">由预训练主干初始化</text>
+<rect x="570" y="2168" width="180" height="56" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="586" y="2203" class="label" style="fill:#7d60b3">Zero Linear</text>
+<path d="M790,2196 L750,2196" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M570,2196 L530,2196" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M315,2242 L315,2285" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1005,2242 L1005,2285" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2285" width="430" height="92" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2320" class="head">MLD 对应层 3</text>
+<text x="118" y="2355" class="small">主干参数冻结 + 接收残差</text>
+<rect x="790" y="2285" width="430" height="92" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="808" y="2320" class="head">Adaptor Transformer 3</text>
+<text x="808" y="2355" class="small">由预训练主干初始化</text>
+<rect x="570" y="2303" width="180" height="56" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="586" y="2338" class="label" style="fill:#7d60b3">Zero Linear</text>
+<path d="M790,2331 L750,2331" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M570,2331 L530,2331" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M315,2377 L315,2420" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1005,2377 L1005,2420" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2420" width="430" height="92" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2455" class="head">MLD 对应层 4</text>
+<text x="118" y="2490" class="small">主干参数冻结 + 接收残差</text>
+<rect x="790" y="2420" width="430" height="92" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="808" y="2455" class="head">Adaptor Transformer 4</text>
+<text x="808" y="2490" class="small">由预训练主干初始化</text>
+<rect x="570" y="2438" width="180" height="56" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="586" y="2473" class="label" style="fill:#7d60b3">Zero Linear</text>
+<path d="M790,2466 L750,2466" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M570,2466 L530,2466" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2570" width="1120" height="105" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2605" class="head">其余冻结主干 / 归一化 → 噪声预测 εθ(zₜ,t,c,s)</text>
+<text x="118" y="2640" class="small">在 D 区分别使用三种条件组合计算预测；上图展开注入点，不表示主干只有四层</text>
+<path d="M315,2512 L315,2570" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="70" y="2760" width="1180" height="1450" rx="15" fill="#fff8ee" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="2803" class="section">D · 推理：内容 / 风格 CFG + 后期梯度风格引导</text>
+<text x="100" y="2837" class="small" style="fill:#607683">固定网络依然参与前向和梯度计算；引导改变当前采样，不更新网络参数。</text>
+<rect x="100" y="2870" width="310" height="130" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2905" class="head">标准起点</text>
+<text x="118" y="2940" class="small">高斯 zT → 当前 zₜ</text>
+<text x="118" y="2969" class="small">或使用 E 区反演起点</text>
+<rect x="490" y="2870" width="330" height="130" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="2905" class="head">内容文本 c</text>
+<text x="508" y="2940" class="small">保留目标动作语义</text>
+<text x="508" y="2969" class="small">例如：向前走，再坐下</text>
+<rect x="900" y="2870" width="320" height="130" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="918" y="2905" class="head">风格参考动作 s</text>
+<text x="918" y="2940" class="small">同一参考分别进入 C 和 f</text>
+<text x="918" y="2969" class="small">不输入风格类别名称</text>
+<rect x="100" y="3070" width="1120" height="130" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3105" class="head">复用 C 区：三种条件预测 → 分开的 CFG</text>
+<text x="118" y="3140" class="small">ε₀₀（无条件） / εc₀（仅内容） / εcs（内容 + 风格）</text>
+<text x="118" y="3169" class="small">εCFG = ε₀₀ + wc (εc₀ − ε₀₀) + ws (εcs − εc₀)；常规 wc=7.5，ws=1.5</text>
+<path d="M255,3000 L255,3070" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M655,3000 L655,3070" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1060,3000 L1060,3070" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="3270" width="330" height="160" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3305" class="head">估计干净动作</text>
+<text x="118" y="3340" class="small">zₜ + εCFG → ẑ₀</text>
+<text x="118" y="3369" class="small">冻结 MLD 解码器 D</text>
+<text x="118" y="3398" class="small">得到当前临时动作 x̂₀</text>
+<rect x="490" y="3270" width="330" height="160" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="3305" class="head">固定风格特征 f</text>
+<text x="508" y="3340" class="small">分别处理 x̂₀ 与参考 s</text>
+<text x="508" y="3369" class="small">G = ‖f(x̂₀) − f(s)‖₁</text>
+<text x="508" y="3398" class="small">论文定义为 L1 距离</text>
+<rect x="900" y="3270" width="320" height="160" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="918" y="3305" class="head">分类器式风格引导</text>
+<text x="918" y="3340" class="small">τ ∇zₜ G；常规 τ=−0.2</text>
+<text x="918" y="3369" class="small">前期 K=0；t≤300 时 K=5</text>
+<text x="918" y="3398" class="small">300 为训练日程时间索引</text>
+<path d="M315,3200 L315,3270" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M430,3350 L490,3350" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,3350 L900,3350" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="730" y="3225" class="label" style="fill:#7d60b3">参考 s 到固定 f</text>
+<rect x="100" y="3520" width="1120" height="130" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3555" class="head">修正预测 → 一步 DDIM 采样</text>
+<text x="118" y="3590" class="small">εguided = εCFG + τ∇zₜG → 由采样器更新 zₜ₋₁</text>
+<text x="118" y="3619" class="small">论文常规推理 50 步；风格梯度迭代 K 与去噪步数是两个不同计数</text>
+<path d="M1060,3430 L1060,3520" fill="none" stroke="#b77d38" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M100,3135 L85,3135 L85,3585 L100,3585" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="3740" width="490" height="130" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3775" class="head">仍未到终点：重复下一去噪步</text>
+<text x="118" y="3810" class="small">更新的 zₜ₋₁ 回到 C / CFG</text>
+<text x="118" y="3839" class="small">条件与网络参数保持供下一步使用</text>
+<rect x="730" y="3740" width="490" height="130" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="748" y="3775" class="head">完成：干净 latent z₀</text>
+<text x="748" y="3810" class="small">固定 MLD 动作解码器 D</text>
+<text x="748" y="3839" class="small">N 帧 × 263 维风格化动作</text>
+<path d="M345,3650 L345,3740" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M975,3650 L975,3740" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="3940" width="1120" height="195" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3975" class="head">如何理解这条链路</text>
+<text x="118" y="4010" class="small">适配器学习基本风格方向；CFG 调节内容 / 风格；CB 在后期进一步强化。</text>
+<text x="118" y="4039" class="small">梯度经过解码与 f 反传，但这些网络的参数不因本次生成而更新。</text>
+<text x="118" y="4068" class="small">高风格分数可能牺牲内容；没有根轨迹、关节坐标、接触或物理可行性的硬保证。</text>
+<rect x="70" y="4250" width="1180" height="540" rx="15" fill="#f3f7f9" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="4293" class="section">E · 可选已有动作入口：DDIM 反演后再风格化</text>
+<text x="100" y="4327" class="small" style="fill:#607683">此区改变 D 的起点，不把源动作直接复制到最终输出；无需为这项任务额外训练。</text>
+<rect x="100" y="4370" width="310" height="135" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="4405" class="head">已有内容动作 xsrc</text>
+<text x="118" y="4440" class="small">例如真实的走后坐下片段</text>
+<text x="118" y="4469" class="small">固定 VAE E → 内容 latent</text>
+<rect x="490" y="4370" width="330" height="155" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="508" y="4405" class="head">不加风格的 DDIM 反演</text>
+<text x="508" y="4440" class="small">原公式仍含内容条件 c</text>
+<text x="508" y="4469" class="small">确定性反演 → zTInv</text>
+<text x="508" y="4498" class="small">代码文本字段可置空</text>
+<rect x="900" y="4370" width="320" height="155" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="918" y="4405" class="head">替代 D 的高斯起点</text>
+<text x="918" y="4440" class="small">随后使用同一风格流程</text>
+<text x="918" y="4469" class="small">迁移：30 步 / ws=6.5</text>
+<text x="918" y="4498" class="small">τ=−0.4</text>
+<path d="M410,4437 L490,4437" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M820,4437 L900,4437" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="100" y="4580" width="1120" height="145" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="4615" class="head">保留边界</text>
+<text x="118" y="4650" class="small">源动作提供整体内容线索，风格参考提供表现方式；两者职责不同。</text>
+<text x="118" y="4679" class="small">没有每步源值硬覆盖：逐帧姿态、根路径、速度、接触和未编辑部位仍可能变化。</text>
+<text x="70" y="4840" class="body" style="fill:#607683">实线：数据、运算与采样反馈　　虚线：训练产物复用、可选入口或明确标注的梯度</text>
+<text x="70" y="4880" class="small" style="fill:#607683">来源：主文 §3 / 图 2–4 / 式 1–7；独立补充 A.1–A.6 / 图 8。示意不代表模型运行结果。</text>
+<path d="M1220,2935 L1235,2935 L1235,3235 L655,3235 L655,3270" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M100,3805 L45,3805 L45,2935 L100,2935" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+</svg>
