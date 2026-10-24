@@ -1,0 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="5300" viewBox="0 0 1320 5300" role="img" aria-labelledby="title desc">
+<title id="title">StyleMotif：风格编码、多模态检索、交叉归一化扩散与源动作反演</title>
+<desc id="desc">分区展现三项训练工作、动作与多模态风格入口、第四个冻结MLD块后的交叉归一化、CFG和风格梯度引导，以及可选DDIM反演。多模态通过检索动作特征，不表示视频动作重建；反演不保证源动作逐帧硬保持。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203747}.title{font-size:32px;font-weight:700}.section{font-size:27px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:22px}.small{font-size:20px}.label{font-size:20px;font-weight:600}</style>
+<rect width="1320" height="5300" fill="#fff"/>
+<text x="70" y="53" class="title">StyleMotif：单个动作扩散主干，结合内容与多模态风格</text>
+<text x="70" y="96" class="body" style="fill:#607683">ICCV 2025 · 教学重绘 · 参数冻结不等于数据流停止；虚线用于训练产物、可选或标注的梯度路径</text>
+<rect x="70" y="140" width="1180" height="1040" rx="15" fill="#f1f7f3" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="183" class="section">A · 训练：学好风格表示，再连接内容生成与跨模态检索</text>
+<text x="100" y="217" class="small" style="fill:#607683">三项学习工作分别标明训练范围；此区数据与损失不是默认推理时的额外输入。</text>
+<rect x="100" y="260" width="330" height="160" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="295" class="head">100STYLE 风格动作</text>
+<text x="118" y="330" class="small">从 HumanML3D 预训练的</text>
+<text x="118" y="359" class="small">MLD VAE 初始化风格分支</text>
+<text x="118" y="388" class="small">动作重建监督</text>
+<rect x="490" y="260" width="330" height="160" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="490" y="274" width="5" height="132" rx="2" fill="#7d60b3"/>
+<text x="508" y="295" class="head">① 风格 VAE 适配</text>
+<text x="508" y="330" class="small">重建式微调 · 200 epochs</text>
+<text x="508" y="359" class="small">结合内容先验与风格数据</text>
+<text x="508" y="388" class="small">保留独立风格 encoder ψ</text>
+<rect x="880" y="260" width="340" height="160" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="295" class="head">得到风格 encoder ψ</text>
+<text x="898" y="330" class="small">只丢弃此分支重建 decoder</text>
+<text x="898" y="359" class="small">最终生成仍用 MLD decoder</text>
+<text x="898" y="388" class="small">不是删除全部动作解码器</text>
+<path d="M430,340 L490,340" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,340 L880,340" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1050,420 L1050,460 L655,460 L655,510" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<text x="730" y="449" class="label" style="fill:#7d60b3">初始化扩散适配的 ψ</text>
+<rect x="100" y="510" width="330" height="200" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="545" class="head">内容 + 风格训练数据</text>
+<text x="118" y="580" class="small">100STYLE 风格动作</text>
+<text x="118" y="609" class="small">HumanML3D 内容 prior</text>
+<text x="118" y="638" class="small">内容文本含前作伪描述</text>
+<text x="118" y="667" class="small">加噪 latent + 对应噪声</text>
+<rect x="490" y="510" width="330" height="200" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="490" y="524" width="5" height="172" rx="2" fill="#7d60b3"/>
+<text x="508" y="545" class="head">② 风格化扩散适配</text>
+<text x="508" y="580" class="small">仅风格 encoder ψ 可训练</text>
+<text x="508" y="609" class="small">其他参数冻结</text>
+<text x="508" y="638" class="small">交叉融合无学习参数</text>
+<text x="508" y="667" class="small">50 epochs · batch 64</text>
+<rect x="880" y="510" width="340" height="200" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="545" class="head">三类学习目标</text>
+<text x="898" y="580" class="small">标准噪声预测</text>
+<text x="898" y="609" class="small">内容 prior 保留</text>
+<text x="898" y="638" class="small">跨数据集 cycle prior 保留</text>
+<text x="898" y="667" class="small">不是源姿态硬约束</text>
+<path d="M430,610 L490,610" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,610 L880,610" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M655,710 L655,800" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<text x="680" y="763" class="label" style="fill:#7d60b3">固定动作特征</text>
+<rect x="100" y="800" width="330" height="185" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="835" class="head">对齐数据</text>
+<text x="118" y="870" class="small">风格动作 ↔ 单文本标签</text>
+<text x="118" y="899" class="small">例如 motion ↔ Old</text>
+<text x="118" y="928" class="small">仅保留 forward 动作子集</text>
+<rect x="490" y="800" width="330" height="185" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="490" y="814" width="5" height="157" rx="2" fill="#7d60b3"/>
+<text x="508" y="835" class="head">③ 只训练线性投影 π</text>
+<text x="508" y="870" class="small">固定 ImageBind 文本编码器</text>
+<text x="508" y="899" class="small">与已有动作风格表示对齐</text>
+<text x="508" y="928" class="small">双向对比学习 · 200 epochs</text>
+<rect x="880" y="800" width="340" height="185" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="835" class="head">用于共享空间检索</text>
+<text x="898" y="870" class="small">温度 τ₀ = 1.0</text>
+<text x="898" y="899" class="small">不使用视频逐帧骨架监督</text>
+<text x="898" y="928" class="small">推理复用 ψ、π 与冻结主干</text>
+<path d="M430,892 L490,892" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,892 L880,892" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1050" width="1120" height="85" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1085" class="head">训练产物 → 下方推理</text>
+<text x="118" y="1120" class="small">已有 MLD 内容编码 / 去噪 / 解码组件 + 学得的风格 ψ 与映射 π</text>
+<path d="M655,985 L655,1050" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<path d="M1050,985 L1050,1050" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="70" y="1230" width="1180" height="900" rx="15" fill="#f8f7fc" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="1273" class="section">B · 风格条件：动作直接编码；其他模态先检索动作特征</text>
+<text x="100" y="1307" class="small" style="fill:#607683">多模态语义用于选择风格，不是从图片或视频中精确恢复源动作。</text>
+<rect x="100" y="1350" width="500" height="100" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1385" class="head">动作风格参考 s</text>
+<text x="118" y="1420" class="small">提供怎样做，不必与输出动作内容相同</text>
+<rect x="720" y="1350" width="500" height="100" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="738" y="1385" class="head">多模态风格参考 m</text>
+<text x="738" y="1420" class="small">风格文本 / 图片 / 视频 / 音频</text>
+<rect x="100" y="1510" width="500" height="130" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="100" y="1524" width="5" height="102" rx="2" fill="#3c7da7"/>
+<text x="118" y="1545" class="head">已训练的风格 encoder ψ</text>
+<text x="118" y="1580" class="small">输入动作 → 动作风格特征 F_s</text>
+<text x="118" y="1609" class="small">推理时不更新模型参数</text>
+<rect x="720" y="1510" width="500" height="130" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="720" y="1524" width="5" height="102" rx="2" fill="#3c7da7"/>
+<text x="738" y="1545" class="head">固定 ImageBind + 已学 π</text>
+<text x="738" y="1580" class="small">得到共享空间中的全局语义特征</text>
+<text x="738" y="1609" class="small">此处依据原文图2，式9省略了 π</text>
+<path d="M350,1450 L350,1510" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M970,1450 L970,1510" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1730" width="500" height="110" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1765" class="head">直接使用动作风格</text>
+<text x="118" y="1800" class="small">保留参考动作供采样风格引导使用</text>
+<rect x="720" y="1700" width="500" height="170" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="720" y="1714" width="5" height="142" rx="2" fill="#3d9179"/>
+<text x="738" y="1735" class="head">语义检索动作风格特征库</text>
+<text x="738" y="1770" class="small">库内风格动作由 ψ 编码</text>
+<text x="738" y="1799" class="small">选取最相近的动作特征及参考</text>
+<text x="738" y="1828" class="small">例：鸭子图像 → Duckfoot 风格</text>
+<path d="M350,1640 L350,1730" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M970,1640 L970,1700" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1950" width="1120" height="130" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1985" class="head">① 动作风格特征 F_s　＋　② 参考动作（供梯度引导）</text>
+<text x="118" y="2020" class="small">单风格直接使用；多个风格先分别检索，再对特征作加权求和</text>
+<text x="118" y="2049" class="small">不将多模态特征直接当成完整动作；精确候选库与检索算子未披露</text>
+<path d="M350,1840 L350,1950" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M970,1867 L970,1950" fill="none" stroke="#3d9179" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="70" y="2200" width="1180" height="1130" rx="15" fill="#f3f8fc" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="2243" class="section">C · 一个采样步骤：冻结 MLD 内第 4 块后进行一次交叉融合</text>
+<text x="100" y="2277" class="small" style="fill:#607683">每个去噪步骤都复用这个结构；“只融合一次”指一次主干调用中的融合位置。</text>
+<rect x="100" y="2320" width="500" height="100" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2355" class="head">内容文本 c</text>
+<text x="118" y="2390" class="small">例如：A person walks in a circle.</text>
+<rect x="790" y="2320" width="430" height="100" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="808" y="2355" class="head">当前 noisy latent z_t 与 t</text>
+<text x="808" y="2390" class="small">首步：高斯噪声，或 E 的反演初态</text>
+<rect x="100" y="2480" width="500" height="110" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="100" y="2494" width="5" height="82" rx="2" fill="#3c7da7"/>
+<text x="118" y="2515" class="head">冻结的内容文本编码器 τ(c)</text>
+<text x="118" y="2550" class="small">文本内容条件，沿用 MLD</text>
+<rect x="790" y="2480" width="430" height="110" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="790" y="2494" width="5" height="82" rx="2" fill="#3c7da7"/>
+<text x="808" y="2515" class="head">冻结 MLD：前 4 个块</text>
+<text x="808" y="2550" class="small">得到内容特征 F_c</text>
+<path d="M350,2420 L350,2480" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1005,2420 L1005,2480" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M600,2535 L790,2535" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2680" width="500" height="210" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="100" y="2694" width="5" height="182" rx="2" fill="#7d60b3"/>
+<text x="118" y="2715" class="head">用内容统计量归一化风格</text>
+<text x="118" y="2750" class="small">① F_s 来自 B；μ_c、σ²_c 来自 F_c</text>
+<text x="118" y="2779" class="small">μ_c = mean(F_c)，σ²_c = var(F_c)</text>
+<text x="118" y="2808" class="small">F̃ = (F_s − μ_c) / √(σ²_c + η)</text>
+<text x="118" y="2837" class="small">统计沿特征维度；不是 AdaIN</text>
+<rect x="790" y="2770" width="430" height="120" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="790" y="2784" width="5" height="92" rx="2" fill="#7d60b3"/>
+<text x="808" y="2805" class="head">残差融合</text>
+<text x="808" y="2840" class="small">F = F_c + γ · F̃</text>
+<text x="808" y="2869" class="small">γ = 0.6；本操作无学习参数</text>
+<path d="M1005,2590 L1005,2770" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M790,2570 L660,2570 L660,2725 L600,2725" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M600,2830 L790,2830" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="790" y="2970" width="430" height="110" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="790" y="2984" width="5" height="82" rx="2" fill="#3c7da7"/>
+<text x="808" y="3005" class="head">其余冻结 Transformer 块</text>
+<text x="808" y="3040" class="small">继续处理融合后的特征</text>
+<path d="M1005,2890 L1005,2970" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="790" y="3150" width="430" height="100" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="808" y="3185" class="head">噪声预测 ε</text>
+<text x="808" y="3220" class="small">进入 D 的组合与采样更新</text>
+<path d="M1005,3080 L1005,3150" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="2980" width="500" height="220" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3015" class="head">同一主干分别计算三种条件</text>
+<text x="118" y="3050" class="small">ε∅：不带内容与风格</text>
+<text x="118" y="3079" class="small">ε_c：仅带内容</text>
+<text x="118" y="3108" class="small">ε_cs：同时带内容与风格</text>
+<text x="118" y="3137" class="small">D 用三者进行 classifier-free guidance</text>
+<text x="118" y="3166" class="small">共享参数，不是三套扩散网络</text>
+<rect x="70" y="3390" width="1180" height="1130" rx="15" fill="#fff9f0" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="3433" class="section">D · 混合引导与采样：文本内容、风格特征共同影响结果</text>
+<text x="100" y="3467" class="small" style="fill:#607683">参数冻结仍可对输入 latent 求梯度；最终动作没有硬性关节 / 接触保持约束。</text>
+<rect x="100" y="3510" width="1120" height="140" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="3545" class="head">Classifier-free guidance（CFG）</text>
+<text x="118" y="3580" class="small">ε_CFG = ε∅ + w_c (ε_c − ε∅) + w_s (ε_cs − ε_c)</text>
+<text x="118" y="3609" class="small">w_c 控制内容贡献，w_s 控制风格贡献；与融合强度 γ 不同</text>
+<rect x="100" y="3730" width="500" height="160" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="100" y="3744" width="5" height="132" rx="2" fill="#3c7da7"/>
+<text x="118" y="3765" class="head">当前干净 latent 估计 ẑ_0</text>
+<text x="118" y="3800" class="small">由当前采样预测得到</text>
+<text x="118" y="3829" class="small">冻结的 MLD motion decoder</text>
+<text x="118" y="3858" class="small">解码得到当前动作估计 x̂_0</text>
+<rect x="720" y="3730" width="500" height="100" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="738" y="3765" class="head">② 参考动作（来自 B）</text>
+<text x="738" y="3800" class="small">直接提供，或经多模态检索得到</text>
+<path d="M350,3650 L350,3730" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="720" y="3910" width="500" height="170" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="720" y="3924" width="5" height="142" rx="2" fill="#3d9179"/>
+<text x="738" y="3945" class="head">预训练风格特征提取器 f</text>
+<text x="738" y="3980" class="small">编码当前预测与参考的风格</text>
+<text x="738" y="4009" class="small">比较二者的风格特征距离</text>
+<text x="738" y="4038" class="small">不擅自将 f 等同于 ψ</text>
+<path d="M970,3830 L970,3910" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M600,3810 L650,3810 L650,3990 L720,3990" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="4140" width="1120" height="125" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="4175" class="head">Classifier-based guidance：对 z_t 的特征距离梯度修正</text>
+<text x="118" y="4210" class="small">在 CFG 预测基础上加入风格梯度引导；τ = 2.3 是作者选定的权衡点</text>
+<text x="118" y="4239" class="small">增大 τ 可以增强风格，也可能损害内容、动作质量与脚滑</text>
+<path d="M970,4080 L970,4140" fill="none" stroke="#3d9179" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<rect x="100" y="4330" width="650" height="115" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="100" y="4344" width="5" height="87" rx="2" fill="#3c7da7"/>
+<text x="118" y="4365" class="head">采样更新：z_t → z_{t−1}</text>
+<text x="118" y="4400" class="small">常规生成共 50 步；未完成则回到 C</text>
+<rect x="850" y="4330" width="370" height="115" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="868" y="4365" class="head">最终解码与动作输出</text>
+<text x="868" y="4400" class="small">z_0 → 冻结 motion decoder</text>
+<text x="868" y="4429" class="small">→ 风格化骨架动作</text>
+<path d="M425,4265 L425,4330" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M750,4385 L850,4385" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="770" y="4365" class="label" style="fill:#3c7da7">终步</text>
+<text x="100" y="4490" class="small" style="fill:#607683">蓝色左侧回路为下一采样步；不等于实时逐帧生成。</text>
+<rect x="70" y="4590" width="1180" height="510" rx="15" fill="#f8f5ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="4633" class="section">E · 可选扩展：已有内容动作 → 反演初态 → 风格化去噪</text>
+<text x="100" y="4667" class="small" style="fill:#607683">此任务不需额外训练；源动作通过初态影响生成，不走全帧姿态硬拷贝旁路。</text>
+<rect x="100" y="4720" width="330" height="120" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="4755" class="head">要迁移风格的内容动作</text>
+<text x="118" y="4790" class="small">与 B 中的风格参考分开</text>
+<text x="118" y="4819" class="small">提供需要延续的动作内容</text>
+<rect x="490" y="4720" width="330" height="170" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<rect x="490" y="4734" width="5" height="142" rx="2" fill="#3c7da7"/>
+<text x="508" y="4755" class="head">VAE 编码 + DDIM 反演</text>
+<text x="508" y="4790" class="small">沿用 MLD 内容编码</text>
+<text x="508" y="4819" class="small">在无风格条件下反演</text>
+<text x="508" y="4848" class="small">保留内容文本条件</text>
+<rect x="880" y="4720" width="340" height="120" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="4755" class="head">对应噪声初态 z̄_T</text>
+<text x="898" y="4790" class="small">替代 C 的随机高斯初态</text>
+<text x="898" y="4819" class="small">此任务去噪使用 30 步</text>
+<path d="M430,4780 L490,4780" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M820,4780 L880,4780" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="4960" width="1120" height="100" rx="15" fill="#fff" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="4995" class="head">保持范围仍需看最终动作</text>
+<text x="118" y="5030" class="small">论文没有给逐关节源动作保持误差；反演初态与软引导不能推出根轨迹、接触或未编辑部位精确保留。</text>
+<text x="70" y="5170" class="small" style="fill:#607683">颜色：绿为数据 / 对齐 / 特征引导；紫为风格表示 / 融合；蓝为冻结生成主干与采样；橙为用户条件。</text>
+<text x="70" y="5210" class="small" style="fill:#607683">依据：ICCV 2025 主文图2、§3.2–3.3、§4.1；独立补充 C.1–C.4。原文与公开状态核验，未运行模型。</text>
+<text x="70" y="5250" class="small" style="fill:#607683">实线为数据流；虚线为训练产物、可选反演或标注的梯度关系。①②为跨分区复用的条件标号。</text>
+<path d="M100,2015 L30,2015 L30,2800 L100,2800" fill="none" stroke="#7d60b3" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1005,3250 L1005,3488 L660,3488 L660,3510" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1220,3580 L1240,3580 L1240,4200 L1220,4200" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M100,4385 L55,4385 L55,2305 L1005,2305 L1005,2320" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1220,4780 L1290,4780 L1290,2375 L1220,2375" fill="none" stroke="#b77d38" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+</svg>

@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2470" viewBox="0 0 1120 2470">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#51677f"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#16314b}.title{font-size:31px;font-weight:700}.section{font-size:25px;font-weight:700}.boxTitle{font-size:23px;font-weight:700}.body{font-size:21px}.small{font-size:19px}.muted{fill:#52687b}.line{fill:none;stroke:#51677f;stroke-width:2.5;stroke-linejoin:round;marker-end:url(#arrow)}</style>
+<rect width="1120" height="2470" fill="#f6f8fc"/>
+<text x="45" y="50" class="title" text-anchor="start">AMUSE：音频三因素 → 可编辑的身体手势</text>
+<text x="45" y="87" class="body muted" text-anchor="start">中文教学示意 · CVPR 2024 · 音频先训练并冻结，动作先验与扩散器再联合训练</text>
+<rect x="28" y="118" width="1064" height="670" rx="20" fill="white" stroke="#d7e0eb" stroke-width="2"/>
+<text x="55" y="155" class="section" text-anchor="start">A · 训练音频分解器</text>
+<text x="55" y="186" class="small muted" text-anchor="start">四段音频：同一情绪 e；两个说话人 × 两个共同脚本。仅此阶段重建音频。</text>
+<rect x="60" y="210" width="1000" height="72" rx="12" fill="#eaf3ff" stroke="#9cbadc" stroke-width="1.7"/>
+<text x="560.0" y="244" class="boxTitle" text-anchor="middle">10 秒语音 → 128 频带 filterbank</text>
+<path d="M560,282 L560,302 L200,302 L200,325" class="line"/>
+<path d="M560,302 L560,325" class="line"/>
+<path d="M560,302 L920,302 L920,325" class="line"/>
+<rect x="60" y="325" width="280" height="127" rx="12" fill="#eaf3ff" stroke="#9cbadc" stroke-width="1.7"/>
+<text x="200.0" y="359" class="boxTitle" text-anchor="middle">内容编码器 E_c</text>
+<text x="200.0" y="390" class="body" text-anchor="middle">c：256 维连续向量</text>
+<text x="200.0" y="419" class="body" text-anchor="middle">监督：相同话语拉近</text>
+<rect x="420" y="325" width="280" height="127" rx="12" fill="#eaf3ff" stroke="#9cbadc" stroke-width="1.7"/>
+<text x="560.0" y="359" class="boxTitle" text-anchor="middle">情绪编码器 E_e</text>
+<text x="560.0" y="390" class="body" text-anchor="middle">e：256 维连续向量</text>
+<text x="560.0" y="419" class="body" text-anchor="middle">监督：8 类情绪标签</text>
+<rect x="780" y="325" width="280" height="127" rx="12" fill="#eaf3ff" stroke="#9cbadc" stroke-width="1.7"/>
+<text x="920.0" y="359" class="boxTitle" text-anchor="middle">风格编码器 E_s</text>
+<text x="920.0" y="390" class="body" text-anchor="middle">s：256 维连续向量</text>
+<text x="920.0" y="419" class="body" text-anchor="middle">监督：说话人身份</text>
+<path d="M200,452 L200,478 L560,478 L560,508" class="line"/>
+<path d="M560,452 L560,478" class="line"/>
+<path d="M920,452 L920,478 L560,478" class="line"/>
+<rect x="60" y="508" width="1000" height="95" rx="12" fill="#eaf3ff" stroke="#9cbadc" stroke-width="1.7"/>
+<text x="560.0" y="542" class="boxTitle" text-anchor="middle">自重建 / 合法交换 → Fusion + Decoder</text>
+<text x="560.0" y="573" class="body" text-anchor="middle">三路向量组合后重建原 filterbank；decoder 不参与动作推理</text>
+<path d="M560,603 L560,634" class="line"/>
+<rect x="60" y="634" width="1000" height="116" rx="12" fill="#fff4e3" stroke="#d8b57e" stroke-width="1.7"/>
+<text x="560.0" y="668" class="boxTitle" text-anchor="middle">用不变因素监督交换</text>
+<text x="560.0" y="699" class="body" text-anchor="middle">同内容跨人交换 c；同人、同情绪、不同话语交换 e 或 s</text>
+<text x="560.0" y="728" class="body" text-anchor="middle">自重建 + 三种跨重建 + 内容距离 + 两类分类损失</text>
+<rect x="28" y="820" width="1064" height="805" rx="20" fill="white" stroke="#d7e0eb" stroke-width="2"/>
+<text x="55" y="857" class="section" text-anchor="start">B · 联合训练动作 VAE 与条件扩散</text>
+<text x="55" y="888" class="small muted" text-anchor="start">同步真实动作 + 音频。音频编码器冻结；下列三条路径分别承担不同训练职责。</text>
+<rect x="60" y="915" width="280" height="125" rx="12" fill="#f0ebff" stroke="#b5a1d7" stroke-width="1.7"/>
+<text x="200.0" y="949" class="boxTitle" text-anchor="middle">真实姿态 → P_E</text>
+<text x="200.0" y="980" class="body" text-anchor="middle">30 fps / 10 秒</text>
+<text x="200.0" y="1009" class="body" text-anchor="middle">VAE 编码为分布</text>
+<rect x="420" y="915" width="280" height="125" rx="12" fill="#f0ebff" stroke="#b5a1d7" stroke-width="1.7"/>
+<text x="560.0" y="949" class="boxTitle" text-anchor="middle">连续动作潜变量 z_m</text>
+<text x="560.0" y="980" class="body" text-anchor="middle">重参数化采样</text>
+<text x="560.0" y="1009" class="body" text-anchor="middle">KL 约束潜空间</text>
+<rect x="780" y="915" width="280" height="125" rx="12" fill="#f0ebff" stroke="#b5a1d7" stroke-width="1.7"/>
+<text x="920.0" y="949" class="boxTitle" text-anchor="middle">P_D → 重建姿态</text>
+<text x="920.0" y="980" class="body" text-anchor="middle">姿态 / 顶点重建损失</text>
+<text x="920.0" y="1009" class="body" text-anchor="middle">更新 P_E 与 P_D</text>
+<path d="M340,977 L420,977" class="line"/>
+<path d="M700,977 L780,977" class="line"/>
+<path d="M560,1040 L560,1072 L200,1072 L200,1112" class="line"/>
+<rect x="60" y="1112" width="280" height="125" rx="12" fill="#fff4e3" stroke="#d8b57e" stroke-width="1.7"/>
+<text x="200.0" y="1146" class="boxTitle" text-anchor="middle">sg(z_m) → 加噪 z_t</text>
+<text x="200.0" y="1177" class="body" text-anchor="middle">断开到 P_E 的梯度</text>
+<text x="200.0" y="1206" class="body" text-anchor="middle">添加已知高斯噪声</text>
+<rect x="420" y="1112" width="280" height="125" rx="12" fill="#f0ebff" stroke="#b5a1d7" stroke-width="1.7"/>
+<text x="560.0" y="1146" class="boxTitle" text-anchor="middle">条件去噪器 Δ</text>
+<text x="560.0" y="1177" class="body" text-anchor="middle">输入 z_t、t、c/e/s</text>
+<text x="560.0" y="1206" class="body" text-anchor="middle">预测添加的噪声</text>
+<rect x="780" y="1112" width="280" height="125" rx="12" fill="#eaf3ff" stroke="#9cbadc" stroke-width="1.7"/>
+<text x="920.0" y="1146" class="boxTitle" text-anchor="middle">同步音频条件</text>
+<text x="920.0" y="1177" class="body" text-anchor="middle">冻结的 E_c / E_e / E_s</text>
+<text x="920.0" y="1206" class="body" text-anchor="middle">输出 c、e、s</text>
+<path d="M340,1174 L420,1174" class="line"/>
+<path d="M780,1174 L700,1174" class="line"/>
+<path d="M560,1237 L560,1265" class="line"/>
+<rect x="420" y="1265" width="280" height="66" rx="12" fill="#fff4e3" stroke="#d8b57e" stroke-width="1.7"/>
+<text x="560.0" y="1299" class="boxTitle" text-anchor="middle">L_LD 只更新 Δ</text>
+<rect x="60" y="1390" width="280" height="125" rx="12" fill="#f0ebff" stroke="#b5a1d7" stroke-width="1.7"/>
+<text x="200.0" y="1424" class="boxTitle" text-anchor="middle">新噪声 + 同音频条件</text>
+<text x="200.0" y="1455" class="body" text-anchor="middle">从随机噪声开始</text>
+<text x="200.0" y="1484" class="body" text-anchor="middle">生成完整动作潜变量</text>
+<rect x="420" y="1390" width="280" height="125" rx="12" fill="#fff4e3" stroke="#d8b57e" stroke-width="1.7"/>
+<text x="560.0" y="1424" class="boxTitle" text-anchor="middle">Δ 完整去噪 → sg</text>
+<text x="560.0" y="1455" class="body" text-anchor="middle">生成结果再次断梯度</text>
+<text x="560.0" y="1484" class="body" text-anchor="middle">不沿此路径更新 Δ</text>
+<rect x="780" y="1390" width="280" height="125" rx="12" fill="#f0ebff" stroke="#b5a1d7" stroke-width="1.7"/>
+<text x="920.0" y="1424" class="boxTitle" text-anchor="middle">复用 P_D → 生成姿态</text>
+<text x="920.0" y="1455" class="body" text-anchor="middle">姿态 / 顶点对齐损失</text>
+<text x="920.0" y="1484" class="body" text-anchor="middle">此路径只更新 P_D</text>
+<path d="M340,1452 L420,1452" class="line"/>
+<path d="M700,1452 L780,1452" class="line"/>
+<text x="60" y="1560" class="body muted" text-anchor="start">“联合”不等于所有损失都反传到所有模块；sg 仅标出训练梯度边界。</text>
+<text x="60" y="1592" class="small muted" text-anchor="start">动作来自 marker → MoSh++ → SMPL-X；不是预先冻结动作 VAE 后只训扩散。</text>
+<rect x="28" y="1655" width="1064" height="712" rx="20" fill="white" stroke="#d7e0eb" stroke-width="2"/>
+<text x="55" y="1692" class="section" text-anchor="start">C · 推理：选择因素来源，再从噪声生成</text>
+<text x="55" y="1723" class="small muted" text-anchor="start">只需要驱动音频和可选参考音频；真实目标动作、音频重建 decoder、P_E 均不必输入。</text>
+<rect x="60" y="1752" width="465" height="96" rx="12" fill="#eaf3ff" stroke="#9cbadc" stroke-width="1.7"/>
+<text x="292.5" y="1786" class="boxTitle" text-anchor="middle">驱动音频 A</text>
+<text x="292.5" y="1817" class="body" text-anchor="middle">提取 c_A、e_A、s_A</text>
+<rect x="595" y="1752" width="465" height="96" rx="12" fill="#eaf3ff" stroke="#9cbadc" stroke-width="1.7"/>
+<text x="827.5" y="1786" class="boxTitle" text-anchor="middle">可选参考音频 B</text>
+<text x="827.5" y="1817" class="body" text-anchor="middle">提取需要的 e_B / s_B；不是 3D 动作</text>
+<path d="M292,1848 L292,1874 L560,1874 L560,1900" class="line"/>
+<path d="M827,1848 L827,1874 L560,1874" class="line"/>
+<rect x="60" y="1900" width="1000" height="118" rx="12" fill="#eaf3ff" stroke="#9cbadc" stroke-width="1.7"/>
+<text x="560.0" y="1934" class="boxTitle" text-anchor="middle">条件选择：保留内容，按需要替换情绪或个人风格</text>
+<text x="560.0" y="1965" class="body" text-anchor="middle">原样 (c_A,e_A,s_A)　换情绪 (c_A,e_B,s_A)</text>
+<text x="560.0" y="1994" class="body" text-anchor="middle">换风格 (c_A,e_A,s_B)　联合换 (c_A,e_B,s_B)</text>
+<rect x="60" y="2068" width="280" height="100" rx="12" fill="#e9f7ee" stroke="#8ebaa1" stroke-width="1.7"/>
+<text x="200.0" y="2102" class="boxTitle" text-anchor="middle">高斯噪声</text>
+<text x="200.0" y="2133" class="body" text-anchor="middle">不同种子 → 多种动作</text>
+<rect x="420" y="2068" width="280" height="100" rx="12" fill="#f0ebff" stroke="#b5a1d7" stroke-width="1.7"/>
+<text x="560.0" y="2102" class="boxTitle" text-anchor="middle">Δ：DDIM 50 步</text>
+<text x="560.0" y="2133" class="body" text-anchor="middle">连续动作潜变量</text>
+<rect x="780" y="2068" width="280" height="100" rx="12" fill="#e9f7ee" stroke="#8ebaa1" stroke-width="1.7"/>
+<text x="920.0" y="2102" class="boxTitle" text-anchor="middle">P_D 解码姿态</text>
+<text x="920.0" y="2133" class="body" text-anchor="middle">47 关节的 6D 旋转</text>
+<path d="M560,2018 L560,2068" class="line"/>
+<path d="M340,2118 L420,2118" class="line"/>
+<path d="M700,2118 L780,2118" class="line"/>
+<path d="M920,2168 L920,2192 L560,2192 L560,2217" class="line"/>
+<rect x="60" y="2217" width="1000" height="106" rx="12" fill="#e9f7ee" stroke="#8ebaa1" stroke-width="1.7"/>
+<text x="560.0" y="2251" class="boxTitle" text-anchor="middle">SMPL-X + 指定体型 → 3D 手势</text>
+<text x="560.0" y="2282" class="body" text-anchor="middle">主要覆盖上身、骨盆、手指；8 个下身关节不建模，面部表情 ψ=0</text>
+<text x="45" y="2406" class="body muted" text-anchor="start">适用边界：块级生成；非精确语言指令执行、非硬接触控制，也未证明完整实时流式。</text>
+<text x="45" y="2440" class="small muted" text-anchor="start">依据：主文图 2、§3–4；补充图 A.1–A.7。蓝：音频；紫：动作模型；橙：监督；绿：输出。</text>
+</svg>
