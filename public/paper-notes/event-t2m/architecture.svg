@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="3010" viewBox="0 0 1320 3010" role="img" aria-labelledby="title desc">
+<title id="title">Event-T2M：文本事件分解与条件动作扩散</title>
+<desc id="desc">四区展示提示式Gemini分解、冻结TMR的全局与事件两路条件、局部和Conformer去噪结构、训练及UniPC采样。运动自注意力和事件交叉注意力同时保留；事件条件没有起止帧与硬顺序约束。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203747}.title{font-size:32px;font-weight:700}.section{font-size:27px;font-weight:700}.head{font-size:23px;font-weight:700}.body{font-size:22px}.small{font-size:20px}.label{font-size:20px;font-weight:600}</style>
+<rect width="1320" height="3010" fill="#fff"/>
+<text x="70" y="53" class="title">Event-T2M：用完整事件条件指导整段动作生成</text>
+<text x="70" y="96" class="body" style="fill:#607683">ICLR 2026 · arXiv v2｜教学重绘；连续运动特征，不是离散动作码生成</text>
+<rect x="70" y="140" width="1180" height="620" rx="15" fill="#f2f7fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="183" class="section">A · 文本分解与两路条件：生成前可预处理、缓存</text>
+<text x="100" y="217" class="small" style="fill:#607683">Gemini 使用提示词，不为本任务微调；TMR 复用动作感知文本编码器，并保持冻结。</text>
+<rect x="100" y="255" width="330" height="125" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="290" class="head">完整动作描述 W</text>
+<text x="118" y="325" class="small">主体、动作、方向、先后关系</text>
+<text x="118" y="354" class="small">保留原句，不只留下动词</text>
+<rect x="480" y="255" width="330" height="125" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="498" y="290" class="head">Gemini 2.5 Flash</text>
+<text x="498" y="325" class="small">提示式分解；保留修饰词</text>
+<text x="498" y="354" class="small">并发动作可组成一个事件</text>
+<rect x="860" y="255" width="360" height="125" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="878" y="290" class="head">事件子句 C₁…Cₖ</text>
+<text x="878" y="325" class="small">各自语义完整、可独立解释</text>
+<text x="878" y="354" class="small">无 start / end / duration</text>
+<path d="M430,317 L480,317" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M810,317 L860,317" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="465" width="330" height="135" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="500" class="head">TMR · 编码原句</text>
+<text x="118" y="535" class="small">冻结的预训练文本编码器</text>
+<text x="118" y="564" class="small">不是检索真实动作片段</text>
+<rect x="480" y="465" width="330" height="135" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="498" y="500" class="head">全局条件 G</text>
+<text x="498" y="535" class="small">保存整句上下文</text>
+<text x="498" y="564" class="small">注入 ATII 门控</text>
+<rect x="860" y="465" width="360" height="135" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="878" y="500" class="head">TMR · 分别编码子句</text>
+<text x="878" y="535" class="small">同一冻结编码器 → E₁…Eₖ</text>
+<text x="878" y="564" class="small">连续向量，注入 ECA</text>
+<path d="M265,380 L265,465" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M430,532 L480,532" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1040,380 L1040,465" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="100" y="665" class="body">原句 G 与事件 E 都参与生成；事件列表不是已对齐的动作时间表。</text>
+<text x="100" y="707" class="small" style="fill:#607683">当前采样入口读取准备好的事件列表；Gemini 调用位于独立预处理脚本。</text>
+<rect x="70" y="800" width="1180" height="900" rx="15" fill="#f8f5fc" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="843" class="section">B · 去噪网络：局部建模 + 全局语义 + 事件软对齐</text>
+<text x="100" y="877" class="small" style="fill:#607683">展开核心顺序；self-attention 与 ECA 并存。四块堆叠，残差与归一化细节省略。</text>
+<rect x="100" y="920" width="280" height="135" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="955" class="head">带噪运动 xₜ + 步数 t</text>
+<text x="118" y="990" class="small">连续运动特征投影</text>
+<text x="118" y="1019" class="small">运动时间位置信息</text>
+<rect x="440" y="920" width="280" height="135" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="458" y="955" class="head">LIMM · 局部建模</text>
+<text x="458" y="990" class="small">深度 / 逐点卷积</text>
+<text x="458" y="1019" class="small">短时相邻运动上下文</text>
+<rect x="780" y="920" width="440" height="135" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="798" y="955" class="head">ATII · 自适应全局文本注入</text>
+<text x="798" y="990" class="small">运动降采样为 patches（因子 8）</text>
+<text x="798" y="1019" class="small">按当前 patch 对 G 门控并融合</text>
+<path d="M380,987 L440,987" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M720,987 L780,987" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="420" y="1110" width="300" height="70" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="438" y="1145" class="head">事件 E · 来自 A</text>
+<rect x="860" y="1110" width="300" height="70" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="878" y="1145" class="head">全局 G · 来自 A</text>
+<path d="M1010,1110 L1010,1055" fill="none" stroke="#3d9179" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M800,1055 L800,1080 L235,1080 L235,1230" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1230" width="270" height="145" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1265" class="head">FFN → 运动自注意力</text>
+<text x="118" y="1300" class="small">查询整段运动上下文</text>
+<text x="118" y="1329" class="small">并非逐帧因果生成</text>
+<rect x="420" y="1230" width="300" height="145" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="438" y="1265" class="head">ECA · 事件交叉注意力</text>
+<text x="438" y="1300" class="small">Q：运动；K / V：事件 E</text>
+<text x="438" y="1329" class="small">软分配关注权重</text>
+<rect x="770" y="1230" width="220" height="145" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="788" y="1265" class="head">Conformer Conv</text>
+<text x="788" y="1300" class="small">GLU + 深度卷积</text>
+<text x="788" y="1329" class="small">补充局部变化</text>
+<rect x="1040" y="1230" width="180" height="145" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="1058" y="1265" class="head">FFN</text>
+<text x="1058" y="1300" class="small">前馈变换</text>
+<text x="1058" y="1329" class="small">残差连接</text>
+<path d="M370,1302 L420,1302" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M720,1302 L770,1302" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M990,1302 L1040,1302" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M570,1180 L570,1230" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="100" y="1480" width="280" height="135" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1515" class="head">逐帧特征旁路</text>
+<text x="118" y="1550" class="small">保留原时间分辨率</text>
+<text x="118" y="1579" class="small">供回扩后的特征融合</text>
+<rect x="440" y="1480" width="430" height="135" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="458" y="1515" class="head">patch 回扩 → 与逐帧特征融合</text>
+<text x="458" y="1550" class="small">重复回原时间长度，拼接与映射</text>
+<text x="458" y="1579" class="small">降采样不意味着丢弃输出帧</text>
+<rect x="930" y="1480" width="290" height="135" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="948" y="1515" class="head">LIMM → 后续处理</text>
+<text x="948" y="1550" class="small">四块后统一输出投影</text>
+<text x="948" y="1579" class="small">得到完整动作预测 x̂₀</text>
+<path d="M580,1055 L580,1067 L85,1067 L85,1547 L100,1547" fill="none" stroke="#3c7da7" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1130,1375 L1130,1425 L655,1425 L655,1480" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M380,1547 L440,1547" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M870,1547 L930,1547" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="100" y="1660" class="small" style="fill:#607683">事件无显式 index 位置编码（当前代码）；软注意力不保证事件顺序或完成。</text>
+<rect x="70" y="1740" width="1180" height="500" rx="15" fill="#f1f7f3" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="1783" class="section">C · 训练：真实动作加噪，以整段干净动作监督</text>
+<text x="100" y="1817" class="small" style="fill:#607683">可训练的是去噪网络；Gemini 不参与梯度，TMR 保持冻结。</text>
+<rect x="100" y="1860" width="300" height="135" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="1895" class="head">配对真实动作 x₀</text>
+<text x="118" y="1930" class="small">采样 t 和 Gaussian 噪声</text>
+<text x="118" y="1959" class="small">前向扩散 → xₜ</text>
+<rect x="470" y="1860" width="340" height="135" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="1895" class="head">条件去噪器 φθ</text>
+<text x="488" y="1930" class="small">xₜ、t、G、E → x̂₀</text>
+<text x="488" y="1959" class="small">文本条件 dropout 0.2</text>
+<rect x="880" y="1860" width="340" height="135" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="1895" class="head">重建干净动作的 MSE</text>
+<text x="898" y="1930" class="small">比较 x̂₀ 与真实 x₀</text>
+<text x="898" y="1959" class="small">没有逐事件边界监督</text>
+<path d="M400,1927 L470,1927" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M810,1927 L880,1927" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M250,1995 L250,2040 L1050,2040 L1050,1995" fill="none" stroke="#3d9179" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<text x="100" y="2100" class="body">两路文本条件取自 A；训练 1,000 扩散步，4 块 / hidden 256。</text>
+<text x="100" y="2140" class="small" style="fill:#607683">2 × RTX 4090；HumanML3D 600 epochs，KIT-ML 1,000 epochs。</text>
+<text x="100" y="2180" class="small" style="fill:#607683">HumanML3D-E 是按事件数重组的测试子集，不额外提供动作时间切分。</text>
+<rect x="70" y="2280" width="1180" height="620" rx="15" fill="#fff8ee" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="100" y="2323" class="section">D · 生成：两路文本条件贯穿整段采样，不逐事件拼接</text>
+<text x="100" y="2357" class="small" style="fill:#607683">总帧数由调用者提供；没有源动作、关键帧硬锁或逐事件执行状态。</text>
+<rect x="100" y="2400" width="300" height="140" rx="15" fill="#eaf3fb" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2435" class="head">初始条件</text>
+<text x="118" y="2470" class="small">总帧数 L → Gaussian xT</text>
+<text x="118" y="2499" class="small">原句 G + 事件 E（A 区）</text>
+<rect x="470" y="2400" width="340" height="140" rx="15" fill="#f0ebfa" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="488" y="2435" class="head">复用同一去噪器</text>
+<text x="488" y="2470" class="small">xₜ、t、G、E → 干净预测</text>
+<text x="488" y="2499" class="small">条件与无条件分支</text>
+<rect x="880" y="2400" width="340" height="140" rx="15" fill="#fff2df" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="898" y="2435" class="head">CFG + UniPC 更新</text>
+<text x="898" y="2470" class="small">CFG scale 4，采样 10 步</text>
+<text x="898" y="2499" class="small">更新 xₜ → 更干净的状态</text>
+<path d="M400,2470 L470,2470" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M810,2470 L880,2470" fill="none" stroke="#718a97" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<path d="M1050,2540 L1050,2590 L640,2590 L640,2540" fill="none" stroke="#b77d38" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="725" y="2625" class="small" style="fill:#b77d38">采样迭代</text>
+<rect x="100" y="2680" width="1120" height="125" rx="15" fill="#e8f4ed" stroke="#b9ced8" stroke-width="1.5"/>
+<text x="118" y="2715" class="head">输出：完整连续动作序列</text>
+<text x="118" y="2750" class="small">当前入口重建 HumanML3D 22 关节；事件不是带起止帧的输出对象。</text>
+<text x="118" y="2779" class="small">逐事件是否遗漏、顺序与次数是否正确，需要检查生成结果，而不能只看切分文本。</text>
+<path d="M1220,2470 L1235,2470 L1235,2740 L1220,2740" fill="none" stroke="#3d9179" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<text x="100" y="2860" class="small" style="fill:#607683">附录采用 UniPC；正文称“10-step DDPM”。不同版本表述和实现差异见正文。</text>
+<text x="70" y="2960" class="small" style="fill:#607683">实线：数据与采样更新　虚线：监督对照｜图 1、§3、附录 A.1；输入接口与回扩参考当前代码</text>
+</svg>
