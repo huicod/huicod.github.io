@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1280" viewBox="0 0 1100 1280"><defs><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#52657b"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#18334b}.h{font-weight:700;font-size:23px}.t{font-size:19px}.s{font-size:16px}.b{font-size:20px;font-weight:600}</style><rect width="1100" height="1280" fill="#f6f9fd"/>
+<text x="34" y="43" class="h">SFD：语义先行的异步潜空间扩散</text>
+<text x="34" y="73" class="s">图像生成 · 连续潜变量 · 原创教学示意，依据 CVPR 2026 正文与补充</text>
+<rect x="24" y="98" width="1052" height="340" rx="18" fill="#edf3f9" stroke="#d3dfeb"/>
+<text x="45" y="134" class="h">① 训练表示：独立压缩语义与纹理</text>
+<rect x="50" y="162" width="175" height="80" rx="12" fill="#fff" stroke="#b8c9d9"/>
+<text x="66" y="191" class="b">真实图像</text>
+<text x="66" y="218" class="s">256 × 256</text>
+<rect x="280" y="153" width="260" height="94" rx="12" fill="#e6efff" stroke="#b8c9d9"/>
+<text x="296" y="182" class="b">冻结 DINOv2-B-reg</text>
+<text x="296" y="209" class="s">空间 patch 特征</text>
+<text x="296" y="236" class="s">每位置 768 维</text>
+<rect x="600" y="153" width="425" height="94" rx="12" fill="#e6efff" stroke="#b8c9d9"/>
+<text x="616" y="182" class="b">预训练 SemVAE → 语义 s₁</text>
+<text x="616" y="209" class="s">编码 / 解码：各 4 个 Transformer 块</text>
+<text x="616" y="236" class="s">重建特征：MSE + cosine + KL</text>
+<rect x="280" y="286" width="260" height="86" rx="12" fill="#e6f4ed" stroke="#b8c9d9"/>
+<text x="296" y="315" class="b">冻结 SD-VAE f16d32</text>
+<text x="296" y="342" class="s">图像重建通路</text>
+<rect x="600" y="286" width="425" height="86" rx="12" fill="#e6f4ed" stroke="#b8c9d9"/>
+<text x="616" y="315" class="b">纹理 z₁ + 语义 s₁</text>
+<text x="616" y="342" class="s">16 × 16 × (32 + 16)</text>
+<text x="616" y="369" class="s">通道拼接，共 256 个空间位置</text>
+<polyline points="225,202 280,202" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<polyline points="540,202 600,202" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<polyline points="137,242 137,329 280,329" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<polyline points="540,329 600,329" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<polyline points="812,247 812,286" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="52" y="413" class="s">SemVAE 学完后冻结；没有离散码本，也没有自然语言规划器。</text>
+<rect x="24" y="458" width="1052" height="320" rx="18" fill="#edf3f9" stroke="#d3dfeb"/>
+<text x="45" y="494" class="h">② 扩散训练：同一个模型看见两种噪声水平</text>
+<rect x="50" y="522" width="320" height="120" rx="12" fill="#e8efff" stroke="#b8c9d9"/>
+<text x="66" y="551" class="b">两路各自加入高斯噪声</text>
+<text x="66" y="578" class="s">tₛ = min(u, 1)</text>
+<text x="66" y="605" class="s">t𝓏 = max(u − Δ, 0)</text>
+<text x="66" y="632" class="s">Δ = 0.3；语义时间更靠近 1</text>
+<rect x="425" y="522" width="315" height="120" rx="12" fill="#fff" stroke="#b8c9d9"/>
+<text x="441" y="551" class="b">LightningDiT</text>
+<text x="441" y="578" class="s">输入：带噪语义 + 纹理</text>
+<text x="441" y="605" class="s">条件：双时间嵌入 + 类别 y</text>
+<text x="441" y="632" class="s">联合预测语义 / 纹理速度</text>
+<rect x="795" y="522" width="230" height="120" rx="12" fill="#fff3dc" stroke="#b8c9d9"/>
+<text x="811" y="551" class="b">速度监督 + REPA</text>
+<text x="811" y="578" class="s">语义速度权重 β = 2</text>
+<text x="811" y="605" class="s">浅层对齐干净</text>
+<text x="811" y="632" class="s">DINOv2 特征</text>
+<polyline points="370,582 425,582" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<polyline points="740,582 795,582" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<polyline points="812,372 812,448 38,448 38,570 50,570" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="52" y="684" class="t">流匹配方向：0 = 噪声，1 = 数据；两路在中间阶段共同更新。</text>
+<text x="52" y="718" class="s">训练表示来自真实图像；推理无需参考图像，直接从两路噪声开始。</text>
+<text x="52" y="750" class="s">主文均匀采样公式说明时钟关系；补充与代码采用 logit-normal 时间采样。</text>
+<rect x="24" y="798" width="1052" height="430" rx="18" fill="#edf3f9" stroke="#d3dfeb"/>
+<text x="45" y="834" class="h">③ 推理：三阶段协作，最终只解码纹理</text>
+<rect x="50" y="866" width="300" height="110" rx="12" fill="#e6efff" stroke="#b8c9d9"/>
+<text x="66" y="895" class="b">阶段一：语义启动</text>
+<text x="66" y="922" class="s">u：0 → 0.3</text>
+<text x="66" y="949" class="s">只更新 s；z 保持初始噪声</text>
+<rect x="400" y="866" width="300" height="110" rx="12" fill="#f0ebff" stroke="#b8c9d9"/>
+<text x="416" y="895" class="b">阶段二：错时联合</text>
+<text x="416" y="922" class="s">u：0.3 → 1.0</text>
+<text x="416" y="949" class="s">同时更新 s、z；语义领先</text>
+<rect x="750" y="866" width="275" height="110" rx="12" fill="#e6f4ed" stroke="#b8c9d9"/>
+<text x="766" y="895" class="b">阶段三：纹理收尾</text>
+<text x="766" y="922" class="s">u：1.0 → 1.3</text>
+<text x="766" y="949" class="s">s 固定；继续更新 z</text>
+<polyline points="350,922 400,922" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<polyline points="700,922 750,922" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="50" y="1035" width="300" height="106" rx="12" fill="#fff" stroke="#b8c9d9"/>
+<text x="66" y="1064" class="b">两路随机噪声 + 类别</text>
+<text x="66" y="1091" class="s">每步复用训练好的 DiT</text>
+<text x="66" y="1118" class="s">可选 AutoGuidance 弱模型</text>
+<polyline points="200,1035 200,976" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="400" y="1035" width="300" height="106" rx="12" fill="#e6f4ed" stroke="#b8c9d9"/>
+<text x="416" y="1064" class="b">纹理 z₁ → SD-VAE 解码</text>
+<text x="416" y="1091" class="s">语义 s₁ 完成后丢弃</text>
+<text x="416" y="1118" class="s">SemVAE 不负责输出 RGB</text>
+<rect x="750" y="1035" width="275" height="106" rx="12" fill="#fff" stroke="#b8c9d9"/>
+<text x="766" y="1064" class="b">生成图像</text>
+<text x="766" y="1091" class="s">256 × 256</text>
+<text x="766" y="1118" class="s">类别条件 / 无类别实验</text>
+<polyline points="887,976 887,1003 550,1003 550,1035" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<polyline points="700,1088 750,1088" fill="none" stroke="#52657b" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="52" y="1190" class="s">有引导结果需额外弱模型；100× 指训练迭代收敛比较，不是单图推理提速。</text>
+<text x="34" y="1260" class="s">范围：ImageNet 图像实验；对人体动作的迁移仍是待验证假设。</text>
+</svg>

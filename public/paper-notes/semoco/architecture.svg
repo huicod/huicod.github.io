@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="2760" viewBox="0 0 1320 2760" role="img" aria-labelledby="title desc">
+<title id="title">SeMoCo：语义优先动作编码与双轴生成</title>
+<desc id="desc">三分区展示语义VQ与完整运动学RVQ并行、冻结codec后的双轴训练、文本生成和独立动作预测的完整输入输出。语义监督只在训练使用，生成码不可读且不保证动作硬保持。</desc>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#243a4b}.title{font-size:32px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1320" height="2760" fill="white"/>
+<text x="60" y="52" class="title">SeMoCo：每个时间片先语义，再补运动细节</text>
+<text x="60" y="94" class="body">arXiv 2026 · v2｜一个 packet = 1 枚语义码 + 15 枚运动学码</text>
+<rect x="60" y="130" width="1200" height="1030" rx="15" fill="#f2f7fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="172" class="head">A · codec 训练：两条量化支路，窗口语义与动作重建共同监督</text>
+<text x="90" y="208" class="small">输入统一到 SOMA77 / 50 Hz；初始全局状态 a 单独保存，运动变化编码为 UMR499。</text>
+<rect x="90" y="250" width="300" height="130" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="285" class="head">真实动作 X</text>
+<text x="108" y="320" class="body">规范化 → transition u</text>
+<text x="108" y="349" class="body">分离初始 anchor a</text>
+<rect x="450" y="250" width="330" height="130" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="468" y="285" class="head">可训练卷积编码器 E</text>
+<text x="468" y="320" class="body">时间压缩 4 倍 → 特征 h</text>
+<text x="468" y="349" class="body">12.5 Hz；512 维</text>
+<rect x="900" y="250" width="330" height="130" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="918" y="285" class="head">冻结 TMR 动作教师</text>
+<text x="918" y="320" class="body">读取真实动作窗口</text>
+<text x="918" y="349" class="body">输出整窗语义描述</text>
+<path d="M390,315 L450,315" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M240,250 L240,225 L1065,225 L1065,250" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)" stroke-dasharray="7 6"/>
+<rect x="160" y="470" width="410" height="150" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="178" y="505" class="head">语义投影 → 单层 VQ</text>
+<text x="178" y="540" class="body">完整 h 的一套投影</text>
+<text x="178" y="569" class="body">1 个码本；1,024 项</text>
+<text x="178" y="598" class="body">输出 qsem / zsem</text>
+<rect x="720" y="470" width="440" height="150" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="738" y="505" class="head">运动学投影 → 15 层 RVQ</text>
+<text x="738" y="540" class="body">完整 h 的另一套投影</text>
+<text x="738" y="569" class="body">不是 h − zsem</text>
+<text x="738" y="598" class="body">仅本分支内部逐级编码残差</text>
+<path d="M615,380 L615,420 L365,420 L365,470" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M615,420 L940,420 L940,470" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="730" width="390" height="140" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="765" class="head">窗口语义监督 · 仅训练</text>
+<text x="108" y="800" class="body">16 个语义嵌入 → 时间聚合</text>
+<text x="108" y="829" class="body">与 TMR 教师做余弦对齐</text>
+<rect x="540" y="730" width="330" height="140" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="558" y="765" class="head">量化输出投影并相加</text>
+<text x="558" y="800" class="body">zsem + zkin</text>
+<text x="558" y="829" class="body">共享重建空间</text>
+<rect x="930" y="730" width="300" height="140" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="948" y="765" class="head">可训练动作解码器</text>
+<text x="948" y="800" class="body">恢复 transition û</text>
+<text x="948" y="829" class="body">anchor + FK → X̂</text>
+<path d="M365,620 L365,730" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M570,545 L615,545 L615,730" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M940,620 L940,670 L785,670 L785,730" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M870,800 L930,800" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M1230,315 L1245,315 L1245,695 L280,695 L280,730" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)" stroke-dasharray="7 6"/>
+<text x="90" y="940" class="body">重建监督：关节位置、速度、加速度、接触脚速、量化损失。</text>
+<text x="90" y="980" class="body">语义分支始终保留；量化 dropout 只改变有效运动学层数。</text>
+<rect x="90" y="1025" width="1140" height="85" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1060" class="head">训练完成：冻结整个 codec；每段动作缓存为 [T, 16] 离散 packets</text>
+<rect x="60" y="1200" width="1200" height="420" rx="15" fill="#f7f3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="1242" class="head">B · 生成器训练：时间轴与码本轴共同学习</text>
+<text x="90" y="1278" class="small">冻结 codec 和 Flan-T5-XL；真实历史与当前 packet 已有码用于 teacher forcing。</text>
+<rect x="90" y="1320" width="320" height="150" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1355" class="head">训练输入</text>
+<text x="108" y="1390" class="body">缓存的真实 packets</text>
+<text x="108" y="1419" class="body">冻结文本特征 + 长度</text>
+<text x="108" y="1448" class="body">真实 EOS 目标</text>
+<rect x="465" y="1320" width="350" height="150" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="483" y="1355" class="head">可训练双轴生成器</text>
+<text x="483" y="1390" class="body">时间轴：下一枚语义码</text>
+<text x="483" y="1419" class="body">码本轴：当前十五级细节</text>
+<text x="483" y="1448" class="body">不把码本展平到时间轴</text>
+<rect x="870" y="1320" width="360" height="150" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="888" y="1355" class="head">码本交叉熵 + EOS</text>
+<text x="888" y="1390" class="body">两个轴都用真实历史</text>
+<text x="888" y="1419" class="body">文本 dropout 0.1</text>
+<text x="888" y="1448" class="body">codec 不接受梯度</text>
+<path d="M410,1395 L465,1395" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M815,1395 L870,1395" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="90" y="1540" class="body">文本生成与动作预测使用独立训练的模型；后者没有文本条件。</text>
+<text x="90" y="1580" class="small">模型规模改变时间主干；码本预测器和 codec 保持相同结构。</text>
+<rect x="60" y="1660" width="1200" height="980" rx="15" fill="#f1f7f3" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="1702" class="head">C · 推理：选择任务上下文，然后逐时间片完成 packet</text>
+<text x="90" y="1738" class="small">以下相同结构由对应任务权重实现；不表示单个检查点同时具备两种任务。</text>
+<rect x="90" y="1780" width="520" height="145" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1815" class="head">文本生成 · 文本 → 冻结 Flan-T5-XL</text>
+<text x="108" y="1850" class="body">文本特征 + motion-BOS 开始</text>
+<text x="108" y="1879" class="body">最终恢复使用固定规范化 anchor</text>
+<rect x="710" y="1780" width="520" height="145" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="728" y="1815" class="head">动作预测 · 观测动作 → 冻结 codec</text>
+<text x="728" y="1850" class="body">观测 packets 初始化历史，不输入文本</text>
+<text x="728" y="1879" class="body">最终恢复保留观测动作的 anchor</text>
+<rect x="90" y="2035" width="330" height="150" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="2070" class="head">时间 Transformer</text>
+<text x="108" y="2105" class="body">读取条件和已完成 packets</text>
+<text x="108" y="2134" class="body">预测下一时间片语义码</text>
+<text x="108" y="2163" class="body">文本模式另预测 EOS</text>
+<rect x="470" y="2035" width="360" height="150" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="488" y="2070" class="head">码本轴预测器</text>
+<text x="488" y="2105" class="body">时间状态 + 当前语义码</text>
+<text x="488" y="2134" class="body">依次生成 qkin¹…qkin¹⁵</text>
+<text x="488" y="2163" class="body">完成当前 packet</text>
+<rect x="880" y="2035" width="350" height="150" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="898" y="2070" class="head">完整 packet mₜ</text>
+<text x="898" y="2105" class="body">16 个索引各自查嵌入</text>
+<text x="898" y="2134" class="body">求和为一个时间 token</text>
+<text x="898" y="2163" class="body">加入历史，进入 t+1</text>
+<path d="M350,1925 L350,1980 L255,1980 L255,2035" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M970,1925 L970,1960 L435,1960 L435,2005 L255,2005 L255,2035" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M420,2110 L470,2110" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M830,2110 L880,2110" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M1055,2185 L1055,2230 L255,2230 L255,2185" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="490" y="2265" class="small">时间轴反馈：完整 packet 历史</text>
+<rect x="90" y="2330" width="330" height="155" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="2365" class="head">所有生成 packets</text>
+<text x="108" y="2400" class="body">分别反量化语义与运动学码</text>
+<text x="108" y="2429" class="body">投影后求和</text>
+<text x="108" y="2458" class="body">作为解码器输入</text>
+<rect x="470" y="2330" width="360" height="155" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="488" y="2365" class="head">冻结解码器 + 状态恢复</text>
+<text x="488" y="2400" class="body">上采样 → transition 恢复</text>
+<text x="488" y="2429" class="body">选定任务的 anchor + FK</text>
+<text x="488" y="2458" class="body">得到全身关节</text>
+<rect x="880" y="2330" width="350" height="155" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="898" y="2365" class="head">输出 50 Hz 动作</text>
+<text x="898" y="2400" class="body">语义码不是可读 CoT</text>
+<text x="898" y="2429" class="body">不保证逐帧硬保持</text>
+<text x="898" y="2458" class="body">接触和动态质量仍需验证</text>
+<path d="M1230,2110 L1245,2110 L1245,2295 L255,2295 L255,2330" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M420,2410 L470,2410" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M830,2410 L880,2410" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="90" y="2550" class="body">每个 packet 的所有码对应同一时间片；不是先生成整段语义前缀。</text>
+<text x="90" y="2595" class="small">时间模型因果 ≠ codec 零前视：当前发布卷积配置为非因果，论文无端到端延迟表。</text>
+<text x="60" y="2710" class="small">实线：数据 / 生成反馈　虚线：训练教师监督｜依据图 1–2、§3、附录 B.3–B.5 重绘</text>
+</svg>

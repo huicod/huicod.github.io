@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="2280" viewBox="0 0 1320 2280" role="img" aria-labelledby="title desc">
+<title id="title">LMR：先生成推理前缀，再生成执行序列</title>
+<desc id="desc">三分区展示执行表示预训练、冻结后的语义分支监督、两段自回归目标与文本生成。最终只有执行序列进入动作解码器，推理表示不是可读语言思维链。</desc>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#243a4b}.title{font-size:32px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1320" height="2280" fill="white"/>
+<text x="60" y="52" class="title">LMR：先生成运动计划，再展开动作细节</text>
+<text x="60" y="94" class="body">TPAMI 2026 · arXiv v2｜潜变量计划，不是自然语言思维链</text>
+<rect x="60" y="130" width="1200" height="850" rx="15" fill="#f2f7fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="172" class="head">A · 表示学习：执行重建先训练，语义分支后训练</text>
+<text x="90" y="208" class="small">以下展示离散版；连续版保留双流职责，但使用连续潜变量。</text>
+<rect x="90" y="250" width="245" height="135" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="285" class="head">真实动作 X</text>
+<text x="108" y="320" class="body">成对动作与文本</text>
+<text x="108" y="349" class="body">密集运动输入</text>
+<rect x="385" y="250" width="245" height="135" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="403" y="285" class="head">共享编码器 E</text>
+<text x="403" y="320" class="body">密集特征 H</text>
+<text x="403" y="349" class="body">先训练，随后冻结</text>
+<rect x="680" y="250" width="245" height="135" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="698" y="285" class="head">执行码本</text>
+<text x="698" y="320" class="body">Qexec → Sexec</text>
+<text x="698" y="349" class="body">重建优先</text>
+<rect x="975" y="250" width="255" height="135" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="993" y="285" class="head">动作解码器</text>
+<text x="993" y="320" class="body">恢复动作 X̂</text>
+<text x="993" y="349" class="body">重建损失监督</text>
+<path d="M335,317 L385,317" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M630,317 L680,317" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M925,317 L975,317" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="90" y="433" class="body">第 1 步：学习 E、执行码本与解码器；第 2 步：固定以上三者。</text>
+<rect x="90" y="510" width="290" height="145" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="545" class="head">冻结 E 的特征 H</text>
+<text x="108" y="580" class="body">来自真实动作</text>
+<text x="108" y="609" class="body">不重新优化执行表示</text>
+<rect x="440" y="510" width="340" height="145" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="458" y="545" class="head">可训练推理分支</text>
+<text x="458" y="580" class="body">轻量 Transformer + 降采样</text>
+<text x="458" y="609" class="body">Qreason → Sreason</text>
+<rect x="840" y="510" width="390" height="145" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="858" y="545" class="head">语义监督</text>
+<text x="858" y="580" class="body">池化 → 文本余弦对齐</text>
+<text x="858" y="609" class="body">动作表示 → 掩码词预测</text>
+<path d="M380,582 L440,582" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M780,582 L840,582" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="740" width="290" height="140" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="775" class="head">两条动作监督序列</text>
+<text x="108" y="810" class="body">执行：密集时间分辨率</text>
+<text x="108" y="839" class="body">推理：较短，最佳配置 1/4</text>
+<rect x="840" y="740" width="390" height="140" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="858" y="775" class="head">配对描述 W</text>
+<text x="858" y="810" class="body">冻结 BERT：对齐教师</text>
+<text x="858" y="839" class="body">被遮词：预测训练目标</text>
+<path d="M610,655 L610,700 L235,700 L235,740" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M1035,740 L1035,655" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)" stroke-dasharray="7 6"/>
+<text x="420" y="795" class="body">同一动作来源，两个学习目标</text>
+<text x="420" y="833" class="body">不强制信息完全互斥</text>
+<text x="90" y="938" class="small">BERT 与掩码词预测只服务表示训练；推理码没有预定义的自然语言名称。</text>
+<rect x="60" y="1020" width="1200" height="460" rx="15" fill="#f7f3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="1062" class="head">B · 生成器训练：统一序列，先推理、后执行</text>
+<text x="90" y="1098" class="small">动作 tokenizer 固定；生成器学习下一个码 / 潜变量，文本条件贯穿两段。</text>
+<rect x="90" y="1140" width="340" height="150" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1175" class="head">真实动作的编码目标</text>
+<text x="108" y="1210" class="body">[全部 Sreason ; 全部 Sexec]</text>
+<text x="108" y="1239" class="body">不是两种码逐帧交替</text>
+<text x="108" y="1268" class="body">也不是 RVQ 层级串行</text>
+<rect x="490" y="1140" width="360" height="150" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="508" y="1175" class="head">因果 Transformer</text>
+<text x="508" y="1210" class="body">可训练：前缀预测 + 执行预测</text>
+<text x="508" y="1239" class="body">执行可看整个推理前缀</text>
+<rect x="910" y="1140" width="320" height="150" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="928" y="1175" class="head">两种实现选择</text>
+<text x="928" y="1210" class="body">离散：双分类头 / 交叉熵</text>
+<text x="928" y="1239" class="body">连续：逐 token 扩散头</text>
+<path d="M430,1215 L490,1215" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M850,1215 L910,1215" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="490" y="1340" width="360" height="85" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="508" y="1375" class="head">文本 W → CLIP 条件</text>
+<path d="M670,1340 L670,1290" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="90" y="1460" class="small">连续版：当前 token 去噪完毕后，才进入下一个自回归步骤。</text>
+<rect x="60" y="1520" width="1200" height="650" rx="15" fill="#f1f7f3" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="1562" class="head">C · 生成：先完成潜在计划，再解码执行流</text>
+<text x="90" y="1598" class="small">只需要文本和采样设置；无真实动作输入，也没有源动作编辑或硬约束接口。</text>
+<rect x="90" y="1640" width="260" height="140" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1675" class="head">文本 W</text>
+<text x="108" y="1710" class="body">CLIP 条件</text>
+<text x="108" y="1739" class="body">输入动作描述</text>
+<rect x="400" y="1640" width="360" height="140" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="418" y="1675" class="head">先生成推理前缀</text>
+<text x="418" y="1710" class="body">自回归预测全部 Sreason</text>
+<text x="418" y="1739" class="body">学得的码 / 连续潜变量</text>
+<rect x="810" y="1640" width="420" height="140" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="828" y="1675" class="head">再生成执行后缀</text>
+<text x="828" y="1710" class="body">条件：文本 + 推理前缀</text>
+<text x="828" y="1739" class="body">以及已有执行历史</text>
+<path d="M350,1710 L400,1710" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M760,1710 L810,1710" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M220,1780 L220,1820 L1020,1820 L1020,1780" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="390" y="1854" class="small">文本仍参与执行生成；实线为条件输入</text>
+<rect x="90" y="1920" width="320" height="140" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1955" class="head">只取执行序列</text>
+<text x="108" y="1990" class="body">丢弃推理前缀的输出槽位</text>
+<text x="108" y="2019" class="body">Sexec → 对应执行表示</text>
+<rect x="470" y="1920" width="340" height="140" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="488" y="1955" class="head">复用冻结动作解码器</text>
+<text x="488" y="1990" class="body">执行表示 → 连续动作</text>
+<text x="488" y="2019" class="body">推理码不直接解码</text>
+<rect x="870" y="1920" width="360" height="140" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="888" y="1955" class="head">输出动作</text>
+<text x="888" y="1990" class="body">仍需检查顺序、次数、接触</text>
+<text x="888" y="2019" class="body">无物理或语义硬保证</text>
+<path d="M1230,1710 L1245,1710 L1245,1885 L250,1885 L250,1920" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M410,1990 L470,1990" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M810,1990 L870,1990" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="90" y="2124" class="small">前缀增加生成前置阶段；KV cache 的每帧速度不等于首帧或端到端延迟。</text>
+<text x="60" y="2230" class="small">实线：数据 / 条件　虚线：训练监督｜依据 §5、图 1/4、算法 1–2 教学重绘</text>
+</svg>

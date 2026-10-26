@@ -1,4 +1,5 @@
 .drawer-content:has(.paper-reading) { min-width: 0; }
+.drawer-content:has(.paper-reading) h1 { overflow-wrap: anywhere; }
 .paper-reading { line-height: 1.9; min-width: 0; }
 .paper-reading .reading-toc { padding: 1.2rem 1.5rem; margin: 1.5rem 0; border: 1px solid #b6c9bf; border-radius: .65rem; background: #f4f8f5; color: #244d3e; }
 .paper-reading .reading-toc ol { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem 1.5rem; margin: .65rem 0 0; font-size: .9rem; }
