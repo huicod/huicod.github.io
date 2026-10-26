@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="2860" viewBox="0 0 1320 2860" role="img" aria-labelledby="title desc">
+<title id="title">GraphMotion：语义图条件与三层动作扩散</title>
+<desc id="desc">四区展示SRL与冻结CLIP、关系感知GAT、三个独立VAE预训练、真实前级latent条件下的扩散训练，以及三路独立噪声按层串联生成并由specific解码。图控制是软条件，不保证动作时序或逐帧保持。</desc>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#243a4b}.title{font-size:32px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1320" height="2860" fill="white"/>
+<text x="60" y="52" class="title">GraphMotion：把语言分层，再逐级生成动作</text>
+<text x="60" y="94" class="body">NeurIPS 2023｜图结构提供语义条件；连续 VAE latent 承载动作</text>
+<rect x="60" y="130" width="1200" height="660" rx="15" fill="#f2f7fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="172" class="head">A · 文本 → 层次语义图 → 三组条件特征</text>
+<text x="90" y="208" class="small">同一条文本同时提供语义角色结构和 CLIP 节点特征；图网络在训练中学习。</text>
+<rect x="90" y="260" width="280" height="110" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="294" class="head">完整动作描述</text>
+<text x="108" y="327" class="body">例如：向前走，然后</text>
+<text x="108" y="356" class="body">用双手捡起物体</text>
+<rect x="430" y="250" width="340" height="140" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="448" y="284" class="head">语义角色解析 SRL</text>
+<text x="448" y="317" class="body">动词及对应属性短语</text>
+<text x="448" y="346" class="body">保留语义角色关系</text>
+<text x="448" y="375" class="body">不输出逐帧时间表</text>
+<rect x="850" y="250" width="380" height="140" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="868" y="284" class="head">冻结 CLIP-ViT-L/14</text>
+<text x="868" y="317" class="body">全句／动词 token／短语池化</text>
+<text x="868" y="346" class="body">按解析节点取得特征</text>
+<text x="868" y="375" class="body">节点特征 768 维</text>
+<path d="M370,315 L430,315" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M770,315 L850,315" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M230,260 L230,230 L1040,230 L1040,250" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="460" width="500" height="165" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="494" class="head">三类节点 · 12 类边</text>
+<text x="108" y="527" class="body">motion：全句描述</text>
+<text x="108" y="556" class="body">action：动词；specific：属性短语</text>
+<text x="108" y="585" class="body">角色边包含 agent、direction、time 等</text>
+<path d="M600,390 L600,425 L340,425 L340,460" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="660" y="460" width="280" height="165" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="678" y="494" class="head">关系感知 GAT</text>
+<text x="678" y="527" class="body">共享变换 + 关系权重</text>
+<text x="678" y="556" class="body">邻域注意力聚合</text>
+<text x="678" y="585" class="body">残差连接更新节点</text>
+<path d="M590,540 L660,540" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M1040,390 L1040,425 L800,425 L800,460" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="1010" y="460" width="220" height="165" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="1028" y="494" class="head">图条件输出</text>
+<text x="1028" y="527" class="body">Vᵐ：整体 motion</text>
+<text x="1028" y="556" class="body">Vᵃ：各 action</text>
+<text x="1028" y="585" class="body">Vˢ：各 specific</text>
+<path d="M940,540 L1010,540" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="690" width="1140" height="65" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="724" class="head">论文展示的控制：改节点或调整边权 → 重新计算语义条件</text>
+<path d="M800,690 L800,625" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)" stroke-dasharray="7 6"/>
+<rect x="60" y="830" width="1200" height="440" rx="15" fill="#f5f3fa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="872" class="head">B · 先训练三套独立 VAE，再冻结动作表示</text>
+<text x="90" y="908" class="small">同一真实动作 x 独立重建三次；2 / 4 / 8 是压缩 token 数，不是动作或事件数量。</text>
+<rect x="90" y="955" width="340" height="190" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="989" class="head">整体粒度 m · VAE</text>
+<text x="108" y="1022" class="body">真实动作 x → 编码器 E</text>
+<text x="108" y="1051" class="body">连续 latent z₀：2 × 256</text>
+<text x="108" y="1080" class="body">解码器 D + 长度 L → x̂</text>
+<text x="108" y="1109" class="body">各自学习重建，不共享 latent</text>
+<rect x="490" y="955" width="340" height="190" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="508" y="989" class="head">动作粒度 a · VAE</text>
+<text x="508" y="1022" class="body">真实动作 x → 编码器 E</text>
+<text x="508" y="1051" class="body">连续 latent z₀：4 × 256</text>
+<text x="508" y="1080" class="body">解码器 D + 长度 L → x̂</text>
+<text x="508" y="1109" class="body">各自学习重建，不共享 latent</text>
+<rect x="890" y="955" width="340" height="190" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="908" y="989" class="head">细节粒度 s · VAE</text>
+<text x="908" y="1022" class="body">真实动作 x → 编码器 E</text>
+<text x="908" y="1051" class="body">连续 latent z₀：8 × 256</text>
+<text x="908" y="1080" class="body">解码器 D + 长度 L → x̂</text>
+<text x="908" y="1109" class="body">各自学习重建，不共享 latent</text>
+<rect x="90" y="1190" width="1140" height="50" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1224" class="head">监督：动作重建损失 + KL 正则；预训练完成后，三个 E / D 均冻结</text>
+<rect x="60" y="1310" width="1200" height="490" rx="15" fill="#f3f7fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="1352" class="head">C · 扩散训练：真实前级 latent 作条件</text>
+<text x="90" y="1388" class="small">冻结 VAE 编码同一真实动作；GAT 与三套 denoiser 学习，CLIP / VAE 不更新。</text>
+<rect x="90" y="1440" width="340" height="180" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1474" class="head">训练整体层 φₘ</text>
+<text x="108" y="1507" class="body">z₀ᵐ + 噪声 εᵐ → zₜᵐ</text>
+<text x="108" y="1536" class="body">条件：Vᵐ 与时间步 t</text>
+<text x="108" y="1565" class="body">预测加入的噪声 ε̂ᵐ</text>
+<rect x="490" y="1440" width="340" height="180" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="508" y="1474" class="head">训练动作层 φₐ</text>
+<text x="508" y="1507" class="body">z₀ᵃ 按 t 加噪 → zₜᵃ</text>
+<text x="508" y="1536" class="body">条件：Vᵐ、Vᵃ、z₀ᵐ</text>
+<text x="508" y="1565" class="body">z₀ᵐ 来自真实动作编码</text>
+<rect x="890" y="1440" width="340" height="180" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="908" y="1474" class="head">训练细节层 φₛ</text>
+<text x="908" y="1507" class="body">z₀ˢ 按 t 加噪 → zₜˢ</text>
+<text x="908" y="1536" class="body">条件：Vᵐ、Vᵃ、Vˢ、z₀ᵃ</text>
+<text x="908" y="1565" class="body">z₀ᵃ 来自真实动作编码</text>
+<path d="M260,1620 L260,1670" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M660,1620 L660,1670" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M1060,1620 L1060,1670" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="1670" width="1140" height="65" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1704" class="head">三项噪声预测 MSE 求和；训练时随机置空文本，支持 classifier-free guidance</text>
+<text x="90" y="1770" class="small">训练不先运行前级去噪生成，再用生成结果监督后级。</text>
+<rect x="60" y="1840" width="1200" height="940" rx="15" fill="#f1f7f3" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="1882" class="head">D · 推理：三个独立噪声起点，按层串联完成条件生成</text>
+<text x="90" y="1918" class="small">先完成整体层，再完成动作层和细节层；各层使用自身噪声、时间步与去噪网络。</text>
+<rect x="90" y="1990" width="340" height="65" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="2024" class="head">独立高斯噪声 zᵐₜ · 2 × 256</text>
+<path d="M260,2055 L260,2110" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="490" y="1990" width="340" height="65" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="508" y="2024" class="head">独立高斯噪声 zᵃₜ · 4 × 256</text>
+<path d="M660,2055 L660,2110" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="890" y="1990" width="340" height="65" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="908" y="2024" class="head">独立高斯噪声 zˢₜ · 8 × 256</text>
+<path d="M1060,2055 L1060,2110" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="2110" width="340" height="160" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="2144" class="head">整体层 φₘ</text>
+<text x="108" y="2177" class="body">读取 zₜᵐ、t 与 Vᵐ</text>
+<text x="108" y="2206" class="body">DDIM 反向迭代 Tᵐ 步</text>
+<text x="108" y="2235" class="body">先生成整体层 latent</text>
+<rect x="490" y="2110" width="340" height="160" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="508" y="2144" class="head">动作层 φₐ</text>
+<text x="508" y="2177" class="body">读取 zₜᵃ、t</text>
+<text x="508" y="2206" class="body">条件：Vᵐ、Vᵃ、生成的 zᵐ</text>
+<text x="508" y="2235" class="body">DDIM 反向迭代 Tᵃ 步</text>
+<rect x="890" y="2110" width="340" height="160" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="908" y="2144" class="head">细节层 φₛ</text>
+<text x="908" y="2177" class="body">读取 zₜˢ、t</text>
+<text x="908" y="2206" class="body">条件：Vᵐ、Vᵃ、Vˢ、zᵃ</text>
+<text x="908" y="2235" class="body">DDIM 反向迭代 Tˢ 步</text>
+<path d="M260,2270 L260,2320" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="2320" width="340" height="75" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="2354" class="head">生成 latent zᵐ · 2 × 256</text>
+<path d="M660,2270 L660,2320" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="490" y="2320" width="340" height="75" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="508" y="2354" class="head">生成 latent zᵃ · 4 × 256</text>
+<path d="M1060,2270 L1060,2320" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="890" y="2320" width="340" height="75" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="908" y="2354" class="head">生成 latent zˢ · 8 × 256</text>
+<path d="M430,2357 L460,2357 L460,2230 L490,2230" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M830,2357 L860,2357 L860,2230 L890,2230" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="90" y="2440" class="small">前级 latent 是下一层条件，不是下一层的噪声初始化，也不是逐点残差加法。</text>
+<rect x="90" y="2500" width="330" height="150" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="2534" class="head">采样配置</text>
+<text x="108" y="2567" class="body">可用 CFG 强化文本条件</text>
+<text x="108" y="2596" class="body">总步数 Tᵐ + Tᵃ + Tˢ</text>
+<text x="108" y="2625" class="body">例如 15 + 15 + 20</text>
+<rect x="490" y="2500" width="340" height="150" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="508" y="2534" class="head">冻结细节层解码器 Dₛ</text>
+<text x="508" y="2567" class="body">只解码最终 zˢ</text>
+<text x="508" y="2596" class="body">结合长度 L / 帧查询</text>
+<text x="508" y="2625" class="body">恢复连续动作序列</text>
+<rect x="890" y="2500" width="340" height="150" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="908" y="2534" class="head">输出动作 x̂₁:ᴸ</text>
+<text x="908" y="2567" class="body">软语义控制</text>
+<text x="908" y="2596" class="body">无源动作逐帧拷贝通路</text>
+<text x="908" y="2625" class="body">无次数／时刻／接触硬保证</text>
+<path d="M1060,2395 L1060,2470 L660,2470 L660,2500" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M830,2575 L890,2575" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="90" y="2725" class="small">改图后再次条件生成；结构可解释，不代表输出一定满足每个指定动作细节。</text>
+<text x="60" y="2825" class="small">实线：数据或条件　虚线：可选图修改｜依据正式主文图 2、§3 和补充 B；训练条件另核官方代码</text>
+</svg>
