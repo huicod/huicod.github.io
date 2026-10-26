@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="2680" viewBox="0 0 1320 2680" role="img" aria-labelledby="title desc">
+<title id="title">Motion-R1：分解式动作推理与强化学习绑定</title>
+<desc id="desc">四区展示VQ-VAE预训练，DeepSeek离线数据引擎与Qwen冷启动，解码后动作和语义相似度奖励下的GRPO，以及仅文本条件的最终推理。推理不需要训练真实动作或奖励评分。</desc>
+<defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="context-stroke"/></marker></defs>
+<style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#243a4b}.title{font-size:32px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1320" height="2680" fill="white"/>
+<text x="60" y="52" class="title">Motion-R1：先分解动作，再奖励生成结果</text>
+<text x="60" y="94" class="body">ICLR 2026｜可读行动计划与学习到的动作 token 是两种不同表示</text>
+<rect x="60" y="130" width="1200" height="420" rx="15" fill="#f2f7fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="172" class="head">A · 表示准备：训练动作 tokenizer</text>
+<text x="90" y="208" class="small">VQ-VAE 将连续运动压缩为离散索引；后续语言模型训练与使用阶段冻结编码器和解码器。</text>
+<rect x="90" y="260" width="230" height="135" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="294" class="head">真实动作 m</text>
+<text x="108" y="328" class="body">T 帧连续运动</text>
+<text x="108" y="357" class="body">训练配对样本</text>
+<rect x="370" y="260" width="240" height="135" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="388" y="294" class="head">动作编码器 E</text>
+<text x="388" y="328" class="body">时间下采样</text>
+<text x="388" y="357" class="body">得到连续 latent</text>
+<rect x="660" y="260" width="260" height="135" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="678" y="294" class="head">最近邻量化</text>
+<text x="678" y="328" class="body">学习到的码本</text>
+<text x="678" y="357" class="body">输出索引 k₁…kₙ</text>
+<rect x="970" y="260" width="260" height="135" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="988" y="294" class="head">动作解码器 D</text>
+<text x="988" y="328" class="body">码本向量 → 动作</text>
+<text x="988" y="357" class="body">重建连续运动</text>
+<path d="M320,325 L370,325" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M610,325 L660,325" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M920,325 L970,325" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="445" width="1140" height="70" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="479" class="head">训练目标：重建 + 速度正则 + commitment / embedding；码本 EMA 与 reset</text>
+<rect x="60" y="590" width="1200" height="650" rx="15" fill="#f7f3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="632" class="head">B · 离线数据引擎与冷启动监督微调</text>
+<text x="90" y="668" class="small">DeepSeek-R1 提供文本分解示范；动作监督来自同一样本原有运动，未增加逐事件时间戳。</text>
+<rect x="90" y="720" width="300" height="145" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="754" class="head">原始 caption + 提示</text>
+<text x="108" y="788" class="body">动作描述／格式要求</text>
+<text x="108" y="817" class="body">少量分解示例</text>
+<text x="108" y="846" class="body">无需真实关节作为教师输入</text>
+<rect x="440" y="720" width="355" height="145" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="458" y="754" class="head">DeepSeek-R1 数据引擎</text>
+<text x="458" y="788" class="body">生成可读推理与子动作</text>
+<text x="458" y="817" class="body">检查相关性／逻辑／简洁性</text>
+<text x="458" y="846" class="body">不合格则过滤并重新生成</text>
+<rect x="845" y="720" width="385" height="145" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="863" y="754" class="head">有效分解文本</text>
+<text x="863" y="788" class="body">think：推理说明</text>
+<text x="863" y="817" class="body">output：动作列表（数据示意）</text>
+<text x="863" y="846" class="body">不等于关节轨迹或固定时长</text>
+<path d="M390,790 L440,790" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M795,790 L845,790" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="945" width="300" height="145" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="979" class="head">配对真实动作 m</text>
+<text x="108" y="1013" class="body">复用 A 的冻结 E 与码本</text>
+<text x="108" y="1042" class="body">提取真实 motion token</text>
+<text x="108" y="1071" class="body">与原 caption 保持样本对应</text>
+<rect x="440" y="945" width="355" height="145" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="458" y="979" class="head">组装监督三元组</text>
+<text x="458" y="1013" class="body">原始 caption</text>
+<text x="458" y="1042" class="body">分解文本</text>
+<text x="458" y="1071" class="body">完整动作 token 目标</text>
+<rect x="845" y="945" width="385" height="145" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="863" y="979" class="head">Qwen-2.5-3B-Instruct</text>
+<text x="863" y="1013" class="body">可训练：监督冷启动 SFT</text>
+<text x="863" y="1042" class="body">学习先推理、后动作的序列</text>
+<text x="863" y="1071" class="body">得到后续 GRPO 初始策略</text>
+<path d="M390,1015 L440,1015" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M795,1015 L845,1015" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M1040,865 L1040,900 L620,900 L620,945" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M240,865 L240,900 L420,900 L420,980 L440,980" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="90" y="1150" class="small">模型接口的最终格式为 think + Motion；图中 output 展示数据阶段的动作列表，非另一个执行器。</text>
+<text x="90" y="1190" class="small">数据教师只负责离线构建；部署时不要求再次调用 DeepSeek-R1。</text>
+<rect x="60" y="1280" width="1200" height="800" rx="15" fill="#f1f7f3" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="1322" class="head">C · 强化学习：GRPO 用解码后的结果给语言策略反馈</text>
+<text x="90" y="1358" class="small">同一指令采样 G = 8 个候选；真实动作、文本特征和格式共同形成奖励，合成权重未披露。</text>
+<rect x="90" y="1420" width="250" height="130" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1454" class="head">训练输入 q</text>
+<text x="108" y="1488" class="body">原始 caption</text>
+<text x="108" y="1517" class="body">分解式提示</text>
+<rect x="390" y="1420" width="350" height="130" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="408" y="1454" class="head">旧策略 π_old</text>
+<text x="408" y="1488" class="body">复用 B 的 SFT 初始化</text>
+<text x="408" y="1517" class="body">采样完整推理与动作输出</text>
+<rect x="790" y="1420" width="440" height="130" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="808" y="1454" class="head">G 个输出 oᵢ</text>
+<text x="808" y="1488" class="body">可读推理 + 离散 motion token</text>
+<text x="808" y="1517" class="body">每个候选分别解码、评分</text>
+<path d="M340,1485 L390,1485" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M740,1485 L790,1485" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="1620" width="330" height="145" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1654" class="head">训练参考输入</text>
+<text x="108" y="1688" class="body">真实动作 m → f_motion(m)</text>
+<text x="108" y="1717" class="body">原 caption q → f_text(q)</text>
+<text x="108" y="1746" class="body">复用预训练联合空间编码器</text>
+<rect x="470" y="1620" width="350" height="145" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="488" y="1654" class="head">冻结 decoder D</text>
+<text x="488" y="1688" class="body">motion token → 生成动作 m̂</text>
+<text x="488" y="1717" class="body">再编码为 f_motion(m̂)</text>
+<text x="488" y="1746" class="body">评分对象是解码后的动作</text>
+<rect x="870" y="1620" width="360" height="145" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="888" y="1654" class="head">格式奖励</text>
+<text x="888" y="1688" class="body">检查 think / Motion 结构</text>
+<text x="888" y="1717" class="body">严格匹配为 1，否则为 0</text>
+<text x="888" y="1746" class="body">不验证推理步骤是否正确</text>
+<path d="M910,1550 L910,1585 L645,1585 L645,1620" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M1100,1550 L1100,1620" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="1840" width="730" height="155" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="1874" class="head">双重相似度奖励</text>
+<text x="108" y="1908" class="body">动作：cos(f_motion(m̂), f_motion(m))</text>
+<text x="108" y="1937" class="body">语义：cos(f_motion(m̂), f_text(q))</text>
+<text x="108" y="1966" class="body">特征相似度；不是逐帧误差、物理验证或事件硬约束</text>
+<rect x="870" y="1840" width="360" height="155" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="888" y="1874" class="head">组内优势 → GRPO</text>
+<text x="888" y="1908" class="body">标准化候选回报</text>
+<text x="888" y="1937" class="body">裁剪概率比 + KL 正则</text>
+<text x="888" y="1966" class="body">更新语言模型生成策略</text>
+<path d="M255,1765 L255,1840" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M645,1765 L645,1840" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M820,1915 L870,1915" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M1050,1765 L1050,1840" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M1230,1915 L1245,1915 L1245,1390 L565,1390 L565,1420" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<text x="90" y="2040" class="small">训练更新语言模型；固定 tokenizer 不被奖励直接改写，也不单独监督每条推理对应哪一帧。</text>
+<rect x="60" y="2120" width="1200" height="470" rx="15" fill="#f2f7fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="90" y="2162" class="head">D · 使用：新文字 → 可读分解 → 动作 token → 连续运动</text>
+<text x="90" y="2198" class="small">不需要真实动作参考，也不需要在每次生成后在线计算 GRPO 奖励。</text>
+<rect x="90" y="2250" width="260" height="145" rx="15" fill="#fff2df" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="2284" class="head">新文本指令</text>
+<text x="108" y="2318" class="body">例如：转身、后退抬手</text>
+<text x="108" y="2347" class="body">最后缓慢靠近</text>
+<rect x="400" y="2250" width="350" height="145" rx="15" fill="#f0ebfa" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="418" y="2284" class="head">训练好的 Motion-R1</text>
+<text x="418" y="2318" class="body">复用 C 的语言模型参数</text>
+<text x="418" y="2347" class="body">先输出可读推理</text>
+<text x="418" y="2376" class="body">继续预测动作 token</text>
+<rect x="800" y="2250" width="430" height="145" rx="15" fill="#e8f4ed" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="818" y="2284" class="head">冻结 D → 连续动作</text>
+<text x="818" y="2318" class="body">复用 A 的动作解码器</text>
+<text x="818" y="2347" class="body">解码完整 token 序列</text>
+<text x="818" y="2376" class="body">可读计划不等于硬保持／硬执行</text>
+<path d="M350,2320 L400,2320" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<path d="M750,2320 L800,2320" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)"/>
+<rect x="90" y="2455" width="340" height="80" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="108" y="2489" class="head">C 区训练得到的策略参数</text>
+<path d="M430,2495 L575,2495 L575,2395" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)" stroke-dasharray="7 6"/>
+<rect x="800" y="2455" width="430" height="80" rx="15" fill="#eaf3fb" stroke="#bdd0da" stroke-width="1.5"/>
+<text x="818" y="2489" class="head">A 区预训练并固定的动作解码器</text>
+<path d="M1015,2455 L1015,2395" fill="none" stroke="#72909e" stroke-width="2.3" marker-end="url(#a)" stroke-dasharray="7 6"/>
+<text x="60" y="2640" class="small">实线：数据／奖励／策略更新｜虚线：训练产物复用｜据 v4 §3、图 2 与正式稿重绘；未运行模型</text>
+</svg>

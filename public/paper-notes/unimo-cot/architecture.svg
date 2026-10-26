@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1518" viewBox="0 0 1120 1518" role="img" aria-labelledby="title desc">
+<title id="title">UniMo：离线标注、监督微调、强化学习与双向推理</title>
+<desc id="desc">视频教师生成动作CoT；共享Qwen通过SFT和GRPO训练；推理仍自回归，分别生成动作和描述，动作VQ模块冻结。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#57718b"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#203347} .small{font-size:18px} .body{font-size:21px} .label{font-size:23px;font-weight:700} .title{font-size:31px;font-weight:700} .sect{font-size:25px;font-weight:700} .flow{fill:none;stroke:#57718b;stroke-width:2.4;marker-end:url(#arr)} .dash{stroke-dasharray:8 6} </style>
+<rect width="1120" height="1518" fill="#f5f8fc"/>
+
+<text x="35" y="44" class="title" text-anchor="start">UniMo：动作与文字共享模型，保留显式 CoT</text>
+<text x="35" y="79" class="small" text-anchor="start">教学示意 · 基于 AAAI 2026 正文与 arXiv v1 附录 · 非模型运行结果</text>
+<rect x="18" y="102" width="1084" height="245" rx="16" fill="white" stroke="#ccd8e6"/>
+<text x="38" y="139" class="sect" text-anchor="start">A  离线制作监督：真实动作提供视觉依据</text>
+<rect x="40" y="164" width="195" height="60" rx="12" fill="#eaf2fd" stroke="#a7bfdc" stroke-width="1.5"/>
+<text x="137.5" y="201.0" class="label" text-anchor="middle">原始动作序列</text>
+<rect x="40" y="257" width="195" height="60" rx="12" fill="#eaf2fd" stroke="#a7bfdc" stroke-width="1.5"/>
+<text x="137.5" y="294.0" class="label" text-anchor="middle">配对 caption</text>
+<rect x="290" y="164" width="195" height="60" rx="12" fill="#eaf2fd" stroke="#a7bfdc" stroke-width="1.5"/>
+<text x="387.5" y="201.0" class="label" text-anchor="middle">Blender 视频</text>
+<rect x="540" y="178" width="270" height="112" rx="12" fill="#eaf2fd" stroke="#a7bfdc" stroke-width="1.5"/>
+<text x="675.0" y="211.0" class="label" text-anchor="middle">Qwen2.5-VL-72B</text>
+<text x="675.0" y="241.0" class="body" text-anchor="middle">视频 + caption</text>
+<text x="675.0" y="271.0" class="body" text-anchor="middle">离线标注教师</text>
+<rect x="865" y="178" width="215" height="112" rx="12" fill="#e6f5ec" stroke="#95c6aa" stroke-width="1.5"/>
+<text x="972.5" y="211.0" class="label" text-anchor="middle">动作 CoT</text>
+<text x="972.5" y="241.0" class="body" text-anchor="middle">按时间顺序描述</text>
+<text x="972.5" y="271.0" class="body" text-anchor="middle">合成语言监督</text>
+<path d="M 235 194 L 290 194" class="flow"/>
+<path d="M 485 194 L 540 207" class="flow"/>
+<path d="M 235 287 L 510 287 L 510 264 L 540 264" class="flow"/>
+<path d="M 810 234 L 865 234" class="flow"/>
+<text x="575" y="327" class="small" text-anchor="start">补充动作细节；不等于保证标注无幻觉</text>
+<rect x="18" y="367" width="1084" height="290" rx="16" fill="white" stroke="#ccd8e6"/>
+<text x="38" y="404" class="sect" text-anchor="start">B  SFT：同一 LLM 学习两个方向的 CoT 与答案</text>
+<rect x="40" y="433" width="300" height="145" rx="12" fill="#e6f5ec" stroke="#95c6aa" stroke-width="1.5"/>
+<text x="190.0" y="482.5" class="label" text-anchor="middle">利用 A 的监督样本</text>
+<text x="190.0" y="512.5" class="body" text-anchor="middle">T2M：caption → CoT + 码</text>
+<text x="190.0" y="542.5" class="body" text-anchor="middle">M2T：动作码 → CoT + 文</text>
+<rect x="415" y="433" width="290" height="145" rx="12" fill="#fff0df" stroke="#e4b67f" stroke-width="1.5"/>
+<text x="560.0" y="482.5" class="label" text-anchor="middle">Qwen2.5-3B-Instruct</text>
+<text x="560.0" y="512.5" class="body" text-anchor="middle">共享参数与扩展词表</text>
+<text x="560.0" y="542.5" class="body" text-anchor="middle">监督后续 CoT 和答案</text>
+<rect x="780" y="433" width="300" height="145" rx="12" fill="#fff0df" stroke="#e4b67f" stroke-width="1.5"/>
+<text x="930.0" y="482.5" class="label" text-anchor="middle">两段训练日程</text>
+<text x="930.0" y="512.5" class="body" text-anchor="middle">先 T2M：10 epochs</text>
+<text x="930.0" y="542.5" class="body" text-anchor="middle">再双任务：10 epochs</text>
+<path d="M 340 505 L 415 505" class="flow"/>
+<path d="M 705 505 L 780 505" class="flow"/>
+<text x="40" y="616" class="body" text-anchor="start">冻结 VQ-VAE：连续动作 ↔ 512 类离散动作码；文本仍用原有语言 tokenizer。</text>
+<text x="40" y="643" class="small" text-anchor="start">这里训练 LLM；视频教师与动作 tokenizer 不随本阶段更新。</text>
+<rect x="18" y="677" width="1084" height="385" rx="16" fill="white" stroke="#ccd8e6"/>
+<text x="38" y="714" class="sect" text-anchor="start">C  GRPO：同一输入的 8 个完整回答，接受任务奖励</text>
+<rect x="40" y="755" width="235" height="105" rx="12" fill="#fff0df" stroke="#e4b67f" stroke-width="1.5"/>
+<text x="157.5" y="784.5" class="label" text-anchor="middle">SFT 后的 UniMo</text>
+<text x="157.5" y="814.5" class="body" text-anchor="middle">同一 prompt 采样 8 次</text>
+<text x="157.5" y="844.5" class="body" text-anchor="middle">仍为自回归生成</text>
+<rect x="330" y="743" width="365" height="110" rx="12" fill="#eaf2fd" stroke="#a7bfdc" stroke-width="1.5"/>
+<text x="512.5" y="775.0" class="label" text-anchor="middle">T2M：动作码 → 固定解码器</text>
+<text x="512.5" y="805.0" class="body" text-anchor="middle">生成动作与参考动作相似度</text>
+<text x="512.5" y="835.0" class="body" text-anchor="middle">生成动作与输入文本相似度</text>
+<rect x="330" y="892" width="365" height="95" rx="12" fill="#eaf2fd" stroke="#a7bfdc" stroke-width="1.5"/>
+<text x="512.5" y="931.5" class="label" text-anchor="middle">M2T：输出描述 → CLIP</text>
+<text x="512.5" y="961.5" class="body" text-anchor="middle">与参考描述余弦相似度 × 2</text>
+<rect x="770" y="797" width="310" height="165" rx="12" fill="#fff0df" stroke="#e4b67f" stroke-width="1.5"/>
+<text x="925.0" y="841.5" class="label" text-anchor="middle">格式奖励 + 内容奖励</text>
+<text x="925.0" y="871.5" class="body" text-anchor="middle">分别计算组内相对优势</text>
+<text x="925.0" y="901.5" class="body" text-anchor="middle">裁剪 / KL 限制更新</text>
+<text x="925.0" y="931.5" class="body" text-anchor="middle">GRPO 更新共享 LLM</text>
+<path d="M 275 804 L 330 798" class="flow"/>
+<path d="M 275 825 L 303 825 L 303 938 L 330 938" class="flow"/>
+<path d="M 695 797 L 733 797 L 733 837 L 770 837" class="flow"/>
+<path d="M 695 939 L 770 939" class="flow"/>
+<path d="M 925 962 L 925 1030 L 158 1030 L 158 860" class="flow dash"/>
+<text x="378" y="1016" class="small" text-anchor="start">只在训练时评分与更新；没有物理仿真奖励</text>
+<rect x="18" y="1082" width="1084" height="414" rx="16" fill="white" stroke="#ccd8e6"/>
+<text x="38" y="1119" class="sect" text-anchor="start">D  推理：按任务选择方向，不必串成生成—理解闭环</text>
+<rect x="40" y="1149" width="205" height="61" rx="12" fill="#eaf2fd" stroke="#a7bfdc" stroke-width="1.5"/>
+<text x="142.5" y="1186.5" class="label" text-anchor="middle">输入 caption</text>
+<rect x="310" y="1149" width="210" height="61" rx="12" fill="#fff0df" stroke="#e4b67f" stroke-width="1.5"/>
+<text x="415.0" y="1186.5" class="label" text-anchor="middle">训练后的 UniMo</text>
+<path d="M 245 1179 L 310 1179" class="flow"/>
+<rect x="40" y="1250" width="480" height="75" rx="12" fill="#e6f5ec" stroke="#95c6aa" stroke-width="1.5"/>
+<text x="280.0" y="1294.5" class="label" text-anchor="middle">显式 CoT + 动作码序列</text>
+<path d="M 415 1210 L 415 1229 L 280 1229 L 280 1250" class="flow"/>
+<rect x="40" y="1360" width="480" height="66" rx="12" fill="#e6f5ec" stroke="#95c6aa" stroke-width="1.5"/>
+<text x="280.0" y="1400.0" class="label" text-anchor="middle">动作码 → 冻结解码器 → 连续动作</text>
+<path d="M 280 1325 L 280 1360" class="flow"/>
+<rect x="600" y="1149" width="195" height="61" rx="12" fill="#eaf2fd" stroke="#a7bfdc" stroke-width="1.5"/>
+<text x="697.5" y="1186.5" class="label" text-anchor="middle">输入连续动作</text>
+<rect x="850" y="1149" width="230" height="61" rx="12" fill="#eaf2fd" stroke="#a7bfdc" stroke-width="1.5"/>
+<text x="965.0" y="1186.5" class="label" text-anchor="middle">冻结编码器 + 量化</text>
+<path d="M 795 1179 L 850 1179" class="flow"/>
+<rect x="600" y="1250" width="480" height="75" rx="12" fill="#fff0df" stroke="#e4b67f" stroke-width="1.5"/>
+<text x="840.0" y="1294.5" class="label" text-anchor="middle">动作码 → 同一个 UniMo</text>
+<path d="M 965 1210 L 965 1229 L 840 1229 L 840 1250" class="flow"/>
+<rect x="600" y="1360" width="480" height="66" rx="12" fill="#e6f5ec" stroke="#95c6aa" stroke-width="1.5"/>
+<text x="840.0" y="1400.0" class="label" text-anchor="middle">显式 CoT + 最终 caption</text>
+<path d="M 840 1325 L 840 1360" class="flow"/>
+<text x="40" y="1469" class="body" text-anchor="start">输出边界：语义规划不保证关节位置、接触或每一步动作严格满足。</text>
+</svg>
