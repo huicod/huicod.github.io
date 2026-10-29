@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2220" viewBox="0 0 1200 2220" role="img" aria-labelledby="t d">
+<title id="t">NeMF：连续动作场、生成先验和潜空间控制</title>
+<desc id="d">区分单动作拟合和生成式训练。双编码器得到局部1024维、朝向256维latent，与连续时间MLP生成旋转；独立GMP恢复平移。应用固定模型，关键帧或轨迹损失只更新latent，无精确保持保证。</desc>
+<defs><marker id="a" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,5.5 L0,11 Z" fill="#54728b"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif}</style>
+<rect x="0" y="0" width="1200" height="2220" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="40" y="48" font-size="33" fill="#243b53" font-weight="700">NeMF：时间选姿态，潜变量选整段动作</text>
+<text x="40" y="87" font-size="22" fill="#536879" font-weight="400">连续查询 ≠ 任意时间都自然；可微优化 ≠ 精确关键帧 / 轨迹保持</text>
+<rect x="25" y="115" width="1150" height="290" rx="14" fill="#f6f5fc" stroke="#cbd7e2" stroke-width="2"/>
+<text x="48" y="154" font-size="28" fill="#243b53" font-weight="700">A  单动作拟合：先验证连续函数能否表示动作</text>
+<text x="48" y="190" font-size="21" fill="#536879" font-weight="400">每一段动作单独优化网络 θ；这条路线不具有跨动作共享的生成先验。</text>
+<rect x="48" y="220" width="330" height="125" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="254" font-size="25" fill="#243b53" font-weight="700">一段已知运动</text>
+<text x="65" y="291" font-size="22" fill="#243b53" font-weight="400">离散时间与真实姿态</text>
+<text x="65" y="321" font-size="22" fill="#243b53" font-weight="400">同时拟合局部 / 全局运动</text>
+<rect x="434" y="220" width="329" height="125" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="451" y="254" font-size="25" fill="#243b53" font-weight="700">优化 fθ(t)</text>
+<text x="451" y="291" font-size="22" fill="#243b53" font-weight="400">时间位置编码 → MLP</text>
+<text x="451" y="321" font-size="22" fill="#243b53" font-weight="400">重建旋转、位置与平移</text>
+<rect x="818" y="220" width="334" height="125" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="254" font-size="25" fill="#243b53" font-weight="700">连续时间查询</text>
+<text x="835" y="291" font-size="22" fill="#243b53" font-weight="400">可查询非整数时间</text>
+<text x="835" y="321" font-size="22" fill="#243b53" font-weight="400">换动作需要重新拟合 θ</text>
+<polyline points="380,280 430,280" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="765,280 814,280" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<text x="48" y="379" font-size="21" fill="#536879" font-weight="400">低拟合误差是表示能力证据，不是未见动作的生成准确率。</text>
+<rect x="25" y="435" width="1150" height="615" rx="14" fill="#edf4fe" stroke="#cbd7e2" stroke-width="2"/>
+<text x="48" y="474" font-size="28" fill="#243b53" font-weight="700">B  生成式训练：共享动作场 + 两路 VAE 潜变量</text>
+<text x="48" y="510" font-size="21" fill="#536879" font-weight="400">128 帧 / 30 FPS 片段；全序列编码、非自回归。训练更新编码器与动作场权重。</text>
+<rect x="48" y="540" width="330" height="175" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="574" font-size="25" fill="#243b53" font-weight="700">动作分解</text>
+<text x="65" y="611" font-size="22" fill="#243b53" font-weight="400">局部 X：去除根朝向</text>
+<text x="65" y="641" font-size="22" fill="#243b53" font-weight="400">每关节位置 / 速度 / 旋转</text>
+<text x="65" y="671" font-size="22" fill="#243b53" font-weight="400">根朝向 rᵒ：独立 6D 序列</text>
+<text x="65" y="701" font-size="22" fill="#243b53" font-weight="400">根平移不由本 VAE 学习</text>
+<rect x="434" y="540" width="329" height="175" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="451" y="574" font-size="25" fill="#243b53" font-weight="700">两路卷积编码器</text>
+<text x="451" y="611" font-size="22" fill="#243b53" font-weight="400">局部：骨架卷积 + 池化</text>
+<text x="451" y="641" font-size="22" fill="#243b53" font-weight="400">朝向：一维卷积</text>
+<text x="451" y="671" font-size="22" fill="#243b53" font-weight="400">分别预测 μ / σ</text>
+<text x="451" y="701" font-size="22" fill="#243b53" font-weight="400">重参数采样连续 latent</text>
+<rect x="818" y="540" width="334" height="175" rx="14" fill="#e2eeff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="574" font-size="25" fill="#243b53" font-weight="700">整段运动潜变量</text>
+<text x="835" y="611" font-size="22" fill="#243b53" font-weight="400">zl：1024 维局部运动</text>
+<text x="835" y="641" font-size="22" fill="#243b53" font-weight="400">zg：256 维根朝向</text>
+<text x="835" y="671" font-size="22" fill="#243b53" font-weight="400">KL → 标准高斯先验</text>
+<text x="835" y="701" font-size="22" fill="#243b53" font-weight="400">zg 不是平移或文本标签</text>
+<polyline points="380,624 430,624" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="765,624 814,624" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="48" y="770" width="330" height="185" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="804" font-size="25" fill="#243b53" font-weight="700">查询时间 t</text>
+<text x="65" y="841" font-size="22" fill="#243b53" font-weight="400">正弦 / 余弦位置编码</text>
+<text x="65" y="871" font-size="22" fill="#243b53" font-weight="400">默认频带 L＝7</text>
+<text x="65" y="901" font-size="22" fill="#243b53" font-weight="400">改变采样间距可改变 FPS</text>
+<text x="65" y="931" font-size="22" fill="#243b53" font-weight="400">高频带可能导致帧间振荡</text>
+<rect x="434" y="770" width="329" height="185" rx="14" fill="#e2eeff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="451" y="804" font-size="25" fill="#243b53" font-weight="700">共享动作场 fθ(t,z)</text>
+<text x="451" y="841" font-size="22" fill="#243b53" font-weight="400">11 层 MLP，宽 1024</text>
+<text x="451" y="871" font-size="22" fill="#243b53" font-weight="400">ReLU + LayerNorm</text>
+<text x="451" y="901" font-size="22" fill="#243b53" font-weight="400">输入跳连</text>
+<text x="451" y="931" font-size="22" fill="#243b53" font-weight="400">两路输出旋转与朝向</text>
+<rect x="818" y="770" width="334" height="185" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="804" font-size="25" fill="#243b53" font-weight="700">局部旋转 + 根朝向</text>
+<text x="835" y="841" font-size="22" fill="#243b53" font-weight="400">6D → 旋转矩阵 → FK</text>
+<text x="835" y="871" font-size="22" fill="#243b53" font-weight="400">任意所选 t 的姿态</text>
+<text x="835" y="901" font-size="22" fill="#243b53" font-weight="400">同一 z 描述整段运动</text>
+<text x="835" y="931" font-size="22" fill="#243b53" font-weight="400">不是逐帧采样一个新 z</text>
+<polyline points="380,849 430,849" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="765,849 814,849" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="985,717 985,744 598,744 598,766" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<text x="48" y="984" font-size="22" fill="#243b53" font-weight="400">训练目标：关节旋转 / 根朝向测地误差 + 10×FK 位置误差 + KL。</text>
+<text x="48" y="1021" font-size="21" fill="#536879" font-weight="400">当前实现朝向分支接收局部隐藏特征；分开 latent 不等于输出完全独立。</text>
+<rect x="25" y="1080" width="1150" height="340" rx="14" fill="#eff8f3" stroke="#cbd7e2" stroke-width="2"/>
+<text x="48" y="1119" font-size="28" fill="#243b53" font-weight="700">C  独立训练根运动预测器，再与生成式动作场组合</text>
+<text x="48" y="1155" font-size="21" fill="#536879" font-weight="400">只对生成式方案拆出此模块；不要与 A 的单动作联合拟合混淆。</text>
+<rect x="48" y="1185" width="330" height="180" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="1219" font-size="25" fill="#243b53" font-weight="700">解码后的姿态运动</text>
+<text x="65" y="1256" font-size="22" fill="#243b53" font-weight="400">由 B 提供旋转 / 朝向</text>
+<text x="65" y="1286" font-size="22" fill="#243b53" font-weight="400">FK 得到位置</text>
+<text x="65" y="1316" font-size="22" fill="#243b53" font-weight="400">计算线速度和角速度</text>
+<text x="65" y="1346" font-size="22" fill="#243b53" font-weight="400">作为全局预测器条件</text>
+<rect x="434" y="1185" width="329" height="180" rx="14" fill="#def1e4" stroke="#cbd7e2" stroke-width="2"/>
+<text x="451" y="1219" font-size="25" fill="#243b53" font-weight="700">Global Motion Predictor</text>
+<text x="451" y="1256" font-size="22" fill="#243b53" font-weight="400">骨架卷积 + 一维卷积</text>
+<text x="451" y="1286" font-size="22" fill="#243b53" font-weight="400">预测根速度 ṙ</text>
+<text x="451" y="1316" font-size="22" fill="#243b53" font-weight="400">直接预测根高度 h</text>
+<text x="451" y="1346" font-size="22" fill="#243b53" font-weight="400">另行训练后固定</text>
+<rect x="818" y="1185" width="334" height="180" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="1219" font-size="25" fill="#243b53" font-weight="700">世界坐标运动</text>
+<text x="835" y="1256" font-size="22" fill="#243b53" font-weight="400">水平速度积分得到位移</text>
+<text x="835" y="1286" font-size="22" fill="#243b53" font-weight="400">竖直方向使用预测高度</text>
+<text x="835" y="1316" font-size="22" fill="#243b53" font-weight="400">与姿态合成完整动画</text>
+<text x="835" y="1346" font-size="22" fill="#243b53" font-weight="400">仍可能有漂移和脚滑</text>
+<polyline points="380,1262 430,1262" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="765,1262 814,1262" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<text x="48" y="1401" font-size="21" fill="#536879" font-weight="400">生成采样：从先验选 z → 查询 B → 经 C 恢复平移；无需先逐帧生成历史。</text>
+<rect x="25" y="1450" width="1150" height="600" rx="14" fill="#fff7e9" stroke="#cbd7e2" stroke-width="2"/>
+<text x="48" y="1489" font-size="28" fill="#243b53" font-weight="700">D  下游应用：固定网络，只优化 zl 与 zg</text>
+<text x="48" y="1525" font-size="21" fill="#536879" font-weight="400">插帧 / 稀疏关键帧补全 / 重新导航使用不同损失，复用同一个生成先验。</text>
+<rect x="48" y="1555" width="330" height="180" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="1589" font-size="25" fill="#243b53" font-weight="700">用户给定条件</text>
+<text x="65" y="1626" font-size="22" fill="#243b53" font-weight="400">关键帧或前后动作片段</text>
+<text x="65" y="1656" font-size="22" fill="#243b53" font-weight="400">或参考动作 + 新平面轨迹</text>
+<text x="65" y="1686" font-size="22" fill="#243b53" font-weight="400">已知帧 / 路径进入损失</text>
+<text x="65" y="1716" font-size="22" fill="#243b53" font-weight="400">不是文本生成接口</text>
+<rect x="434" y="1555" width="329" height="180" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="451" y="1589" font-size="25" fill="#243b53" font-weight="700">初始化潜变量</text>
+<text x="451" y="1626" font-size="22" fill="#243b53" font-weight="400">补全：SLERP → 编码器</text>
+<text x="451" y="1656" font-size="22" fill="#243b53" font-weight="400">导航：源动作初始化 zl</text>
+<text x="451" y="1686" font-size="22" fill="#243b53" font-weight="400">导航 zg 从头优化</text>
+<text x="451" y="1716" font-size="22" fill="#243b53" font-weight="400">初始化影响最终解</text>
+<rect x="818" y="1555" width="334" height="180" rx="14" fill="#fff0ce" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="1589" font-size="25" fill="#243b53" font-weight="700">可优化变量 zl / zg</text>
+<text x="835" y="1626" font-size="22" fill="#243b53" font-weight="400">Adam 更新 latent</text>
+<text x="835" y="1656" font-size="22" fill="#243b53" font-weight="400">固定编码器 / 解码器权重</text>
+<text x="835" y="1686" font-size="22" fill="#243b53" font-weight="400">默认最多 600 次迭代</text>
+<text x="835" y="1716" font-size="22" fill="#243b53" font-weight="400">不等于一次前向实时编辑</text>
+<polyline points="380,1633 430,1633" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="765,1633 814,1633" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="48" y="1775" width="715" height="145" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="1809" font-size="25" fill="#243b53" font-weight="700">重复解码候选动作：B 的动作场 + C 的根预测器</text>
+<text x="65" y="1846" font-size="22" fill="#243b53" font-weight="400">同一候选 z 决定整个片段，可以同时利用未来观测</text>
+<text x="65" y="1876" font-size="22" fill="#243b53" font-weight="400">时间采样 → 旋转 / FK → 根移动 → 得到待评价完整动作</text>
+<rect x="818" y="1775" width="334" height="145" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="1809" font-size="25" fill="#243b53" font-weight="700">条件损失与梯度</text>
+<text x="835" y="1846" font-size="22" fill="#243b53" font-weight="400">补全：已知帧重建误差</text>
+<text x="835" y="1876" font-size="22" fill="#243b53" font-weight="400">导航：soft-DTW + 轨迹</text>
+<text x="835" y="1906" font-size="22" fill="#243b53" font-weight="400">梯度回传到 zl / zg</text>
+<polyline points="985,1737 985,1745 598,1745 598,1771" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="765,1843 814,1843" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="1153,1843 1164,1843 1164,1633 1156,1633" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<text x="48" y="1975" font-size="22" fill="#243b53" font-weight="400">最终输出：一条接近条件的运动候选；没有最终关键帧硬覆盖，也不保证无脚滑。</text>
+<text x="48" y="2012" font-size="21" fill="#536879" font-weight="400">片段衔接优于部分基线，但短间隔 FID、根平移误差等存在更优对照。</text>
+<text x="40" y="2100" font-size="22" fill="#536879" font-weight="400">来源：NeurIPS 2022 正式主文 §3–4、补充 §1–2；代码 e45a7ecf657cf 静态核对。</text>
+<text x="40" y="2140" font-size="22" fill="#856329" font-weight="400">训练的人体片段先验不是任意拓扑模型；犬类长序列是另训的单动作重建。</text>
+<text x="40" y="2180" font-size="22" fill="#856329" font-weight="400">本文未运行模型；优化迭代数、解码查询和完整应用耗时应分别理解。</text>
+</svg>

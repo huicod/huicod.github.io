@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2140" viewBox="0 0 1200 2140" role="img" aria-labelledby="t d">
+<title id="t">MOCHA：离线学习角色匹配，在线逐帧角色化</title>
+<desc id="d">两个训练阶段：共享内容和风格转换网络；粗动作标签限制的近邻教师训练每目标NCM。在线过去窗口经编码，NCM以历史状态和当前上下文生成角色特征，AdaIN与上下文交叉注意力解码当前姿态。根运动和公开演示后处理另列。</desc>
+<defs><marker id="a" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,5.5 L0,11 Z" fill="#54728b"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif}</style>
+<rect x="0" y="0" width="1200" height="2140" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="40" y="48" font-size="33" fill="#243b53" font-weight="700">MOCHA：让目标角色接着当前动作来表演</text>
+<text x="40" y="87" font-size="22" fill="#536879" font-weight="400">输入动作 → 目标角色的风格与身体比例；无文本输入，不是任意新角色零样本适配</text>
+<rect x="25" y="115" width="1150" height="340" rx="14" fill="#edf4fe" stroke="#cbd7e2" stroke-width="2"/>
+<text x="48" y="154" font-size="28" fill="#243b53" font-weight="700">A  离线阶段一：学习共享编码与角色化</text>
+<text x="48" y="190" font-size="21" fill="#536879" font-weight="400">不要求成对动作；本阶段尚不使用 NCM，以重建 / 循环 / 部位对比学习内容对应。</text>
+<rect x="48" y="225" width="330" height="150" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="259" font-size="25" fill="#243b53" font-weight="700">随机源 / 目标窗口</text>
+<text x="65" y="296" font-size="22" fill="#243b53" font-weight="400">每关节 15 维</text>
+<text x="65" y="326" font-size="22" fill="#243b53" font-weight="400">过去 60 帧、约 1 秒</text>
+<text x="65" y="356" font-size="22" fill="#243b53" font-weight="400">不同角色的非配对动作</text>
+<rect x="434" y="225" width="329" height="150" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="451" y="259" font-size="25" fill="#243b53" font-weight="700">共享部位编码器</text>
+<text x="451" y="296" font-size="22" fill="#243b53" font-weight="400">关节 → 6 部位 × 15 时刻</text>
+<text x="451" y="326" font-size="22" fill="#243b53" font-weight="400">90 个连续特征，各 256 维</text>
+<text x="451" y="356" font-size="22" fill="#243b53" font-weight="400">Transformer 建模时空关系</text>
+<rect x="818" y="225" width="334" height="150" rx="14" fill="#e0edff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="259" font-size="25" fill="#243b53" font-weight="700">共享 Characterizer</text>
+<text x="835" y="296" font-size="22" fill="#243b53" font-weight="400">源内容 + 目标风格</text>
+<text x="835" y="326" font-size="22" fill="#243b53" font-weight="400">AdaIN / 交叉注意力</text>
+<text x="835" y="356" font-size="22" fill="#243b53" font-weight="400">解码、重建和循环监督</text>
+<polyline points="380,298 430,298" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="765,298 814,298" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<text x="48" y="425" font-size="22" fill="#243b53" font-weight="400">学习后的特征与上下文映射 f 用于下一阶段；patch 不是离散码本。</text>
+<rect x="25" y="485" width="1150" height="395" rx="14" fill="#fff7e9" stroke="#cbd7e2" stroke-width="2"/>
+<text x="48" y="524" font-size="28" fill="#243b53" font-weight="700">B  离线阶段二：训练每个目标角色的 NCM</text>
+<text x="48" y="560" font-size="21" fill="#536879" font-weight="400">近邻提供教师目标，NCM 学会生成；本阶段使用粗动作标签，不是全程无标签训练。</text>
+<rect x="48" y="595" width="330" height="175" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="629" font-size="25" fill="#243b53" font-weight="700">固定目标角色数据</text>
+<text x="65" y="666" font-size="22" fill="#243b53" font-weight="400">编码得到角色特征 zcha</text>
+<text x="65" y="696" font-size="22" fill="#243b53" font-weight="400">上下文 f(zcha) 用于匹配</text>
+<text x="65" y="726" font-size="22" fill="#243b53" font-weight="400">保留真实时间顺序</text>
+<text x="65" y="756" font-size="22" fill="#243b53" font-weight="400">角色 / 情绪组合分别建模</text>
+<rect x="434" y="595" width="329" height="175" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="451" y="629" font-size="25" fill="#243b53" font-weight="700">构造近邻教师序列</text>
+<text x="451" y="666" font-size="22" fill="#243b53" font-weight="400">粗动作标签先筛候选</text>
+<text x="451" y="696" font-size="22" fill="#243b53" font-weight="400">仅首个源上下文找近邻</text>
+<text x="451" y="726" font-size="22" fill="#243b53" font-weight="400">取该起点的连续 8 步</text>
+<text x="451" y="756" font-size="22" fill="#243b53" font-weight="400">不是逐帧独立拼最近邻</text>
+<rect x="818" y="595" width="334" height="175" rx="14" fill="#fff0ce" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="629" font-size="25" fill="#243b53" font-weight="700">条件 VAE / NCM</text>
+<text x="835" y="666" font-size="22" fill="#243b53" font-weight="400">历史特征 + 当前源上下文</text>
+<text x="835" y="696" font-size="22" fill="#243b53" font-weight="400">后验、学习先验和 Decoder</text>
+<text x="835" y="726" font-size="22" fill="#243b53" font-weight="400">特征重建 + KL 约束</text>
+<text x="835" y="756" font-size="22" fill="#243b53" font-weight="400">训练后每目标一个 NCM</text>
+<polyline points="380,677 430,677" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="765,677 814,677" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<text x="48" y="819" font-size="22" fill="#243b53" font-weight="400">图按论文算法：训练先验采样；公开代码改为后验采样，并有不同训练超参数。</text>
+<text x="48" y="852" font-size="21" fill="#536879" font-weight="400">推理移除目标后验编码器；学习到的 Prior Net 仍需保留。</text>
+<rect x="25" y="910" width="1150" height="745" rx="14" fill="#eff8f3" stroke="#cbd7e2" stroke-width="2"/>
+<text x="48" y="949" font-size="28" fill="#243b53" font-weight="700">C  在线推理：只用过去窗口，每次显示当前一帧</text>
+<text x="48" y="985" font-size="21" fill="#536879" font-weight="400">共享主干 + 已训练的目标 NCM；每帧更新连续角色状态，不要求访问未来动作。</text>
+<rect x="48" y="1020" width="330" height="155" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="1054" font-size="25" fill="#243b53" font-weight="700">源动作窗口 X(i)</text>
+<text x="65" y="1091" font-size="22" fill="#243b53" font-weight="400">当前根坐标系</text>
+<text x="65" y="1121" font-size="22" fill="#243b53" font-weight="400">位置 / 旋转 / 线与角速度</text>
+<text x="65" y="1151" font-size="22" fill="#243b53" font-weight="400">最近 60 帧 → 当前时刻</text>
+<rect x="434" y="1020" width="329" height="155" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="451" y="1054" font-size="25" fill="#243b53" font-weight="700">共享编码器</text>
+<text x="451" y="1091" font-size="22" fill="#243b53" font-weight="400">源特征 zsrc(i)</text>
+<text x="451" y="1121" font-size="22" fill="#243b53" font-weight="400">f(zsrc(i))：当前上下文</text>
+<text x="451" y="1151" font-size="22" fill="#243b53" font-weight="400">源特征另送往下方融合</text>
+<rect x="818" y="1020" width="334" height="225" rx="14" fill="#def1e4" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="1054" font-size="25" fill="#243b53" font-weight="700">目标 NCM</text>
+<text x="835" y="1091" font-size="22" fill="#243b53" font-weight="400">输入当前 f(zsrc)</text>
+<text x="835" y="1121" font-size="22" fill="#243b53" font-weight="400">加上一帧 zcha(i−1)</text>
+<text x="835" y="1151" font-size="22" fill="#243b53" font-weight="400">Prior Net → μ / σ → 采样</text>
+<text x="835" y="1181" font-size="22" fill="#243b53" font-weight="400">Decoder → 当前 zcha(i)</text>
+<text x="835" y="1211" font-size="22" fill="#243b53" font-weight="400">推理通常不逐帧查近邻</text>
+<polyline points="380,1094 430,1094" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="765,1094 814,1094" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="818" y="1285" width="334" height="86" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="1319" font-size="25" fill="#243b53" font-weight="700">状态保存</text>
+<text x="835" y="1356" font-size="22" fill="#243b53" font-weight="400">zcha(i) 留给下一帧</text>
+<polyline points="1153,1170 1164,1170 1164,1327 1156,1327" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="985,1283 985,1249" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="48" y="1380" width="715" height="180" rx="14" fill="#def1e4" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="1414" font-size="25" fill="#243b53" font-weight="700">Characterizer：依内容对齐，注入完整角色特征</text>
+<text x="65" y="1451" font-size="22" fill="#243b53" font-weight="400">① AdaIN：目标特征预测缩放 / 偏移，改变整体统计</text>
+<text x="65" y="1481" font-size="22" fill="#243b53" font-weight="400">② Q＝源上下文，K＝目标上下文，V＝完整目标特征</text>
+<text x="65" y="1511" font-size="22" fill="#243b53" font-weight="400">③ 残差 / FFN → 反部位展开 → 密集关节运动</text>
+<rect x="818" y="1380" width="334" height="180" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="835" y="1414" font-size="25" fill="#243b53" font-weight="700">当前角色姿态</text>
+<text x="835" y="1451" font-size="22" fill="#243b53" font-weight="400">输出窗口与输入等长</text>
+<text x="835" y="1481" font-size="22" fill="#243b53" font-weight="400">仅最后一帧用于显示</text>
+<text x="835" y="1511" font-size="22" fill="#243b53" font-weight="400">身体比例、姿态可改变</text>
+<text x="835" y="1541" font-size="22" fill="#243b53" font-weight="400">历史已显示帧不再重写</text>
+<polyline points="598,1177 598,1376" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="818,1210 790,1210 790,1435 767,1435" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="765,1515 814,1515" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<text x="48" y="1607" font-size="22" fill="#243b53" font-weight="400">论文报告 2080 Ti 推理 &lt;16 ms；不是已测传感器 → 传输 → 渲染的完整延迟。</text>
+<rect x="25" y="1685" width="1150" height="315" rx="14" fill="#f7f2ff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="48" y="1724" font-size="28" fill="#243b53" font-weight="700">D  根运动、公开演示与约束边界</text>
+<text x="48" y="1760" font-size="21" fill="#536879" font-weight="400">风格 / 内容损失不是硬保持；以下处理不能被隐去后归功于原始网络。</text>
+<rect x="48" y="1795" width="530" height="140" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="65" y="1829" font-size="25" fill="#243b53" font-weight="700">论文的根运动处理</text>
+<text x="65" y="1866" font-size="22" fill="#243b53" font-weight="400">角速度沿用源动作</text>
+<text x="65" y="1896" font-size="22" fill="#243b53" font-weight="400">线速度按输出 / 源平均髋速比缩放</text>
+<text x="65" y="1926" font-size="22" fill="#243b53" font-weight="400">总体路径形态保持 ≠ 世界坐标逐点不变</text>
+<rect x="625" y="1795" width="527" height="140" rx="14" fill="#fff" stroke="#cbd7e2" stroke-width="2"/>
+<text x="642" y="1829" font-size="25" fill="#243b53" font-weight="700">当前公开 BVH 演示另含后处理</text>
+<text x="642" y="1866" font-size="22" fill="#243b53" font-weight="400">目标参考近邻初始化；之后用 NCM</text>
+<text x="642" y="1896" font-size="22" fill="#243b53" font-weight="400">源脚接触、速度融合、脚部 IK</text>
+<text x="642" y="1926" font-size="22" fill="#243b53" font-weight="400">不等于已验证实时传感器客户端</text>
+<text x="40" y="2050" font-size="22" fill="#536879" font-weight="400">来源：论文 §3–6、附录 A–D；公开代码 d7dfba1ae119 静态核对，未运行模型。</text>
+<text x="40" y="2090" font-size="22" fill="#856329" font-weight="400">六关节稀疏输入需要重训；未见源用户演示不能证明未见目标角色零样本能力。</text>
+</svg>

@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2760" viewBox="0 0 1200 2760" role="img" aria-labelledby="title desc">
+<title id="title">MATE：词嵌入的运动语义对齐</title>
+<desc id="desc">离线文本动作联合分段生成软高斯先验；训练词嵌入、动作编码解码、词原型及多头注意力，冻结文本上层；增强文本编码器替换下游原编码器并从头重训动作生成器，最后仅凭文本生成动作。</desc>
+<defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#668393"/></marker></defs>
+<style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#213d50}.title{font-size:32px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1200" height="2760" fill="#fff"/>
+<text x="40" y="50" class="title">MATE：先校准词的运动语义，再训练动作生成器</text>
+<text x="40" y="92" class="body">ICLR 2026｜词嵌入是文本查表，不是动作 token 或可读推理链</text>
+<rect x="30" y="125" width="1140" height="445" rx="14" fill="#f0f6fa" stroke="#c1d1db"/>
+<text x="55" y="165" class="head">A · 离线伪定位：配对文字与已有动作 → 时间先验</text>
+<text x="55" y="202" class="small">这里使用真实训练动作；人工边界只用于评价，不进入训练监督。</text>
+<rect x="55" y="250" width="320" height="175" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="71" y="284" class="head">文字描述 t</text>
+<text x="71" y="318" class="body">ChatGPT 提示式拆分</text>
+<text x="71" y="347" class="body">有序子描述 t₁…tₙ</text>
+<text x="71" y="376" class="body">未微调成动作模型</text>
+<rect x="440" y="250" width="320" height="175" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="456" y="284" class="head">配对真实动作 m</text>
+<text x="456" y="318" class="body">冻结文本／动作检索教师</text>
+<text x="456" y="347" class="body">穷举相邻、不重叠划分</text>
+<text x="456" y="376" class="body">最小化各段匹配距离</text>
+<rect x="825" y="250" width="320" height="175" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="841" y="284" class="head">词 w 所在段 → A(t)</text>
+<text x="841" y="318" class="body">从起止边界构造高斯先验</text>
+<text x="841" y="347" class="body">覆盖整段，中心权重较强</text>
+<text x="841" y="376" class="body">伪边界，不是人工真值</text>
+<path d="M375,335 L440,335" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M760,335 L825,335" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<text x="55" y="495" class="small">同一子描述内的词先共享粗时间位置；细分词义由后续训练学习。</text>
+<rect x="30" y="605" width="1140" height="850" rx="14" fill="#f5f2fa" stroke="#c1d1db"/>
+<text x="55" y="645" class="head">B · MATE 训练：词 query 从连续动作特征中提取语义</text>
+<text x="55" y="682" class="small">只冻结文本编码器的后续层；动作编码器、对齐模块与词嵌入参与学习。</text>
+<rect x="55" y="730" width="320" height="145" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="71" y="764" class="head">文本：可训练词嵌入</text>
+<text x="71" y="798" class="body">完整句 t → 词查表 WE</text>
+<text x="71" y="827" class="body">选词 w → 投影 Q</text>
+<text x="71" y="856" class="body">Q 不含完整上下文</text>
+<rect x="55" y="960" width="320" height="145" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="71" y="994" class="head">冻结文本后续层</text>
+<text x="71" y="1028" class="body">整句词嵌入作为输入</text>
+<text x="71" y="1057" class="body">保留上下文建模</text>
+<text x="71" y="1086" class="body">输出句级文本特征 fᵗ</text>
+<path d="M215,875 L215,960" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<rect x="440" y="730" width="320" height="185" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="456" y="764" class="head">可训练动作编码器</text>
+<text x="456" y="798" class="body">输入真实动作 m</text>
+<text x="456" y="827" class="body">输出帧特征 Fᵐ</text>
+<text x="456" y="856" class="body">同时输出整段特征 fᵐ</text>
+<text x="456" y="885" class="body">不是 A 区冻结教师</text>
+<rect x="825" y="730" width="320" height="185" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="841" y="764" class="head">复用 A 区软先验</text>
+<text x="841" y="798" class="body">K = (1 + αA) ⊙ Fᵐ</text>
+<text x="841" y="827" class="body">V = Fᵐ</text>
+<text x="841" y="856" class="body">不屏蔽区间外帧</text>
+<text x="841" y="885" class="body">不在 logits 上加硬掩码</text>
+<rect x="440" y="1025" width="705" height="155" rx="14" fill="#fff" stroke="#c1d1db"/>
+<text x="456" y="1059" class="head">可训练多头注意力：Q、K、V</text>
+<text x="456" y="1093" class="body">Q 来自词嵌入；K 受时间先验加权；V 保留原始特征</text>
+<text x="456" y="1122" class="body">输出词相关动作特征 fᵐw</text>
+<text x="456" y="1151" class="body">这里得到连续表示，不是动作片段或可执行指令</text>
+<path d="M375,795 L405,795 L405,1070 L440,1070" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M600,915 L600,1025" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M985,915 L985,1025" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<rect x="55" y="1255" width="1090" height="130" rx="14" fill="#fff" stroke="#c1d1db"/>
+<text x="71" y="1289" class="head">两种粒度共同保留</text>
+<text x="71" y="1323" class="body">词分支：WE(w) ↔ fᵐw；句分支：冻结上层输出 fᵗ ↔ 动作整段特征 fᵐ。</text>
+<text x="71" y="1352" class="body">fᵐ 另送可训练辅助动作解码器，重建真实动作；该解码器不等于下游生成器。</text>
+<path d="M790,1180 L790,1255" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<text x="55" y="1420" class="small">冻结权重仍允许梯度穿过；文本上层不更新，但词嵌入能够学习。</text>
+<rect x="30" y="1490" width="1140" height="500" rx="14" fill="#eef6f1" stroke="#c1d1db"/>
+<text x="55" y="1530" class="head">C · 五项训练信号：共享词义、排除错误关联、保留上下文</text>
+<text x="55" y="1567" class="small">原型是可学习连续向量，初始化自对应词嵌入；不是动作片段数据库。</text>
+<rect x="55" y="1615" width="320" height="195" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="71" y="1649" class="head">自解耦 Lself</text>
+<text x="71" y="1683" class="body">词相关动作 ↔ 对应原型</text>
+<text x="71" y="1712" class="body">拉近同词跨动作共享语义</text>
+<text x="71" y="1741" class="body">与其他词原型区分</text>
+<text x="71" y="1770" class="body">原型数：5,161 / 1,191</text>
+<rect x="440" y="1615" width="320" height="195" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="456" y="1649" class="head">交叉解耦 Lcross</text>
+<text x="456" y="1683" class="body">词与不相关动作交叉查询</text>
+<text x="456" y="1712" class="body">对不相符配对约束正交</text>
+<text x="456" y="1741" class="body">不是把输出强制清零</text>
+<text x="456" y="1770" class="body">也不是语义成功率分类器</text>
+<rect x="825" y="1615" width="320" height="195" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="841" y="1649" class="head">三项配对与重建目标</text>
+<text x="841" y="1683" class="body">Lalign：词 ↔ 动作特征</text>
+<text x="841" y="1712" class="body">Lsent：整句 ↔ 整段动作</text>
+<text x="841" y="1741" class="body">Lrec：辅助动作重建</text>
+<text x="841" y="1770" class="body">共同更新 MATE 模块</text>
+<text x="55" y="1880" class="body">总目标：Lrec + α₁(Lself + Lcross + Lalign) + α₂Lsent。</text>
+<text x="55" y="1930" class="small">词级分离不替代句子关系；运动特征正交不等于物理变量完全解耦。</text>
+<rect x="30" y="2025" width="1140" height="585" rx="14" fill="#fff6e8" stroke="#c1d1db"/>
+<text x="55" y="2065" class="head">D · 下游训练与推理：只复用增强后的文本编码器</text>
+<text x="55" y="2102" class="small">MATE 的动作定位、词原型及辅助解码器不是最终文本生成时的必经模块。</text>
+<rect x="55" y="2150" width="320" height="170" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="71" y="2184" class="head">增强文本编码器</text>
+<text x="71" y="2218" class="body">词嵌入已注入运动语义</text>
+<text x="71" y="2247" class="body">后续上下文层保持原模型</text>
+<text x="71" y="2276" class="body">替换原文本编码器</text>
+<text x="71" y="2305" class="body">不是无训练替换检查点</text>
+<rect x="440" y="2150" width="320" height="170" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="456" y="2184" class="head">下游生成器从头重训</text>
+<text x="456" y="2218" class="body">MDM / MotionDiffuse</text>
+<text x="456" y="2247" class="body">MMM / MoMask</text>
+<text x="456" y="2276" class="body">仍用对应方法的训练流程</text>
+<text x="456" y="2305" class="body">整体成本不只 3.2 M 参数</text>
+<rect x="825" y="2150" width="320" height="170" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="841" y="2184" class="head">最终推理</text>
+<text x="841" y="2218" class="body">新文字 → 增强编码</text>
+<text x="841" y="2247" class="body">下游模型合成完整动作</text>
+<text x="841" y="2276" class="body">不需输入真实动作</text>
+<text x="841" y="2305" class="body">不需再次调用 ChatGPT</text>
+<path d="M375,2230 L440,2230" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M760,2230 L825,2230" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M55,805 L42,805 L42,2130 L215,2130 L215,2150" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)" stroke-dasharray="7 6"/>
+<rect x="55" y="2405" width="1090" height="125" rx="14" fill="#fff" stroke="#c1d1db"/>
+<text x="71" y="2439" class="head">输出边界</text>
+<text x="71" y="2473" class="body">改善文字—动作匹配；没有精确关键帧、接触、计数或源动作保持的硬约束。</text>
+<text x="71" y="2502" class="body">当前官方仓库只有未来发布说明；图是论文方法重绘，不是已运行实现。</text>
+<text x="40" y="2670" class="small">实线：数据／条件／目标；虚线：训练产物复用。依据正式图 2、式 1–8 与 §4.1。</text>
+<text x="40" y="2715" class="small">本文分别核对原始数值、统计口径、失败示例和未公开的工程细节。</text>
+</svg>

@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2420" viewBox="0 0 1200 2420" role="img" aria-labelledby="title desc">
+<title id="title">FrankenMotion 完整教学架构</title>
+<desc id="desc">离线用已有文字推理三层标注，冻结CLIP编码条件与带噪动作联合训练，用户时间轨道控制同一个全身扩散模型。没有七个独立生成器或源动作硬保持。</desc>
+<defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#668393"/></marker></defs>
+<style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#213d50}.title{font-size:31px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1200" height="2420" fill="#fff"/>
+<text x="40" y="50" class="title">FrankenMotion：多条文字轨道，共同驱动一个全身模型</text>
+<text x="40" y="91" class="body">CVPR 2026｜三层监督 × 异步部位条件 × 联合扩散生成</text>
+<rect x="30" y="125" width="1140" height="470" rx="14" fill="#f0f6fa" stroke="#c1d1db"/>
+<text x="55" y="165" class="head">A · 离线建立训练标注：语言推理不是直接观察动作</text>
+<text x="55" y="202" class="small">FrankenAgent 根据已有文字补充细节；它不在每个扩散步中调用。</text>
+<rect x="55" y="250" width="320" height="185" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="71" y="284" class="head">已有文字与时间信息</text>
+<text x="71" y="318" class="body">BABEL 动作时间段（主要）</text>
+<text x="71" y="347" class="body">HumanML3D / KIT-ML 描述</text>
+<text x="71" y="376" class="body">配套已有动作作为训练目标</text>
+<text x="71" y="405" class="body">代理本身不读运动坐标</text>
+<rect x="440" y="250" width="320" height="185" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="456" y="284" class="head">FrankenAgent</text>
+<text x="456" y="318" class="body">DeepSeek-R1 提示式推理</text>
+<text x="456" y="347" class="body">整段 → 原子动作 → 部位</text>
+<text x="456" y="376" class="body">来源／置信度／unknown</text>
+<text x="456" y="405" class="body">不是微调动作生成 LLM</text>
+<rect x="825" y="250" width="320" height="185" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="841" y="284" class="head">FrankenStein 标注</text>
+<text x="841" y="318" class="body">1 条全局目标</text>
+<text x="841" y="347" class="body">动作文本＋起止时间</text>
+<text x="841" y="376" class="body">7 条部位异步时间轨道</text>
+<text x="841" y="405" class="body">与真实动作配对</text>
+<path d="M375,340 L440,340" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M760,340 L825,340" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<text x="55" y="500" class="small">七轨道：头、脊柱、左臂、右臂、左腿、右腿、轨迹；不必共享动作边界。</text>
+<text x="55" y="545" class="small">自动标签是推理监督，不能等同人工观察真值；unknown 允许描述不完整。</text>
+<rect x="30" y="630" width="1140" height="1010" rx="14" fill="#f5f2fa" stroke="#c1d1db"/>
+<text x="55" y="670" class="head">B · 联合训练：每帧局部条件 + 两个全局 token</text>
+<text x="55" y="707" class="small">所有部位共同进入同一个 Transformer；论文 PCA 维度为 50。</text>
+<rect x="55" y="755" width="330" height="180" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="71" y="789" class="head">动作与七部位时间轨道</text>
+<text x="71" y="823" class="body">冻结 CLIP → PCA</text>
+<text x="71" y="852" class="body">按起止区间展开到每帧</text>
+<text x="71" y="881" class="body">unknown / 随机遮蔽 → 零</text>
+<text x="71" y="910" class="body">得到 T × (8 × 50) 特征</text>
+<rect x="440" y="755" width="320" height="180" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="456" y="789" class="head">真实全身动作 x₀</text>
+<text x="456" y="823" class="body">根高度／速度／角速度</text>
+<text x="456" y="852" class="body">局部旋转和关节位置</text>
+<text x="456" y="881" class="body">随机扩散步 σ 加噪</text>
+<text x="456" y="910" class="body">得到带噪整段动作 xσ</text>
+<rect x="825" y="755" width="320" height="180" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="841" y="789" class="head">整段目标与扩散步</text>
+<text x="841" y="823" class="body">全局文本 → 冻结 CLIP</text>
+<text x="841" y="852" class="body">可学习投影为全局 token</text>
+<text x="841" y="881" class="body">σ → 扩散时间 token</text>
+<text x="841" y="910" class="body">各自单独提供上下文</text>
+<rect x="245" y="1025" width="515" height="130" rx="14" fill="#fff" stroke="#c1d1db"/>
+<text x="261" y="1059" class="head">按帧拼接：文字 + 带噪动作</text>
+<text x="261" y="1093" class="body">可学习 MLP → T 个联合帧特征</text>
+<text x="261" y="1122" class="body">此 embedding 不是 VAE / VQ 动作码</text>
+<path d="M220,935 L220,990 L430,990 L430,1025" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M600,935 L600,1025" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<rect x="245" y="1240" width="700" height="150" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="261" y="1274" class="head">同一个全身 Transformer</text>
+<text x="261" y="1308" class="body">T 个帧特征 + 全局文本 token + 扩散时间 token</text>
+<text x="261" y="1337" class="body">加入位置编码，在身体与时间关系中共同建模</text>
+<text x="261" y="1366" class="body">输出完整干净动作预测 x̂₀</text>
+<path d="M500,1155 L500,1240" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M985,935 L985,1190 L780,1190 L780,1240" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<rect x="245" y="1460" width="700" height="105" rx="14" fill="#fff" stroke="#c1d1db"/>
+<text x="261" y="1494" class="head">监督：x̂₀ 与真实动作 x₀ 的均方误差</text>
+<text x="261" y="1528" class="body">训练投影与生成网络；CLIP 保持冻结</text>
+<path d="M600,1390 L600,1460" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<text x="55" y="1600" class="small">随机遮蔽的是已知文字条件；没有删除对应关节监督，也不硬锁运动输出。</text>
+<rect x="30" y="1675" width="1140" height="610" rx="14" fill="#eef6f1" stroke="#c1d1db"/>
+<text x="55" y="1715" class="head">C · 推理与条件编辑：全身从噪声共同生成</text>
+<text x="55" y="1752" class="small">训练后的模型复用；可稀疏指定轨道，常规采样不必重新调用 FrankenAgent。</text>
+<rect x="55" y="1800" width="320" height="185" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="71" y="1834" class="head">用户输入</text>
+<text x="71" y="1868" class="body">总时长＋整段描述</text>
+<text x="71" y="1897" class="body">原子动作时间区间</text>
+<text x="71" y="1926" class="body">七部位各自的文字区间</text>
+<text x="71" y="1955" class="body">未指定部分可为 unknown</text>
+<rect x="440" y="1800" width="320" height="185" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="456" y="1834" class="head">复用 B 区条件编码</text>
+<text x="456" y="1868" class="body">文字与时间条件保持输入</text>
+<text x="456" y="1897" class="body">全身高斯噪声开始采样</text>
+<text x="456" y="1926" class="body">反复预测干净整身动作</text>
+<text x="456" y="1955" class="body">论文采用 100 步扩散</text>
+<rect x="825" y="1800" width="320" height="185" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="841" y="1834" class="head">连续完整动作</text>
+<text x="841" y="1868" class="body">全身姿态与根运动</text>
+<text x="841" y="1897" class="body">各部位共同协调</text>
+<text x="841" y="1926" class="body">没有分部位生成后拼接</text>
+<text x="841" y="1955" class="body">没有源动作硬复制支路</text>
+<path d="M375,1895 L440,1895" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M760,1895 L825,1895" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M945,1310 L1155,1310 L1155,1780 L600,1780 L600,1800" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)" stroke-dasharray="7 6"/>
+<rect x="55" y="2070" width="1090" height="140" rx="14" fill="#fff" stroke="#c1d1db"/>
+<text x="71" y="2104" class="head">编辑：改某条部位文字 → 同一个模型重新生成</text>
+<text x="71" y="2138" class="body">例如保留行走轨道，将右臂“敲门”改为“挥手”。</text>
+<text x="71" y="2167" class="body">保持其余文字条件 ≠ 保持其余关节逐帧数值；接触、时点和次数需另行验证。</text>
+<path d="M985,1985 L985,2070" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#ar)"/>
+<text x="40" y="2340" class="small">实线：数据与条件流；虚线：训练产物复用。依据正式主文图 2–3、§3–4 原创重绘。</text>
+<text x="40" y="2380" class="small">当前代码的 PCA、训练配置及条件通道处理差异见正文；图按正式论文解释。</text>
+</svg>
