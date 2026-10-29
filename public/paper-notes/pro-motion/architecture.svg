@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2025" viewBox="0 0 1200 2025" role="img" aria-labelledby="title desc"><title id="title">PRO-Motion：从语言规划到关键姿态，再到带全局运动的动作</title><desc id="desc">原创教学图。上方离线学习三条支路；推理时GPT-3.5规划八条姿态描述，姿态扩散生成候选，预训练检索编码器与Viterbi选择关键姿态，Go-Denoiser完成一百步动作采样。姿态条件是连续向量，不是量化码；没有严格关键帧覆写保证。</desc><defs><marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#37627b"/></marker><marker id="dash" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#af6e31"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#213446;font-size:22px}.title{font-size:32px;font-weight:700}.head{font-size:27px;font-weight:700}.b{font-weight:700}.small{font-size:20px}.muted{fill:#53697b}.node{stroke:#97b1c5;stroke-width:1.5;rx:13}.flow{fill:none;stroke:#37627b;stroke-width:2.4;marker-end:url(#arr)}.reuse{fill:none;stroke:#af6e31;stroke-width:2.4;stroke-dasharray:8 6;marker-end:url(#dash)}</style><rect width="1200" height="2025" fill="#fff"/>
+<text x="600" y="48" text-anchor="middle" class="title">PRO-Motion：先规划姿态，再生成全局动作</text>
+<text x="600" y="78" text-anchor="middle" class="small muted">ECCV 2024 正式版 · 教学重绘 · 实线为数据流，虚线为采样循环</text>
+<rect x="25" y="100" width="1150" height="330" rx="18" fill="#f4f7fb" stroke="#d4dfe7"/>
+<text x="50" y="138" text-anchor="start" class="head">A  离线学习与预训练复用</text>
+<text x="50" y="168" text-anchor="start" class="small muted">学习三种能力；GPT-3.5 只做提示规划，没有报告微调或强化学习。</text>
+<rect class="node" x="60" y="195" width="330" height="65" fill="#fff"/>
+<text x="225.0" y="234.5" text-anchor="middle" class="">PoseScript-A：姿态＋文字</text>
+<rect class="node" x="435" y="195" width="330" height="65" fill="#fff"/>
+<text x="600.0" y="234.5" text-anchor="middle" class="">PoseScript-A 检索预训练</text>
+<rect class="node" x="810" y="195" width="330" height="65" fill="#fff"/>
+<text x="975.0" y="234.5" text-anchor="middle" class="">AMASS：64 帧完整动作</text>
+<path class="flow" d="M225 260V285"/>
+<path class="flow" d="M600 260V285"/>
+<path class="flow" d="M975 260V285"/>
+<rect class="node" x="60" y="285" width="330" height="100" fill="#e3f2ff"/>
+<text x="225.0" y="313.0" text-anchor="middle" class="">① 姿态去噪器</text>
+<text x="225.0" y="342.0" text-anchor="middle" class="">带噪姿态 → 干净姿态</text>
+<text x="225.0" y="371.0" text-anchor="middle" class="">DistilBERT 冻结</text>
+<rect class="node" x="435" y="285" width="330" height="100" fill="#eaf5ed"/>
+<text x="600.0" y="313.0" text-anchor="middle" class="">② 文字／姿态检索编码器</text>
+<text x="600.0" y="342.0" text-anchor="middle" class="">批内分类损失</text>
+<text x="600.0" y="371.0" text-anchor="middle" class="">用于候选路径打分</text>
+<rect class="node" x="810" y="285" width="330" height="100" fill="#fff1df"/>
+<text x="975.0" y="313.0" text-anchor="middle" class="">③ 动作去噪器</text>
+<text x="975.0" y="342.0" text-anchor="middle" class="">局部关键姿态条件</text>
+<text x="975.0" y="371.0" text-anchor="middle" class="">恢复过渡与全局运动</text>
+<text x="600" y="414" text-anchor="middle" class="small muted">①②③ 在下方对应模块复用；正文未给出完整去噪损失项与权重。</text>
+<rect x="25" y="450" width="1150" height="555" rx="18" fill="#f1f8ff" stroke="#d4dfe7"/>
+<text x="50" y="488" text-anchor="start" class="head">B  推理：文字规划与候选姿态生成</text>
+<text x="50" y="518" text-anchor="start" class="small muted">每条脚本描述一个局部姿态；它不是可执行程序，也不是动作码。</text>
+<rect class="node" x="60" y="540" width="310" height="85" fill="#fff"/>
+<text x="215.0" y="575.0" text-anchor="middle" class="">用户文本</text>
+<text x="215.0" y="604.0" text-anchor="middle" class="">例如：“单脚跳”</text>
+<rect class="node" x="435" y="540" width="310" height="85" fill="#e1edff"/>
+<text x="590.0" y="575.0" text-anchor="middle" class="">GPT-3.5 Motion Planner</text>
+<text x="590.0" y="604.0" text-anchor="middle" class="">身体关系规则＋示例</text>
+<rect class="node" x="825" y="540" width="310" height="85" fill="#fff"/>
+<text x="980.0" y="575.0" text-anchor="middle" class="">F 条有顺序姿态描述</text>
+<text x="980.0" y="604.0" text-anchor="middle" class="">正式提示 F = 8</text>
+<path class="flow" d="M370 582H435"/>
+<path class="flow" d="M745 582H825"/>
+<rect class="node" x="435" y="680" width="310" height="80" fill="#fff"/>
+<text x="590.0" y="712.5" text-anchor="middle" class="">扩散时刻 t</text>
+<text x="590.0" y="741.5" text-anchor="middle" class="">正弦编码＋前馈网络</text>
+<rect class="node" x="825" y="680" width="310" height="80" fill="#fff"/>
+<text x="980.0" y="712.5" text-anchor="middle" class="">冻结 DistilBERT</text>
+<text x="980.0" y="741.5" text-anchor="middle" class="">文字特征 → K、V</text>
+<path class="flow" d="M980 625V680"/>
+<path class="flow" d="M590 760V800"/>
+<path class="flow" d="M980 760V780H745V830"/>
+<rect class="node" x="60" y="800" width="310" height="110" fill="#fff"/>
+<text x="215.0" y="833.0" text-anchor="middle" class="">带噪局部姿态 pₜ</text>
+<text x="215.0" y="862.0" text-anchor="middle" class="">每个姿态 126 维</text>
+<text x="215.0" y="891.0" text-anchor="middle" class="">21 个关节 × 6D 旋转</text>
+<rect class="node" x="435" y="800" width="310" height="110" fill="#e3f2ff"/>
+<text x="590.0" y="833.0" text-anchor="middle" class="">① Posture-Denoiser</text>
+<text x="590.0" y="862.0" text-anchor="middle" class="">3 组时间残差＋跨注意力</text>
+<text x="590.0" y="891.0" text-anchor="middle" class="">姿态特征作 Q</text>
+<rect class="node" x="825" y="800" width="310" height="110" fill="#fff"/>
+<text x="980.0" y="833.0" text-anchor="middle" class="">干净姿态预测／采样</text>
+<text x="980.0" y="862.0" text-anchor="middle" class="">每阶段 L 个候选</text>
+<text x="980.0" y="891.0" text-anchor="middle" class="">不含根平移与根朝向</text>
+<path class="flow" d="M370 855H435"/>
+<path class="flow" d="M745 855H825"/>
+<path class="reuse" d="M875 910V940H215V910"/>
+<text x="540" y="968" text-anchor="middle" class="small muted">姿态扩散采样循环；按每条描述生成多种候选</text>
+<rect x="25" y="1030" width="1150" height="310" rx="18" fill="#eff8f1" stroke="#d4dfe7"/>
+<text x="50" y="1068" text-anchor="start" class="head">C  候选选择：文字匹配与相邻一致性</text>
+<text x="50" y="1098" text-anchor="start" class="small muted">② 复用检索编码器；特征归一化 → 相似度 softmax → 路径分数。</text>
+<rect class="node" x="60" y="1125" width="310" height="100" fill="#fff"/>
+<text x="215.0" y="1153.0" text-anchor="middle" class="">各阶段候选姿态</text>
+<text x="215.0" y="1182.0" text-anchor="middle" class="">VPoser 姿态编码</text>
+<text x="215.0" y="1211.0" text-anchor="middle" class="">512 维归一化特征</text>
+<rect class="node" x="435" y="1125" width="310" height="100" fill="#e0f0e5"/>
+<text x="590.0" y="1153.0" text-anchor="middle" class="">文字：双向 GRU 编码</text>
+<text x="590.0" y="1182.0" text-anchor="middle" class="">E：当前候选与文字</text>
+<text x="590.0" y="1211.0" text-anchor="middle" class="">A：相邻候选姿态</text>
+<rect class="node" x="825" y="1125" width="310" height="100" fill="#fff"/>
+<text x="980.0" y="1153.0" text-anchor="middle" class="">Viterbi 最大路径搜索</text>
+<text x="980.0" y="1182.0" text-anchor="middle" class="">兼顾 E 与 A</text>
+<text x="980.0" y="1211.0" text-anchor="middle" class="">选择每阶段一个候选</text>
+<path class="flow" d="M980 910V985H40V1105H215V1125"/>
+<path class="flow" d="M1135 582H1160V1105H590V1125"/>
+<path class="flow" d="M370 1175H435"/>
+<path class="flow" d="M745 1175H825"/>
+<rect class="node" x="825" y="1260" width="310" height="60" fill="#e0f0e5"/>
+<text x="980.0" y="1297.0" text-anchor="middle" class="">选中关键姿态 F × 126</text>
+<path class="flow" d="M980 1225V1260"/>
+<text x="60" y="1270" text-anchor="start" class="small muted">相邻一致性是学习到的特征相似性，</text>
+<text x="60" y="1299" text-anchor="start" class="small muted">不是接触、速度或动力学硬约束。</text>
+<rect x="25" y="1360" width="1150" height="555" rx="18" fill="#fff7eb" stroke="#d4dfe7"/>
+<text x="50" y="1398" text-anchor="start" class="head">D  推理：生成过渡、根位置与朝向</text>
+<text x="50" y="1428" text-anchor="start" class="small muted">③ 复用 Go-Denoiser；关键姿态是连续投影 token，不是 VQ 离散码。</text>
+<rect class="node" x="60" y="1455" width="310" height="100" fill="#fff"/>
+<text x="215.0" y="1483.0" text-anchor="middle" class="">带噪完整动作 xₜ</text>
+<text x="215.0" y="1512.0" text-anchor="middle" class="">N × 135</text>
+<text x="215.0" y="1541.0" text-anchor="middle" class="">由动作噪声开始采样</text>
+<rect class="node" x="435" y="1455" width="310" height="100" fill="#fff"/>
+<text x="590.0" y="1483.0" text-anchor="middle" class="">扩散时刻＋位置编码</text>
+<text x="590.0" y="1512.0" text-anchor="middle" class="">条件训练中随机屏蔽</text>
+<text x="590.0" y="1541.0" text-anchor="middle" class="">推理使用 CFG</text>
+<rect class="node" x="825" y="1455" width="310" height="100" fill="#fff"/>
+<text x="980.0" y="1483.0" text-anchor="middle" class="">逐姿态线性投影</text>
+<text x="980.0" y="1512.0" text-anchor="middle" class="">保留 F 个条件 token</text>
+<text x="980.0" y="1541.0" text-anchor="middle" class="">每个姿态信息独立进入</text>
+<path class="flow" d="M980 1320V1455"/>
+<path class="flow" d="M590 1555V1600"/>
+<path class="flow" d="M980 1555V1580H745V1630"/>
+<path class="flow" d="M215 1555V1655H435"/>
+<rect class="node" x="435" y="1600" width="310" height="110" fill="#ffe8c6"/>
+<text x="590.0" y="1633.0" text-anchor="middle" class="">③ Go-Denoiser</text>
+<text x="590.0" y="1662.0" text-anchor="middle" class="">8 层 Transformer 编码器</text>
+<text x="590.0" y="1691.0" text-anchor="middle" class="">512 维／4 个注意力头</text>
+<rect class="node" x="825" y="1600" width="310" height="110" fill="#fff"/>
+<text x="980.0" y="1633.0" text-anchor="middle" class="">预测干净完整动作 x̂₀</text>
+<text x="980.0" y="1662.0" text-anchor="middle" class="">局部身体旋转</text>
+<text x="980.0" y="1691.0" text-anchor="middle" class="">＋根平移与根朝向</text>
+<path class="flow" d="M745 1655H825"/>
+<path class="reuse" d="M980 1710V1750H185V1555"/>
+<text x="60" y="1810" text-anchor="start" class="small muted">中间步：扩散更新 → 下一噪声状态</text>
+<text x="60" y="1839" text-anchor="start" class="small muted">论文报告 100 个采样步骤</text>
+<text x="60" y="1868" text-anchor="start" class="small muted">没有明确的关键帧硬覆写算法</text>
+<rect class="node" x="825" y="1790" width="310" height="95" fill="#ffe8c6"/>
+<text x="980.0" y="1815.5" text-anchor="middle" class="">最终 64 × 135 动作</text>
+<text x="980.0" y="1844.5" text-anchor="middle" class="">平面位移差＋根高度</text>
+<text x="980.0" y="1873.5" text-anchor="middle" class="">根旋转＋身体旋转</text>
+<path class="flow" d="M1120 1710V1790"/>
+<text x="600" y="1952" text-anchor="middle" class="b">控制边界：修改姿态描述后重新生成 ≠ 原动作未改区域严格保持。</text>
+<text x="600" y="1984" text-anchor="middle" class="small muted">来源：正式主文 §3／图 3–4；补充 §B–D／表 1。官方仓库未发布可运行模型。</text>
+</svg>

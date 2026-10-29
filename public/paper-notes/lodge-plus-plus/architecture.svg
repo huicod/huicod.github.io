@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2180" viewBox="0 0 1200 2180" role="img" aria-labelledby="title desc">
+<title id="title">Lodge++：训练、全局编舞、原语桥接与局部舞蹈精修</title>
+<desc id="desc">依据 arXiv 2410.20389v1 图2至5重绘。区分离线学习与推理，离散动作码与连续原语，以及局部并行设计和2026公开代码归档的差异。</desc>
+<defs><marker id="arrow" markerWidth="11" markerHeight="11" refX="10" refY="5.5" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L11,5.5 L0,11 Z" fill="#54708c"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif}</style>
+<rect x="0" y="0" width="1200" height="2180" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="2"/>
+<text x="40" y="48" text-anchor="start" font-size="34" fill="#143c56" font-weight="700">Lodge++：全局安排动作，局部恢复细节</text>
+<text x="40" y="86" text-anchor="start" font-size="23" fill="#64748b" font-weight="400">论文机制教学图 · 依据 arXiv v1 · 期刊出版身份为 TPAMI 2025</text>
+<rect x="25" y="115" width="1150" height="350" rx="20" fill="#f3f7fb" stroke="#d9e2ec" stroke-width="2"/>
+<text x="48" y="153" text-anchor="start" font-size="28" fill="#123959" font-weight="700">A  离线学习：三类网络各有目标</text>
+<text x="48" y="187" text-anchor="start" font-size="21" fill="#526678" font-weight="400">预训练 VQ 表示 → 学习动作码接续；局部扩散另学连续细节，不画作端到端联合训练。</text>
+<rect x="48" y="211" width="340" height="145" rx="15" fill="#eaf2ff" stroke="#c7d3df" stroke-width="2"/>
+<text x="68" y="245" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">① VQ-VAE + 编舞码本</text>
+<text x="68" y="281" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">真实动作 → 7 主关节 42D</text>
+<text x="68" y="311" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">时间压缩 4 倍；码本 1024</text>
+<text x="68" y="341" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">重建 + 码本 + commitment</text>
+<rect x="430" y="211" width="340" height="145" rx="15" fill="#eaf2ff" stroke="#c7d3df" stroke-width="2"/>
+<text x="450" y="245" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">② 舞蹈 GPT</text>
+<text x="450" y="281" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">音乐 + 舞种 + 已有动作码</text>
+<text x="450" y="311" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">自回归预测下一码 / End</text>
+<text x="450" y="341" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">训练信号：码序列交叉熵</text>
+<rect x="812" y="211" width="340" height="145" rx="15" fill="#eaf5f0" stroke="#c7d3df" stroke-width="2"/>
+<text x="832" y="245" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">③ 局部 PDDM</text>
+<text x="832" y="281" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">真实动作 + 原语相关扰动</text>
+<text x="832" y="311" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">重建 + 关节 / 接触辅助损失</text>
+<text x="832" y="341" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">训练时使用舞种判别器</text>
+<polyline points="389,284 427,284" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="48" y="402" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">训练边界：局部输入首尾各 4 帧设为真实边界，使网络学习受条件限制的过渡。</text>
+<text x="48" y="438" text-anchor="start" font-size="22" fill="#825e20" font-weight="400">资源边界：论文超参数与当前归档代码不是同一套已核实配置；未运行模型。</text>
+<rect x="25" y="492" width="1150" height="395" rx="20" fill="#f5f7ff" stroke="#d9e2ec" stroke-width="2"/>
+<text x="48" y="530" text-anchor="start" font-size="28" fill="#123959" font-weight="700">B  推理一：生成全局粗编舞</text>
+<text x="48" y="564" text-anchor="start" font-size="21" fill="#526678" font-weight="400">输入为音乐和舞种；舞蹈 GPT 仍按时间自回归，非语言大模型生成文字计划。</text>
+<rect x="48" y="590" width="282" height="105" rx="15" fill="#ffffff" stroke="#c7d3df" stroke-width="2"/>
+<text x="68" y="624" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">音乐 → Librosa</text>
+<text x="68" y="660" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">逐帧 35D 音乐特征</text>
+<rect x="48" y="729" width="282" height="90" rx="15" fill="#ffffff" stroke="#c7d3df" stroke-width="2"/>
+<text x="68" y="763" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">目标舞种 g</text>
+<text x="68" y="799" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">舞种嵌入</text>
+<rect x="400" y="627" width="330" height="145" rx="15" fill="#e6edff" stroke="#c7d3df" stroke-width="2"/>
+<text x="420" y="661" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">舞蹈 GPT</text>
+<text x="420" y="697" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">音乐与舞种作为条件</text>
+<text x="420" y="727" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">按已有码预测后续离散码</text>
+<text x="420" y="757" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">输出：s₁, s₂, …, End</text>
+<rect x="805" y="627" width="347" height="145" rx="15" fill="#e6edff" stroke="#c7d3df" stroke-width="2"/>
+<text x="825" y="661" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">冻结的 VQ 解码器</text>
+<text x="825" y="697" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">动作码 → 连续粗动作</text>
+<text x="825" y="727" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">论文：7 主关节的旋转</text>
+<text x="825" y="757" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">此时尚非最终完整舞蹈</text>
+<polyline points="330,645 365,645 365,671 396,671" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="330,777 365,777 365,727 396,727" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="731,700 801,700" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="48" y="858" text-anchor="start" font-size="22" fill="#825e20" font-weight="400">后续还需完整 139D 身体动作；42D 到完整原语条件的补齐细节未充分披露。</text>
+<rect x="25" y="917" width="1150" height="390" rx="20" fill="#fff9ed" stroke="#d9e2ec" stroke-width="2"/>
+<text x="48" y="955" text-anchor="start" font-size="28" fill="#123959" font-weight="700">C  桥接：连续舞蹈原语承担两种任务</text>
+<text x="48" y="989" text-anchor="start" font-size="21" fill="#526678" font-weight="400">从粗动作提取片段；这里传递的是连续运动，不是把离散码直接当局部扩散输出。</text>
+<rect x="48" y="1020" width="522" height="145" rx="15" fill="#ffffff" stroke="#c7d3df" stroke-width="2"/>
+<text x="68" y="1054" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">dₛ：节拍附近的短动作</text>
+<text x="68" y="1090" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">动作速度局部极小 → 舞蹈节拍</text>
+<text x="68" y="1120" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">取附近 8 帧；对齐最近音乐节拍</text>
+<text x="68" y="1150" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">传递动作安排，数量可随序列变化</text>
+<rect x="630" y="1020" width="522" height="145" rx="15" fill="#ffffff" stroke="#c7d3df" stroke-width="2"/>
+<text x="650" y="1054" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">dₕ：相邻窗口的接缝安排</text>
+<text x="650" y="1090" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">边界 in 附近取 [in−4, in+4)</text>
+<text x="650" y="1120" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">前 4 帧给前段结尾，后 4 帧给后段开头</text>
+<text x="650" y="1150" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">不是把同一姿态重复到两侧</text>
+<polyline points="980,773 980,900 12,900 12,1010 309,1010 309,1019" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="12,1010 890,1010 890,1019" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="200" y="1210" width="800" height="70" rx="15" fill="#fff0ca" stroke="#c7d3df" stroke-width="2"/>
+<text x="220" y="1244" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">组成各 128 帧窗口的原语条件 dₚ</text>
+<polyline points="309,1166 309,1188 460,1188 460,1206" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="890,1166 890,1188 740,1188 740,1206" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="25" y="1340" width="1150" height="650" rx="20" fill="#f1f8f5" stroke="#d9e2ec" stroke-width="2"/>
+<text x="48" y="1378" text-anchor="start" font-size="28" fill="#123959" font-weight="700">D  推理二：局部细化、穿透引导与拼接</text>
+<text x="48" y="1412" text-anchor="start" font-size="21" fill="#526678" font-weight="400">各局部窗口共享全局安排，可并行去噪；每个窗口仍需迭代 50 步。</text>
+<rect x="48" y="1445" width="662" height="111" rx="15" fill="#ffffff" stroke="#c7d3df" stroke-width="2"/>
+<text x="68" y="1479" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">从原语附近采样</text>
+<text x="68" y="1515" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">dₜ = (1−ηₜ)d₀ + ηₜdₚ + k√ηₜ ε</text>
+<text x="68" y="1545" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">采样起点：dT ≈ dₚ + kε</text>
+<rect x="782" y="1445" width="370" height="111" rx="15" fill="#ffffff" stroke="#c7d3df" stroke-width="2"/>
+<text x="802" y="1479" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">各窗口条件</text>
+<text x="802" y="1515" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">局部音乐 mⁱ + 舞种 g</text>
+<text x="802" y="1545" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">扩散时间 t</text>
+<polyline points="600,1281 600,1324 12,1324 12,1434 390,1434 390,1444" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="48" y="1604" width="662" height="170" rx="15" fill="#e1f1e9" stroke="#c7d3df" stroke-width="2"/>
+<text x="68" y="1638" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">局部去噪器 × 多个窗口</text>
+<text x="68" y="1674" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">预测连续动作 d̂₀；音乐 / 舞种 / 时间调制</text>
+<text x="68" y="1704" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">Foot Refine Block：FK → 脚位置、速度、接触</text>
+<text x="68" y="1734" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">注意力细化脚部；非动力学或平衡求解器</text>
+<text x="68" y="1764" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">随后按反向扩散更新，重复去噪</text>
+<rect x="782" y="1604" width="370" height="170" rx="15" fill="#fff0da" stroke="#c7d3df" stroke-width="2"/>
+<text x="802" y="1638" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">穿透引导（采样中）</text>
+<text x="802" y="1674" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">预测动作 → SMPL-X 网格</text>
+<text x="802" y="1704" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">COAP 可微几何场</text>
+<text x="802" y="1734" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">手—身体穿透梯度</text>
+<text x="802" y="1764" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">修正后参与后续去噪</text>
+<polyline points="379,1557 379,1600" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="968,1557 750,1557 750,1578 650,1578 650,1600" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="711,1646 778,1646" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<polyline points="782,1735 714,1735" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="48" y="1830" width="1104" height="114" rx="15" fill="#ffffff" stroke="#c7d3df" stroke-width="2"/>
+<text x="68" y="1864" text-anchor="start" font-size="25" fill="#25364b" font-weight="700">拼接 → 长序列连续身体舞蹈</text>
+<text x="68" y="1900" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">每帧 139D：4 接触标记 + 3 根平移 + 22×6 旋转；不含精细手指与面部表情</text>
+<text x="68" y="1930" text-anchor="start" font-size="22" fill="#25364b" font-weight="400">共用边界条件帮助过渡，但不保证每个接缝、接触或碰撞误差都为零。</text>
+<polyline points="379,1775 379,1826" fill="none" stroke="#54708c" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="48" y="1970" text-anchor="start" font-size="21" fill="#526678" font-weight="400">训练中的舞种判别器不等于推理时的硬风格验证器；几何引导也不保证无所有碰撞。</text>
+<rect x="25" y="2018" width="1150" height="137" rx="16" fill="#fff8ee" stroke="#e5cba3" stroke-width="2"/>
+<text x="48" y="2056" text-anchor="start" font-size="25" fill="#825e20" font-weight="700">公开实现提醒</text>
+<text x="48" y="2091" text-anchor="start" font-size="22" fill="#6d572c" font-weight="400">当前归档主入口含 139D VQ、真实原语库检索与逐窗口衔接；默认走 mask + DDIM。</text>
+<text x="48" y="2123" text-anchor="start" font-size="22" fill="#6d572c" font-weight="400">它与上图论文机制不完全一致；所需三组权重与匹配配置未齐，不能视为论文已复现。</text>
+</svg>

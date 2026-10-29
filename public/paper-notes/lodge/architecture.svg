@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2490" viewBox="0 0 1200 2490" role="img" aria-labelledby="title desc">
+<title id="title">Lodge：原语引导的两阶段长舞蹈生成</title><desc id="desc">训练分离全局与局部模型。推理生成连续八帧原语，编排为硬边界和软内部提示，并行局部扩散后连接舞蹈。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#456276"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#18364b} .t{font-size:30px;font-weight:700}.h{font-size:25px;font-weight:700}.p{font-size:22px}.small{font-size:20px}.line{fill:none;stroke:#456276;stroke-width:2.5;marker-end:url(#arrow);stroke-linejoin:round}</style>
+<rect width="1200" height="2490" fill="#f6f8fc"/>
+<text x="42" y="49" class="t" text-anchor="start">Lodge｜用短动作原语组织长舞蹈</text>
+<text x="42" y="85" class="p" text-anchor="start">CVPR 2024 · 论文机制教学图 · 连续动作扩散，无离散码本或语言模型</text>
+<rect x="24" y="115" width="1152" height="520" rx="20" fill="white" stroke="#d5dfeb" stroke-width="2"/>
+<text x="50" y="159" class="t" text-anchor="start">A  训练：两套扩散模型分别学习</text>
+<text x="50" y="194" class="small" text-anchor="start">真实动作提供监督；全局生成原语只在推理时送入局部采样。</text>
+<rect x="60" y="225" width="250" height="120" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="185.0" y="259" class="h" text-anchor="middle">长音乐与真实舞蹈</text>
+<text x="185.0" y="292" class="p" text-anchor="middle">全局窗口 N=1024</text>
+<text x="185.0" y="321" class="p" text-anchor="middle">音乐 35 维 / 动作 139 维</text>
+<rect x="365" y="225" width="340" height="120" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="535.0" y="259" class="h" text-anchor="middle">抽取连续关键动作</text>
+<text x="535.0" y="292" class="p" text-anchor="middle">速度局部极小附近</text>
+<text x="535.0" y="321" class="p" text-anchor="middle">8 帧片段＋边界原语</text>
+<rect x="760" y="225" width="370" height="120" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="945.0" y="259" class="h" text-anchor="middle">全局扩散训练</text>
+<text x="945.0" y="292" class="p" text-anchor="middle">加噪原语 → 预测干净原语</text>
+<text x="945.0" y="321" class="p" text-anchor="middle">音乐条件＋重建监督</text>
+<polyline class="line" points="310,285 365,285"/>
+<polyline class="line" points="705,285 760,285"/>
+<rect x="60" y="425" width="250" height="120" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="185.0" y="459" class="h" text-anchor="middle">短音乐与真实舞蹈</text>
+<text x="185.0" y="492" class="p" text-anchor="middle">局部窗口 n=256</text>
+<text x="185.0" y="521" class="p" text-anchor="middle">舞种标签</text>
+<rect x="365" y="415" width="340" height="150" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="535.0" y="449" class="h" text-anchor="middle">局部扩散训练</text>
+<text x="535.0" y="482" class="p" text-anchor="middle">重建＋关节运动学损失</text>
+<text x="535.0" y="511" class="p" text-anchor="middle">足接触损失＋舞种判别</text>
+<text x="535.0" y="540" class="p" text-anchor="middle">判别器仅用于训练</text>
+<rect x="760" y="425" width="370" height="120" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="945.0" y="459" class="h" text-anchor="middle">边界微调</text>
+<text x="945.0" y="492" class="p" text-anchor="middle">干净首尾各 4 帧</text>
+<text x="945.0" y="521" class="p" text-anchor="middle">内部仍加噪 → 重建整段</text>
+<polyline class="line" points="310,485 365,485"/>
+<polyline class="line" points="705,485 760,485"/>
+<polyline class="line" points="945,345 945,373" stroke-dasharray="8 7"/>
+<text x="945" y="397" class="small" text-anchor="middle">训练后供 B 区复用</text>
+<polyline class="line" points="945,545 945,575" stroke-dasharray="8 7"/>
+<text x="945" y="602" class="small" text-anchor="middle">训练后供 D 区复用</text>
+<rect x="24" y="665" width="1152" height="455" rx="20" fill="white" stroke="#d5dfeb" stroke-width="2"/>
+<text x="50" y="709" class="t" text-anchor="start">B  推理：长音乐先变成稀疏原语</text>
+<text x="50" y="744" class="small" text-anchor="start">示例：一个全局窗口 1024 帧 ≈34.13 秒；更长音乐按窗口批量处理。</text>
+<rect x="60" y="785" width="280" height="125" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="200.0" y="819" class="h" text-anchor="middle">音乐特征</text>
+<text x="200.0" y="852" class="p" text-anchor="middle">Librosa：1024×35</text>
+<text x="200.0" y="881" class="p" text-anchor="middle">原始音乐保留供局部使用</text>
+<rect x="400" y="785" width="340" height="125" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="570.0" y="819" class="h" text-anchor="middle">全局音乐编码</text>
+<text x="570.0" y="852" class="p" text-anchor="middle">线性层＋Transformer</text>
+<text x="570.0" y="881" class="p" text-anchor="middle">压缩条件：256×35</text>
+<rect x="800" y="785" width="330" height="125" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="965.0" y="819" class="h" text-anchor="middle">全局条件扩散</text>
+<text x="965.0" y="852" class="p" text-anchor="middle">复用训练好的全局模型</text>
+<text x="965.0" y="881" class="p" text-anchor="middle">迭代预测连续原语</text>
+<polyline class="line" points="340,845 400,845"/>
+<polyline class="line" points="740,845 800,845"/>
+<rect x="800" y="975" width="330" height="100" rx="13" fill="#f2edf8" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="965.0" y="1009" class="h" text-anchor="middle">独立随机噪声</text>
+<text x="965.0" y="1042" class="p" text-anchor="middle">原语采样的起点</text>
+<polyline class="line" points="965,975 965,910"/>
+<rect x="400" y="965" width="340" height="120" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="570.0" y="999" class="h" text-anchor="middle">13 个连续原语</text>
+<text x="570.0" y="1032" class="p" text-anchor="middle">每个 8×139</text>
+<text x="570.0" y="1061" class="p" text-anchor="middle">5 个边界＋8 个内部</text>
+<polyline class="line" points="800,880 770,880 770,1025 740,1025"/>
+<text x="60" y="1000" class="small" text-anchor="start">全局模型输出 104 个原语帧，</text>
+<text x="60" y="1032" class="small" text-anchor="start">尚未生成完整 1024 帧舞蹈。</text>
+<rect x="24" y="1150" width="1152" height="405" rx="20" fill="white" stroke="#d5dfeb" stroke-width="2"/>
+<text x="50" y="1194" class="t" text-anchor="start">C  编排：同一种原语，两种职责</text>
+<text x="50" y="1229" class="small" text-anchor="start">边界建立片段连接；内部提示增加动作变化与音乐节拍呼应。</text>
+<rect x="60" y="1280" width="500" height="180" rx="13" fill="#e3eff8" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="310.0" y="1314" class="h" text-anchor="middle">5 个 hard-cue 原语</text>
+<text x="310.0" y="1347" class="p" text-anchor="middle">8 帧拆成前 4 帧＋后 4 帧</text>
+<text x="310.0" y="1376" class="p" text-anchor="middle">分别交给前段末尾和后段开头</text>
+<text x="310.0" y="1405" class="p" text-anchor="middle">每步覆盖干净边界 → D 区</text>
+<rect x="640" y="1280" width="500" height="180" rx="13" fill="#fcf0df" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="890.0" y="1314" class="h" text-anchor="middle">8 个 soft-cue 原语</text>
+<text x="890.0" y="1347" class="p" text-anchor="middle">左右镜像后共 16 个实例</text>
+<text x="890.0" y="1376" class="p" text-anchor="middle">按音乐节拍安排内部提示位置</text>
+<text x="890.0" y="1405" class="p" text-anchor="middle">早期回填加噪提示 → D 区</text>
+<polyline class="line" points="570,1085 570,1135 1155,1135 1155,1255 300,1255 300,1280"/>
+<polyline class="line" points="890,1255 890,1280"/>
+<text x="60" y="1510" class="p" text-anchor="start">s 控制内部提示持续的去噪阶段；不是原语与输出的线性混合比例。</text>
+<rect x="24" y="1585" width="1152" height="820" rx="20" fill="white" stroke="#d5dfeb" stroke-width="2"/>
+<text x="50" y="1629" class="t" text-anchor="start">D  并行局部生成：条件去噪＋循环内约束</text>
+<text x="50" y="1664" class="small" text-anchor="start">以下表示共享局部模型的一条路径；四段并行后拼成 1024 帧。</text>
+<rect x="60" y="1705" width="280" height="120" rx="13" fill="#f2edf8" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="200.0" y="1739" class="h" text-anchor="middle">局部独立噪声</text>
+<text x="200.0" y="1772" class="p" text-anchor="middle">每段 256×139</text>
+<text x="200.0" y="1801" class="p" text-anchor="middle">四段可批量去噪</text>
+<rect x="400" y="1705" width="390" height="120" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="595.0" y="1739" class="h" text-anchor="middle">局部 Transformer</text>
+<text x="595.0" y="1772" class="p" text-anchor="middle">复用局部训练＋边界微调</text>
+<text x="595.0" y="1801" class="p" text-anchor="middle">自注意力 / 交叉注意力 / FiLM</text>
+<rect x="850" y="1705" width="290" height="120" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="995.0" y="1739" class="h" text-anchor="middle">音乐＋舞种＋时间步</text>
+<text x="995.0" y="1772" class="p" text-anchor="middle">对应的 256 帧音乐</text>
+<text x="995.0" y="1801" class="p" text-anchor="middle">不是只有原语这一条条件</text>
+<polyline class="line" points="340,1765 400,1765"/>
+<polyline class="line" points="850,1765 790,1765"/>
+<rect x="400" y="1880" width="390" height="135" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="595.0" y="1914" class="h" text-anchor="middle">足部精修＋干净动作预测</text>
+<text x="595.0" y="1947" class="p" text-anchor="middle">FK 得位置、速度与接触特征</text>
+<text x="595.0" y="1976" class="p" text-anchor="middle">交叉注意力生成修正</text>
+<text x="595.0" y="2005" class="p" text-anchor="middle">此处按论文设计绘制</text>
+<polyline class="line" points="595,1825 595,1880"/>
+<rect x="400" y="2070" width="390" height="130" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="595.0" y="2104" class="h" text-anchor="middle">采样更新与原语回填</text>
+<text x="595.0" y="2137" class="p" text-anchor="middle">早期：soft cue 加噪回填</text>
+<text x="595.0" y="2166" class="p" text-anchor="middle">所有步骤：hard cue 干净覆盖</text>
+<text x="595.0" y="2195" class="p" text-anchor="middle">t 逐步减小</text>
+<rect x="60" y="2070" width="280" height="130" rx="13" fill="#e3eff8" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="200.0" y="2104" class="h" text-anchor="middle">边界 dₕ</text>
+<text x="200.0" y="2137" class="p" text-anchor="middle">每段首尾各 4 帧</text>
+<text x="200.0" y="2166" class="p" text-anchor="middle">约束已指定的特征</text>
+<rect x="850" y="2070" width="290" height="130" rx="13" fill="#fcf0df" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="995.0" y="2104" class="h" text-anchor="middle">内部 dₛ 与 mask</text>
+<text x="995.0" y="2137" class="p" text-anchor="middle">条件 t &gt; T(1−s)</text>
+<text x="995.0" y="2166" class="p" text-anchor="middle">之后允许模型调整</text>
+<polyline class="line" points="595,2015 595,2070"/>
+<polyline class="line" points="340,2135 400,2135"/>
+<polyline class="line" points="850,2135 790,2135"/>
+<polyline class="line" points="400,2100 365,2100 365,1850 420,1850 420,1825"/>
+<text x="215" y="1975" class="small" text-anchor="middle">下一去噪步</text>
+<rect x="400" y="2255" width="390" height="105" rx="13" fill="#e5f1f4" stroke="#adc4d1" stroke-width="1.5"/>
+<text x="595.0" y="2289" class="h" text-anchor="middle">四段动作沿时间拼接</text>
+<text x="595.0" y="2322" class="p" text-anchor="middle">输出 1024×139 身体动作</text>
+<polyline class="line" points="595,2200 595,2255"/>
+<text x="625" y="2237" class="small" text-anchor="start">t=0</text>
+<text x="60" y="2450" class="small" text-anchor="start">依据主文图 2–3、补充图 1–2 与 Listing 1 重绘；源码差异与物理保证边界见正文。</text>
+</svg>
