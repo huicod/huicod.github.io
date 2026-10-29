@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2390" viewBox="0 0 1200 2390" role="img" aria-labelledby="title desc">
+<title id="title">Zero-Shot STL：从逻辑任务到受约束轨迹与执行评价</title>
+<desc id="desc">四个分区区分离线训练、逻辑分解和时间搜索、带端点与不变性条件的扩散生成，以及控制执行和降采样评价。训练的时间预测器与扩散先验相互独立。Lemma 2只保证路标时刻，完整定理要求生成器确实满足约束，不能自动保证实际执行安全。</desc>
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 Z" fill="#526479"/></marker>
+  <marker id="reuse" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 Z" fill="#6b62a3"/></marker>
+  <style>
+    text { font-family: 'Microsoft YaHei','Noto Sans CJK SC','PingFang SC',sans-serif; fill:#20334c; }
+    .title { font-size:34px; font-weight:700; }
+    .section { font-size:28px; font-weight:700; }
+    .node-title { font-size:24px; font-weight:700; }
+    .body { font-size:22px; }
+    .small { font-size:20px; }
+    .muted { fill:#526479; }
+    .edge { fill:none; stroke:#526479; stroke-width:2.6; stroke-linejoin:round; marker-end:url(#arrow); }
+    .reuse { fill:none; stroke:#6b62a3; stroke-width:2.6; stroke-dasharray:8 6; marker-end:url(#reuse); }
+  </style>
+</defs>
+<rect width="1200" height="2390" fill="#f5f7fb"/>
+
+<text x="42" y="55" class="title" text-anchor="start">Zero-Shot STL：逻辑、轨迹与执行分层</text>
+<text x="42" y="91" class="small muted" text-anchor="start">依据 NeurIPS 2025 主文与附录重绘 · 不包含后续 DAG-STL 扩展</text>
+<path d="M 42 122 H 112" class="edge"/>
+<text x="126" y="129" class="small muted" text-anchor="start">数据 / 条件流</text>
+<path d="M 330 122 H 400" class="reuse"/>
+<text x="414" y="129" class="small muted" text-anchor="start">已训练模块复用</text>
+<text x="1150" y="129" class="small muted" text-anchor="end">编号用于跨区引用，避免长线穿越</text>
+<rect x="24" y="155" width="1152" height="405" rx="22" fill="#eef2fc" stroke="#d6dfeb" stroke-width="1.5"/>
+<rect x="24" y="179" width="6" height="36" rx="3" fill="#5067ad"/>
+<text x="54" y="206" class="section" text-anchor="start">A  离线训练：同一批轨迹，两条独立分支</text>
+<text x="54" y="240" class="small muted" text-anchor="start">轨迹来自目标系统 / 环境；不使用测试 STL 任务标签。</text>
+<rect x="300" y="260" width="600" height="80" rx="14" fill="#ffffff" stroke="#a9b7dc" stroke-width="1.7"/>
+<text x="322" y="296" class="node-title" text-anchor="start">任务无关的历史状态轨迹</text>
+<path d="M 450 340 V 360 H 310 V 385" class="edge"/>
+<path d="M 750 340 V 360 H 890 V 385" class="edge"/>
+<rect x="60" y="385" width="500" height="145" rx="14" fill="#ffffff" stroke="#a9b7dc" stroke-width="1.7"/>
+<text x="82" y="421" class="node-title" text-anchor="start">A1  TimePredict：高斯 MLP</text>
+<text x="82" y="455" class="body" text-anchor="start">状态对 → 轨迹长度均值 / 方差</text>
+<text x="82" y="486" class="body" text-anchor="start">时间差监督；负对数似然训练</text>
+<rect x="640" y="385" width="500" height="145" rx="14" fill="#ffffff" stroke="#a9b7dc" stroke-width="1.7"/>
+<text x="662" y="421" class="node-title" text-anchor="start">A2  状态扩散先验</text>
+<text x="662" y="455" class="body" text-anchor="start">带噪状态序列 ＋ 扩散步 → 噪声</text>
+<text x="662" y="486" class="body" text-anchor="start">训练目标：噪声预测平方误差</text>
+<rect x="24" y="585" width="1152" height="610" rx="22" fill="#eef8f5" stroke="#d6dfeb" stroke-width="1.5"/>
+<rect x="24" y="609" width="6" height="36" rx="3" fill="#228278"/>
+<text x="54" y="636" class="section" text-anchor="start">B  测试时规划：分解逻辑，再搜索状态与时刻</text>
+<text x="54" y="670" class="small muted" text-anchor="start">新任务进入符号规划器；不需要针对每条公式重新训练。</text>
+<rect x="60" y="690" width="500" height="140" rx="14" fill="#ffffff" stroke="#a9d1c7" stroke-width="1.7"/>
+<text x="82" y="726" class="node-title" text-anchor="start">①  STL 公式与谓词 hμ(x) ≥ 0</text>
+<text x="82" y="760" class="body" text-anchor="start">有限整数时间、正范式</text>
+<text x="82" y="791" class="body" text-anchor="start">Until 左侧不能含 Finally / Until</text>
+<rect x="640" y="690" width="220" height="140" rx="14" fill="#ffffff" stroke="#a9d1c7" stroke-width="1.7"/>
+<text x="662" y="726" class="node-title" text-anchor="start">初始状态 x₀</text>
+<text x="662" y="760" class="body" text-anchor="start">当前状态</text>
+<text x="662" y="791" class="body" text-anchor="start">起始时刻 0</text>
+<rect x="890" y="690" width="250" height="140" rx="14" fill="#f4f0fc" stroke="#c5b9df" stroke-width="1.7"/>
+<text x="912" y="726" class="node-title" text-anchor="start">复用 A1</text>
+<text x="912" y="760" class="body" text-anchor="start">估计状态间时长</text>
+<text x="912" y="791" class="body" text-anchor="start">使用 γ × 均值</text>
+<path d="M 310 830 V 875" class="edge"/>
+<path d="M 750 830 V 875" class="edge"/>
+<path d="M 1015 830 V 875" class="reuse"/>
+<rect x="60" y="875" width="500" height="175" rx="14" fill="#ffffff" stroke="#a9d1c7" stroke-width="1.7"/>
+<text x="82" y="911" class="node-title" text-anchor="start">②  语义分解：R、I、时间约束 T</text>
+<text x="82" y="945" class="body" text-anchor="start">R：窗口内至少到达一次</text>
+<text x="82" y="976" class="body" text-anchor="start">I：整个窗口持续成立</text>
+<text x="82" y="1007" class="body" text-anchor="start">λ 保留嵌套任务的相对时间</text>
+<rect x="640" y="875" width="500" height="175" rx="14" fill="#ffffff" stroke="#a9d1c7" stroke-width="1.7"/>
+<text x="662" y="911" class="node-title" text-anchor="start">③  DFS ＋ ILP 时间分配</text>
+<text x="662" y="945" class="body" text-anchor="start">采样目标状态；查询可行时窗</text>
+<text x="662" y="976" class="body" text-anchor="start">检查已开始的 I；追加时间约束</text>
+<text x="662" y="1007" class="body" text-anchor="start">时间赋值不可行时回溯</text>
+<path d="M 560 962 H 640" class="edge"/>
+<path d="M 890 1050 V 1095" class="edge"/>
+<rect x="60" y="1095" width="500" height="74" rx="14" fill="#e5f1ed" stroke="#b5d1c8" stroke-width="1.7"/>
+<text x="82" y="1131" class="node-title" text-anchor="start">边界：消析取可能强化原任务</text>
+<rect x="640" y="1095" width="500" height="74" rx="14" fill="#e1f2eb" stroke="#99c5b5" stroke-width="1.7"/>
+<text x="662" y="1131" class="node-title" text-anchor="start">④  带时刻路标序列 (xᵢ, tᵢ)</text>
+<rect x="24" y="1220" width="1152" height="675" rx="22" fill="#f5f0fb" stroke="#d6dfeb" stroke-width="1.5"/>
+<rect x="24" y="1244" width="6" height="36" rx="3" fill="#7b5fa5"/>
+<text x="54" y="1271" class="section" text-anchor="start">C  轨迹生成：端点固定，区间条件覆盖中间状态</text>
+<text x="54" y="1305" class="small muted" text-anchor="start">Lemma 2 仅保证路标时刻不冲突；路标之间仍需本区生成器满足全部条件。</text>
+<rect x="60" y="1325" width="1080" height="110" rx="14" fill="#ffffff" stroke="#c7b7dc" stroke-width="1.7"/>
+<text x="82" y="1361" class="node-title" text-anchor="start">输入④的路标，选取同一可行时间赋值 λ*</text>
+<text x="82" y="1395" class="body" text-anchor="start">逐段确定长度 tᵢ₊₁ − tᵢ ＋ 1、起终点，以及该段有效的不变性 I</text>
+<path d="M 220 1435 V 1490" class="edge"/>
+<path d="M 790 1435 V 1490" class="edge"/>
+<rect x="60" y="1490" width="325" height="185" rx="14" fill="#ffffff" stroke="#c7b7dc" stroke-width="1.7"/>
+<text x="82" y="1526" class="node-title" text-anchor="start">按段长度初始化噪声</text>
+<text x="82" y="1560" class="body" text-anchor="start">变量是状态序列</text>
+<text x="82" y="1591" class="body" text-anchor="start">不是动作或控制输入</text>
+<text x="82" y="1622" class="body" text-anchor="start">噪声长度决定状态数</text>
+<rect x="435" y="1490" width="705" height="185" rx="14" fill="#ffffff" stroke="#c7b7dc" stroke-width="1.7"/>
+<text x="457" y="1526" class="node-title" text-anchor="start">⑤  分段去噪：复用 A2 扩散先验</text>
+<text x="457" y="1560" class="body" text-anchor="start">网络预测；SafeDiffuser 的 CBF-QP 调整更新</text>
+<text x="457" y="1591" class="body" text-anchor="start">每个去噪步回填给定起终点</text>
+<text x="457" y="1622" class="body" text-anchor="start">有效 I → 轨迹各时刻的 hμ(xₜ) ≥ 0</text>
+<path d="M 385 1582 H 435" class="edge"/>
+<path d="M 1140 1625 H 1156 V 1474 H 1110 V 1490" class="edge"/>
+<path d="M 790 1675 V 1720" class="edge"/>
+<rect x="435" y="1720" width="705" height="84" rx="14" fill="#eae0f5" stroke="#b8a3d2" stroke-width="1.7"/>
+<text x="457" y="1756" class="node-title" text-anchor="start">⑥  拼接短段 → 完整规划状态序列</text>
+<text x="60" y="1840" class="small" text-anchor="start">定理 1：若生成结果确实经过全部路标并满足全部有效 I，才推出 STL 满足。</text>
+<text x="60" y="1872" class="small muted" text-anchor="start">这不证明每次搜索或采样必成功，也不证明未知系统一定能够执行。</text>
+<rect x="24" y="1920" width="1152" height="420" rx="22" fill="#fcf6e9" stroke="#d6dfeb" stroke-width="1.5"/>
+<rect x="24" y="1944" width="6" height="36" rx="3" fill="#ad7d32"/>
+<text x="54" y="1971" class="section" text-anchor="start">D  执行与评价：规划信号不是实际运动</text>
+<text x="54" y="2005" class="small muted" text-anchor="start">控制器跟踪生成状态；保持更新时序不等于消除跟踪误差。</text>
+<rect x="60" y="2025" width="300" height="108" rx="14" fill="#ffffff" stroke="#d9c496" stroke-width="1.7"/>
+<text x="82" y="2061" class="node-title" text-anchor="start">⑥  规划状态序列</text>
+<text x="82" y="2095" class="body" text-anchor="start">来自 C 区生成器</text>
+<rect x="450" y="2025" width="310" height="108" rx="14" fill="#ffffff" stroke="#d9c496" stroke-width="1.7"/>
+<text x="472" y="2061" class="node-title" text-anchor="start">PD / 逆动力学</text>
+<text x="472" y="2095" class="body" text-anchor="start">每规划步执行 k 次更新</text>
+<rect x="850" y="2025" width="290" height="108" rx="14" fill="#ffffff" stroke="#d9c496" stroke-width="1.7"/>
+<text x="872" y="2061" class="node-title" text-anchor="start">实际执行轨迹</text>
+<text x="872" y="2095" class="body" text-anchor="start">可能偏离规划</text>
+<path d="M 360 2079 H 450" class="edge"/>
+<path d="M 760 2079 H 850" class="edge"/>
+<path d="M 995 2133 V 2180" class="edge"/>
+<rect x="450" y="2180" width="690" height="92" rx="14" fill="#fffaf0" stroke="#d9c496" stroke-width="1.7"/>
+<text x="472" y="2216" class="node-title" text-anchor="start">η 抽样 ＋ 时间窗口缩放 → STL 评价</text>
+<text x="472" y="2250" class="body" text-anchor="start">由执行信号计算成功率与鲁棒度</text>
+<text x="60" y="2206" class="small" text-anchor="start">k：运行时控制更新数</text>
+<text x="60" y="2237" class="small" text-anchor="start">η：事后评价采样间隔</text>
+<text x="60" y="2268" class="small muted" text-anchor="start">两个量的作用不同</text>
+<text x="60" y="2315" class="small" text-anchor="start">无未知动力学执行保证；抽样评价不能单独认证被跳过时刻或连续时间安全。</text>
+<text x="42" y="2375" class="small muted" text-anchor="start">来源：正式论文 §2–3，附录 D、E、F.7、G · 原创教学重绘 · 未运行模型或控制系统</text>
+</svg>
