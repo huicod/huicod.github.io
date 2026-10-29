@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2110" viewBox="0 0 1200 2110" role="img" aria-labelledby="t d">
+<title id="t">TimelineControl：在线多轨文字到连续人体动作</title>
+<desc id="d">离线数据与表示学习、当前可见文字、部位及全身流匹配生成器、动作计划联合流式采样。空间控制是微调扩展，不是硬投影。</desc>
+<defs><marker id="a" markerWidth="11" markerHeight="11" refX="10" refY="5.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,5.5 L0,11 Z" fill="#54728b"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif}</style>
+<rect x="0" y="0" width="1200" height="2110" rx="14" fill="#fff" stroke="#fff" stroke-width="2"/>
+<text x="40" y="48" font-size="33" fill="#243b53" font-weight="700">TimelineControl：指令可以晚到，已输出动作不回滚</text>
+<text x="40" y="87" font-size="22" fill="#536879" font-weight="400">依据 arXiv 2610.03873v2 · 连续 latent / 流匹配 · 不是离散动作码或文字 CoT</text>
+<rect x="25" y="115" width="1150" height="350" rx="14" fill="#f2f6fb" stroke="#d8e1e9" stroke-width="2"/>
+<text x="48" y="153" font-size="28" fill="#243b53" font-weight="700">A  离线训练：先学习表示，再学习生成</text>
+<text x="48" y="188" font-size="21" fill="#536879" font-weight="400">数据、运动表示和计划表征各有来源；文字标注模型不负责在线生成姿态。</text>
+<rect x="48" y="215" width="335" height="175" rx="14" fill="#eaf2ff" stroke="#c5d3df" stroke-width="2"/>
+<text x="66" y="249" font-size="25" fill="#243b53" font-weight="700">组合训练数据</text>
+<text x="66" y="285" font-size="22" fill="#243b53" font-weight="400">HumanML3D 同 split 片段</text>
+<text x="66" y="316" font-size="22" fill="#243b53" font-weight="400">Qwen 标注部位 / 互斥属性</text>
+<text x="66" y="347" font-size="22" fill="#243b53" font-weight="400">STMC 合成重叠时间线</text>
+<text x="66" y="378" font-size="22" fill="#243b53" font-weight="400">TimelineMotion：44,944 条</text>
+<rect x="432" y="215" width="340" height="175" rx="14" fill="#eaf2ff" stroke="#c5d3df" stroke-width="2"/>
+<text x="450" y="249" font-size="25" fill="#243b53" font-weight="700">因果部位自编码器</text>
+<text x="450" y="285" font-size="22" fill="#243b53" font-weight="400">根：每 4 帧组成 20D</text>
+<text x="450" y="316" font-size="22" fill="#243b53" font-weight="400">身体：6 个区域 × 8D</text>
+<text x="450" y="347" font-size="22" fill="#243b53" font-weight="400">骨架消息传递 + 时间压缩</text>
+<text x="450" y="378" font-size="22" fill="#243b53" font-weight="400">先训练；生成阶段冻结</text>
+<rect x="820" y="215" width="332" height="175" rx="14" fill="#edf8f0" stroke="#c5d3df" stroke-width="2"/>
+<text x="838" y="249" font-size="25" fill="#243b53" font-weight="700">继承 ActionPlan 计划流</text>
+<text x="838" y="285" font-size="22" fill="#243b53" font-weight="400">BABEL 原子动作标签</text>
+<text x="838" y="316" font-size="22" fill="#243b53" font-weight="400">CLIP / 平滑 / 冻结编码器</text>
+<text x="838" y="347" font-size="22" fill="#243b53" font-weight="400">连续计划表征 + 动作流</text>
+<text x="838" y="378" font-size="22" fill="#243b53" font-weight="400">联合流匹配训练</text>
+<polyline points="384,302 428,302" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<text x="48" y="435" font-size="22" fill="#243b53" font-weight="400">生成损失：流匹配 + 部位辅助损失 + 分类损失 + 根运动损失；不是只训练文字分配器。</text>
+<rect x="25" y="495" width="1150" height="350" rx="14" fill="#f5f7ff" stroke="#d8e1e9" stroke-width="2"/>
+<text x="48" y="533" font-size="28" fill="#243b53" font-weight="700">B  在线输入：当前已经到达的条件</text>
+<text x="48" y="568" font-size="21" fill="#536879" font-weight="400">每条文字独立保留自己的有效区间；未到达的未来指令不可见。</text>
+<rect x="48" y="600" width="338" height="180" rx="14" fill="#fff" stroke="#c5d3df" stroke-width="2"/>
+<text x="66" y="634" font-size="25" fill="#243b53" font-weight="700">多轨指令集合</text>
+<text x="66" y="670" font-size="22" fill="#243b53" font-weight="400">“走路”：[0, 5] 秒</text>
+<text x="66" y="701" font-size="22" fill="#243b53" font-weight="400">3 秒收到“接电话”：[3, 8]</text>
+<text x="66" y="732" font-size="22" fill="#243b53" font-weight="400">每条指令独立 CLIP 编码</text>
+<text x="66" y="763" font-size="22" fill="#243b53" font-weight="400">区间内才启用可见性 M</text>
+<rect x="435" y="600" width="330" height="180" rx="14" fill="#e9edff" stroke="#c5d3df" stroke-width="2"/>
+<text x="453" y="634" font-size="25" fill="#243b53" font-weight="700">时间与部位分配</text>
+<text x="453" y="670" font-size="22" fill="#243b53" font-weight="400">时间位置 RoPE + 区间 RoTE</text>
+<text x="453" y="701" font-size="22" fill="#243b53" font-weight="400">部位分类器 → 相关性偏置</text>
+<text x="453" y="732" font-size="22" fill="#243b53" font-weight="400">sigmoid 分配，不互相归一</text>
+<text x="453" y="763" font-size="22" fill="#243b53" font-weight="400">分类器输入/偏置梯度分离</text>
+<rect x="815" y="600" width="337" height="180" rx="14" fill="#fff" stroke="#c5d3df" stroke-width="2"/>
+<text x="833" y="634" font-size="25" fill="#243b53" font-weight="700">动作与计划状态</text>
+<text x="833" y="670" font-size="22" fill="#243b53" font-weight="400">已输出历史：最多 8 单元</text>
+<text x="833" y="701" font-size="22" fill="#243b53" font-weight="400">未来运动噪声：最多 78 单元</text>
+<text x="833" y="732" font-size="22" fill="#243b53" font-weight="400">连续计划噪声 / 当前估计</text>
+<text x="833" y="763" font-size="22" fill="#243b53" font-weight="400">空间目标：可选微调扩展</text>
+<polyline points="387,690 431,690" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<text x="48" y="821" font-size="22" fill="#243b53" font-weight="400">空间目标经零初始化投影加到全身特征；误差损失促使接近目标，不做最终硬覆写。</text>
+<rect x="25" y="875" width="1150" height="465" rx="14" fill="#f0f8f5" stroke="#d8e1e9" stroke-width="2"/>
+<text x="48" y="913" font-size="28" fill="#243b53" font-weight="700">C  生成器：部位分工与全身协调</text>
+<text x="48" y="948" font-size="21" fill="#536879" font-weight="400">68D = 20D 显式根 + 48D 身体；一个运动单元对应 4 帧，不是一个姿态或离散词。</text>
+<rect x="48" y="985" width="530" height="160" rx="14" fill="#e1f1e8" stroke="#c5d3df" stroke-width="2"/>
+<text x="66" y="1019" font-size="25" fill="#243b53" font-weight="700">根 + 六部位分支</text>
+<text x="66" y="1055" font-size="22" fill="#243b53" font-weight="400">按部位接收独立文字、时间与相关性偏置</text>
+<text x="66" y="1086" font-size="22" fill="#243b53" font-weight="400">时序自注意力 + 多文字交叉注意力</text>
+<text x="66" y="1117" font-size="22" fill="#243b53" font-weight="400">部位辅助流匹配监督</text>
+<rect x="625" y="985" width="527" height="160" rx="14" fill="#e1f1e8" stroke="#c5d3df" stroke-width="2"/>
+<text x="643" y="1019" font-size="25" fill="#243b53" font-weight="700">全身分支与计划流</text>
+<text x="643" y="1055" font-size="22" fill="#243b53" font-weight="400">全身查询部位 Key / Value → 门控融合</text>
+<text x="643" y="1086" font-size="22" fill="#243b53" font-weight="400">全身多文字条件；与连续计划联合建模</text>
+<text x="643" y="1117" font-size="22" fill="#243b53" font-weight="400">四阶段网络 → 预测动作及计划的速度场</text>
+<polyline points="579,1064 621,1064" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="435,690 409,690 409,585 12,585 12,973 313,973 313,981" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="982,781 1187,781 1187,973 888,973 888,981" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="48" y="1187" width="1104" height="105" rx="14" fill="#fff" stroke="#c5d3df" stroke-width="2"/>
+<text x="66" y="1221" font-size="25" fill="#243b53" font-weight="700">训练时的块因果注意力</text>
+<text x="66" y="1257" font-size="22" fill="#243b53" font-weight="400">按新指令到达时刻分块：块内可双向协调，块间不能看未来；这不是逐帧单向注意力。</text>
+<text x="48" y="1320" font-size="22" fill="#243b53" font-weight="400">流匹配：干净 z₀ → zₜ=(1−t)z₀+tε；监督 ε−z₀；采样从噪声 t=1 积分到 t=0。</text>
+<rect x="25" y="1370" width="1150" height="590" rx="14" fill="#fff8ed" stroke="#d8e1e9" stroke-width="2"/>
+<text x="48" y="1408" font-size="28" fill="#243b53" font-weight="700">D  流式采样：计划先稳定，动作持续提交</text>
+<text x="48" y="1443" font-size="21" fill="#536879" font-weight="400">当前未输出的未来可以重算；已经提交的历史始终保留。</text>
+<rect x="48" y="1485" width="344" height="170" rx="14" fill="#fff0d6" stroke="#c5d3df" stroke-width="2"/>
+<text x="66" y="1519" font-size="25" fill="#243b53" font-weight="700">① 先联合去噪</text>
+<text x="66" y="1555" font-size="22" fill="#243b53" font-weight="400">计划 + 首个运动单元</text>
+<text x="66" y="1586" font-size="22" fill="#243b53" font-weight="400">先生成完整当前计划</text>
+<text x="66" y="1617" font-size="22" fill="#243b53" font-weight="400">得到首个干净运动单元</text>
+<text x="66" y="1648" font-size="22" fill="#243b53" font-weight="400">首单元平均：280 ms</text>
+<rect x="435" y="1485" width="327" height="170" rx="14" fill="#fff0d6" stroke="#c5d3df" stroke-width="2"/>
+<text x="453" y="1519" font-size="25" fill="#243b53" font-weight="700">② 固定计划，逐步出动作</text>
+<text x="453" y="1555" font-size="22" fill="#243b53" font-weight="400">沿 Diffusion Forcing 采样</text>
+<text x="453" y="1586" font-size="22" fill="#243b53" font-weight="400">后续单元逐步变干净</text>
+<text x="453" y="1617" font-size="22" fill="#243b53" font-weight="400">平均间隔：35 ms</text>
+<text x="453" y="1648" font-size="22" fill="#243b53" font-weight="400">一个单元 = 4 帧</text>
+<rect x="810" y="1485" width="342" height="170" rx="14" fill="#fff0d6" stroke="#c5d3df" stroke-width="2"/>
+<text x="828" y="1519" font-size="25" fill="#243b53" font-weight="700">③ 因果解码与输出</text>
+<text x="828" y="1555" font-size="22" fill="#243b53" font-weight="400">冻结解码器 → 连续全身动作</text>
+<text x="828" y="1586" font-size="22" fill="#243b53" font-weight="400">30 fps 播放 / 下游控制</text>
+<text x="828" y="1617" font-size="22" fill="#243b53" font-weight="400">提交结果成为固定历史</text>
+<text x="828" y="1648" font-size="22" fill="#243b53" font-weight="400">非直接机器人力矩输出</text>
+<polyline points="393,1570 431,1570" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="763,1570 806,1570" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="1153,1064 1187,1064 1187,1355 12,1355 12,1473 220,1473 220,1481" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="235" y="1710" width="730" height="130" rx="14" fill="#fff" stroke="#c5d3df" stroke-width="2"/>
+<text x="253" y="1744" font-size="25" fill="#243b53" font-weight="700">新指令到来：丢弃尚未提交的未来预测</text>
+<text x="253" y="1780" font-size="22" fill="#243b53" font-weight="400">保留已输出历史，更新指令集合，从噪声重新规划未来。</text>
+<text x="253" y="1811" font-size="22" fill="#243b53" font-weight="400">已经播出的动作不回改。</text>
+<polyline points="982,1656 982,1760 969,1760" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<polyline points="234,1760 182,1760 182,1660" fill="none" stroke="#54728b" stroke-width="3" stroke-linejoin="round" marker-end="url(#a)"/>
+<text x="48" y="1872" font-size="22" fill="#243b53" font-weight="400">计时：RTX 6000 Ada · FP32 · batch 1 · 78 单元窗口；不是完整端到端首帧延迟。</text>
+<text x="48" y="1910" font-size="22" fill="#856329" font-weight="400">区间掩码 ≠ 动作完成保证；部位偏置 ≠ 关节硬锁；在线取消与冲突消解仍是未来工作。</text>
+<text x="40" y="1985" font-size="22" fill="#536879" font-weight="400">图示范围：论文主文 §3–5 与附录 A、B、E；当前官方仓库仍待发布训练、推理和模型。</text>
+<text x="40" y="2024" font-size="22" fill="#536879" font-weight="400">教学重绘：输入协议 → 条件注入 → 生成 → 解码输出；没有把评估分数当作硬执行证明。</text>
+</svg>

@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2740" viewBox="0 0 1200 2740" role="img" aria-labelledby="title desc">
+<title id="title">KinMo：层级文字动作对齐与粗到细生成</title>
+<desc id="desc">四区区分离线标注、对齐与生成器训练、三层语义条件生成和另训轨迹控制。文字与动作token是不同表示。控制为学习的条件，不是解码后硬投影。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#668393"/></marker></defs>
+<style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#213d50}.title{font-size:32px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1200" height="2740" fill="#fff"/>
+<text x="40" y="50" class="title">KinMo：从全身语义，逐层走向部位与交互</text>
+<text x="40" y="89" class="body">ICCV 2025｜人工可读的是描述；生成器预测的是学习得到的动作 token</text>
+<rect x="30" y="125" width="1140" height="490" rx="14" fill="#f0f6fa" stroke="#c1d1db"/>
+<text x="55" y="165" class="head">A · 离线建库：真实动作 → 多层文字标注</text>
+<text x="55" y="201" class="small">此过程用于训练资料制作；新文本生成时不输入真实动作或 PoseScript 关键帧。</text>
+<rect x="55" y="245" width="290" height="145" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="71" y="279" class="head">真实动作 + 原始描述</text>
+<text x="71" y="312" class="body">PoseScript：逐帧姿态文字</text>
+<text x="71" y="341" class="body">句向量相似度筛关键帧</text>
+<text x="71" y="370" class="body">保留关键帧的时间顺序</text>
+<rect x="430" y="245" width="315" height="145" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="446" y="279" class="head">GPT-4o-mini 标注</text>
+<text x="446" y="312" class="body">结构化提示 + 关键帧文字</text>
+<text x="446" y="341" class="body">原始全局动作描述</text>
+<text x="446" y="370" class="body">人工抽查，迭代提示模板</text>
+<rect x="830" y="245" width="315" height="145" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="846" y="279" class="head">KinMo 多层描述</text>
+<text x="846" y="312" class="body">全局动作 T꜀</text>
+<text x="846" y="341" class="body">六个身体组 Tɢ</text>
+<text x="846" y="370" class="body">十五组身体交互 Tᵢ</text>
+<path d="M345,318 L430,318" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M745,318 L830,318" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="55" y="445" width="1090" height="120" rx="14" fill="#fff" stroke="#c1d1db"/>
+<text x="71" y="479" class="head">六组：躯干、颈头区域、左右臂、左右腿</text>
+<text x="71" y="512" class="body">描述组内位置／角度／速度及组间关系；不是六套独立生成器。</text>
+<text x="71" y="541" class="body">标注文字是训练监督，不是关节轨迹或逐帧硬约束。</text>
+<rect x="30" y="650" width="1140" height="610" rx="14" fill="#f6f2fb" stroke="#c1d1db"/>
+<text x="55" y="690" class="head">B · 训练三类能力：层级对齐、文字推理、动作 token 预测</text>
+<text x="55" y="726" class="small">冻结预训练文本特征器；对齐网络、动作推理器与动作生成模型各自学习。</text>
+<rect x="55" y="770" width="290" height="155" rx="14" fill="#e9eef9" stroke="#c1d1db"/>
+<text x="71" y="804" class="head">多层文本 + 真实动作</text>
+<text x="71" y="837" class="body">冻结 RoBERTa / DistilBERT</text>
+<text x="71" y="866" class="body">文本特征 → 层级编码器</text>
+<text x="71" y="895" class="body">动作 → 动作编码与解码</text>
+<rect x="430" y="770" width="315" height="155" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="446" y="804" class="head">层级对齐 HTMA</text>
+<text x="446" y="837" class="body">全局 → 部位 → 交互</text>
+<text x="446" y="866" class="body">跨层注意力逐级传递</text>
+<text x="446" y="895" class="body">得到三层分布与均值 μ</text>
+<rect x="830" y="770" width="315" height="155" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="846" y="804" class="head">配对监督</text>
+<text x="846" y="837" class="body">每层文本—动作对比学习</text>
+<text x="846" y="866" class="body">KL + 嵌入与重建损失</text>
+<text x="846" y="895" class="body">连续对齐空间 ≠ 动作码本</text>
+<path d="M345,846 L430,846" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M745,846 L830,846" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="55" y="985" width="500" height="155" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="71" y="1019" class="head">动作推理器：微调 LLaMA-3</text>
+<text x="71" y="1052" class="body">全局描述 → 六组与十五组交互描述</text>
+<text x="71" y="1081" class="body">使用 KinMo 标注进行下一 token 预测监督</text>
+<text x="71" y="1110" class="body">推理时可替用户补全文字条件</text>
+<rect x="630" y="985" width="515" height="155" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="646" y="1019" class="head">动作表示与掩码生成器</text>
+<text x="646" y="1052" class="body">真实动作 → RVQ-VAE → 离散 token → 重建</text>
+<text x="646" y="1081" class="body">用三层 HTMA 条件学习恢复被遮蔽的 token</text>
+<text x="646" y="1110" class="body">三个语义阶段复用同一个生成器</text>
+<path d="M587,925 L587,960 L890,960 L890,985" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<text x="55" y="1200" class="small">RVQ 的残差量化层数，与全局／部位／交互三个语义阶段是两件事。</text>
+<rect x="30" y="1295" width="1140" height="760" rx="14" fill="#eef6f1" stroke="#c1d1db"/>
+<text x="55" y="1335" class="head">C · 推理：完整文本 → 三轮语义细化 → 连续动作</text>
+<text x="55" y="1371" class="small">每轮预测整段动作 token；这里的“粗到细”不是按时间逐帧自回归。</text>
+<rect x="55" y="1415" width="290" height="125" rx="14" fill="#fff" stroke="#c1d1db"/>
+<text x="71" y="1449" class="head">用户全局描述</text>
+<text x="71" y="1482" class="body">例如：下蹲，并将</text>
+<text x="71" y="1511" class="body">双手维持在肩膀附近</text>
+<rect x="430" y="1415" width="315" height="125" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="446" y="1449" class="head">已训练的动作推理器</text>
+<text x="446" y="1482" class="body">补全部位与交互描述</text>
+<text x="446" y="1511" class="body">也可手动修改这些文字</text>
+<rect x="830" y="1415" width="315" height="125" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="846" y="1449" class="head">复用 HTMA 文本端</text>
+<text x="846" y="1482" class="body">编码 T꜀、Tɢ、Tᵢ</text>
+<text x="846" y="1511" class="body">输出 μ꜀、μɢ、μᵢ 条件</text>
+<path d="M345,1478 L430,1478" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M745,1478 L830,1478" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="55" y="1620" width="290" height="165" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="71" y="1654" class="head">① 全局条件生成</text>
+<text x="71" y="1687" class="body">全掩码动作 token</text>
+<text x="71" y="1716" class="body">读取 μ꜀ → 掩码迭代</text>
+<text x="71" y="1745" class="body">得到初始动作 token</text>
+<rect x="430" y="1620" width="315" height="165" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="446" y="1654" class="head">② 部位条件细化</text>
+<text x="446" y="1687" class="body">读取前轮动作 token</text>
+<text x="446" y="1716" class="body">同一生成器 + μɢ</text>
+<text x="446" y="1745" class="body">重预测整段 token</text>
+<rect x="830" y="1620" width="315" height="165" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="846" y="1654" class="head">③ 交互条件细化</text>
+<text x="846" y="1687" class="body">读取前轮动作 token</text>
+<text x="846" y="1716" class="body">同一生成器 + μᵢ</text>
+<text x="846" y="1745" class="body">输出最终动作 token</text>
+<path d="M345,1700 L430,1700" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M745,1700 L830,1700" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M987,1540 L987,1580 L200,1580 L200,1620" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M587,1580 L587,1620" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M987,1580 L987,1620" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="55" y="1840" width="690" height="150" rx="14" fill="#fff" stroke="#c1d1db"/>
+<text x="71" y="1874" class="head">可选应用：检索或动作编辑</text>
+<text x="71" y="1907" class="body">检索：比较文本与动作均值嵌入，按余弦相似度排序。</text>
+<text x="71" y="1936" class="body">编辑：修改文字，遮蔽目标 token 序列后重新预测；</text>
+<text x="71" y="1965" class="body">复制未遮蔽 token 不证明解码后所有原帧严格不变。</text>
+<rect x="830" y="1840" width="315" height="150" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="846" y="1874" class="head">RVQ-VAE 解码</text>
+<text x="846" y="1907" class="body">查询动作码本并解码</text>
+<text x="846" y="1936" class="body">输出连续全身动作</text>
+<text x="846" y="1965" class="body">没有逐帧硬覆盖步骤</text>
+<path d="M987,1785 L987,1840" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="30" y="2090" width="1140" height="530" rx="14" fill="#f7f3ed" stroke="#c1d1db"/>
+<text x="55" y="2130" class="head">D · 另训的可选轨迹控制：ControlNet 式条件支路</text>
+<text x="55" y="2166" class="small">输入指定关节的全局位置与 mask；损失在解码后的动作空间中计算。</text>
+<rect x="55" y="2210" width="290" height="150" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="71" y="2244" class="head">轨迹输入</text>
+<text x="71" y="2277" class="body">关节位置序列 + mask</text>
+<text x="71" y="2306" class="body">三层 CNN 编码</text>
+<text x="71" y="2335" class="body">时间下采样 ×4</text>
+<rect x="430" y="2210" width="315" height="150" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="446" y="2244" class="head">可训练的控制副本</text>
+<text x="446" y="2277" class="body">复制掩码 Transformer</text>
+<text x="446" y="2306" class="body">逐层零初始化线性连接</text>
+<text x="446" y="2335" class="body">向冻结生成主干注入特征</text>
+<rect x="830" y="2210" width="315" height="150" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="846" y="2244" class="head">冻结生成主干</text>
+<text x="846" y="2277" class="body">仍读取文字／动作条件</text>
+<text x="846" y="2306" class="body">控制特征逐层相加</text>
+<text x="846" y="2335" class="body">预测动作 token</text>
+<path d="M345,2285 L430,2285" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M745,2285 L830,2285" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="430" y="2420" width="715" height="130" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="446" y="2454" class="head">解码动作 → 选定关节位置误差 → 训练控制支路</text>
+<text x="446" y="2487" class="body">真实动作提供目标位置；监督 mask 所选关节的平方误差。</text>
+<text x="446" y="2516" class="body">这是学习的软条件，不是解码后把关节投影到目标坐标。</text>
+<path d="M987,2360 L987,2420" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<text x="40" y="2665" class="small">实线：数据与条件流；图内复用模块表示训练产物在推理时使用。</text>
+<text x="40" y="2705" class="small">依据：正式论文图 2–3、§3–4，补充 §B–C／图 3；原创教学重绘。</text>
+</svg>
