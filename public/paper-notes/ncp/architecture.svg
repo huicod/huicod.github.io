@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2260" viewBox="0 0 1200 2260">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#52677b"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#213449} .title{font-size:32px;font-weight:700} .section{font-size:26px;font-weight:700} .label{font-size:23px;font-weight:700} .small{font-size:20px} .line{fill:none;stroke:#52677b;stroke-width:2.5;marker-end:url(#arr)} .dash{stroke-dasharray:8 6}</style>
+<rect width="1200" height="2260" fill="#f7f9fc"/>
+<text x="48" y="51" class="title" text-anchor="start">NCP：离散码选择，连续控制，物理反馈</text>
+<text x="48" y="87" class="small" text-anchor="start">训练把动作能力、采样先验与任务选择分开；执行不需要参考动作。</text>
+<rect x="24" y="115" width="1152" height="485" rx="20" fill="#edf3f8" stroke="#d2dce7"/>
+<text x="48" y="155" class="section" text-anchor="start">A  模仿训练：把动作库学成可执行的底层能力</text>
+<text x="48" y="189" class="small" text-anchor="start">更新：编码器、码本、解码策略；PPO 跟踪奖励 + 码本 / commitment 损失</text>
+<rect x="50" y="220" width="274" height="120" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="254" class="label" text-anchor="start">训练输入</text>
+<text x="68" y="286" class="small" text-anchor="start">当前状态 s</text>
+<text x="68" y="314" class="small" text-anchor="start">参考未来两帧 f</text>
+<rect x="374" y="220" width="290" height="120" rx="14" fill="#fff2d9" stroke="#c7d4e0" stroke-width="2"/>
+<text x="392" y="254" class="label" text-anchor="start">编码器 → 最近邻量化</text>
+<text x="392" y="286" class="small" text-anchor="start">连续 zₑ → 选索引 k</text>
+<text x="392" y="314" class="small" text-anchor="start">取码本向量 eₖ</text>
+<rect x="724" y="220" width="422" height="120" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="742" y="254" class="label" text-anchor="start">底层解码策略 πd(a | s, eₖ)</text>
+<text x="742" y="286" class="small" text-anchor="start">同时读取当前身体状态</text>
+<text x="742" y="314" class="small" text-anchor="start">输出连续关节目标增量 a</text>
+<path d="M324,280 L374,280" class="line"/>
+<path d="M664,280 L724,280" class="line"/>
+<path d="M187,340 L187,376 L700,376 L700,310 L724,310" class="line"/>
+<text x="355" y="367" class="small" text-anchor="start">当前状态旁路，不由码替代</text>
+<rect x="724" y="420" width="422" height="110" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="742" y="454" class="label" text-anchor="start">PD 控制 + 物理仿真</text>
+<text x="742" y="486" class="small" text-anchor="start">目标关节位置 = 当前位置 + a</text>
+<text x="742" y="514" class="small" text-anchor="start">执行后获得下一状态 s′</text>
+<path d="M935,340 L935,420" class="line"/>
+<rect x="50" y="420" width="614" height="110" rx="14" fill="#fff2d9" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="454" class="label" text-anchor="start">参考跟踪奖励 → 更新模仿策略</text>
+<text x="68" y="486" class="small" text-anchor="start">比较实际仿真结果与动作库：关节 / 关键身体 / 根部</text>
+<text x="68" y="514" class="small" text-anchor="start">难以跟踪的片段提高采样概率</text>
+<path d="M724,474 L664,474" class="line dash"/>
+<text x="50" y="570" class="small" text-anchor="start">完成后复用码本与底层解码器；离散码不对应一段固定动画。</text>
+<rect x="24" y="625" width="1152" height="535" rx="20" fill="#edf3f8" stroke="#d2dce7"/>
+<text x="48" y="665" class="section" text-anchor="start">B  先验学习：先蒸馏，再调整动作访问分布</text>
+<text x="48" y="699" class="small" text-anchor="start">更新：状态条件类别先验 πp(k | s)；底层执行器固定</text>
+<rect x="50" y="730" width="505" height="145" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="764" class="label" text-anchor="start">B1  蒸馏：移除参考未来的依赖</text>
+<text x="68" y="796" class="small" text-anchor="start">先验采样 → 冻结底层执行 → 收集状态</text>
+<text x="68" y="824" class="small" text-anchor="start">教师编码器：状态 + 参考未来 → 选码</text>
+<text x="68" y="852" class="small" text-anchor="start">教师到先验 KL：让先验学会状态条件选码</text>
+<rect x="625" y="730" width="521" height="145" rx="14" fill="#fff2d9" stroke="#c7d4e0" stroke-width="2"/>
+<text x="643" y="764" class="label" text-anchor="start">B2  迁移：探索较少访问的参考状态</text>
+<text x="643" y="796" class="small" text-anchor="start">初始化为蒸馏先验，继续用 RL 更新</text>
+<text x="643" y="824" class="small" text-anchor="start">选码 → 冻结底层 → 仿真状态</text>
+<text x="643" y="852" class="small" text-anchor="start">状态与动作库帧匹配，累计最近窗口访问数</text>
+<path d="M555,802 L625,802" class="line"/>
+<rect x="50" y="935" width="505" height="145" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="969" class="label" text-anchor="start">获得可自由采样的状态先验</text>
+<text x="68" y="1001" class="small" text-anchor="start">只需当前状态，不需要未来参考</text>
+<text x="68" y="1029" class="small" text-anchor="start">随机生成时：采样 k → 底层执行</text>
+<text x="68" y="1057" class="small" text-anchor="start">下游训练时：给上层策略提供 KL 参照</text>
+<rect x="625" y="935" width="521" height="145" rx="14" fill="#fff2d9" stroke="#c7d4e0" stroke-width="2"/>
+<text x="643" y="969" class="label" text-anchor="start">计数奖励反馈给先验</text>
+<text x="643" y="1001" class="small" text-anchor="start">匹配状态：r = √(Nₖ / 访问计数)</text>
+<text x="643" y="1029" class="small" text-anchor="start">未匹配参考帧：奖励 0</text>
+<text x="643" y="1057" class="small" text-anchor="start">平衡动作状态访问，不是强制均匀抽码</text>
+<path d="M885,875 L885,935" class="line"/>
+<path d="M625,1004 L555,1004" class="line"/>
+<text x="50" y="1127" class="small" text-anchor="start">论文的独立蒸馏阶段与公开 README 默认 prior 训练入口存在差异，见正文。</text>
+<rect x="24" y="1185" width="1152" height="480" rx="20" fill="#edf3f8" stroke="#d2dce7"/>
+<text x="48" y="1225" class="section" text-anchor="start">C  下游训练：学习为目标选码</text>
+<text x="48" y="1259" class="small" text-anchor="start">更新：上层策略与价值网络；固定：码本、底层策略、迁移后的先验</text>
+<rect x="50" y="1290" width="315" height="135" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="1324" class="label" text-anchor="start">当前状态 s + 任务目标 g</text>
+<text x="68" y="1356" class="small" text-anchor="start">剑盾：目标位置与运动</text>
+<text x="68" y="1384" class="small" text-anchor="start">拳击：对手状态</text>
+<rect x="425" y="1290" width="330" height="135" rx="14" fill="#fff2d9" stroke="#c7d4e0" stroke-width="2"/>
+<text x="443" y="1324" class="label" text-anchor="start">上层策略 πh(k | s,g)</text>
+<text x="443" y="1356" class="small" text-anchor="start">在类别分布中选择码</text>
+<text x="443" y="1384" class="small" text-anchor="start">任务 PPO + KL + 熵</text>
+<rect x="815" y="1290" width="330" height="135" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="833" y="1324" class="label" text-anchor="start">冻结执行链</text>
+<text x="833" y="1356" class="small" text-anchor="start">码本 → 底层策略</text>
+<text x="833" y="1384" class="small" text-anchor="start">PD → 仿真 → 任务回报</text>
+<path d="M365,1357 L425,1357" class="line"/>
+<path d="M755,1357 L815,1357" class="line"/>
+<rect x="425" y="1490" width="330" height="115" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="443" y="1524" class="label" text-anchor="start">冻结先验 πp(k | s)</text>
+<text x="443" y="1556" class="small" text-anchor="start">KL(上层 ‖ 先验)</text>
+<text x="443" y="1584" class="small" text-anchor="start">只约束训练，不必串行执行</text>
+<path d="M590,1490 L590,1425" class="line dash"/>
+<rect x="815" y="1490" width="330" height="115" rx="14" fill="#ffffff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="833" y="1524" class="label" text-anchor="start">拳击额外使用 PFSP</text>
+<text x="833" y="1556" class="small" text-anchor="start">从历史策略挑选对手</text>
+<text x="833" y="1584" class="small" text-anchor="start">困难对手获得更高采样权重</text>
+<text x="50" y="1533" class="small" text-anchor="start">任务回报与动作丰富性</text>
+<text x="50" y="1564" class="small" text-anchor="start">可能冲突，KL 是软权衡。</text>
+<rect x="24" y="1690" width="1152" height="450" rx="20" fill="#edf3f8" stroke="#d2dce7"/>
+<text x="48" y="1730" class="section" text-anchor="start">D  实际执行：当前状态反馈闭环</text>
+<text x="48" y="1764" class="small" text-anchor="start">不更新网络；不读取参考未来；没有编码器教师或模仿损失</text>
+<rect x="50" y="1800" width="270" height="115" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="1834" class="label" text-anchor="start">状态 + 任务目标</text>
+<text x="68" y="1866" class="small" text-anchor="start">读取实际角色 / 环境</text>
+<text x="68" y="1894" class="small" text-anchor="start">每个控制时刻重新决策</text>
+<rect x="370" y="1800" width="270" height="115" rx="14" fill="#fff2d9" stroke="#c7d4e0" stroke-width="2"/>
+<text x="388" y="1834" class="label" text-anchor="start">上层选码</text>
+<text x="388" y="1866" class="small" text-anchor="start">类别分布 → 索引 k</text>
+<text x="388" y="1894" class="small" text-anchor="start">码本 → 向量 eₖ</text>
+<rect x="690" y="1800" width="455" height="115" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="708" y="1834" class="label" text-anchor="start">底层解码器 + 当前状态</text>
+<text x="708" y="1866" class="small" text-anchor="start">连续关节增量 → 目标关节位置</text>
+<text x="708" y="1894" class="small" text-anchor="start">PD 与物理仿真产生实际动作</text>
+<path d="M320,1857 L370,1857" class="line"/>
+<path d="M640,1857 L690,1857" class="line"/>
+<path d="M920,1915 L920,1970 L184,1970 L184,1915" class="line"/>
+<text x="425" y="1961" class="small" text-anchor="start">下一状态反馈，继续选择与执行</text>
+<text x="50" y="2038" class="small" text-anchor="start">原论文：策略控制 30 Hz，物理仿真 120 Hz；这不是端到端延迟基准。</text>
+<text x="50" y="2073" class="small" text-anchor="start">码本提供受限控制入口，不保证命中、接触时刻、关键帧或任意新技能。</text>
+<text x="48" y="2205" class="small" text-anchor="start">依据作者论文图 2、§5–7 原创重绘；公开代码配置与论文差异在正文单列。</text>
+</svg>

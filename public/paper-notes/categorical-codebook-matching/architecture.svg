@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2380" viewBox="0 0 1200 2380">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#52677b"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#213449}.title{font-size:30px;font-weight:700}.section{font-size:26px;font-weight:700}.label{font-size:23px;font-weight:700}.small{font-size:20px}.line{fill:none;stroke:#52677b;stroke-width:2.5;marker-end:url(#arr)}.dash{stroke-dasharray:8 6}</style>
+<rect width="1200" height="2380" fill="#f7f9fc"/>
+<text x="48" y="49" class="title">Codebook Matching：把多解留在候选选择中</text>
+<text x="48" y="87" class="small">运动学角色动画；不使用物理强化学习，也不把 token 当作精确动作保证。</text>
+<rect x="24" y="115" width="1152" height="540" rx="20" fill="#edf3f8" stroke="#d2dce7"/>
+<text x="48" y="155" class="section">A  联合监督训练：动作表示与控制查询一起学</text>
+<text x="48" y="191" class="small">核心下半身模型：输入编码器、目标编码器、共享解码器同时更新，无冻结先验阶段</text>
+<rect x="50" y="225" width="285" height="120" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="259" class="label">真实短动作 Y</text>
+<text x="68" y="292" class="small">含当前状态的未来序列</text>
+<text x="68" y="320" class="small">只在训练时可用</text>
+<rect x="385" y="225" width="360" height="120" rx="14" fill="#fff2d9" stroke="#c7d4e0" stroke-width="2"/>
+<text x="403" y="259" class="label">目标编码器 → Zᵧ</text>
+<text x="403" y="292" class="small">Gumbel-Softmax 类别选择</text>
+<text x="403" y="320" class="small">128 个通道 × 每通道 8 类</text>
+<rect x="805" y="225" width="340" height="120" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="823" y="259" class="label">共享解码器</text>
+<text x="823" y="292" class="small">选中的组合 → 短序列 Y′</text>
+<text x="823" y="320" class="small">重建损失 MSE(Y, Y′)</text>
+<path d="M335,285 L385,285" class="line"/>
+<path d="M745,285 L805,285" class="line"/>
+<rect x="50" y="430" width="285" height="120" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="464" class="label">当前状态 + 控制 X</text>
+<text x="68" y="497" class="small">角色姿态与未来控制特征</text>
+<text x="68" y="525" class="small">测试时保留这一路</text>
+<rect x="385" y="430" width="360" height="120" rx="14" fill="#fff2d9" stroke="#c7d4e0" stroke-width="2"/>
+<text x="403" y="464" class="label">输入编码器 → Zₓ</text>
+<text x="403" y="497" class="small">学习可供采样的类别分布</text>
+<text x="403" y="525" class="small">匹配目标路径的类别表示</text>
+<path d="M335,490 L385,490" class="line"/>
+<path d="M565,430 L565,345" class="line dash"/>
+<text x="593" y="393" class="small">匹配损失；两路共同学习</text>
+<rect x="805" y="430" width="340" height="120" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="823" y="464" class="label">训练完成后复用</text>
+<text x="823" y="497" class="small">保留输入编码器 + 解码器</text>
+<text x="823" y="525" class="small">不再需要真实未来动作 Y</text>
+<text x="50" y="598" class="small">图按论文概念式绘制；公开代码目标编码器额外读取 X，并匹配 hard ST 采样，见正文。</text>
+<rect x="24" y="680" width="1152" height="420" rx="20" fill="#edf3f8" stroke="#d2dce7"/>
+<text x="48" y="720" class="section">B  在线控制预测：从历史推测未来，不等待真实未来</text>
+<text x="48" y="756" class="small">输入：头显 / 双手柄过去 0.5 秒；可选：摇杆、按钮或目标位置</text>
+<rect x="50" y="790" width="320" height="135" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="824" class="label">三点追踪历史</text>
+<text x="68" y="857" class="small">位置、旋转、速度</text>
+<text x="68" y="885" class="small">输入用户身高校准后的信号</text>
+<rect x="420" y="790" width="725" height="135" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="438" y="824" class="label">追踪 / 未来预测网络</text>
+<text x="438" y="857" class="small">估计未来 0.5 秒上半身与根轨迹</text>
+<text x="438" y="885" class="small">提取 5 个未来控制采样：根速度、髋部、上身中心与方向</text>
+<path d="M370,857 L420,857" class="line"/>
+<rect x="50" y="975" width="320" height="85" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="1009" class="label">可选摇杆 / 按钮目标</text>
+<rect x="420" y="975" width="725" height="85" rx="14" fill="#fff2d9" stroke="#c7d4e0" stroke-width="2"/>
+<text x="438" y="1009" class="label">根轨迹变换组合 → 供下半身使用的控制 C</text>
+<path d="M370,1017 L420,1017" class="line"/>
+<path d="M782,925 L782,975" class="line"/>
+<rect x="24" y="1125" width="1152" height="510" rx="20" fill="#edf3f8" stroke="#d2dce7"/>
+<text x="48" y="1165" class="section">C  在线下半身生成：采样多个短序列，择近衔接再推进</text>
+<text x="48" y="1201" class="small">每次重规划只使用当前角色与预测控制；生成候选不是搜索原始动作数据库</text>
+<rect x="50" y="1230" width="285" height="125" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="1264" class="label">当前下半身 + 控制 C</text>
+<text x="68" y="1297" class="small">构成 X</text>
+<text x="68" y="1325" class="small">自回归状态来自上一帧</text>
+<rect x="385" y="1230" width="360" height="125" rx="14" fill="#fff2d9" stroke="#c7d4e0" stroke-width="2"/>
+<text x="403" y="1264" class="label">输入编码器 + 类别采样</text>
+<text x="403" y="1297" class="small">同一条件采样 K 组组合</text>
+<text x="403" y="1325" class="small">每组由共享解码器解码</text>
+<rect x="805" y="1230" width="340" height="125" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="823" y="1264" class="label">K 条候选短序列</text>
+<text x="823" y="1297" class="small">每条含 16 个状态</text>
+<text x="823" y="1325" class="small">约半秒，包括当前时刻</text>
+<path d="M335,1292 L385,1292" class="line"/>
+<path d="M745,1292 L805,1292" class="line"/>
+<rect x="385" y="1425" width="760" height="130" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="403" y="1459" class="label">候选姿态与当前姿态比较 → 找进入点 → 前进一帧</text>
+<text x="403" y="1492" class="small">选择仍有后继状态的候选，不平均不同候选的姿态</text>
+<text x="403" y="1520" class="small">可连续 rollout 多帧节约计算，但对新控制响应更慢</text>
+<path d="M975,1355 L975,1425" class="line"/>
+<path d="M385,1490 L192,1490 L192,1355" class="line"/>
+<text x="50" y="1588" class="small">原文推荐 10–20 个候选；公开脚本初值与场景配置可不同。</text>
+<rect x="24" y="1660" width="1152" height="555" rx="20" fill="#edf3f8" stroke="#d2dce7"/>
+<text x="48" y="1700" class="section">D  全身融合与输出：姿态、IK 与运动学执行</text>
+<text x="48" y="1736" class="small">纯跟踪与混合控制采用不同融合方式；不输出物理力矩，不保证唯一真实腿姿</text>
+<rect x="50" y="1768" width="520" height="140" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="68" y="1802" class="label">生成的下半身 / 髋部</text>
+<text x="68" y="1835" class="small">根部变换、局部关节位置 / 旋转 / 速度</text>
+<text x="68" y="1863" class="small">接触与根锁定信号用于运行后处理</text>
+<rect x="625" y="1768" width="520" height="140" rx="14" fill="#e9f0ff" stroke="#c7d4e0" stroke-width="2"/>
+<text x="643" y="1802" class="label">预测上半身 / 追踪信号</text>
+<text x="643" y="1835" class="small">纯三点：融合上半身并做 IK</text>
+<text x="643" y="1863" class="small">混合控制：结合下半身历史预测上半身</text>
+<rect x="295" y="1980" width="610" height="125" rx="14" fill="#e7f5ed" stroke="#c7d4e0" stroke-width="2"/>
+<text x="313" y="2014" class="label">全身姿态 + IK / 接触处理 → 虚拟角色</text>
+<text x="313" y="2047" class="small">继续将已生成角色状态反馈给下一次预测</text>
+<text x="313" y="2075" class="small">混合模式允许头手偏移，不能同时声称严格保持</text>
+<path d="M310,1908 L310,1942 L470,1942 L470,1980" class="line"/>
+<path d="M885,1908 L885,1942 L735,1942 L735,1980" class="line"/>
+<text x="50" y="2166" class="small">额外碰撞规避是另训的“几何条件 → 姿态”应用，不是上述链路的通用物理安全证明。</text>
+<text x="48" y="2271" class="small">论文报告：30 Hz 动画目标、约 3 ms/帧；不等于传感到显示的端到端零延迟。</text>
+<text x="48" y="2310" class="small">依据原文图 2 / 图 5、§3–5 原创重绘；完整实现与资源边界见正文。</text>
+</svg>

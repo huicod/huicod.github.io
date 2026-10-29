@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1960" viewBox="0 0 1200 1960" role="img" aria-labelledby="title desc">
+<title id="title">GenMM 多尺度生成匹配完整架构</title><desc id="desc">无需训练。示例动作建立时间金字塔，生成时从随机初值逐级检索片段并平均融合，支持指定特征约束与可选接触后处理。</desc>
+<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0L9 3L0 6" fill="none" stroke="#38627a" stroke-width="1.5"/></marker></defs>
+<rect width="1200" height="1960" fill="#f6f8fb"/>
+<text x="600" y="43" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="31" font-weight="700" fill="#183247">GenMM：不训练网络，在示例片段中搜索与重组</text>
+<text x="600" y="80" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#526778">随机初值提供变化；多尺度匹配保留细节；人工身体分区扩大组合空间</text>
+<rect x="35" y="105" width="1130" height="340" rx="18" fill="white" stroke="#c5d3de"/>
+<text x="60" y="141" text-anchor="start" font-family="Microsoft YaHei,Arial,sans-serif" font-size="26" font-weight="700" fill="#183247">A · 示例准备：没有网络预训练、没有学习权重</text>
+<text x="60" y="173" text-anchor="start" font-family="Microsoft YaHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#526778">单段或多段骨架动画 → 运动特征 → 时间金字塔；每次合成使用这些示例。</text>
+<rect x="75" y="205" width="370" height="95" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="260.0" y="246.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">示例动画 + 骨架</text>
+<text x="260.0" y="275.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">可选：人工重叠身体分区</text>
+<rect x="525" y="205" width="600" height="95" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="825.0" y="246.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">每帧：6J 旋转 + 3 根部位移差</text>
+<text x="825.0" y="275.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">可选 C 个接触标签（来自示例足部速度）</text>
+<path d="M445 252H525" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<path d="M825 300V340" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<rect x="75" y="340" width="1050" height="70" rx="12" fill="#e7f4ed" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="600.0" y="383.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">示例金字塔 T₁ … T_s … T_S：从粗到细；T_S = 原始示例</text>
+<rect x="35" y="465" width="1130" height="290" rx="18" fill="white" stroke="#c5d3de"/>
+<text x="60" y="501" text-anchor="start" font-family="Microsoft YaHei,Arial,sans-serif" font-size="26" font-weight="700" fill="#183247">B · 每次合成：从粗到细逐级细化</text>
+<text x="60" y="533" text-anchor="start" font-family="Microsoft YaHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#526778">论文最粗层使用高斯初值；后续层上采样上一级输出，再用该级示例匹配。</text>
+<rect x="75" y="575" width="190" height="85" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="170.0" y="611.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">高斯初值</text>
+<text x="170.0" y="640.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">目标粗层长度</text>
+<rect x="325" y="575" width="230" height="85" rx="12" fill="#e7f4ed" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="440.0" y="611.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">粗层匹配</text>
+<text x="440.0" y="640.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">示例 T₁ → F₁</text>
+<rect x="615" y="575" width="190" height="85" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="710.0" y="611.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">时间上采样</text>
+<text x="710.0" y="640.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">F_s−1 ↑ r</text>
+<rect x="865" y="575" width="260" height="85" rx="12" fill="#e7f4ed" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="995.0" y="611.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">第 s 层匹配</text>
+<text x="995.0" y="640.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">示例 T_s → F_s</text>
+<path d="M265 617H325" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<path d="M555 617H615" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<path d="M805 617H865" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<text x="600" y="710" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="21" font-weight="400" fill="#526778">逐级重复至原时间分辨率 → 输出任意指定长度的 F_S；每级模块在下方展开</text>
+<rect x="35" y="775" width="1130" height="655" rx="18" fill="white" stroke="#c5d3de"/>
+<text x="60" y="811" text-anchor="start" font-family="Microsoft YaHei,Arial,sans-serif" font-size="26" font-weight="700" fill="#183247">C · 单尺度生成匹配：每级重复 E 次，正文默认 E = 5</text>
+<text x="60" y="843" text-anchor="start" font-family="Microsoft YaHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#526778">下面以可选身体分区版本说明；单示例主比较关闭分区，直接用完整骨架 patch。</text>
+<rect x="75" y="900" width="450" height="70" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="300.0" y="943.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">当前合成初值 / 上一轮 F̃_s</text>
+<rect x="675" y="900" width="450" height="70" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="900.0" y="943.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">同尺度示例集合 T_s</text>
+<rect x="75" y="1010" width="450" height="70" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="300.0" y="1053.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">按部位取连续 p 帧 → 输出 patch Xᵇ</text>
+<rect x="675" y="1010" width="450" height="70" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="900.0" y="1053.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">按部位取连续 p 帧 → 示例 patch Yᵇ</text>
+<path d="M300 970V1010" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<path d="M900 970V1010" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<path d="M300 1080V1100H600V1120" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<path d="M900 1080V1100H600" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<rect x="200" y="1120" width="800" height="100" rx="12" fill="#fff4df" stroke="#d8bc90" stroke-width="1.5"/>
+<text x="600.0" y="1163.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">Dᵇᵢⱼ = ‖Xᵇᵢ − Yᵇⱼ‖²</text>
+<text x="600.0" y="1192.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">归一化：D̂ᵇᵢⱼ = Dᵇᵢⱼ / (α + min_ℓ Dᵇℓⱼ)</text>
+<path d="M600 1220V1245H215V1270" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<rect x="75" y="1270" width="280" height="90" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="215.0" y="1308.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">为每个输出 patch</text>
+<text x="215.0" y="1337.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">选归一化最近邻</text>
+<rect x="425" y="1270" width="350" height="90" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="600.0" y="1308.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">时间重叠片段平均投票</text>
+<text x="600.0" y="1337.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">得到各部位运动</text>
+<rect x="845" y="1270" width="280" height="90" rx="12" fill="#e7f4ed" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="985.0" y="1308.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">重叠关节平均融合</text>
+<text x="985.0" y="1337.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">得到完整 F_s</text>
+<path d="M355 1315H425" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<path d="M775 1315H845" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)"/>
+<path d="M1125 1315H1145V875H55V935H75" fill="none" stroke="#38627a" stroke-width="2.4" marker-end="url(#arr)" stroke-dasharray="7 6"/>
+<text x="600" y="1400" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#526778">虚线：结果进入下一轮匹配；α 鼓励示例覆盖，不是每个片段必出现的硬保证</text>
+<rect x="35" y="1450" width="1130" height="350" rx="18" fill="white" stroke="#c5d3de"/>
+<text x="60" y="1486" text-anchor="start" font-family="Microsoft YaHei,Arial,sans-serif" font-size="26" font-weight="700" fill="#183247">D · 输出与可选约束：论文应用，不等于全部已有完整公开入口</text>
+<text x="60" y="1518" text-anchor="start" font-family="Microsoft YaHei,Arial,sans-serif" font-size="20" font-weight="400" fill="#526778">每一级可以固定指定运动特征；最终还可使用接触标签做 IK 后处理。</text>
+<rect x="75" y="1545" width="510" height="90" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="330.0" y="1583.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">动作补全：固定给定身体部分</text>
+<text x="330.0" y="1612.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">关键帧：替换并保持选定姿态</text>
+<rect x="615" y="1545" width="510" height="90" rx="12" fill="#e9f3f9" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="870.0" y="1583.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">循环：固定起止姿态相同</text>
+<text x="870.0" y="1612.5" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">异构重组：人工选部位与重叠区域</text>
+<rect x="75" y="1670" width="1050" height="85" rx="12" fill="#e7f4ed" stroke="#8cabbf" stroke-width="1.5"/>
+<text x="600.0" y="1706.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">最终骨架动画：旋转 + 根部运动；可选接触 IK</text>
+<text x="600.0" y="1735.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">并非任意目标轨迹跟踪；姿态相等不等于速度连续或物理可执行</text>
+<rect x="35" y="1825" width="1130" height="100" rx="12" fill="#fff5e6" stroke="#d8bc90" stroke-width="1.5"/>
+<text x="600.0" y="1854.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">证据边界：远离示例的关键姿态可能失败；没有连续新姿态分布或物理控制器</text>
+<text x="600.0" y="1883.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">当前代码初始化、默认参数及已发布模块与论文不同，详正文独立核查。</text>
+<text x="600.0" y="1912.0" text-anchor="middle" font-family="Microsoft YaHei,Arial,sans-serif" font-size="22" font-weight="400" fill="#183247">原创教学图；依据 SIGGRAPH 2023 图 2–4、§3–5 重绘，非原图复制。</text>
+</svg>
