@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2220" viewBox="0 0 1200 2220" role="img" aria-labelledby="title desc"><title id="title">Motion Puzzle：以身体部位组合参考风格</title><desc id="desc">论文15维表示的训练与推理流程。源动作经过内容编码，最多五段参考经过多尺度风格编码，按部位选取风格后在三级解码中依次通过BP-AdaIN、骨架图卷积、BP-ATN和骨架图卷积，输出完整风格化动作。离线结果另用源动作足接触标签作逆运动学清理。公开实现12维与源root旁路属于另一个版本，不混入论文训练流程。</desc><defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#3f637a"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#1d3346;font-size:22px}.title{font-size:31px;font-weight:700}.head{font-size:27px;font-weight:700}.small{font-size:20px}.muted{fill:#526979}.bold{font-weight:700}.box{stroke:#9bb2c3;stroke-width:1.5;rx:13}.flow{fill:none;stroke:#3f637a;stroke-width:2.4;marker-end:url(#a)}.rail{fill:none;stroke:#3f637a;stroke-width:2.4}</style><rect width="1200" height="2220" fill="white"/>
+<text x="600" y="47" text-anchor="middle" class="title">Motion Puzzle：按身体部位拼合参考风格</text>
+<text x="600" y="78" text-anchor="middle" class="small muted">TOG／SIGGRAPH 2022 · 原创教学图 · 主线按论文，发布版差异单列</text>
+<rect x="25" y="105" width="1150" height="300" rx="18" fill="#f4f7fb" stroke="#d5e0e8"/>
+<text x="50" y="143" text-anchor="start" class="head">A  离线训练：无风格标签与配对目标，仍有重建监督</text>
+<text x="50" y="173" text-anchor="start" class="small muted">同一模型学习内容编码 E꜀、风格编码 Eₛ 和解码 D；无 GAN、LLM 或扩散循环。</text>
+<rect class="box" x="60" y="200" width="320" height="100" fill="#fff"/>
+<text x="220.0" y="228.0" text-anchor="middle" class="">CMU 统一 21 关节骨架</text>
+<text x="220.0" y="257.0" text-anchor="middle" class="">60 fps；120 帧训练窗</text>
+<text x="220.0" y="286.0" text-anchor="middle" class="">位置／旋转／速度＋root</text>
+<rect class="box" x="440" y="200" width="320" height="100" fill="#fff"/>
+<text x="600.0" y="228.0" text-anchor="middle" class="">source 与 target 动作对</text>
+<text x="600.0" y="257.0" text-anchor="middle" class="">随机按部位混合两者风格</text>
+<text x="600.0" y="286.0" text-anchor="middle" class="">自重建＋循环恢复分支</text>
+<rect class="box" x="820" y="200" width="320" height="100" fill="#e5eefb"/>
+<text x="980.0" y="228.0" text-anchor="middle" class="">端到端训练 E꜀、Eₛ、D</text>
+<text x="980.0" y="257.0" text-anchor="middle" class="">论文输入 T × 21 × 15</text>
+<text x="980.0" y="286.0" text-anchor="middle" class="">含 3 维 root 速度信息</text>
+<path class="flow" d="M380 250H440"/>
+<path class="flow" d="M760 250H820"/>
+<text x="600" y="340" text-anchor="middle" class="small">目标：Lrec 自重建 ＋ Lcyc 循环恢复 ＋ Lroot 根速度保持 ＋ Lsm 差分匹配</text>
+<text x="600" y="375" text-anchor="middle" class="small muted">三个 λ 均为 1；保持均为训练中的软约束。以下推理复用训练后的 E꜀、Eₛ、D。</text>
+<rect x="25" y="435" width="1150" height="420" rx="18" fill="#eef6ff" stroke="#d5e0e8"/>
+<text x="50" y="473" text-anchor="start" class="head">B  推理编码：一个内容源，多路风格参考</text>
+<text x="50" y="503" text-anchor="start" class="small muted">内容与风格都是动作输入；最粗层仍保留左腿／右腿／脊柱／左臂／右臂五个部位。</text>
+<rect class="box" x="60" y="530" width="280" height="95" fill="#fff"/>
+<text x="200.0" y="555.5" text-anchor="middle" class="">source 动作</text>
+<text x="200.0" y="584.5" text-anchor="middle" class="">内容与时间结构</text>
+<text x="200.0" y="613.5" text-anchor="middle" class="">长度 T꜀</text>
+<rect class="box" x="410" y="530" width="345" height="95" fill="#dfeeff"/>
+<text x="582.5" y="555.5" text-anchor="middle" class="">内容编码器 E꜀</text>
+<text x="582.5" y="584.5" text-anchor="middle" class="">IN＋STGCN＋部位图 pooling</text>
+<text x="582.5" y="613.5" text-anchor="middle" class="">21 → 10 → 5 节点</text>
+<rect class="box" x="825" y="530" width="310" height="95" fill="#fff"/>
+<text x="980.0" y="555.5" text-anchor="middle" class="">仅输出最粗内容特征</text>
+<text x="980.0" y="584.5" text-anchor="middle" class="">T꜀/4 × 5 × 512</text>
+<text x="980.0" y="613.5" text-anchor="middle" class="">减弱风格统计</text>
+<path class="flow" d="M340 577H410"/>
+<path class="flow" d="M755 577H825"/>
+<rect class="box" x="60" y="690" width="280" height="100" fill="#fff"/>
+<text x="200.0" y="718.0" text-anchor="middle" class="">1–5 段风格参考</text>
+<text x="200.0" y="747.0" text-anchor="middle" class="">长度可以不同</text>
+<text x="200.0" y="776.0" text-anchor="middle" class="">可包括 source 自身</text>
+<rect class="box" x="410" y="690" width="345" height="100" fill="#fff0d9"/>
+<text x="582.5" y="718.0" text-anchor="middle" class="">风格编码器 Eₛ</text>
+<text x="582.5" y="747.0" text-anchor="middle" class="">STGCN＋部位图 pooling</text>
+<text x="582.5" y="776.0" text-anchor="middle" class="">保留三级风格特征</text>
+<rect class="box" x="825" y="690" width="310" height="100" fill="#fff"/>
+<text x="980.0" y="718.0" text-anchor="middle" class="">各尺度按五部位选参考</text>
+<text x="980.0" y="747.0" text-anchor="middle" class="">未改部位用 source 风格</text>
+<text x="980.0" y="776.0" text-anchor="middle" class="">不是拷贝原关节输出</text>
+<path class="flow" d="M340 740H410"/>
+<path class="flow" d="M755 740H825"/>
+<text x="600" y="828" text-anchor="middle" class="small muted">G₁：Tₛ × 21 × 128　　G₂：Tₛ/2 × 10 × 256　　G₃：Tₛ/4 × 5 × 512</text>
+<rect x="25" y="890" width="1150" height="690" rx="18" fill="#f0f8f2" stroke="#d5e0e8"/>
+<text x="50" y="928" text-anchor="start" class="head">C  多尺度解码：每级都先全局统计，再局部时空匹配</text>
+<text x="50" y="958" text-anchor="start" class="small muted">风格按相同尺度、相同部位注入；骨架图卷积仍允许相邻部位间的信息传播。</text>
+<rect class="box" x="60" y="1000" width="310" height="70" fill="#fff0d9"/>
+<text x="215.0" y="1042.0" text-anchor="middle" class="">选取的 G₃ 部位风格</text>
+<rect class="box" x="445" y="1000" width="310" height="70" fill="#fff0d9"/>
+<text x="600.0" y="1042.0" text-anchor="middle" class="">选取的 G₂ 部位风格</text>
+<rect class="box" x="830" y="1000" width="310" height="70" fill="#fff0d9"/>
+<text x="985.0" y="1042.0" text-anchor="middle" class="">选取的 G₁ 部位风格</text>
+<path class="rail" d="M980 790V868H1158V977H215"/>
+<path class="flow" d="M215 977V1000"/>
+<path class="flow" d="M600 977V1000"/>
+<path class="flow" d="M985 977V1000"/>
+<rect class="box" x="60" y="1120" width="310" height="130" fill="#dff0e3"/>
+<text x="215.0" y="1163.0" text-anchor="middle" class="">G₃：5 节点，T꜀/4</text>
+<text x="215.0" y="1192.0" text-anchor="middle" class="">BP-ResBlk</text>
+<text x="215.0" y="1221.0" text-anchor="middle" class="">＋ BP-StyleNet</text>
+<rect class="box" x="445" y="1120" width="310" height="130" fill="#dff0e3"/>
+<text x="600.0" y="1163.0" text-anchor="middle" class="">G₂：10 节点，T꜀/2</text>
+<text x="600.0" y="1192.0" text-anchor="middle" class="">BP-StyleNet</text>
+<text x="600.0" y="1221.0" text-anchor="middle" class="">注入较细风格</text>
+<rect class="box" x="830" y="1120" width="310" height="130" fill="#dff0e3"/>
+<text x="985.0" y="1163.0" text-anchor="middle" class="">G₁：21 节点，T꜀</text>
+<text x="985.0" y="1192.0" text-anchor="middle" class="">BP-StyleNet</text>
+<text x="985.0" y="1221.0" text-anchor="middle" class="">恢复逐关节细节</text>
+<path class="flow" d="M980 625V655H40V1185H60"/>
+<path class="flow" d="M215 1070V1120"/>
+<path class="flow" d="M600 1070V1120"/>
+<path class="flow" d="M985 1070V1120"/>
+<path class="flow" d="M370 1185H445"/>
+<path class="flow" d="M755 1185H830"/>
+<text x="600" y="1282" text-anchor="middle" class="small muted">阶段间做图 unpool：节点映回骨架，时间用最近邻上采样。</text>
+<text x="600" y="1325" text-anchor="middle" class="bold">每一级 BP-StyleNet 内部：两种风格注入按五部位执行</text>
+<text x="600" y="1364" text-anchor="middle" class="small muted">同尺度、同部位的风格特征</text>
+<path class="rail" d="M600 1374H175"/>
+<path class="rail" d="M600 1374H695"/>
+<path class="flow" d="M175 1374V1415"/>
+<path class="flow" d="M695 1374V1415"/>
+<rect class="box" x="60" y="1415" width="230" height="110" fill="#e0ecff"/>
+<text x="175.0" y="1448.0" text-anchor="middle" class="">BP-AdaIN</text>
+<text x="175.0" y="1477.0" text-anchor="middle" class="">内容通道归一化</text>
+<text x="175.0" y="1506.0" text-anchor="middle" class="">风格产生 γ、β</text>
+<rect class="box" x="325" y="1415" width="170" height="110" fill="#fff"/>
+<text x="410.0" y="1462.5" text-anchor="middle" class="">STGCN1</text>
+<text x="410.0" y="1491.5" text-anchor="middle" class="">骨架关系传播</text>
+<rect class="box" x="530" y="1415" width="330" height="110" fill="#ffedda"/>
+<text x="695.0" y="1448.0" text-anchor="middle" class="">BP-ATN</text>
+<text x="695.0" y="1477.0" text-anchor="middle" class="">内容 Q ↔ 风格 K</text>
+<text x="695.0" y="1506.0" text-anchor="middle" class="">加权风格 V ＋ 残差</text>
+<rect class="box" x="895" y="1415" width="245" height="110" fill="#fff"/>
+<text x="1017.5" y="1462.5" text-anchor="middle" class="">STGCN2</text>
+<text x="1017.5" y="1491.5" text-anchor="middle" class="">输出当前尺度特征</text>
+<path class="flow" d="M290 1470H325"/>
+<path class="flow" d="M495 1470H530"/>
+<path class="flow" d="M860 1470H895"/>
+<text x="600" y="1554" text-anchor="middle" class="small muted">“全局”是片段统计；“局部”是时空节点对应。两者都不是根轨迹硬控制。</text>
+<rect x="25" y="1610" width="1150" height="460" rx="18" fill="#fff7ec" stroke="#d5e0e8"/>
+<text x="50" y="1648" text-anchor="start" class="head">D  输出、接触清理与版本边界</text>
+<text x="50" y="1678" text-anchor="start" class="small muted">完整离线网络生成整段动作；内容保持和未编辑部位保持均不是逐值锁定。</text>
+<rect class="box" x="60" y="1710" width="310" height="110" fill="#fff"/>
+<text x="215.0" y="1743.0" text-anchor="middle" class="">最终 1×1 映射</text>
+<text x="215.0" y="1772.0" text-anchor="middle" class="">T꜀ × 21 × 15</text>
+<text x="215.0" y="1801.0" text-anchor="middle" class="">论文原始风格化动作</text>
+<rect class="box" x="435" y="1710" width="310" height="110" fill="#fff"/>
+<text x="590.0" y="1743.0" text-anchor="middle" class="">source 足接触标签</text>
+<text x="590.0" y="1772.0" text-anchor="middle" class="">由源动作计算</text>
+<text x="590.0" y="1801.0" text-anchor="middle" class="">不是网络预测的新接触</text>
+<rect class="box" x="825" y="1710" width="310" height="110" fill="#ffe9cb"/>
+<text x="980.0" y="1743.0" text-anchor="middle" class="">可选足部后处理</text>
+<text x="980.0" y="1772.0" text-anchor="middle" class="">接触均值位置目标＋IK</text>
+<text x="980.0" y="1801.0" text-anchor="middle" class="">得到清理后的动作</text>
+<path class="flow" d="M1140 1185H1160V1688H215V1710"/>
+<path class="flow" d="M745 1765H825"/>
+<path class="flow" d="M215 1820V1850H980V1820"/>
+<text x="600" y="1884" text-anchor="middle" class="small muted">离线展示与主评测包含后处理；不能将所有足滑改善归给核心网络。</text>
+<rect class="box" x="60" y="1920" width="1075" height="105" fill="#fff"/>
+<text x="597.5" y="1950.5" text-anchor="middle" class="small">发布版差异（不与上方论文 15D 配置混用）</text>
+<text x="597.5" y="1979.5" text-anchor="middle" class="small">当前官方代码：12D 局部输入、移除 Lroot；导出时旁路复用 source root，可作 IK。</text>
+<text x="597.5" y="2008.5" text-anchor="middle" class="small">完整输出仍经过解码与清理，不构成未编辑关节逐值相同的保证。</text>
+<text x="50" y="2115" text-anchor="start" class="small">轻量实时演示：删 residual blocks，仅 G₃/G₂ 风格注入；4 种风格预缓存。</text>
+<text x="50" y="2145" text-anchor="start" class="small">PFNN 历史 [i−30,i] → 当前帧；报告 30 FPS，无接触后处理。不是完整离线网络计时。</text>
+<text x="50" y="2185" text-anchor="start" class="small muted">来源：论文 §3–8／图 2–7／附录 A；发布差异依据官方 README 与静态代码，未运行模型。</text>
+</svg>
