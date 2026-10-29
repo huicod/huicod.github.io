@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2200" viewBox="0 0 1200 2200" role="img" aria-labelledby="title desc">
+<title id="title">FineMoLA：片段配对监督下的时间短语对齐</title>
+<desc id="desc">从文字拆短语，冻结T5与可训练投影，微调动作编码器，使用熵正则最优传输和批次双向对比训练。推理输出软对齐矩阵，不生成动作。人工边界只用于独立评估。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#668393"/></marker></defs>
+<style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#213d50}.title{font-size:32px;font-weight:700}.head{font-size:24px;font-weight:700}.body{font-size:21px}.small{font-size:20px}</style>
+<rect width="1200" height="2200" fill="#fff"/>
+<text x="40" y="50" class="title">FineMoLA：把整段配对，细化成时间与短语的关联</text>
+<text x="40" y="90" class="body">CVPR Workshops 2026｜输入已有动作与文字；输出软对齐，不生成新动作</text>
+<rect x="30" y="125" width="1140" height="405" rx="14" fill="#f0f6fa" stroke="#c1d1db"/>
+<text x="55" y="165" class="head">A · 文字预处理与特征：先拆动作单元，再池化</text>
+<text x="55" y="201" class="small">GPT-4o-mini 仅按提示拆文字；没有训练它预测时间边界。</text>
+<rect x="55" y="245" width="300" height="150" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="71" y="279" class="head">长动作描述 → 短语串</text>
+<text x="71" y="312" class="body">GPT 保留顺序与并发词</text>
+<text x="71" y="341" class="body">分号分隔各动作单元</text>
+<text x="71" y="370" class="body">不产生逐帧时间标签</text>
+<rect x="430" y="245" width="310" height="150" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="446" y="279" class="head">冻结 T5-base</text>
+<text x="446" y="312" class="body">串联后的短语一起编码</text>
+<text x="446" y="341" class="body">五个可训练残差 MLP</text>
+<text x="446" y="370" class="body">投影到 512 维</text>
+<rect x="815" y="245" width="330" height="150" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="831" y="279" class="head">动作单元聚合</text>
+<text x="831" y="312" class="body">按短语 token 范围池化</text>
+<text x="831" y="341" class="body">另对整段文本全局池化</text>
+<text x="831" y="370" class="body">得到短语特征 + [UNK]</text>
+<path d="M355,320 L430,320" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M740,320 L815,320" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<text x="55" y="465" class="small">[UNK] 是整段文本的全局特征，用于未描述帧；它仍受统一列质量约束。</text>
+<rect x="30" y="565" width="1140" height="660" rx="14" fill="#f5f2fa" stroke="#c1d1db"/>
+<text x="55" y="605" class="head">B · 局部匹配：两路特征 → 成本矩阵 → 传输计划</text>
+<text x="55" y="641" class="small">单个动作—文字候选对内部求一次 P；时间轴是下采样后的动作特征位置。</text>
+<rect x="55" y="685" width="300" height="155" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="71" y="719" class="head">已有真实动作</text>
+<text x="71" y="752" class="body">30 fps 运动序列</text>
+<text x="71" y="781" class="body">预训练 VQ-VAE 编码器</text>
+<text x="71" y="810" class="body">微调时间卷积；下采样 ×4</text>
+<rect x="430" y="685" width="310" height="155" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="446" y="719" class="head">动作特征序列 Zᵐ</text>
+<text x="446" y="752" class="body">连续特征，不查动作码本</text>
+<text x="446" y="781" class="body">对齐有效网格 7.5 fps</text>
+<text x="446" y="810" class="body">与文字特征均做 ℓ₂ 归一化</text>
+<rect x="815" y="685" width="330" height="155" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="831" y="719" class="head">复用 A 区文字特征 Zᵗ</text>
+<text x="831" y="752" class="body">每个短语一个特征</text>
+<text x="831" y="781" class="body">另附加全局 [UNK] 列</text>
+<text x="831" y="810" class="body">数量随文本改变</text>
+<path d="M355,762 L430,762" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="55" y="930" width="300" height="170" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="71" y="964" class="head">局部成本 C</text>
+<text x="71" y="997" class="body">每个时间 × 每个文字单元</text>
+<text x="71" y="1026" class="body">Cᵤᵥ = 1 − cos(zᵐᵤ, zᵗᵥ)</text>
+<text x="71" y="1055" class="body">相似度越高，成本越低</text>
+<rect x="430" y="930" width="310" height="170" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="446" y="964" class="head">Sinkhorn 求解 P</text>
+<text x="446" y="997" class="body">熵正则 ε = 0.1</text>
+<text x="446" y="1026" class="body">50 次前向迭代</text>
+<text x="446" y="1055" class="body">行和 1/Tₘ；列和 1/Tₜ</text>
+<rect x="815" y="930" width="330" height="170" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="831" y="964" class="head">P：软时间—短语对齐</text>
+<text x="831" y="997" class="body">支持并发／多对多关系</text>
+<text x="831" y="1026" class="body">不是硬起止帧或动作时长</text>
+<text x="831" y="1055" class="body">反向传播时对 P 停梯度</text>
+<path d="M587,840 L587,885 L205,885 L205,930" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M980,840 L980,865 L785,865 L785,900 L205,900 L205,930" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M355,1015 L430,1015" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M740,1015 L815,1015" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<text x="55" y="1165" class="small">均匀边际约束质量分配，不强制短语顺序、持续时长或真实动作边界。</text>
+<rect x="30" y="1260" width="1140" height="805" rx="14" fill="#eef6f1" stroke="#c1d1db"/>
+<text x="55" y="1300" class="head">C · 训练与使用分开：片段对比监督 → 新配对的对齐矩阵</text>
+<text x="55" y="1336" class="small">人工时间边界仅进入评估；不用于训练特征，也不作为生成控制器的输入。</text>
+<rect x="55" y="1380" width="300" height="170" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="71" y="1414" class="head">训练：batch 内所有配对</text>
+<text x="71" y="1447" class="body">每个动作 i × 每段文本 j</text>
+<text x="71" y="1476" class="body">分别计算 Pⁱʲ 与 Cⁱʲ</text>
+<text x="71" y="1505" class="body">Lᵢⱼ = −Σ Pⁱʲ Cⁱʲ</text>
+<rect x="430" y="1380" width="310" height="170" rx="14" fill="#eee8fa" stroke="#c1d1db"/>
+<text x="446" y="1414" class="head">双向对比交叉熵</text>
+<text x="446" y="1447" class="body">沿行／列 softmax，τ=.07</text>
+<text x="446" y="1476" class="body">正确样本对在对角线上</text>
+<text x="446" y="1505" class="body">正确配对总成本应更低</text>
+<rect x="815" y="1380" width="330" height="170" rx="14" fill="#e8f3eb" stroke="#c1d1db"/>
+<text x="831" y="1414" class="head">更新可训练部分</text>
+<text x="831" y="1447" class="body">微调动作编码器与文本 MLP</text>
+<text x="831" y="1476" class="body">梯度经 C，不穿过 P 求解</text>
+<text x="831" y="1505" class="body">T5 始终冻结</text>
+<path d="M355,1465 L430,1465" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M740,1465 L815,1465" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="55" y="1630" width="490" height="150" rx="14" fill="#e6f0f8" stroke="#c1d1db"/>
+<text x="71" y="1664" class="head">推理：新动作 + 新文字</text>
+<text x="71" y="1697" class="body">短语预处理 → 特征 → Sinkhorn</text>
+<text x="71" y="1726" class="body">输出 P 热力图与整段配对分数</text>
+<text x="71" y="1755" class="body">没有动作解码或扩散生成支路</text>
+<rect x="635" y="1630" width="510" height="150" rx="14" fill="#fff0d9" stroke="#c1d1db"/>
+<text x="651" y="1664" class="head">独立人工评估：仅 30 对测试样本</text>
+<text x="651" y="1697" class="body">人工开始／结束区间 → 二值矩阵</text>
+<text x="651" y="1726" class="body">再经 Sinkhorn 归一化 → 软 Pᵍᵗ</text>
+<text x="651" y="1755" class="body">人工标签从未加入训练</text>
+<rect x="55" y="1850" width="1090" height="135" rx="14" fill="#fff" stroke="#c1d1db"/>
+<text x="71" y="1884" class="head">比较预测 P 与软化标签：平均元素绝对差</text>
+<text x="71" y="1917" class="body">评估前将 [UNK] 质量归给前一个有效动作单元。</text>
+<text x="71" y="1946" class="body">这是归一化矩阵距离，不是边界秒误差、帧分类准确率或生成成功率。</text>
+<path d="M300,1780 L300,1850" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M890,1780 L890,1850" fill="none" stroke="#668393" stroke-width="2.2" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<text x="40" y="2120" class="small">实线：数据／分数／输出；虚线：仅供评估的人工标签路径。</text>
+<text x="40" y="2165" class="small">依据正式主文图 2、算法 1、§4–5 与补充 §2–3／图 1 原创重绘。</text>
+</svg>
