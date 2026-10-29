@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2080" viewBox="0 0 1200 2080" role="img" aria-labelledby="title desc">
+<title id="title">多层扩散：语义协调、关键帧精修与源动作编辑的完整流程</title>
+<desc id="desc">原创教学图。共享模型从局部关键帧特征拼接和全局文本关键帧交叉注意力预测干净运动。训练使用去噪、关键帧和接触脚速度损失。DDIM推理前期直接更新，末期先按速度比例修正根轨迹再覆盖约束姿态。编辑以DDIM反演与固定点迭代获得源动作噪声，再用新的关键帧采样。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10Z" fill="#397ca9"/></marker><marker id="orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10Z" fill="#c07a2a"/></marker></defs>
+<rect width="1200" height="2080" fill="white"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+<text x="35" y="46" font-size="32" fill="#173851" font-weight="750">多层扩散：把语义协调与关键帧硬约束分开处理</text>
+<text x="35" y="81" font-size="21" fill="#536d80" font-weight="400">CVPR 2026  ·  教学重绘，非论文原图  ·  x 为运动特征序列，关键帧不是图片</text>
+<rect x="18" y="110" width="1164" height="660" rx="18" fill="#f1f7fc" stroke="#d3dee7" stroke-width="1.4"/>
+<text x="40" y="146" font-size="27" fill="#153b56" font-weight="700">A  共享条件模型：局部拼接 + 全局语义协调</text>
+<text x="40" y="179" font-size="20" fill="#567084" font-weight="400">训练、生成与编辑复用同一个去噪模型；下列条件输入均为动作数据或文本。</text>
+<rect x="18" y="790" width="1164" height="310" rx="18" fill="#f3f8ef" stroke="#d3dee7" stroke-width="1.4"/>
+<text x="40" y="826" font-size="27" fill="#153b56" font-weight="700">B  训练：学习运动先验与约束响应</text>
+<text x="40" y="859" font-size="20" fill="#567084" font-weight="400">HumanML3D 重提取为 SMPL-X，30 fps、22 关节、每帧 218 维。</text>
+<rect x="18" y="1120" width="1164" height="540" rx="18" fill="#fff7eb" stroke="#d3dee7" stroke-width="1.4"/>
+<text x="40" y="1156" font-size="27" fill="#153b56" font-weight="700">C  生成：DDIM 50 步，末阶段先轨迹、后姿态精修</text>
+<text x="40" y="1189" font-size="20" fill="#567084" font-weight="400">文本 CFG = 2.5；有 / 无文本的两路都保留关键帧，关键帧条件不额外放大。</text>
+<rect x="18" y="1680" width="1164" height="305" rx="18" fill="#f6f1fa" stroke="#d3dee7" stroke-width="1.4"/>
+<text x="40" y="1716" font-size="27" fill="#153b56" font-weight="700">D  编辑：反演原动作，再带着新关键帧采样</text>
+<text x="40" y="1749" font-size="20" fill="#567084" font-weight="400">不为一次编辑额外训练；论文定量编辑实验不输入文本。</text>
+<path d="M360 250 H420" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M730 250 H830" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M780 250 V490 H575 V515" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M990 310 V350" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M360 410 H420" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M730 410 H830" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M990 470 V515" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M360 570 H420" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M730 570 H830" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M990 670 V690" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M360 950 H420" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M760 950 H830" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M205 1025 V1048 H990 V1025" fill="none" stroke="#c07a2a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 6" marker-end="url(#orange)"/>
+<path d="M310 1290 H350" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M690 1290 H780" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M965 1365 V1435" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M780 1510 H690" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M350 1510 H310" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M735 1290 V1410 H520 V1435" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M330 1510 V1385 H520 V1365" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M350 1845 H410" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M770 1845 H830" fill="none" stroke="#397ca9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="50" y="190" width="310" height="120" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="67" y="221" font-size="23" fill="#183b5a" font-weight="650">关键帧 K 与二值掩码 mₖ</text>
+<text x="67" y="251" font-size="20" fill="#2c4358" font-weight="400">K：N×218 的运动特征约束</text>
+<text x="67" y="278" font-size="20" fill="#2c4358" font-weight="400">未约束项置零，mask 区分未知</text>
+<text x="67" y="305" font-size="20" fill="#2c4358" font-weight="400">部分关节控制也需要根信息</text>
+<rect x="420" y="190" width="310" height="120" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="437" y="221" font-size="23" fill="#183b5a" font-weight="650">逐帧条件编码</text>
+<text x="437" y="251" font-size="20" fill="#2c4358" font-weight="400">[K, mₖ] 沿特征维拼接</text>
+<text x="437" y="278" font-size="20" fill="#2c4358" font-weight="400">MLP → 逐帧 embedding eₖ</text>
+<text x="437" y="305" font-size="20" fill="#2c4358" font-weight="400">一份表征，送入两条条件路径</text>
+<rect x="830" y="190" width="320" height="120" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="847" y="221" font-size="23" fill="#183b5a" font-weight="650">全局关键帧编码</text>
+<text x="847" y="251" font-size="20" fill="#2c4358" font-weight="400">位置编码 + 8 个 learned tokens</text>
+<text x="847" y="278" font-size="20" fill="#2c4358" font-weight="400">mask 过滤 → 4 层 Transformer</text>
+<text x="847" y="305" font-size="20" fill="#2c4358" font-weight="400">输出 8×512 的关键帧特征</text>
+<rect x="50" y="350" width="310" height="120" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="67" y="381" font-size="23" fill="#183b5a" font-weight="650">文本条件 p</text>
+<text x="67" y="411" font-size="20" fill="#2c4358" font-weight="400">例如：走路，然后停下坐下</text>
+<text x="67" y="438" font-size="20" fill="#2c4358" font-weight="400">提供动作意图与整体语义</text>
+<text x="67" y="465" font-size="20" fill="#2c4358" font-weight="400">不自动生成编辑目标关键帧</text>
+<rect x="420" y="350" width="310" height="120" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="437" y="381" font-size="23" fill="#183b5a" font-weight="650">文本条件编码</text>
+<text x="437" y="411" font-size="20" fill="#2c4358" font-weight="400">预训练 CLIP token embeddings</text>
+<text x="437" y="438" font-size="20" fill="#2c4358" font-weight="400">4 层 Transformer + 8 tokens</text>
+<text x="437" y="465" font-size="20" fill="#2c4358" font-weight="400">输出 8×512 的文本特征</text>
+<rect x="830" y="350" width="320" height="120" rx="13" fill="#e8f2fb" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="847" y="381" font-size="23" fill="#183b5a" font-weight="650">全局条件：16×512</text>
+<text x="847" y="411" font-size="20" fill="#2c4358" font-weight="400">两组特征沿 token 维拼接</text>
+<text x="847" y="438" font-size="20" fill="#2c4358" font-weight="400">作为 cross-attention 的 K / V</text>
+<text x="847" y="465" font-size="20" fill="#2c4358" font-weight="400">U-Net 运动特征作为 Q</text>
+<rect x="50" y="515" width="310" height="110" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="67" y="546" font-size="23" fill="#183b5a" font-weight="650">噪声运动 xₜ 与时间 t</text>
+<text x="67" y="576" font-size="20" fill="#2c4358" font-weight="400">xₜ 经 MLP 投影；t 为扩散时间</text>
+<text x="67" y="603" font-size="20" fill="#2c4358" font-weight="400">每一帧均为运动特征向量</text>
+<rect x="420" y="515" width="310" height="110" rx="13" fill="#e8f2fb" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="437" y="546" font-size="23" fill="#183b5a" font-weight="650">局部条件路径</text>
+<text x="437" y="576" font-size="20" fill="#2c4358" font-weight="400">xₜ 投影与同帧 eₖ 按特征拼接</text>
+<text x="437" y="603" font-size="20" fill="#2c4358" font-weight="400">时间卷积传播到邻近过渡</text>
+<rect x="830" y="515" width="320" height="155" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="847" y="546" font-size="23" fill="#183b5a" font-weight="650">Conv1D U-Net</text>
+<text x="847" y="576" font-size="20" fill="#2c4358" font-weight="400">接收局部输入与全局注意力</text>
+<text x="847" y="603" font-size="20" fill="#2c4358" font-weight="400">基础通道 512；使用 AdaGN</text>
+<text x="847" y="630" font-size="20" fill="#2c4358" font-weight="400">扩散时间 t 也输入去噪模型</text>
+<text x="847" y="657" font-size="20" fill="#2c4358" font-weight="400">输出 clean-motion 估计 x̂₀</text>
+<rect x="50" y="690" width="1100" height="44" rx="13" fill="#e8f2fb" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="67" y="721" font-size="23" fill="#183b5a" font-weight="650">x̂₀ 只是学习模型的预测；精确关键帧由 C 区的显式推理精修落实。</text>
+<text x="50" y="756" font-size="20" fill="#506c82" font-weight="400">218D = 世界系根位置 / 旋转 + 根相对关节位置 / 父关节相对旋转 + 接触 + 体型；不是速度型训练表示。</text>
+<rect x="50" y="875" width="310" height="150" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="67" y="906" font-size="23" fill="#183b5a" font-weight="650">真实动作 x₀ → 加噪 xₜ</text>
+<text x="67" y="936" font-size="20" fill="#2c4358" font-weight="400">随机抽取帧、再抽取关节</text>
+<text x="67" y="963" font-size="20" fill="#2c4358" font-weight="400">保留相应完整特征形成 K / mₖ</text>
+<text x="67" y="990" font-size="20" fill="#2c4358" font-weight="400">文本与关键帧各独立 10% 置空</text>
+<text x="67" y="1017" font-size="20" fill="#2c4358" font-weight="400">训练噪声日程：1000 步 cosine</text>
+<rect x="420" y="875" width="340" height="150" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="437" y="906" font-size="23" fill="#183b5a" font-weight="650">复用 A 区条件模型</text>
+<text x="437" y="936" font-size="20" fill="#2c4358" font-weight="400">输入 xₜ、t、文本、K / mₖ</text>
+<text x="437" y="963" font-size="20" fill="#2c4358" font-weight="400">预测整段干净运动 x̂₀</text>
+<text x="437" y="990" font-size="20" fill="#2c4358" font-weight="400">训练阶段不依赖末期硬覆盖</text>
+<text x="437" y="1017" font-size="20" fill="#2c4358" font-weight="400">优化模型响应与运动先验</text>
+<rect x="830" y="875" width="320" height="150" rx="13" fill="#eaf5e4" stroke="#a4b995" stroke-width="1.8"/>
+<text x="847" y="906" font-size="23" fill="#183b5a" font-weight="650">联合监督损失</text>
+<text x="847" y="936" font-size="20" fill="#2c4358" font-weight="400">L = Ldiff + Lkey + Lfoot</text>
+<text x="847" y="963" font-size="20" fill="#2c4358" font-weight="400">整段去噪 MSE + 关键帧误差</text>
+<text x="847" y="990" font-size="20" fill="#2c4358" font-weight="400">接触脚的相邻帧位置差分惩罚</text>
+<text x="847" y="1017" font-size="20" fill="#2c4358" font-weight="400">λkey = λfoot = 1</text>
+<text x="390" y="1043" font-size="20" fill="#9a691e" font-weight="400">真实动作 / 约束作为监督目标</text>
+<text x="50" y="1081" font-size="20" fill="#536c4c" font-weight="400">论文训练配置：batch 64、500K iterations、Adam、EMA；未披露训练 GPU 型号或完整时长。</text>
+<rect x="50" y="1225" width="260" height="140" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="67" y="1256" font-size="23" fill="#183b5a" font-weight="650">生成起点</text>
+<text x="67" y="1286" font-size="20" fill="#2c4358" font-weight="400">高斯噪声 xT</text>
+<text x="67" y="1313" font-size="20" fill="#2c4358" font-weight="400">目标文本 + K / mₖ</text>
+<text x="67" y="1340" font-size="20" fill="#2c4358" font-weight="400">进入 50 步去噪循环</text>
+<rect x="350" y="1225" width="340" height="140" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="367" y="1256" font-size="23" fill="#183b5a" font-weight="650">复用 A：预测 x̂₀</text>
+<text x="367" y="1286" font-size="20" fill="#2c4358" font-weight="400">有文本 / 无文本预测做 CFG</text>
+<text x="367" y="1313" font-size="20" fill="#2c4358" font-weight="400">K / mₖ 在两路始终保留</text>
+<text x="367" y="1340" font-size="20" fill="#2c4358" font-weight="400">条件是软引导，尚非硬对齐</text>
+<rect x="780" y="1225" width="370" height="140" rx="13" fill="#fff0d8" stroke="#c7aa7b" stroke-width="1.8"/>
+<text x="797" y="1256" font-size="23" fill="#183b5a" font-weight="650">① 根轨迹精修（末阶段）</text>
+<text x="797" y="1286" font-size="20" fill="#2c4358" font-weight="400">逐轴权重 |v̂| / Σ|v̂| 分配端点误差</text>
+<text x="797" y="1313" font-size="20" fill="#2c4358" font-weight="400">由已对齐起点逐段积分</text>
+<text x="797" y="1340" font-size="20" fill="#2c4358" font-weight="400">替换根轨迹，得到 x̃₀</text>
+<text x="350" y="1407" font-size="20" fill="#426c88" font-weight="400">下一步</text>
+<text x="570" y="1398" font-size="20" fill="#426c88" font-weight="400">前期跳过精修</text>
+<rect x="780" y="1435" width="370" height="150" rx="13" fill="#fff0d8" stroke="#c7aa7b" stroke-width="1.8"/>
+<text x="797" y="1466" font-size="23" fill="#183b5a" font-weight="650">② 姿态精修（末阶段）</text>
+<text x="797" y="1496" font-size="20" fill="#2c4358" font-weight="400">x̄₀ = K⊙mₖ + x̃₀⊙(1−mₖ)</text>
+<text x="797" y="1523" font-size="20" fill="#2c4358" font-weight="400">受约束特征直接写回目标值</text>
+<text x="797" y="1550" font-size="20" fill="#2c4358" font-weight="400">其余特征采用轨迹修正结果</text>
+<text x="797" y="1577" font-size="20" fill="#2c4358" font-weight="400">顺序：轨迹在先，姿态回填在后</text>
+<rect x="350" y="1435" width="340" height="150" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="367" y="1466" font-size="23" fill="#183b5a" font-weight="650">DDIM 更新下一状态</text>
+<text x="367" y="1496" font-size="20" fill="#2c4358" font-weight="400">用 xₜ 与当前 x₀ 估计计算 ε</text>
+<text x="367" y="1523" font-size="20" fill="#2c4358" font-weight="400">更新到下一去噪状态 xₛ</text>
+<text x="367" y="1550" font-size="20" fill="#2c4358" font-weight="400">前期：用 x̂₀；末期：用 x̄₀</text>
+<text x="367" y="1577" font-size="20" fill="#2c4358" font-weight="400">继续循环，直到最终动作</text>
+<rect x="50" y="1435" width="260" height="150" rx="13" fill="#fff" stroke="#a8bfd4" stroke-width="1.8"/>
+<text x="67" y="1466" font-size="23" fill="#183b5a" font-weight="650">输出动作序列</text>
+<text x="67" y="1496" font-size="20" fill="#2c4358" font-weight="400">x₀ ∈ Rᴺˣ²¹⁸</text>
+<text x="67" y="1523" font-size="20" fill="#2c4358" font-weight="400">满足已施加的关键帧约束</text>
+<text x="67" y="1550" font-size="20" fill="#2c4358" font-weight="400">0 约束误差不等于</text>
+<text x="67" y="1577" font-size="20" fill="#2c4358" font-weight="400">零脚滑或零抖动</text>
+<text x="50" y="1633" font-size="20" fill="#795c37" font-weight="400">轨迹公式需要有效分母与起点对齐；补充算法的阈值与状态同步细节存在歧义，正文单列说明。</text>
+<rect x="50" y="1780" width="300" height="130" rx="13" fill="#fff" stroke="#bda5cb" stroke-width="1.8"/>
+<text x="67" y="1811" font-size="23" fill="#183b5a" font-weight="650">输入源动作 x₀</text>
+<text x="67" y="1841" font-size="20" fill="#2c4358" font-weight="400">原动作提供语义与动态线索</text>
+<text x="67" y="1868" font-size="20" fill="#2c4358" font-weight="400">不需要成对编辑数据重新训练</text>
+<text x="67" y="1895" font-size="20" fill="#2c4358" font-weight="400">不是把动作转换为文字计划</text>
+<rect x="410" y="1780" width="360" height="130" rx="13" fill="#f1e9f7" stroke="#bda5cb" stroke-width="1.8"/>
+<text x="427" y="1811" font-size="23" fill="#183b5a" font-weight="650">DDIM 反演 → 源噪声 xT</text>
+<text x="427" y="1841" font-size="20" fill="#2c4358" font-weight="400">50 步；每步 1 次 fixed-point 迭代</text>
+<text x="427" y="1868" font-size="20" fill="#2c4358" font-weight="400">反演过程不提供关键帧条件</text>
+<text x="427" y="1895" font-size="20" fill="#2c4358" font-weight="400">减小反演误差，近似保留源语义</text>
+<rect x="830" y="1780" width="320" height="130" rx="13" fill="#f1e9f7" stroke="#bda5cb" stroke-width="1.8"/>
+<text x="847" y="1811" font-size="23" fill="#183b5a" font-weight="650">新 K / mₖ → 复用 C</text>
+<text x="847" y="1841" font-size="20" fill="#2c4358" font-weight="400">从源噪声开始，再去噪 50 步</text>
+<text x="847" y="1868" font-size="20" fill="#2c4358" font-weight="400">人工修改的目标关键帧驱动编辑</text>
+<text x="847" y="1895" font-size="20" fill="#2c4358" font-weight="400">得到满足目标的编辑动作</text>
+<text x="50" y="1955" font-size="20" fill="#6e547f" font-weight="400">要严格保留一段：把该段每一帧都列为关键帧；未被列出的帧不因反演而获得数值不变保证。</text>
+<text x="35" y="2021" font-size="20" fill="#576d7d" font-weight="400">依据：正式主文 §3–4、图 3–4、式 1–6；正式补充 §8–10、算法 1–2。</text>
+<text x="35" y="2054" font-size="20" fill="#576d7d" font-weight="400">图按论文方法重绘；没有运行模型，也不将公开展示等同于已验证的工程实现。</text>
+</g></svg>
