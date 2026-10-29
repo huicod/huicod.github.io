@@ -40,7 +40,7 @@ tags: ["Character-Control", "Sparse-Tracking", "Discrete-Representation", "Virtu
 
 **切入角度：** 用输出动作的自编码路径学习“有哪些动作答案”，再用独立输入编码器学习“当前条件下每种答案有多大可能”。两条路径在训练中匹配类别表示，测试时仅保留输入路径和共享解码器。
 
-**核心 idea：** **把歧义留在候选选择中，而不是留在平均后的动作里。** 相同输入可以采样出不同短序列；系统根据当前姿态选择衔接合适的候选并前进一帧，再用更新后的控制信号继续预测。动作表示因此从训练之初就面向控制任务，而不是先训练一个完全独立的先验，再另学如何使用它。[主文 §1、§3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=2)
+**核心 idea：** **把歧义留在候选选择中，而不是留在平均后的动作里。** 相同输入可以采样出不同短序列；系统根据当前姿态选择衔接合适的候选并前进一帧，再用更新后的控制信号继续预测。动作表示因此从训练之初就面向控制任务，而不是先训练一个完全独立的先验，再另学如何使用它。[主文 §1、§3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=2)
 
 <span id="reading-3" class="reading-anchor"></span>
 
@@ -65,7 +65,7 @@ tags: ["Character-Control", "Sparse-Tracking", "Discrete-Representation", "Virtu
 
    这是一组类别选择的组合，**不是从 1024 条动作中选一条，也不是 NCP 那种在 K 个可训练连续向量中找最近邻**。每一行选一个类别，拼成完整离散表示，再共同决定输出短序列。组合数量不等于实际已经学会的动作数量，也不保证任意类别组合都对应高质量动作。
 
-   解码目标是未来约半秒的短序列，而非单帧。短序列同时包含当前时刻和后续状态，帮助控制器选择有后继动作的接入点；类别表示约束了自回归过程中可以到达的潜在区域，降低连续表示逐步漂离训练分布的风险，但并不构成不会漂移的数学保证。[§3.1、§5](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=4)
+   解码目标是未来约半秒的短序列，而非单帧。短序列同时包含当前时刻和后续状态，帮助控制器选择有后继动作的接入点；类别表示约束了自回归过程中可以到达的潜在区域，降低连续表示逐步漂离训练分布的风险，但并不构成不会漂移的数学保证。[§3.1、§5](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=4)
 
 2. **独立编码控制条件，通过匹配损失把“查什么”与“能生成什么”一起学。**
 
@@ -79,13 +79,13 @@ tags: ["Character-Control", "Sparse-Tracking", "Discrete-Representation", "Virtu
 
    这里的关键不只是“有两个编码器”，而是**两条路径同时训练，匹配信号可以影响表示的形成**。如果先将动作先验训练并冻结，控制编码器只能适应既有潜空间；联合学习则让潜空间也考虑哪些区分容易从控制信号中预测。它没有 NCP 那种“先模仿、再蒸馏、再训练任务策略”的冻结流程，也不使用任务奖励或 PPO。
 
-   论文采用 Gumbel-Softmax 的类别重参数化与直通梯度，而不是普通 VQ-VAE 所需的额外码本距离/commitment 损失。下文会单列公开代码与式 1–5 的具体差别，避免把概念图当成当前实现的逐行复刻。[§3.2–3.3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=4)
+   论文采用 Gumbel-Softmax 的类别重参数化与直通梯度，而不是普通 VQ-VAE 所需的额外码本距离/commitment 损失。下文会单列公开代码与式 1–5 的具体差别，避免把概念图当成当前实现的逐行复刻。[§3.2–3.3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=4)
 
 3. **先预测短期控制轨迹，让下半身有可用的前瞻信息。**
 
    直接从追踪历史回归动作，容易在急转弯、抬手、下蹲等变化发生后才被动补腿部动作。本文从过去 0.5 秒的三点位置、旋转和速度预测未来 0.5 秒的上半身与根部运动；论文分别用 31 个采样点表示这两个半秒窗口。随后下半身控制只抽取未来 0.1–0.5 秒的 5 个控制采样点。
 
-   控制特征包括根部线速度、角速度、髋部位置、上半身中心与朝向。这样模型得到的是一个对“接下来身体大致怎样移动”的估计，而不是对真实未来的读取。预测会犯错，错误也可能传到脚步选择；它的优势是无需等待真实未来窗口填满，因此不会人为引入同长度的前视等待。[§4，Stage 1–2](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=6)
+   控制特征包括根部线速度、角速度、髋部位置、上半身中心与朝向。这样模型得到的是一个对“接下来身体大致怎样移动”的估计，而不是对真实未来的读取。预测会犯错，错误也可能传到脚步选择；它的优势是无需等待真实未来窗口填满，因此不会人为引入同长度的前视等待。[§4，Stage 1–2](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=6)
 
 4. **从同一条件采样多个候选，在动作空间挑衔接点，再只推进一帧。**
 
@@ -93,13 +93,13 @@ tags: ["Character-Control", "Sparse-Tracking", "Discrete-Representation", "Virtu
 
    例如，两个候选都能支持身体向右移动，但一个从左腿支撑开始、另一个从右腿支撑开始。当前角色正在左腿支撑时，选择衔接更近的候选可以减少突然换脚。**采样负责提供可能性，动作空间匹配负责当前连续性**，二者并不相同。
 
-   默认思路是逐帧重新预测，以响应新的用户输入；也可以沿已选序列连续执行多帧再重算，节约计算并平滑动作，但会降低对新控制的反应速度。论文称 10–20 个候选在其应用中效果较好，耗时随候选数变化，不能把每次生成固定解释为一条序列的一次前向。[§3.2、§4 Stage 2、§5](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=5)
+   默认思路是逐帧重新预测，以响应新的用户输入；也可以沿已选序列连续执行多帧再重算，节约计算并平滑动作，但会降低对新控制的反应速度。论文称 10–20 个候选在其应用中效果较好，耗时随候选数变化，不能把每次生成固定解释为一条序列的一次前向。[§3.2、§4 Stage 2、§5](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=5)
 
 5. **先生成支撑身体的下半身，再融合上半身，而不是把腿拖到追踪结果下面。**
 
    下半身状态包含根部水平变换、局部关节位置/旋转/速度、足部接触标签与根部锁定标签。模型先产生能支撑预测上半身运动的腿部和髋部，再进行全身融合。
 
-   纯三点跟踪时，论文将预测上半身与生成下半身融合，并用 IK 匹配头、腕和髋部位置。混合控制时，用户可能现实中不走、虚拟世界中却在跑，此时直接贴合真实上身会显得不自然；系统用下半身历史与追踪位置预测上半身，并以 0.5 秒过渡在两种融合方式间切换。**IK 是运行系统的后处理环节，不能把表中的追踪精度全部归因于离散潜空间。**[§4 Stage 3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=6)
+   纯三点跟踪时，论文将预测上半身与生成下半身融合，并用 IK 匹配头、腕和髋部位置。混合控制时，用户可能现实中不走、虚拟世界中却在跑，此时直接贴合真实上身会显得不自然；系统用下半身历史与追踪位置预测上半身，并以 0.5 秒过渡在两种融合方式间切换。**IK 是运行系统的后处理环节，不能把表中的追踪精度全部归因于离散潜空间。**[§4 Stage 3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=6)
 
 6. **混合控制在轨迹层组合意图，允许虚拟动作有意偏离现实追踪。**
 
@@ -107,13 +107,13 @@ tags: ["Character-Control", "Sparse-Tracking", "Discrete-Representation", "Virtu
 
    <div class="equation">T<sup>*</sup><sub>F</sub> = R<sub>F</sub> · T<sup>+</sup><sub>F</sub>。</div>
 
-   因而一个站着举枪的用户可以在虚拟世界里边走边瞄准。这里的“保留动作语境”不是严格保持所有头手坐标：为生成协调的虚拟行走或运动，系统允许位置和朝向偏移，论文表 4 专门报告这种偏离。不能把 hybrid 模式同时描述为“任意虚拟移动”与“全部现实追踪点精确不变”。[§4 Stage 1、§6.3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=9)
+   因而一个站着举枪的用户可以在虚拟世界里边走边瞄准。这里的“保留动作语境”不是严格保持所有头手坐标：为生成协调的虚拟行走或运动，系统允许位置和朝向偏移，论文表 4 专门报告这种偏离。不能把 hybrid 模式同时描述为“任意虚拟移动”与“全部现实追踪点精确不变”。[§4 Stage 1、§6.3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=9)
 
 7. **碰撞规避是同一学习思想的额外应用，不是主控制器自带的物理安全保证。**
 
    论文另构造“几何条件 → 无碰撞姿态”的训练任务：用简单碰撞体近似人体，占据人体的体素置零，其余体素随机填入噪声，形成环绕这个合法姿态的虚拟几何；再随机扰动关节目标，将这些几何和目标作为输入，原始合法姿态作为输出，训练类别匹配模型。
 
-   它不需要先收集大量真实障碍物模型，也能在示例中调整身体和手指避让球体、椅子或自身部位。但这是另一种输入/输出定义和训练数据构造，没有给出普适的碰撞率或几何安全证明，不能把所有主实验动作都当成经过严格防穿透验证。[§6.5，图 14–15](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=10)
+   它不需要先收集大量真实障碍物模型，也能在示例中调整身体和手指避让球体、椅子或自身部位。但这是另一种输入/输出定义和训练数据构造，没有给出普适的碰撞率或几何安全证明，不能把所有主实验动作都当成经过严格防穿透验证。[§6.5，图 14–15](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=10)
 
 ### 一个完整例子
 
@@ -141,7 +141,7 @@ tags: ["Character-Control", "Sparse-Tracking", "Discrete-Representation", "Virtu
 | 训练预算 | 原文报告 RTX 4090 约 1 天；不是 NCP 的物理仿真强化学习预算 |
 | 运行 | ONNX + Unity Sentis；目标动画频率 30 Hz，报告约 3 ms/帧，全部网络约 25 MB |
 
-以上来自[主文 §4–5，第 6 页](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=6)。论文在同段给训练硬件和推理耗时，但没有分解传感器采集、传输、渲染、设备显示的端到端延迟；3 ms 还随候选采样数量变化。因此，原文的“zero delay”应理解为**不等待真实未来追踪帧的算法接口**，不是系统物理延迟为零，也不是所有头显设备上都已验证 3 ms。
+以上来自[主文 §4–5，第 6 页](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=6)。论文在同段给训练硬件和推理耗时，但没有分解传感器采集、传输、渲染、设备显示的端到端延迟；3 ms 还随候选采样数量变化。因此，原文的“zero delay”应理解为**不等待真实未来追踪帧的算法接口**，不是系统物理延迟为零，也不是所有头显设备上都已验证 3 ms。
 
 **训练中没有冻结动作先验再适配控制器的阶段。** 下半身模型的两个编码器与共享解码器联合优化；推理丢弃目标动作编码路径。控制预测、上身融合等辅助网络也需要训练，不是所有模块共享一个端到端大网络、一个权重文件。
 
@@ -168,7 +168,7 @@ tags: ["Character-Control", "Sparse-Tracking", "Discrete-Representation", "Virtu
 | Motion Detail，deg/s | 61.2 | 55.8 |
 | Motion Jitter，mm/s ↓ | 2.9 | 1.4 |
 
-路径含尖锐转向和不同速度。CM 的位置、旋转误差与抖动更低，但 Motion Detail 为 55.8，低于 MM 的 61.2，不能将其解释为四项都优于数据库方法。原文 §6.1 将这组数据误称为 Table 2，实际对应表 1；单位按原表保留，尤其 Jitter 写的是 mm/s，不能自行替换成常见的三阶 jerk 单位。[表 1、图 7](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=7)
+路径含尖锐转向和不同速度。CM 的位置、旋转误差与抖动更低，但 Motion Detail 为 55.8，低于 MM 的 61.2，不能将其解释为四项都优于数据库方法。原文 §6.1 将这组数据误称为 Table 2，实际对应表 1；单位按原表保留，尤其 Jitter 写的是 mm/s，不能自行替换成常见的三阶 jerk 单位。[表 1、图 7](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=7)
 
 **表 2：三点跟踪，原文第 8 页。每格为“平均跟踪误差 cm / Motion Detail deg/s”。**
 
@@ -183,7 +183,7 @@ tags: ["Character-Control", "Sparse-Tracking", "Discrete-Representation", "Virtu
 | Tennis | 14.6 / 22.9 | 3.9 / 22.3 | 0.7 / 19.2 | 0.5 / 33.1 |
 | Beatsaber | 11.4 / 14.9 | 3.6 / 13.1 | 0.4 / 13.6 | 0.5 / 24.6 |
 
-PNN 使用 DeepPhase 特征。CM 在这些行保留较多关节运动细节，但 Jumping 的跟踪误差 0.6 高于 CVAE 的 0.5，Beatsaber 为 0.5 对 0.4；Gestures 则同为 0.2。结果支持跟踪与动作细节之间的改善组合，**不是所有动作上跟踪误差都严格最低**。[表 2](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=8)
+PNN 使用 DeepPhase 特征。CM 在这些行保留较多关节运动细节，但 Jumping 的跟踪误差 0.6 高于 CVAE 的 0.5，Beatsaber 为 0.5 对 0.4；Gestures 则同为 0.2。结果支持跟踪与动作细节之间的改善组合，**不是所有动作上跟踪误差都严格最低**。[表 2](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=8)
 
 **表 3：与专用三点跟踪方法比较 Motion Detail，单位 deg/s，原文第 9 页。**
 
@@ -195,7 +195,7 @@ PNN 使用 DeepPhase 特征。CM 在这些行保留较多关节运动细节，�
 | Crouching | 41.3 | 9.2 | 13.2 | 33.2 |
 | Unstructured | 35.6 | 17.5 | 20.2 | 32.7 |
 
-在上身摆动信息少的 Static Arm Walk 中，CM 更接近 GT 的运动幅度，体现了自回归下半身选择的价值。但表 3 只比较动作细节，不提供这些方法同表的全身姿态误差、跟踪误差、物理接触误差或用户偏好，不能据此宣布所有三点重建质量指标领先。[表 3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=9)
+在上身摆动信息少的 Static Arm Walk 中，CM 更接近 GT 的运动幅度，体现了自回归下半身选择的价值。但表 3 只比较动作细节，不提供这些方法同表的全身姿态误差、跟踪误差、物理接触误差或用户偏好，不能据此宣布所有三点重建质量指标领先。[表 3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=9)
 
 **表 4：混合控制相对头/手追踪位置与朝向的偏移，原文第 10 页。**
 
@@ -210,7 +210,7 @@ PNN 使用 DeepPhase 特征。CM 在这些行保留较多关节运动细节，�
 | Tennis | 8.1 | 6.9 |
 | Beatsaber | 7.6 | 8.0 |
 
-这些值是将现实上身行为转成协调虚拟移动时出现的偏移；它们说明 hybrid 控制允许改变结果，而不是一个必须降到零的纯三点还原实验。尤其 Crouching 达到 16.3 cm/12.1°，不能在方法介绍中省略这一代价。[表 4、§6.3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=10)
+这些值是将现实上身行为转成协调虚拟移动时出现的偏移；它们说明 hybrid 控制允许改变结果，而不是一个必须降到零的纯三点还原实验。尤其 Crouching 达到 16.3 cm/12.1°，不能在方法介绍中省略这一代价。[表 4、§6.3](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=10)
 
 | 指标或协议 | 正确读法 |
 |---|---|
@@ -237,9 +237,9 @@ PNN 使用 DeepPhase 特征。CM 在这些行保留较多关节运动细节，�
 
 **去掉端到端联合训练。** 将动作先验与控制学习分开，细节降到 19.6，支持控制信息参与潜空间形成的作用。这不意味着所有两阶段模型都会更差，结论仅限作者此处对照配置。
 
-**去掉离散潜空间。** 换成连续潜在结构，细节降到 14.6，是表中变化最大的项；作者观察到输入编码结果更难保持在合适动作分布内，出现漂移。表中没有每项置信区间、完整误差/耗时对照，不能只凭这一项就保证离散化不会引入其他取舍。[表 5、§6.6](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=11)
+**去掉离散潜空间。** 换成连续潜在结构，细节降到 14.6，是表中变化最大的项；作者观察到输入编码结果更难保持在合适动作分布内，出现漂移。表中没有每项置信区间、完整误差/耗时对照，不能只凭这一项就保证离散化不会引入其他取舍。[表 5、§6.6](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=11)
 
-**附录 A：歧义函数与外推反例。** 作者构造 <em>Y = B·X·t²</em>，其中 B 随机取 ±1，X ∈ [0,1] 只指定陡峭程度；输出是在 t ∈ [−2,2] 上的 100 个点。相同 X 对应向上或向下两条合法曲线，逐点平均会得到不合法的平坦结果。CM 能在两种分支之间做一致选择，并在已见样本间插值；但把输入放大 8 倍时，作者明确指出它**也不能外推到训练范围之外**。这一实验解释多解问题，没有新增动作基准数值表，不应从图 17–19 编造定量准确率。[附录 A，第 13–14 页](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=14)
+**附录 A：歧义函数与外推反例。** 作者构造 <em>Y = B·X·t²</em>，其中 B 随机取 ±1，X ∈ [0,1] 只指定陡峭程度；输出是在 t ∈ [−2,2] 上的 100 个点。相同 X 对应向上或向下两条合法曲线，逐点平均会得到不合法的平坦结果。CM 能在两种分支之间做一致选择，并在已见样本间插值；但把输入放大 8 倍时，作者明确指出它**也不能外推到训练范围之外**。这一实验解释多解问题，没有新增动作基准数值表，不应从图 17–19 编造定量准确率。[附录 A，第 13–14 页](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=14)
 
 ### 关键发现
 
@@ -272,7 +272,7 @@ PNN 使用 DeepPhase 特征。CM 在这些行保留较多关节运动细节，�
 
 ## 相关工作与启发
 
-- **Motion Matching：** 从数据库检索与当前状态、控制条件相近的短动作，再沿序列推进。本文保留“候选—选择—推进”的思想，但候选由类别模型生成，不需要运行时保留完整动作数据库；它也没有因此变成检索增强语言模型。[论文 §7.1](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/master/Media/SIGGRAPH_2024/Paper.pdf#page=11)
+- **Motion Matching：** 从数据库检索与当前状态、控制条件相近的短动作，再沿序列推进。本文保留“候选—选择—推进”的思想，但候选由类别模型生成，不需要运行时保留完整动作数据库；它也没有因此变成检索增强语言模型。[论文 §7.1](https://raw.githubusercontent.com/sebastianstarke/AI4Animation/98aff6c87d73e4af0cbf50df2586f58532475662/Media/SIGGRAPH_2024/Paper.pdf#page=11)
 - **DeepPhase（SIGGRAPH 2022）：** 用周期自编码器学习动作相位特征，本文 PNN 对照使用其表示。Codebook Matching 的主要区别是把控制查询与类别动作表示联合训练，而不是学习一个可用于控制的相位空间；二者不能只因为都有潜变量就视为同一种控制机制。[官方项目](https://github.com/sebastianstarke/AI4Animation#siggraph-2022)
 - **NCP（SIGGRAPH Asia 2023）：** 同样用离散表示组织动作，但 NCP 是物理仿真中的模仿 RL、状态条件先验与任务上层策略；本文是监督学习的运动学动画、组合类别采样与生成候选衔接，不输出 PD 目标或物理力矩。[本站解读](/blog/siggraphasia2023-ncp/)、[原论文](https://tencent-roboticsx.github.io/NCP/static/pdfs/NCP.pdf)
 - **AvatarPoser / AGRoL：** 面向稀疏追踪的全身动作恢复，分别是本文的专用三点方法对照。表 3 只比较动作细节；本文加入未来控制估计与自回归下半身选择，不能把该表扩大成所有重建指标的全面优劣。[AvatarPoser 原论文](https://arxiv.org/abs/2207.13784)、[AGRoL 原论文](https://arxiv.org/abs/2304.08577)
