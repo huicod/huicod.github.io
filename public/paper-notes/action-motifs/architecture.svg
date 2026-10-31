@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1404" viewBox="0 0 1200 1404" role="img" aria-labelledby="title desc"><title id="title">Action Motifs · 从帧到动作母题</title><desc id="desc">A4Mer，CVPR 2026 · 可变长分段、潜在预测与三个下游任务</desc><defs><marker id="end" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#42617a"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#173247}.main{font-size:39px;font-weight:700}.head{font-size:29px;font-weight:700}.card{font-size:23px;font-weight:700}.line{font-size:21px}.sub{font-size:20px;fill:#365267}.edge{fill:none;stroke:#42617a;stroke-width:3;marker-end:url(#end)}</style><rect width="1200" height="1404" rx="20" fill="#f6f8fa"/>
+<text x="39" y="57" class="main" text-anchor="start">Action Motifs · 从帧到动作母题</text>
+<text x="41" y="96" class="sub" text-anchor="start">A4Mer，CVPR 2026 · 可变长分段、潜在预测与三个下游任务</text>
+<rect x="24" y="122" width="1152" height="244" rx="16" fill="#ffffff" stroke="#d7e1e6" stroke-width="2"/>
+<text x="50" y="170" class="head" text-anchor="start">A　一级训练与母题分段</text>
+<text x="51" y="208" class="sub" text-anchor="start">30 fps 轨迹检测边界，5 fps 输入模型。先学原子，再离线挖掘可复用的组合。</text>
+<rect x="49" y="233" width="338" height="112" rx="16" fill="#e8f2fa" stroke="#b8cbd1" stroke-width="2"/>
+<text x="218" y="268" class="card" text-anchor="middle">连续 3D 姿态</text>
+<text x="218" y="301" class="line" text-anchor="middle">线性外推局部关节位置</text>
+<text x="218" y="331" class="line" text-anchor="middle">误差转折 → 原子边界</text>
+<rect x="431" y="233" width="338" height="112" rx="16" fill="#e8f2fa" stroke="#b8cbd1" stroke-width="2"/>
+<text x="600" y="268" class="card" text-anchor="middle">一级 A4Mer</text>
+<text x="600" y="301" class="line" text-anchor="middle">段内帧汇成原子向量</text>
+<text x="600" y="331" class="line" text-anchor="middle">LatentFormer 读原子序列</text>
+<rect x="813" y="233" width="338" height="112" rx="16" fill="#e8f2fa" stroke="#b8cbd1" stroke-width="2"/>
+<text x="982" y="268" class="card" text-anchor="middle">离线发现母题边界</text>
+<text x="982" y="301" class="line" text-anchor="middle">512 簇 → GSP 频繁原子串</text>
+<text x="982" y="331" class="line" text-anchor="middle">动态规划求非重叠覆盖</text>
+<path d="M388 289H427" class="edge"/>
+<path d="M770 289H809" class="edge"/>
+<rect x="24" y="383" width="1152" height="244" rx="16" fill="#ffffff" stroke="#d7e1e6" stroke-width="2"/>
+<text x="50" y="431" class="head" text-anchor="start">B　两层表示与联合预训练</text>
+<text x="51" y="469" class="sub" text-anchor="start">Encoder 做段内自注意力，池化查询交叉读取本段。LatentFormer 再做段间自注意力。</text>
+<rect x="49" y="494" width="338" height="112" rx="16" fill="#e4f3ed" stroke="#b8cbd1" stroke-width="2"/>
+<text x="218" y="529" class="card" text-anchor="middle">一级 Encoder</text>
+<text x="218" y="562" class="line" text-anchor="middle">姿态帧组成一个原子段</text>
+<text x="218" y="592" class="line" text-anchor="middle">每段汇成一个连续 token</text>
+<rect x="431" y="494" width="338" height="112" rx="16" fill="#e4f3ed" stroke="#b8cbd1" stroke-width="2"/>
+<text x="600" y="529" class="card" text-anchor="middle">一级上下文 → 二级 Encoder</text>
+<text x="600" y="562" class="line" text-anchor="middle">按 A 的模式边界聚合原子</text>
+<text x="600" y="592" class="line" text-anchor="middle">每个母题得到一个 token</text>
+<rect x="813" y="494" width="338" height="112" rx="16" fill="#e4f3ed" stroke="#b8cbd1" stroke-width="2"/>
+<text x="982" y="529" class="card" text-anchor="middle">二级 LatentFormer</text>
+<text x="982" y="562" class="line" text-anchor="middle">在母题序列间建模上下文</text>
+<text x="982" y="592" class="line" text-anchor="middle">每段输出一枚连续向量</text>
+<path d="M388 550H427" class="edge"/>
+<path d="M770 550H809" class="edge"/>
+<rect x="24" y="644" width="1152" height="344" rx="16" fill="#ffffff" stroke="#d7e1e6" stroke-width="2"/>
+<text x="50" y="692" class="head" text-anchor="start">C　遮挡学习信号</text>
+<text x="51" y="730" class="sub" text-anchor="start">两次训练都用潜在预测。联合训练遮住母题及其下属原子，防止目标从下层泄漏。</text>
+<rect x="51" y="755" width="500" height="87" rx="16" fill="#edf3ff" stroke="#b8cbd1" stroke-width="2"/>
+<text x="301" y="790" class="card" text-anchor="middle">可见段 → 在线编码器 → 预测器</text>
+<text x="301" y="823" class="line" text-anchor="middle">在缺失位置插入可学习 mask token</text>
+<rect x="51" y="864" width="500" height="87" rx="16" fill="#f6edff" stroke="#b8cbd1" stroke-width="2"/>
+<text x="301" y="899" class="card" text-anchor="middle">完整序列 → EMA 目标编码器</text>
+<text x="301" y="932" class="line" text-anchor="middle">提取目标向量并停止梯度</text>
+<rect x="670" y="796" width="474" height="126" rx="16" fill="#fff1d9" stroke="#b8cbd1" stroke-width="2"/>
+<text x="907" y="831" class="card" text-anchor="middle">局部分解损失＋全局分解损失</text>
+<text x="907" y="864" class="line" text-anchor="middle">对被遮向量取均值与逐段偏差</text>
+<text x="907" y="894" class="line" text-anchor="middle">Smooth L1，自适应强调局部项</text>
+<path d="M551 797H610V829H665" class="edge"/>
+<path d="M551 907H610V888H665" class="edge"/>
+<rect x="24" y="1007" width="1152" height="282" rx="16" fill="#ffffff" stroke="#d7e1e6" stroke-width="2"/>
+<text x="50" y="1055" class="head" text-anchor="start">D　使用学好的连续母题</text>
+<text x="51" y="1093" class="sub" text-anchor="start">推理复用 A、B 的分段与表示，按需要选择任务头。</text>
+<rect x="49" y="1137" width="338" height="123" rx="16" fill="#e8f3ef" stroke="#b8cbd1" stroke-width="2"/>
+<text x="218" y="1172" class="card" text-anchor="middle">识别动作</text>
+<text x="218" y="1205" class="line" text-anchor="middle">HiK 有标签近邻投票</text>
+<text x="218" y="1235" class="line" text-anchor="middle">或按段长展开后逐帧分类</text>
+<rect x="431" y="1137" width="338" height="123" rx="16" fill="#e8f3ef" stroke="#b8cbd1" stroke-width="2"/>
+<text x="600" y="1172" class="card" text-anchor="middle">预测未来</text>
+<text x="600" y="1205" class="line" text-anchor="middle">自回归预测向量及持续帧数</text>
+<text x="600" y="1235" class="line" text-anchor="middle">冻结的预训练解码器输出关节</text>
+<rect x="813" y="1137" width="338" height="123" rx="16" fill="#e8f3ef" stroke="#b8cbd1" stroke-width="2"/>
+<text x="982" y="1172" class="card" text-anchor="middle">补全运动</text>
+<text x="982" y="1205" class="line" text-anchor="middle">缺口位置插入可学习向量</text>
+<text x="982" y="1235" class="line" text-anchor="middle">双侧上下文 → 解码缺失姿态</text>
+<text x="42" y="1341" class="sub" text-anchor="start">依据正式主文图 2、§3 和补充 A 重绘。AMD 脚部相机用于标注，表示模型输入为姿态。</text>
+<text x="42" y="1376" class="sub" text-anchor="start">教学示意图 · 实线为区内数据流，各区标题标示阶段与使用条件</text>
+</svg>

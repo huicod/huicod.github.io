@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1404" viewBox="0 0 1200 1404" role="img" aria-labelledby="title desc"><title id="title">CASA · 从两段骨架找到同一动作时刻</title><desc id="desc">CVPR 2022 · 利用已知的时间变换建立训练对应，使用逐帧嵌入进行匹配</desc><defs><marker id="end" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#42617a"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#173247}.main{font-size:39px;font-weight:700}.head{font-size:29px;font-weight:700}.card{font-size:23px;font-weight:700}.line{font-size:21px}.sub{font-size:20px;fill:#365267}.edge{fill:none;stroke:#42617a;stroke-width:3;marker-end:url(#end)}</style><rect width="1200" height="1404" rx="20" fill="#f6f8fa"/>
+<text x="39" y="57" class="main" text-anchor="start">CASA · 从两段骨架找到同一动作时刻</text>
+<text x="41" y="96" class="sub" text-anchor="start">CVPR 2022 · 利用已知的时间变换建立训练对应，使用逐帧嵌入进行匹配</text>
+<rect x="24" y="122" width="1152" height="244" rx="16" fill="#ffffff" stroke="#d7e1e6" stroke-width="2"/>
+<text x="50" y="170" class="head" text-anchor="start">A　训练数据：由一条序列构造一对样本</text>
+<text x="51" y="208" class="sub" text-anchor="start">通过时间抽帧保留索引对应；空间扰动改变骨架形态，同时沿用这份对应。</text>
+<rect x="49" y="233" width="338" height="112" rx="16" fill="#e8f2fa" stroke="#b8cbd1" stroke-width="2"/>
+<text x="218" y="268" class="card" text-anchor="middle">同一动作的一次记录</text>
+<text x="218" y="301" class="line" text-anchor="middle">3D 身体或双手关键点</text>
+<text x="218" y="331" class="line" text-anchor="middle">按身体大小、朝向归一化</text>
+<rect x="431" y="233" width="338" height="112" rx="16" fill="#e8f2fa" stroke="#b8cbd1" stroke-width="2"/>
+<text x="600" y="268" class="card" text-anchor="middle">4D 骨架增强</text>
+<text x="600" y="301" class="line" text-anchor="middle">时间抽帧／镜像／坐标噪声</text>
+<text x="600" y="331" class="line" text-anchor="middle">关节角或 VPoser 潜在扰动</text>
+<rect x="813" y="233" width="338" height="112" rx="16" fill="#e8f2fa" stroke="#b8cbd1" stroke-width="2"/>
+<text x="982" y="268" class="card" text-anchor="middle">原序列 A 与增强 B</text>
+<text x="982" y="301" class="line" text-anchor="middle">A 有 M 帧，B 有 N 帧</text>
+<text x="982" y="331" class="line" text-anchor="middle">记录 B 各帧来自 A 的位置</text>
+<path d="M388 289H427" class="edge"/>
+<path d="M770 289H809" class="edge"/>
+<rect x="24" y="383" width="1152" height="244" rx="16" fill="#ffffff" stroke="#d7e1e6" stroke-width="2"/>
+<text x="50" y="431" class="head" text-anchor="start">B　两路共同编码：从瞬时姿态到动作上下文</text>
+<text x="51" y="469" class="sub" text-anchor="start">两路骨架经相同映射，交替读取本序列和对方序列，保留每个时间位置的表示。</text>
+<rect x="49" y="494" width="338" height="112" rx="16" fill="#e4f3ed" stroke="#b8cbd1" stroke-width="2"/>
+<text x="218" y="529" class="card" text-anchor="middle">逐帧 MLP</text>
+<text x="218" y="562" class="line" text-anchor="middle">用两个非线性层编码关节</text>
+<text x="218" y="592" class="line" text-anchor="middle">加入一维正弦时间位置</text>
+<rect x="431" y="494" width="338" height="112" rx="16" fill="#e4f3ed" stroke="#b8cbd1" stroke-width="2"/>
+<text x="600" y="529" class="card" text-anchor="middle">Self / Cross Attention</text>
+<text x="600" y="562" class="line" text-anchor="middle">自注意力读取本段上下文</text>
+<text x="600" y="592" class="line" text-anchor="middle">交叉注意力读取配对序列</text>
+<rect x="813" y="494" width="338" height="112" rx="16" fill="#e4f3ed" stroke="#b8cbd1" stroke-width="2"/>
+<text x="982" y="529" class="card" text-anchor="middle">投影前的逐帧表示 U</text>
+<text x="982" y="562" class="line" text-anchor="middle">A、B 各保留一个向量序列</text>
+<text x="982" y="592" class="line" text-anchor="middle">下游识别、进度与匹配读 U</text>
+<path d="M388 550H427" class="edge"/>
+<path d="M770 550H809" class="edge"/>
+<rect x="24" y="644" width="1152" height="344" rx="16" fill="#ffffff" stroke="#d7e1e6" stroke-width="2"/>
+<text x="50" y="692" class="head" text-anchor="start">C　训练：预测原序列中的帧索引</text>
+<text x="51" y="730" class="sub" text-anchor="start">投影头在训练目标中使用。相似度分布决定坐标的加权平均，再与数据增强记录比较。</text>
+<rect x="51" y="755" width="500" height="87" rx="16" fill="#edf3ff" stroke="#b8cbd1" stroke-width="2"/>
+<text x="301" y="790" class="card" text-anchor="middle">逐帧 U → 投影 MLP → Z</text>
+<text x="301" y="823" class="line" text-anchor="middle">按两段向量距离做 softmax</text>
+<rect x="51" y="864" width="500" height="87" rx="16" fill="#f6edff" stroke="#b8cbd1" stroke-width="2"/>
+<text x="301" y="899" class="card" text-anchor="middle">已知时间映射</text>
+<text x="301" y="932" class="line" text-anchor="middle">某个增强帧 j 对应的原始帧 i*</text>
+<rect x="670" y="796" width="474" height="126" rx="16" fill="#fff1d9" stroke="#b8cbd1" stroke-width="2"/>
+<text x="907" y="831" class="card" text-anchor="middle">索引回归损失</text>
+<text x="907" y="864" class="line" text-anchor="middle">预测索引 = Σᵢ 概率(j,i) × i</text>
+<text x="907" y="894" class="line" text-anchor="middle">与真实 i* 的差逐帧计算 MSE</text>
+<path d="M551 797H610V829H665" class="edge"/>
+<path d="M551 907H610V888H665" class="edge"/>
+<rect x="24" y="1007" width="1152" height="282" rx="16" fill="#ffffff" stroke="#d7e1e6" stroke-width="2"/>
+<text x="50" y="1055" class="head" text-anchor="start">D　推理：换成两次真实执行</text>
+<text x="51" y="1093" class="sub" text-anchor="start">两段同类动作各得到逐帧表示。可按任务取全序列上下文，或仅使用截至当前的帧。</text>
+<rect x="49" y="1137" width="338" height="123" rx="16" fill="#e8f3ef" stroke="#b8cbd1" stroke-width="2"/>
+<text x="218" y="1172" class="card" text-anchor="middle">同类动作 A、B</text>
+<text x="218" y="1205" class="line" text-anchor="middle">估计并归一化两路骨架</text>
+<text x="218" y="1235" class="line" text-anchor="middle">例如快、慢两次棒球挥棒</text>
+<rect x="431" y="1137" width="338" height="123" rx="16" fill="#e8f3ef" stroke="#b8cbd1" stroke-width="2"/>
+<text x="600" y="1172" class="card" text-anchor="middle">上下文编码器输出 U</text>
+<text x="600" y="1205" class="line" text-anchor="middle">全序列或在线前缀</text>
+<text x="600" y="1235" class="line" text-anchor="middle">读取投影头之前的逐帧特征</text>
+<rect x="813" y="1137" width="338" height="123" rx="16" fill="#e8f3ef" stroke="#b8cbd1" stroke-width="2"/>
+<text x="982" y="1172" class="card" text-anchor="middle">按任务读取 U</text>
+<text x="982" y="1205" class="line" text-anchor="middle">跨序列最近邻 → 匹配帧索引</text>
+<text x="982" y="1235" class="line" text-anchor="middle">SVM 读阶段，回归器读进度</text>
+<path d="M388 1199H427" class="edge"/>
+<path d="M770 1199H809" class="edge"/>
+<text x="42" y="1341" class="sub" text-anchor="start">依据正式主文图 2、式 4–6 与补充 S.4 重绘。最近邻得到的对应未被强制为单调路径。</text>
+<text x="42" y="1376" class="sub" text-anchor="start">教学示意图 · 实线为区内数据流，各区标题标示阶段与使用条件</text>
+</svg>
