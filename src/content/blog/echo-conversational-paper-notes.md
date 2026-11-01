@@ -46,7 +46,7 @@ tags: ["Echo", "Conversational-Behavior", "Co-Speech-Gesture", "Human-Motion", "
 
 ### 整体框架
 
-[![Echo 架构图：旅行对话经三次语义抽取和择一复核，再融合帧、句、对话三级条件；伙伴的动作是输入，主角的骨骼是输出。](/paper-notes/echo-conversational/architecture.svg)](/paper-notes/echo-conversational/architecture.svg)
+[![Echo 架构图：旅行对话经三次语义抽取和择一复核，再融合帧、句、对话三级条件；伙伴的动作是输入，主角的骨骼是输出。](/paper-notes/echo-conversational/architecture.svg?v=travel-20261101)](/paper-notes/echo-conversational/architecture.svg?v=travel-20261101)
 
 沿图读一次：**双方说了什么、伙伴怎样动 → 当前发言在交流中起什么作用 → 动作模型在这些条件下生成主角怎样动**。这决定了后面实验的读法。伙伴的动作已作为输入提供，论文中的“双人同步”评价生成的主角与这一已知伙伴是否协调。[主文图 2][m4] · [附录 §1][s2]
 
