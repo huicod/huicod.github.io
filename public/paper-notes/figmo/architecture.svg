@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1525" viewBox="0 0 1080 1525" role="img" aria-labelledby="fg-title fg-desc">
+  <title id="fg-title">FiGMo 如何根据带时间戳的骨架读懂动作</title>
+  <desc id="fg-desc">从 2D/3D 姿态预训练、逐帧时间标记与可选视频到多粒度文字监督、动作问答和区间字幕。</desc>
+  <defs>
+    <marker id="end" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 1 1 L 11 6 L 1 11 z" fill="#3e6276" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1080" height="1525" rx="0" fill="#f3f7f9" stroke="#f3f7f9" stroke-width="2" />
+  <rect x="23" y="22" width="1034" height="130" rx="18" fill="#113648" stroke="#113648" stroke-width="2" />
+  <text x="50" y="78" fill="#fff" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="38" font-weight="bold" text-anchor="start">FiGMo  |  用真实秒数读懂骨架序列</text>
+  <text x="50" y="122" fill="#d9efed" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" font-weight="normal" text-anchor="start">问题沿着姿态、时间与语言三条线进入同一套模型。</text>
+  <rect x="23" y="170" width="1034" height="245" rx="12" fill="#fff" stroke="#c5d5df" stroke-width="2" />
+  <text x="50" y="217" fill="#086974" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="bold" text-anchor="start">A</text>
+  <text x="99" y="217" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="bold" text-anchor="start">预训练：学会读取单帧姿态</text>
+  <text x="50" y="255" fill="#486674" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" font-weight="normal" text-anchor="start">对每一帧独立编码；这里还没有跨帧的时序注意力。</text>
+  <rect x="49" y="281" width="265" height="100" rx="12" fill="#e9f2f9" stroke="#c5d5df" stroke-width="2" />
+  <text x="181.5" y="323.0" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">2D / 3D 关节</text>
+  <text x="181.5" y="355.0" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">遮蔽关节 + 加噪</text>
+  <line x1="316" y1="331" x2="365" y2="331" stroke="#3e6276" stroke-width="3" marker-end="url(#end)" />
+  <rect x="369" y="281" width="308" height="100" rx="12" fill="#e3f3ef" stroke="#c5d5df" stroke-width="2" />
+  <text x="523.0" y="323.0" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">共享姿态编码器</text>
+  <text x="523.0" y="355.0" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">保留空间注意力</text>
+  <line x1="679" y1="331" x2="726" y2="331" stroke="#3e6276" stroke-width="3" marker-end="url(#end)" />
+  <rect x="731" y="281" width="297" height="100" rx="12" fill="#fdf1df" stroke="#c5d5df" stroke-width="2" />
+  <text x="879.5" y="323.0" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">重建 3D 姿态</text>
+  <text x="879.5" y="355.0" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">3D 误差 / 2D 投影误差</text>
+  <rect x="23" y="432" width="1034" height="484" rx="12" fill="#fff" stroke="#c5d5df" stroke-width="2" />
+  <text x="50" y="481" fill="#086974" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="bold" text-anchor="start">B</text>
+  <text x="99" y="481" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="bold" text-anchor="start">读动作：给每个姿态保留片段内的物理时间</text>
+  <text x="50" y="519" fill="#486674" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" font-weight="normal" text-anchor="start">同一帧的关节先汇成一个连续向量，保留帧的秒数随向量一起输入。</text>
+  <rect x="49" y="548" width="242" height="91" rx="12" fill="#e9f2f9" stroke="#c5d5df" stroke-width="2" />
+  <text x="170.0" y="585.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">已有骨架动作</text>
+  <text x="170.0" y="617.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">2D (x,y,c) / 3D (x,y,z)</text>
+  <line x1="293" y1="594" x2="337" y2="594" stroke="#3e6276" stroke-width="3" marker-end="url(#end)" />
+  <rect x="341" y="548" width="301" height="91" rx="12" fill="#e3f3ef" stroke="#c5d5df" stroke-width="2" />
+  <text x="491.5" y="585.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">同一个姿态编码器</text>
+  <text x="491.5" y="617.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">逐帧读取</text>
+  <line x1="644" y1="594" x2="702" y2="594" stroke="#3e6276" stroke-width="3" marker-end="url(#end)" />
+  <rect x="707" y="548" width="320" height="91" rx="12" fill="#e3f3ef" stroke="#c5d5df" stroke-width="2" />
+  <text x="867.0" y="585.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">两层 MLP</text>
+  <text x="867.0" y="617.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">映射到语言嵌入空间</text>
+  <line x1="867" y1="641" x2="867" y2="682" stroke="#3e6276" stroke-width="3" marker-end="url(#end)" />
+  <rect x="49" y="687" width="978" height="67" rx="12" fill="#edf6fb" stroke="#c5d5df" stroke-width="2" />
+  <text x="538" y="728" fill="#193d54" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="24" font-weight="bold" text-anchor="middle">问题 + 0.00 秒〔姿态〕 + 0.03 秒〔姿态〕 + … + 5.03 秒〔姿态〕</text>
+  <line x1="515" y1="756" x2="515" y2="789" stroke="#3e6276" stroke-width="3" marker-end="url(#end)" />
+  <rect x="49" y="796" width="308" height="89" rx="12" fill="#f6f2fa" stroke="#c5d5df" stroke-width="2" />
+  <text x="203.0" y="832.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">可选 RGB 视频</text>
+  <text x="203.0" y="864.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">视觉编码与投影</text>
+  <line x1="359" y1="840" x2="421" y2="840" stroke="#3e6276" stroke-width="3" marker-end="url(#end)" stroke-dasharray="8 5" />
+  <rect x="425" y="796" width="265" height="89" rx="12" fill="#e3f3ef" stroke="#c5d5df" stroke-width="2" />
+  <text x="557.5" y="832.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">VideoLLaMA3-7B</text>
+  <text x="557.5" y="864.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">跨帧推理与答复</text>
+  <line x1="692" y1="840" x2="742" y2="840" stroke="#3e6276" stroke-width="3" marker-end="url(#end)" />
+  <rect x="746" y="796" width="281" height="89" rx="12" fill="#fdf1df" stroke="#c5d5df" stroke-width="2" />
+  <text x="886.5" y="832.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">文字输出</text>
+  <text x="886.5" y="864.5" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">问答 / 区间与字幕</text>
+  <rect x="23" y="933" width="1034" height="284" rx="12" fill="#fff" stroke="#c5d5df" stroke-width="2" />
+  <text x="50" y="982" fill="#086974" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="bold" text-anchor="start">C</text>
+  <text x="99" y="982" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="bold" text-anchor="start">训练：给相同骨架提供不同粒度的监督</text>
+  <text x="50" y="1020" fill="#486674" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" font-weight="normal" text-anchor="start">四阶段逐步引入任务。消融还用同一组资料做单阶段混合训练。</text>
+  <rect x="49" y="1042" width="452" height="120" rx="12" fill="#e9f2f9" stroke="#c5d5df" stroke-width="2" />
+  <text x="275.0" y="1078.0" fill="31" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">姿态与部位</text>
+  <text x="275.0" y="1110.0" fill="31" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">单姿态摘要、几何问答</text>
+  <text x="275.0" y="1142.0" fill="31" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">两个姿态间的局部变化</text>
+  <rect x="519" y="1042" width="508" height="120" rx="12" fill="#e3f3ef" stroke="#c5d5df" stroke-width="2" />
+  <text x="773.0" y="1078.0" fill="31" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">动作与时间</text>
+  <text x="773.0" y="1110.0" fill="31" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">短片段配动作标签、整段动作问答</text>
+  <text x="773.0" y="1142.0" fill="31" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">BABEL 带起止时间的标注 → FTM-QA</text>
+  <text x="50" y="1196" fill="#486674" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" font-weight="normal" text-anchor="start">先对齐姿态与文字，再学习动作问答。阶段 1 冻结 LLM，之后用 LoRA 微调。</text>
+  <rect x="23" y="1234" width="1034" height="246" rx="12" fill="#fff" stroke="#c5d5df" stroke-width="2" />
+  <text x="50" y="1283" fill="#086974" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="26" font-weight="bold" text-anchor="start">D</text>
+  <text x="99" y="1283" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="30" font-weight="bold" text-anchor="start">读一次投球：找到出手时刻</text>
+  <text x="50" y="1321" fill="#486674" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" font-weight="normal" text-anchor="start">图 2 的问题询问出手时间，答案以当前片段起点为零。</text>
+  <rect x="49" y="1341" width="334" height="88" rx="12" fill="#e9f2f9" stroke="#c5d5df" stroke-width="2" />
+  <text x="216.0" y="1377.0" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">按时刻读姿态</text>
+  <text x="216.0" y="1409.0" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">观察挥臂前后的变化</text>
+  <line x1="385" y1="1385" x2="449" y2="1385" stroke="#3e6276" stroke-width="3" marker-end="url(#end)" />
+  <rect x="453" y="1341" width="259" height="88" rx="12" fill="#fdf1df" stroke="#c5d5df" stroke-width="2" />
+  <text x="582.5" y="1377.0" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="bold" text-anchor="middle">模型答复</text>
+  <text x="582.5" y="1409.0" fill="#183348" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="23" font-weight="normal" text-anchor="middle">投球约在 2.4 秒</text>
+  <text x="743" y="1373" fill="#486674" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" font-weight="normal" text-anchor="start">抽帧保留原秒数，</text>
+  <text x="743" y="1407" fill="#486674" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="22" font-weight="normal" text-anchor="start">会漏掉帧间事件。</text>
+  <text x="50" y="1459" fill="#486674" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="21" font-weight="normal" text-anchor="start">这是原文架构示意中的答复，论文的定量定位结果另见正文表 3、附表 5。</text>
+  <text x="50" y="1507" fill="#486674" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="18" font-weight="normal" text-anchor="start">依据 FiGMo v2 图 2、§3、附录 A–B 重绘</text>
+</svg>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1570" viewBox="0 0 1120 1570" role="img" aria-labelledby="title desc"><title id="title">DEMO 密集动作描述，数据生成、模型输入、训练及解码</title><desc id="desc">先用时间线生成 CompMo；窗内关节的连续嵌入传给 Llama，分两阶段学整段与密集描述，最后把预测的起点和文字还原成时间段。</desc><defs><marker id="tip" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7" fill="#546e7a"/></marker></defs><g font-family="'Microsoft YaHei','Noto Sans CJK SC','Arial',sans-serif" fill="#1e3948"><rect x="0" y="0" width="1120" height="1570" rx="0" fill="#f2f6fa" stroke="none" />
+<text x="48" y="58" font-size="40" font-weight="700" fill="#143344">DEMO  /  Dense Motion Captioning</text>
+<text x="48" y="99" font-size="29" fill="#2c5769">从一串关节坐标读出「哪个时刻，人在做什么」</text>
+<rect x="32" y="133" width="1056" height="306" rx="21" fill="#ffffff" stroke="#d5dee7" />
+<text x="61" y="183" font-size="32" font-weight="700" fill="#122f48">A    构造 CompMo 的监督</text>
+<text x="61" y="222" font-size="22" fill="#476273">在生成训练数据之前先写时间线，长动作随时间线一起产生。</text>
+<rect x="58" y="244" width="294" height="123" rx="14" fill="#eaf3f9" stroke="none" />
+<text x="78" y="285" font-size="26" font-weight="700">收集原子动作</text>
+<text x="78" y="324" font-size="21" >HumanML3D 简单动作</text>
+<text x="78" y="356" font-size="21" >生成 / 真实片段，TMR 筛选</text>
+<path d="M 356 302 L 393 302" stroke="#546e7a" stroke-width="3" marker-end="url(#tip)" fill="none"/>
+<rect x="399" y="244" width="294" height="123" rx="14" fill="#e2f3ed" stroke="none" />
+<text x="419" y="285" font-size="26" font-weight="700">安排 2–10 个动作</text>
+<text x="419" y="324" font-size="21" >扰动各段时长</text>
+<text x="419" y="356" font-size="21" >已知起点、片段文字</text>
+<path d="M 697 302 L 734 302" stroke="#546e7a" stroke-width="3" marker-end="url(#tip)" fill="none"/>
+<rect x="740" y="244" width="326" height="123" rx="14" fill="#fff1d8" stroke="none" />
+<text x="760" y="285" font-size="26" font-weight="700">去噪拼成连续动作</text>
+<text x="760" y="324" font-size="21" >STMC / MDM，半秒过渡</text>
+<text x="760" y="356" font-size="21" >监督来自预设时间线</text>
+<text x="61" y="408" font-size="23" >产物：60,000 条长动作及时间标记。这里的生成器用于造数据。</text>
+<rect x="32" y="465" width="1056" height="357" rx="21" fill="#ffffff" stroke="#d5dee7" />
+<text x="61" y="515" font-size="32" font-weight="700" fill="#122f48">B    将待描述动作送入语言模型</text>
+<text x="61" y="554" font-size="22" fill="#476273">22 个关节 × xyz；20 fps。输入含动作和总时长，不提供真实分段。</text>
+<rect x="58" y="577" width="240" height="143" rx="14" fill="#eaf3f9" stroke="none" />
+<text x="78" y="618" font-size="26" font-weight="700">时间窗口</text>
+<text x="78" y="657" font-size="21" >16 帧 / 窗</text>
+<text x="78" y="689" font-size="21" >每 8 帧滑动一次</text>
+<path d="M 301 644 L 335 644" stroke="#546e7a" stroke-width="3" marker-end="url(#tip)" fill="none"/>
+<rect x="340" y="577" width="305" height="143" rx="14" fill="#e2f3ed" stroke="none" />
+<text x="360" y="618" font-size="26" font-weight="700">连续动作嵌入</text>
+<text x="360" y="657" font-size="21" >展平为 1,056 维</text>
+<text x="360" y="689" font-size="21" >MLP → 线性投影</text>
+<path d="M 648 644 L 680 644" stroke="#546e7a" stroke-width="3" marker-end="url(#tip)" fill="none"/>
+<rect x="685" y="577" width="380" height="143" rx="14" fill="#fff1d8" stroke="none" />
+<text x="705" y="618" font-size="26" font-weight="700">Llama‑3.1‑8B‑Instruct</text>
+<text x="705" y="657" font-size="21" >动作向量插入 &lt;motion></text>
+<text x="705" y="689" font-size="21" >加指令，自回归预测回答</text>
+<text x="61" y="764" font-size="22" >窗口允许重叠。它限定模型读入的局部范围，每个事件可以跨多个窗口。</text>
+<rect x="32" y="850" width="1056" height="278" rx="21" fill="#ffffff" stroke="#d5dee7" />
+<text x="61" y="900" font-size="32" font-weight="700" fill="#122f48">C    两次训练，共用下一个词元预测目标</text>
+<text x="61" y="939" font-size="22" fill="#476273">两阶段更换监督的粒度，也更换可更新的参数。</text>
+<rect x="58" y="964" width="467" height="133" rx="14" fill="#eaf3f9" stroke="none" />
+<text x="78" y="1005" font-size="26" font-weight="700">阶段一  ·  整段描述</text>
+<text x="78" y="1044" font-size="21" >HumanML3D：动作 + 一句整段文本</text>
+<text x="78" y="1076" font-size="21" >冻结语言模型，只训练动作适配器</text>
+<path d="M 531 1029 L 571 1029" stroke="#546e7a" stroke-width="3" marker-end="url(#tip)" fill="none"/>
+<rect x="577" y="964" width="488" height="133" rx="14" fill="#e2f3ed" stroke="none" />
+<text x="597" y="1005" font-size="26" font-weight="700">阶段二  ·  密集描述</text>
+<text x="597" y="1044" font-size="21" >CompMo：长动作 + 多个时间戳及短句</text>
+<text x="597" y="1076" font-size="21" >继续训练适配器，并训练语言模型 LoRA</text>
+<rect x="32" y="1156" width="1056" height="321" rx="21" fill="#ffffff" stroke="#d5dee7" />
+<text x="61" y="1206" font-size="32" font-weight="700" fill="#122f48">D    解码为读者看到的时间线</text>
+<text x="61" y="1245" font-size="22" fill="#476273">语言模型依次写出「起点 + 描述」。评测脚本用下一个起点补全当前段终点。</text>
+<rect x="68" y="1275" width="292" height="75" rx="14" fill="#eaf3f9" stroke="none" />
+<rect x="368" y="1275" width="306" height="75" rx="14" fill="#e2f3ed" stroke="none" />
+<rect x="682" y="1275" width="355" height="75" rx="14" fill="#fff1d8" stroke="none" />
+<text x="86" y="1322" font-size="23" >0.000 s　开合跳</text>
+<text x="386" y="1322" font-size="23" >7.549 s　向下坡走</text>
+<text x="700" y="1322" font-size="23" >15.349 s　左臂画圈 …</text>
+<text x="61" y="1400" font-size="21" >作者发布样例 25560，前三个预测段的中文概括。第二段参考描述是缓慢向前走。</text>
+<text x="61" y="1440" font-size="21" >最后一段以整段动作终点收尾。输出是一份带时间的文字记录，关节轨迹保持原样。</text>
+<text x="50" y="1532" font-size="20" fill="#4a6475">依据主文图 3、附录图 A.1、作者样例与评测脚本重绘。</text></g></svg>
