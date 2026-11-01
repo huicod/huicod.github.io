@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1390" viewBox="0 0 1080 1390" role="img" aria-labelledby="title desc">
+<title id="title">Motion2Motion 跨拓扑动作迁移架构</title><desc id="desc">从火烈鸟的步行和猴子示例步行出发，六对后肢骨骼引导对猴子全身短动作的检索。每轮选择并融合重叠窗口，输出源时间长度和猴子骨架维度的动作。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#516d77"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#1d343a} .k{font-size:24px;font-weight:700} .s{font-size:20px} .n{font-size:19px;fill:#365766} .l{font-size:15px;font-weight:700;letter-spacing:1.8px;fill:#476872}</style>
+<rect width="1080" height="1390" rx="20" fill="#faf9f5"/>
+<text x="40" y="55" class="l" style="">MOTION TRANSFER   /   METHOD STUDY   /   SIGGRAPH ASIA 2025</text>
+<text x="40" y="106" class="k" style="font-size:43px">Motion2Motion</text>
+<text x="40" y="145" class="s" style="">怎样让猴子走出火烈鸟的节奏？</text>
+<rect x="40" y="188" width="45" height="32" rx="6" fill="#254f60" stroke="none" stroke-width="1.6"/>
+<text x="51" y="211" class="n" style="fill:#fff;font-size:18px;font-weight:bold">01</text>
+<text x="101" y="213" class="k" style="">源表演给时间线，目标范例给全身协调</text>
+<rect x="40" y="239" width="477" height="188" rx="12" fill="#e5f0f3" stroke="#adc4ca" stroke-width="1.6"/>
+<rect x="563" y="239" width="477" height="188" rx="12" fill="#edf2e7" stroke="#bdc9aa" stroke-width="1.6"/>
+<text x="61" y="280" class="k" style="">源动作 S</text>
+<text x="61" y="313" class="s" style="">火烈鸟步行，41 个关节。</text>
+<text x="61" y="344" class="s" style="">保留要转移的一段运动和时序。</text>
+<text x="585" y="280" class="k" style="">目标动作库 T</text>
+<text x="585" y="313" class="s" style="">猴子骨架，76 个关节。</text>
+<text x="585" y="344" class="s" style="">一段或几段本角色已有的步行范例。</text>
+<rect x="62" y="368" width="38" height="19" rx="3" fill="#537d90" stroke="none" stroke-width="1.6"/>
+<rect x="118" y="368" width="38" height="19" rx="3" fill="#537d90" stroke="none" stroke-width="1.6"/>
+<rect x="174" y="368" width="38" height="19" rx="3" fill="#537d90" stroke="none" stroke-width="1.6"/>
+<rect x="230" y="368" width="38" height="19" rx="3" fill="#537d90" stroke="none" stroke-width="1.6"/>
+<rect x="286" y="368" width="38" height="19" rx="3" fill="#537d90" stroke="none" stroke-width="1.6"/>
+<rect x="342" y="368" width="38" height="19" rx="3" fill="#537d90" stroke="none" stroke-width="1.6"/>
+<rect x="584" y="368" width="38" height="19" rx="3" fill="#718c5a" stroke="none" stroke-width="1.6"/>
+<rect x="640" y="368" width="38" height="19" rx="3" fill="#98ac79" stroke="none" stroke-width="1.6"/>
+<rect x="696" y="368" width="38" height="19" rx="3" fill="#718c5a" stroke="none" stroke-width="1.6"/>
+<rect x="752" y="368" width="38" height="19" rx="3" fill="#98ac79" stroke="none" stroke-width="1.6"/>
+<rect x="808" y="368" width="38" height="19" rx="3" fill="#718c5a" stroke="none" stroke-width="1.6"/>
+<rect x="864" y="368" width="38" height="19" rx="3" fill="#98ac79" stroke="none" stroke-width="1.6"/>
+<text x="61" y="411" class="n" style="">源与目标预先对齐参考姿态约定。</text>
+<text x="585" y="411" class="n" style="">窗长默认 11 帧，沿时间切出重叠片段。</text>
+<path d="M276 428 V475" fill="none" stroke="#516d77" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M805 428 V475" fill="none" stroke="#516d77" stroke-width="2.4" marker-end="url(#arrow)"/>
+<rect x="40" y="479" width="477" height="156" rx="12" fill="#e8f1f3" stroke="#adc4ca" stroke-width="1.6"/>
+<rect x="563" y="479" width="477" height="156" rx="12" fill="#edf2e7" stroke="#bdc9aa" stroke-width="1.6"/>
+<text x="61" y="518" class="k" style="">六对后肢建立稀疏查询</text>
+<text x="61" y="553" class="s" style="">成对通道：从源特征映射到目标格式。</text>
+<text x="61" y="586" class="s" style="">未配对通道：先用随机噪声填充。</text>
+<text x="61" y="617" class="n" style="">得到与目标骨架同维的查询窗口。</text>
+<text x="585" y="518" class="k" style="">建立目标全身窗口库</text>
+<text x="585" y="553" class="s" style="">每个候选都保有后肢、前肢和尾巴。</text>
+<text x="585" y="586" class="s" style="">取回一个窗口就取回整段全身动作。</text>
+<text x="585" y="617" class="n" style="">候选来源始终是目标范例。</text>
+<path d="M276 635 V656 H495 V670" fill="none" stroke="#516d77" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M805 635 V656 H585 V670" fill="none" stroke="#516d77" stroke-width="2.4" marker-end="url(#arrow)"/>
+<rect x="40" y="684" width="45" height="32" rx="6" fill="#254f60" stroke="none" stroke-width="1.6"/>
+<text x="51" y="707" class="n" style="fill:#fff;font-size:18px;font-weight:bold">02</text>
+<text x="101" y="709" class="k" style="">在目标库里比较窗口，选回完整的目标动作</text>
+<rect x="40" y="736" width="1000" height="96" rx="12" fill="#efeaf4" stroke="#c6bad3" stroke-width="1.6"/>
+<text x="62" y="775" class="k" style="font-size:23px">候选代价 = α × 已绑定通道误差 + (1 − α) × 未绑定通道误差</text>
+<text x="62" y="810" class="s" style="">按式 3 选择距离最小的片段，默认 α = 0.85。目标每个关节都参与最终输出。</text>
+<rect x="40" y="877" width="45" height="32" rx="6" fill="#254f60" stroke="none" stroke-width="1.6"/>
+<text x="51" y="900" class="n" style="fill:#fff;font-size:18px;font-weight:bold">03</text>
+<text x="101" y="902" class="k" style="">融合重叠的候选，再检索下一轮</text>
+<rect x="40" y="927" width="1000" height="207" rx="12" fill="#fff" stroke="#c0cdca" stroke-width="1.6"/>
+<text x="64" y="965" class="k" style="">源时间轴</text>
+<text x="64" y="1008" class="s" style="">查询窗 A</text>
+<text x="64" y="1042" class="s" style="">查询窗 B</text>
+<text x="64" y="1076" class="s" style="">查询窗 C</text>
+<path d="M254,964 L1005,964" fill="none" stroke="#516d77" stroke-width="2" marker-end="url(#arrow)" />
+<path d="M268,958 L268,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M332,958 L332,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M396,958 L396,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M460,958 L460,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M524,958 L524,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M588,958 L588,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M652,958 L652,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M716,958 L716,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M780,958 L780,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M844,958 L844,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M908,958 L908,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<path d="M972,958 L972,970" fill="none" stroke="#516d77" stroke-width="2"  />
+<rect x="267" y="984" width="253" height="23" rx="3" fill="#c1d9e0" stroke="none" stroke-width="1.6"/>
+<rect x="400" y="1019" width="253" height="23" rx="3" fill="#bcd4b4" stroke="none" stroke-width="1.6"/>
+<rect x="533" y="1053" width="253" height="23" rx="3" fill="#d7c8e2" stroke="none" stroke-width="1.6"/>
+<text x="66" y="1110" class="n" style="">同一帧收到多个候选值 → 平均融合 → 以新序列作为查询。论文默认 3 轮。</text>
+<rect x="40" y="1177" width="45" height="32" rx="6" fill="#254f60" stroke="none" stroke-width="1.6"/>
+<text x="51" y="1200" class="n" style="fill:#fff;font-size:18px;font-weight:bold">04</text>
+<text x="101" y="1202" class="k" style="">读出猴子动作，分清来源和控制边界</text>
+<rect x="40" y="1227" width="1000" height="108" rx="12" fill="#e8f0e8" stroke="#b4c8b7" stroke-width="1.6"/>
+<text x="64" y="1265" class="k" style="">输出 = 源帧数 × 目标角色特征维度</text>
+<text x="64" y="1304" class="s" style="">后肢为检索提供线索；前肢和尾巴来自猴子的配合。默认融合不强制逐帧命中。</text>
+<text x="41" y="1366" class="n" style="font-size:17px">依据原文图 2、图 7、式 2–3 与算法 1 重绘。图中时间窗仅示意重叠，不表示实测帧号。</text>
+</svg>
