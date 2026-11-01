@@ -1,41 +1,79 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1170" viewBox="0 0 1080 1170" role="img" aria-labelledby="title desc">
- <title id="title">Echo：把两人对话的上下文接到角色动作生成器</title>
- <desc id="desc">对话脚本经多提示抽取、复核和检查，得到句级局部意图、主动性、触发强度和对话级摘要、全局意图。融合模块逐级结合原始逐帧条件和高层语义，输出主角色动作。另列公开训练脚本中重复摘要向量的路径。</desc>
- <defs>
- <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#49776d"/></marker>
- <style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC","Source Han Sans CN",sans-serif;fill:#183b36}.k{font-size:17px;font-weight:700;letter-spacing:1.3px;fill:#487970}.h{font-size:32px;font-weight:700}.sub{font-size:20px}.body{font-size:19px}.tag{font-size:21px;font-weight:700}.small{font-size:17px}.box{stroke-width:1.6}.flow{fill:none;stroke:#49776d;stroke-width:3;marker-end:url(#arrow)}</style>
- </defs>
- <rect width="1080" height="1170" rx="24" fill="#f9faf6"/>
- <text x="44" y="48" class="k">METHOD STUDY  /  ECHO  /  SIGGRAPH ASIA 2025</text>
- <text x="44" y="103" class="h">对话的哪一层信息决定角色怎么动？</text>
- <text x="45" y="142" class="sub">音频定位节奏，句子说明此刻在做什么，整段谈话补充原因。</text>
- <text x="44" y="202" class="tag">01　先读谈话，在对话历史中分析当前发言</text>
- <g class="box" stroke="#a4c0b6" fill="#e8f2ec"><rect x="44" y="224" width="295" height="117" rx="14"/><rect x="391" y="224" width="294" height="117" rx="14"/><rect x="738" y="224" width="298" height="117" rx="14"/></g>
- <text x="65" y="264" class="tag">双方转写与语音</text><text x="65" y="300" class="body">起始窗口 10 句，提取情绪</text>
- <text x="414" y="264" class="tag">LLM 分项抽取</text><text x="414" y="300" class="body">变动窗口和提示，取 3 组候选</text>
- <text x="760" y="264" class="tag">复核与检查</text><text x="760" y="300" class="body">择一；格式不合则重新生成</text>
- <path d="M342 282H380" class="flow"/><path d="M689 282H727" class="flow"/>
- <text x="44" y="405" class="tag">02　三种时间尺度怎样汇合</text>
- <rect x="44" y="430" width="304" height="215" rx="16" fill="#e8eff6" stroke="#a1b9ca" class="box"/>
- <text x="66" y="468" class="k">FRAME　帧级</text><text x="66" y="510" class="tag">现场的可观察信息</text>
- <text x="66" y="549" class="body">音频、说话人身份、转写</text><text x="66" y="581" class="body">以及对话伙伴的动作</text><text x="66" y="617" class="small">保留声音与动作的时间变化</text>
- <rect x="389" y="430" width="301" height="215" rx="16" fill="#f6eddf" stroke="#d5b99a" class="box"/>
- <text x="410" y="468" class="k">SENTENCE　句级</text><text x="410" y="510" class="tag">当前发言的作用</text>
- <text x="410" y="549" class="body">意图、情绪、主动性、触发</text><text x="410" y="581" class="body">独热编码 → IF 融合块</text><text x="410" y="617" class="small">合并逐帧信号与句子条件</text>
- <rect x="731" y="430" width="305" height="215" rx="16" fill="#e4eeea" stroke="#9ebcaf" class="box"/>
- <text x="752" y="468" class="k">DIALOGUE　对话级</text><text x="752" y="510" class="tag">整段谈话的方向</text>
- <text x="752" y="549" class="body">话题摘要、全局意图</text><text x="752" y="581" class="body">BERT 编码 → IF 融合块</text><text x="752" y="617" class="small">再合并前一级的特征</text>
- <path d="M350 536H379" class="flow"/><path d="M692 536H721" class="flow"/>
- <text x="48" y="684" class="small">IF 块：拼接特征作查询、单项特征作键和值，经交叉注意力和 MLP 融合。</text>
- <path d="M882 648V707" class="flow"/>
- <rect x="44" y="715" width="992" height="129" rx="16" fill="#e1ece5" stroke="#91b3a2" class="box"/>
- <text x="68" y="756" class="tag">03　接入动作生成器</text>
- <text x="68" y="795" class="body">帧级 Hf ＋ 句级 Hs ＋ 对话级 Hc → 拼接三层特征 → 生成主角色骨骼动作</text>
- <text x="68" y="826" class="small">触发强度表达一句话可能配多少动作；没有指定哪只手、哪一帧或哪个落点。</text>
- <rect x="44" y="889" width="992" height="190" rx="16" fill="#f6f1e7" stroke="#ceb997" class="box"/>
- <text x="68" y="931" class="tag">对照公开的训练入口</text>
- <text x="68" y="970" class="body">Diff 脚本载入每条样本的文字摘要，把词向量求和为 300 维条件。</text>
- <text x="68" y="1004" class="body">该向量沿片段时间维重复，与音频等条件一起交给动作模型。</text>
- <text x="68" y="1044" class="small">这一入口直接显示摘要怎样接入；完整 IF 网络和逐句切换效果仍需另行核验。</text>
- <text x="46" y="1131" class="small">依据主文算法 1、图 2–4、式 1–4、附录 §1–2 和作者公开训练脚本重绘。</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="1628" viewBox="0 0 640 1628" role="img" aria-labelledby="title desc">
+  <title id="title">Echo 怎样从“两个人在谈旅行”生成主角的动作</title>
+  <desc id="desc">作者图 4 的旅行对话经过三次语义抽取、复核择一与格式检查。双方的声音、转写、角色标识和伙伴的已知动作组成帧级条件。局部意图、情绪、主动性和强度加入句级融合；话题和全局意图加入对话级融合。三个尺度的特征拼接，输入已有生成器，预测主角的骨骼序列。图 5 中指向伙伴的动作属于另一段对话。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="6" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0L6 3.5L0 7Z" fill="#416660"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC","Source Han Sans CN",sans-serif;fill:#16342f}
+      .label{font-size:19px;font-weight:700;letter-spacing:1.1px}
+      .title{font-size:41px;font-weight:700;letter-spacing:-.8px}
+      .section{font-size:30px;font-weight:700}
+      .subhead{font-size:26px;font-weight:700}
+      .body{font-size:24px}
+      .small{font-size:21px}
+      .caps{font-family:Arial,sans-serif;font-size:17px;font-weight:700;letter-spacing:1.35px}
+      .muted{fill:#49625c}
+      .edge{stroke:#416660;stroke-width:2.5;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="640" height="1628" rx="20" fill="#faf8f2"/>
+
+  <text x="28" y="42" class="caps" fill="#486b63">ECHO   /   SIGGRAPH ASIA 2025</text>
+  <text x="28" y="105" class="title">从一句旅行感想到主角动作</text>
+  <path d="M28 136H612" stroke="#b2c2b7" stroke-width="2"/>
+
+  <text x="28" y="190" class="section">①  两人在说什么？</text>
+  <rect x="28" y="209" width="584" height="182" rx="14" fill="#e8efeb" stroke="#b2c2b7"/>
+  <text x="51" y="250" class="label" style="fill:#216c5c">主角</text>
+  <text x="134" y="250" class="body">我想去旅行，听说日本的樱花很美。</text>
+  <path d="M51 270H588" stroke="#c1cdc4"/>
+  <text x="51" y="309" class="label" style="fill:#124e78">伙伴</text>
+  <text x="134" y="309" class="body">我去过，确实不错。</text>
+  <text x="51" y="364" class="small muted">据图 4 意译。场景中有双方语音和伙伴动作。</text>
+
+  <text x="28" y="456" class="section">②  这句话在做什么？</text>
+  <text x="28" y="494" class="body">语言模型从转写读上下文，结合语音情绪。</text>
+  <text x="28" y="528" class="body">窗口初始为 10 句，变换窗口与提示，抽取 3 次。</text>
+  <g>
+    <rect x="28" y="551" width="176" height="61" rx="12" fill="#fff" stroke="#a2b5af"/>
+    <rect x="214" y="551" width="176" height="61" rx="12" fill="#fff" stroke="#a2b5af"/>
+    <rect x="400" y="551" width="176" height="61" rx="12" fill="#fff" stroke="#a2b5af"/>
+    <text x="116" y="590" text-anchor="middle" class="body">候选 A</text>
+    <text x="302" y="590" text-anchor="middle" class="body">候选 B</text>
+    <text x="488" y="590" text-anchor="middle" class="body">候选 C</text>
+    <path d="M116 612V624H488V612" fill="none" stroke="#8ba39b" stroke-width="2"/>
+    <path d="M302 612V646" class="edge"/>
+  </g>
+  <rect x="28" y="651" width="584" height="78" rx="12" fill="#fffdf9" stroke="#a2b5af"/>
+  <text x="50" y="685" class="subhead">复核器参照示例，择一</text>
+  <text x="50" y="715" class="small muted">规则检查格式与缺项；不合格则请求重新生成。</text>
+
+  <text x="28" y="799" class="section">③  三种时间尺度怎样汇合？</text>
+
+  <rect x="28" y="823" width="584" height="96" rx="13" fill="#e5eef4" stroke="#97adbd"/>
+  <rect x="28" y="823" width="10" height="96" rx="5" fill="#366a8b"/>
+  <text x="51" y="858" class="subhead" style="fill:#205071">逐帧 · Hf</text>
+  <text x="51" y="894" class="body">双方语音与转写、角色标识、伙伴的已知动作</text>
+  <path d="M75 919V945" class="edge"/>
+  <rect x="28" y="950" width="584" height="131" rx="13" fill="#f7eddd" stroke="#c7ac7e"/>
+  <rect x="28" y="950" width="10" height="131" rx="5" fill="#a96e29"/>
+  <text x="51" y="985" class="subhead" style="fill:#79501d">当前句 · Hs</text>
+  <text x="51" y="1022" class="body">图 4 的判断：陈述、高兴、主动、强度 5/10。</text>
+  <text x="51" y="1057" class="small muted">这些类别经独热编码，与 Hf 在融合块中合并。</text>
+  <path d="M75 1081V1107" class="edge"/>
+  <rect x="28" y="1112" width="584" height="131" rx="13" fill="#e6efe7" stroke="#a0b5a3"/>
+  <rect x="28" y="1112" width="10" height="131" rx="5" fill="#50816a"/>
+  <text x="51" y="1148" class="subhead" style="fill:#305f46">整段对话 · Hc</text>
+  <text x="51" y="1185" class="body">话题是旅行经历；主角想向伙伴寻求建议。</text>
+  <text x="51" y="1219" class="small muted">全局文本经 BERT 编码，与 Hs 再做一次融合。</text>
+  <text x="28" y="1280" class="small muted">每个融合块依次拼接特征、做交叉注意力、再过 MLP。</text>
+
+  <text x="28" y="1349" class="section">④  谁的动作被生成？</text>
+  <rect x="28" y="1370" width="584" height="117" rx="14" fill="#22483f"/>
+  <text x="50" y="1413" class="subhead" style="fill:#fff">拼接 Hf、Hs、Hc　→　动作生成器</text>
+  <text x="50" y="1455" class="body" style="fill:#fff">已知的是伙伴动作，输出的是主角的骨骼序列。</text>
+  <text x="28" y="1531" class="small">图 4 展示语义判断；图 5 指向伙伴的动作来自另一句</text>
+  <text x="28" y="1561" class="small">“you know”。强度 5/10 不指定哪只手或哪一帧。</text>
+  <path d="M28 1583H612" stroke="#b2c2b7"/>
+  <text x="28" y="1613" class="caps muted">依据主文图 2、4、5，式 1–4；补充材料 §1.2</text>
 </svg>
