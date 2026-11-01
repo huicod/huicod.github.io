@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1630" viewBox="0 0 1120 1630" role="img" aria-labelledby="title desc"><title id="title">PixelUMM 的统一像素接口、双专家、训练和推理</title><desc id="desc">文字和干净像素进入理解专家，加噪目标进入生成专家。两路各用自己的参数形成 QKV，在块级掩码下进行一次共同的注意力计算，再分别输出语言或干净像素预测。</desc><defs><marker id="arrow" viewBox="0 0 10 10" markerWidth="7" markerHeight="7" refX="9" refY="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#417189"/></marker></defs><g font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+<rect x="0" y="0" width="1120" height="1630" rx="0" fill="#f0f5f6" stroke="none" stroke-width="2"/>
+<rect x="24" y="18" width="1072" height="110" rx="16" fill="#143b49" stroke="none" stroke-width="2"/>
+<text x="48" y="64" font-size="38" fill="#fff" font-weight="700">PixelUMM｜同一个 Transformer 如何读写像素</text>
+<text x="50" y="101" font-size="23" fill="#d9edf2">图像或视频 → 像素块 → 共享注意力 → 文字回答或像素预测</text>
+<rect x="24" y="148" width="1072" height="282" rx="16" fill="#ffffff" stroke="#bdcfd7" stroke-width="2"/>
+<text x="52" y="194" font-size="27" fill="#167580" font-weight="700">A</text>
+<text x="100" y="194" font-size="29" fill="#153e50" font-weight="700">先确定视觉输入来自哪里</text>
+<text x="52" y="228" font-size="21" fill="#466a7b">四个线性入口各有自己的权重，将图像块或视频时空块投影到相同的隐藏维度。</text>
+<rect x="52" y="244" width="494" height="118" rx="12" fill="#e3f0ec" stroke="#bed8cd" stroke-width="2"/>
+<text x="70" y="279" font-size="23" fill="#193e4b" font-weight="700">理解与条件输入</text>
+<text x="70" y="309" font-size="19" fill="#203f50">文字 → 词嵌入；干净图像 → 16 × 16 RGB 图块</text>
+<text x="70" y="335" font-size="19" fill="#203f50">密集视频 → 4 × 16 × 16 RGB 时空块</text>
+<rect x="574" y="244" width="494" height="118" rx="12" fill="#faefdf" stroke="#e8d3b4" stroke-width="2"/>
+<text x="592" y="279" font-size="23" fill="#193e4b" font-weight="700">要生成的目标</text>
+<text x="592" y="309" font-size="19" fill="#203f50">带噪图块或视频时空块 → 单层线性投影</text>
+<text x="592" y="335" font-size="19" fill="#203f50">每个视频块跨 4 帧，连续表示占一个序列位置</text>
+<text x="56" y="396" font-size="20" fill="#203f50">稀疏视频理解按帧读取：1 fps 抽帧后使用图像入口。密集模式默认 4 fps，使用视频入口。</text>
+<rect x="24" y="448" width="1072" height="385" rx="16" fill="#ffffff" stroke="#bdcfd7" stroke-width="2"/>
+<text x="52" y="494" font-size="27" fill="#167580" font-weight="700">B</text>
+<text x="100" y="494" font-size="29" fill="#153e50" font-weight="700">每个 Transformer 块内，按 token 类型固定分路</text>
+<text x="52" y="528" font-size="21" fill="#466a7b">理解专家处理文字与干净视觉上下文，生成专家处理带噪目标；两路均有自己的归一化、投影与前馈层。</text>
+<rect x="52" y="550" width="285" height="116" rx="12" fill="#e3f0ec" stroke="#bed8cd" stroke-width="2"/>
+<text x="70" y="585" font-size="23" fill="#193e4b" font-weight="700">理解专家的投影</text>
+<text x="70" y="615" font-size="19" fill="#203f50">文字、干净块 → Q/K/V</text>
+<rect x="783" y="550" width="285" height="116" rx="12" fill="#faefdf" stroke="#e8d3b4" stroke-width="2"/>
+<text x="801" y="585" font-size="23" fill="#193e4b" font-weight="700">生成专家的投影</text>
+<text x="801" y="615" font-size="19" fill="#203f50">带噪块 → Q/K/V</text>
+<rect x="384" y="553" width="352" height="107" rx="12" fill="#e5eef6" stroke="#c6d9e5" stroke-width="2"/>
+<text x="412" y="597" font-size="26" fill="#163c50" font-weight="700">共享多模态自注意力</text>
+<text x="410" y="632" font-size="19" fill="#203f50">按块的可见范围聚合信息</text>
+<path d="M339 607H378" fill="none" stroke="#417189" stroke-width="3.2" marker-end="url(#arrow)"/>
+<path d="M781 607H743" fill="none" stroke="#417189" stroke-width="3.2" marker-end="url(#arrow)"/>
+<path d="M560 661V684" fill="none" stroke="#417189" stroke-width="3.2"/>
+<path d="M194 684H925" fill="none" stroke="#417189" stroke-width="3.2"/>
+<path d="M194 684V703" fill="none" stroke="#417189" stroke-width="3.2" marker-end="url(#arrow)"/>
+<path d="M925 684V703" fill="none" stroke="#417189" stroke-width="3.2" marker-end="url(#arrow)"/>
+<rect x="52" y="707" width="497" height="51" rx="10" fill="#e3f0ec" stroke="#bed8cd" stroke-width="2"/>
+<rect x="571" y="707" width="497" height="51" rx="10" fill="#faefdf" stroke="#e8d3b4" stroke-width="2"/>
+<text x="77" y="739" font-size="20" fill="#203f50">理解位置 → 自己的输出投影、前馈层</text>
+<text x="594" y="739" font-size="20" fill="#203f50">生成位置 → 自己的输出投影、前馈层</text>
+<text x="52" y="799" font-size="20" fill="#203f50">文字块内逐词因果，视觉块内双向；带噪目标能读先前提示，提示不能反向读取目标。</text>
+<rect x="24" y="851" width="1072" height="359" rx="16" fill="#ffffff" stroke="#bdcfd7" stroke-width="2"/>
+<text x="52" y="897" font-size="27" fill="#167580" font-weight="700">C</text>
+<text x="100" y="897" font-size="29" fill="#153e50" font-weight="700">训练时，只有该样本对应的损失生效</text>
+<text x="52" y="931" font-size="21" fill="#466a7b">六阶段逐步引入视频和更高分辨率；最终阶段联合学习文字、图像与视频任务。</text>
+<rect x="52" y="948" width="495" height="155" rx="12" fill="#e3f0ec" stroke="#bed8cd" stroke-width="2"/>
+<text x="70" y="983" font-size="23" fill="#193e4b" font-weight="700">理解：I2T / V2T</text>
+<text x="70" y="1013" font-size="19" fill="#203f50">先读图像或视频及问题，逐词预测回答</text>
+<text x="70" y="1039" font-size="19" fill="#203f50">只对助手回答词元计算交叉熵（CE）</text>
+<rect x="573" y="948" width="495" height="155" rx="12" fill="#faefdf" stroke="#e8d3b4" stroke-width="2"/>
+<text x="591" y="983" font-size="23" fill="#193e4b" font-weight="700">生成：T2I / T2V</text>
+<text x="591" y="1013" font-size="19" fill="#203f50">噪声与真实像素混合，形成 zₜ</text>
+<text x="591" y="1039" font-size="19" fill="#203f50">按图像或视频的输出头预测干净像素 x̂</text>
+<text x="591" y="1065" font-size="19" fill="#203f50">由 x̂ 换算速度，在速度空间计算 MSE</text>
+<text x="55" y="1142" font-size="21" fill="#203f50">输出头由 RMSNorm 与线性投影组成，预测块可直接拼回 RGB。</text>
+<text x="55" y="1177" font-size="20" fill="#203f50">噪声时刻 t 用于构造训练目标和采样更新，去噪网络没有单独的 t 输入。</text>
+<rect x="24" y="1228" width="1072" height="323" rx="16" fill="#ffffff" stroke="#bdcfd7" stroke-width="2"/>
+<text x="52" y="1274" font-size="27" fill="#167580" font-weight="700">D</text>
+<text x="100" y="1274" font-size="29" fill="#153e50" font-weight="700">以“猎豹追逐羚羊”读一次视频生成</text>
+<text x="52" y="1308" font-size="21" fill="#466a7b">按图 4 的示例，给文字和整段噪声视频；采样时反复更新整块目标，再拼回所有帧。</text>
+<rect x="52" y="1330" width="280" height="115" rx="12" fill="#e5eef6" stroke="#c6d9e5" stroke-width="2"/>
+<text x="70" y="1365" font-size="23" fill="#193e4b" font-weight="700">输入提示与噪声</text>
+<text x="70" y="1395" font-size="19" fill="#203f50">96 帧 × 256 × 256</text>
+<text x="70" y="1421" font-size="19" fill="#203f50">形成 6,144 个视频块</text>
+<rect x="374" y="1330" width="321" height="115" rx="12" fill="#faefdf" stroke="#e8d3b4" stroke-width="2"/>
+<text x="392" y="1365" font-size="23" fill="#193e4b" font-weight="700">迭代预测干净像素</text>
+<text x="392" y="1395" font-size="19" fill="#203f50">目标块同时读取整段提示</text>
+<text x="392" y="1421" font-size="19" fill="#203f50">和目标内的所有时空位置</text>
+<rect x="736" y="1330" width="332" height="115" rx="12" fill="#e5eef6" stroke="#c6d9e5" stroke-width="2"/>
+<text x="754" y="1365" font-size="23" fill="#193e4b" font-weight="700">还原整段视频</text>
+<text x="754" y="1395" font-size="19" fill="#203f50">按时空网格拼回 RGB 帧</text>
+<text x="754" y="1421" font-size="19" fill="#203f50">4 秒，24 fps</text>
+<path d="M333 1388H368" fill="none" stroke="#417189" stroke-width="3.2" marker-end="url(#arrow)"/>
+<path d="M696 1388H730" fill="none" stroke="#417189" stroke-width="3.2" marker-end="url(#arrow)"/>
+<text x="55" y="1491" font-size="20" fill="#203f50">6,144 = (96 ÷ 4) × (256 ÷ 16) × (256 ÷ 16)。这里展示的是形状推导，没有运行模型。</text>
+<text x="55" y="1526" font-size="20" fill="#203f50">图像生成用同一条采样逻辑，只将时空块换成图块。</text>
+<text x="32" y="1593" font-size="19" fill="#486e80">据 PixelUMM arXiv v1 图 3–5、式 1–2、§2.1–2.4 重绘。绿色为理解路径，浅橙为生成路径。</text>
+</g></svg>
