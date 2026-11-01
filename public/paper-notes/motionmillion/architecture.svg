@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1574" viewBox="0 0 1120 1574" role="img" aria-labelledby="title desc"><title id="title">MotionMillion 数据、训练、推理与评估流程</title><desc id="desc">数据集提供成对文字和动作。动作编解码器产生训练码，文本条件模型学习逐码预测，推理仅需文字。</desc><defs><marker id="a" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0 L9 4 L0 8Z" fill="#386479"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#163747}.title{font-size:35px;font-weight:bold}.sec{font-size:25px;font-weight:bold}.h{font-size:22px;font-weight:bold}.b{font-size:19px}.small{font-size:17px;fill:#476473}.white{fill:white}</style><rect width="1120" height="1574" fill="#f1f6f7"/>
+<rect x="24" y="20" width="1072" height="111" rx="13" fill="#123a4a" stroke="#123a4a" stroke-width="2"/>
+<text x="47" y="67" class="title white">MotionMillion｜从网络视频到可生成的动作码</text>
+<text x="47" y="102" class="b white">A 建数据　 B 学编解码　 C 学下一码　 D 生成与评估</text>
+<rect x="24" y="153" width="1072" height="312" rx="13" fill="#fff" stroke="#bdcfd5" stroke-width="2"/>
+<text x="46" y="196" class="sec">A　构建动作—文字训练对</text>
+<text x="46" y="231" class="b">新视频提供估计的动作与配文，既有动作库是另一条数据来源。</text>
+<rect x="46" y="251" width="294" height="101" rx="13" fill="#e6f0f6" stroke="#bdcfd5" stroke-width="2"/>
+<text x="62" y="284" class="h">网络人物视频</text>
+<text x="62" y="314" class="b">切镜、检人和跟踪</text>
+<text x="62" y="341" class="b">过滤遮挡与过渡</text>
+<rect x="394" y="251" width="290" height="101" rx="13" fill="#ddf1e9" stroke="#bdcfd5" stroke-width="2"/>
+<text x="410" y="284" class="h">GVHMR → SMPL</text>
+<text x="410" y="314" class="b">关节与根轨迹</text>
+<text x="410" y="341" class="b">突变／jerk 过滤</text>
+<rect x="738" y="251" width="330" height="101" rx="13" fill="#fbefdb" stroke="#bdcfd5" stroke-width="2"/>
+<text x="754" y="284" class="h">GPT-4o → 文字改写</text>
+<text x="754" y="314" class="b">看镜头中的目标人物</text>
+<text x="754" y="341" class="b">Llama-3.1-8B 扩充说法</text>
+<path d="M341 302L389 302" fill="none" stroke="#386479" stroke-width="3" marker-end="url(#a)" />
+<path d="M200 352 V368 H903 V354" fill="none" stroke="#386479" stroke-width="2.5" marker-end="url(#a)" />
+<text x="48" y="392" class="b">同一视频片段提供对应的运动和文字。另汇合 BABEL、AIST 等已有来源。</text>
+<text x="48" y="430" class="small">汇总口径　约 200 万动作片段，超过 2,000 小时。每次改写仍指向原来那段运动。</text>
+<rect x="24" y="483" width="1072" height="323" rx="13" fill="#fff" stroke="#bdcfd5" stroke-width="2"/>
+<text x="46" y="526" class="sec">B　学习动作编解码器</text>
+<text x="46" y="561" class="b">训练输入为已有动作，每帧 272 维，含根运动和局部关节位置、速度、旋转。</text>
+<rect x="46" y="584" width="242" height="99" rx="13" fill="#e6f0f6" stroke="#bdcfd5" stroke-width="2"/>
+<text x="62" y="617" class="h">时间小波</text>
+<text x="62" y="647" class="b">分离快慢变化</text>
+<rect x="321" y="584" width="223" height="99" rx="13" fill="#ddf1e9" stroke="#bdcfd5" stroke-width="2"/>
+<text x="337" y="617" class="h">动作编码器</text>
+<text x="337" y="647" class="b">得到连续潜坐标</text>
+<rect x="580" y="584" width="228" height="99" rx="13" fill="#fbefdb" stroke="#bdcfd5" stroke-width="2"/>
+<text x="596" y="617" class="h">FSQ 量化</text>
+<text x="596" y="647" class="b">逐坐标限幅、舍入</text>
+<rect x="843" y="584" width="225" height="99" rx="13" fill="#e6f0f6" stroke="#bdcfd5" stroke-width="2"/>
+<text x="859" y="617" class="h">组合索引</text>
+<text x="859" y="647" class="b">作为动作码目标</text>
+<path d="M289 632L317 632" fill="none" stroke="#386479" stroke-width="3" marker-end="url(#a)" />
+<path d="M545 632L576 632" fill="none" stroke="#386479" stroke-width="3" marker-end="url(#a)" />
+<path d="M809 632L839 632" fill="none" stroke="#386479" stroke-width="3" marker-end="url(#a)" />
+<text x="48" y="733" class="b">重建路径　索引还原为量化坐标 → 动作解码器 → 逆小波 → 重建人体动作。</text>
+<text x="48" y="771" class="small">小波按论文图 5 绘制。公开示例的 Haar 层数受 patch_size 设置影响，见正文。</text>
+<rect x="24" y="824" width="1072" height="310" rx="13" fill="#fff" stroke="#bdcfd5" stroke-width="2"/>
+<text x="46" y="867" class="sec">C　训练文本条件的自回归生成器</text>
+<text x="46" y="902" class="b">文字可读整句；每一步动作预测只读此前的动作码。</text>
+<rect x="46" y="925" width="262" height="106" rx="13" fill="#e6f0f6" stroke="#bdcfd5" stroke-width="2"/>
+<text x="62" y="958" class="h">配对的文本描述</text>
+<text x="62" y="988" class="b">T5-XL 词级特征</text>
+<rect x="46" y="1044" width="262" height="67" rx="13" fill="#fbefdb" stroke="#bdcfd5" stroke-width="2"/>
+<text x="62" y="1077" class="h">已有动作码前缀</text>
+<rect x="407" y="957" width="315" height="127" rx="13" fill="#ddf1e9" stroke="#bdcfd5" stroke-width="2"/>
+<text x="423" y="990" class="h">混合注意力块 × L</text>
+<text x="423" y="1020" class="b">整句文本双向可见</text>
+<text x="423" y="1047" class="b">动作序列使用因果掩码</text>
+<rect x="808" y="957" width="260" height="127" rx="13" fill="#fbefdb" stroke="#bdcfd5" stroke-width="2"/>
+<text x="824" y="990" class="h">动作分类头</text>
+<text x="824" y="1020" class="b">预测下一码</text>
+<text x="824" y="1047" class="b">与真实码计算交叉熵</text>
+<path d="M310 980L402 995" fill="none" stroke="#386479" stroke-width="3" marker-end="url(#a)" />
+<path d="M310 1077L402 1048" fill="none" stroke="#386479" stroke-width="3" marker-end="url(#a)" />
+<path d="M723 1024L802 1024" fill="none" stroke="#386479" stroke-width="3" marker-end="url(#a)" />
+<rect x="24" y="1152" width="1072" height="355" rx="13" fill="#fff" stroke="#bdcfd5" stroke-width="2"/>
+<text x="46" y="1195" class="sec">D　推理与核验</text>
+<text x="46" y="1230" class="b">仅给文字，例如“先停住，再转身举刀挥砍”。推理可以分别使用原句与改写句。</text>
+<rect x="46" y="1256" width="290" height="108" rx="13" fill="#e6f0f6" stroke="#bdcfd5" stroke-width="2"/>
+<text x="62" y="1289" class="h">文本 → 动作码</text>
+<text x="62" y="1319" class="b">预测一个码，加入前缀</text>
+<text x="62" y="1346" class="b">遇到结束码或达到上限</text>
+<rect x="395" y="1256" width="285" height="108" rx="13" fill="#ddf1e9" stroke="#bdcfd5" stroke-width="2"/>
+<text x="411" y="1289" class="h">解码人体运动</text>
+<text x="411" y="1319" class="b">FSQ 还原、解码</text>
+<text x="411" y="1346" class="b">得到连续骨骼轨迹</text>
+<rect x="740" y="1256" width="328" height="108" rx="13" fill="#fbefdb" stroke="#bdcfd5" stroke-width="2"/>
+<text x="756" y="1289" class="h">检验输出</text>
+<text x="756" y="1319" class="b">人评文字匹配、平滑度</text>
+<text x="756" y="1346" class="b">与物理合理性</text>
+<path d="M337 1310L390 1310" fill="none" stroke="#386479" stroke-width="3" marker-end="url(#a)" />
+<path d="M681 1310L735 1310" fill="none" stroke="#386479" stroke-width="3" marker-end="url(#a)" />
+<text x="48" y="1410" class="b">观察顺序　是否先停住？是否发生转身和挥砍？论文在人评中为整条提示评分。</text>
+<text x="48" y="1454" class="small">骨架可以呈现挥动。道具轨迹、接触力及每个事件的精确时刻没有作为模型输出。</text>
+<text x="45" y="1550" class="small">教学重绘｜依据 ICCV 2025 主文图 2、图 5–6，补充图 2 与公开推理代码。</text>
+</svg>

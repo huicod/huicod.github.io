@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 1628" width="1120" height="1628" role="img" aria-labelledby="title desc"><title id="title">身体部位相位、生成主干与训练路径</title><desc id="desc">从参考动作取五个区域的相位，改变选定部位的幅度、频率或相移，借九块 ControlNet 残差向冻结的主干提供条件，解码全身动作。训练用冻结的相位提取器检查输出。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#497180"/></marker><marker id="teach" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#ab6939"/></marker></defs><g font-family="'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif"><rect x="0" y="0" width="1120" height="1628" rx="0" fill="#f4f7f7" stroke="none"/>
+<rect x="24" y="20" width="1072" height="113" rx="20" fill="#183e4c" stroke="none"/>
+<text x="45" y="66" font-size="39" fill="#fff" font-weight="740">部位相位如何改写一段文本生成的动作</text>
+<text x="46" y="109" font-size="23" fill="#deedf1" font-weight="400">参考动作给节奏，文字给动作意图，用户只改变选中部位的参数。</text>
+<rect x="26" y="155" width="1068" height="205" rx="19" fill="#fff" stroke="#bfd1d6"/>
+<text x="46" y="198" font-size="29" fill="#176576" font-weight="780">A</text>
+<text x="88" y="198" font-size="30" fill="#173d48" font-weight="740">从参考动作读出局部周期</text>
+<text x="48" y="237" font-size="21" fill="#496974" font-weight="400">参考可以是已有动作，也可以是先按文字生成的一段动作。</text>
+<rect x="49" y="256" width="275" height="84" rx="12" fill="#e8eff5" stroke="none"/>
+<text x="66" y="290" font-size="23" fill="#123a44" font-weight="720">参考动作 xref</text>
+<text x="66" y="323" font-size="19" fill="#263e4b" font-weight="400">取短窗关节速度</text>
+<rect x="382" y="256" width="325" height="84" rx="12" fill="#e7f2f1" stroke="none"/>
+<text x="399" y="290" font-size="23" fill="#123a44" font-weight="720">冻结的部位相位提取器</text>
+<text x="399" y="323" font-size="19" fill="#263e4b" font-weight="400">左右上肢、左右下肢、躯干</text>
+<rect x="758" y="256" width="310" height="84" rx="12" fill="#fbf0dd" stroke="none"/>
+<text x="775" y="290" font-size="23" fill="#123a44" font-weight="720">每部位两条通道</text>
+<text x="775" y="323" font-size="19" fill="#263e4b" font-weight="400">各估计 A、F、S、B</text>
+<path d="M 328 295 H 371" fill="none" stroke="#497180" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M 711 295 H 748" fill="none" stroke="#497180" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="26" y="382" width="1068" height="258" rx="19" fill="#fff" stroke="#bfd1d6"/>
+<text x="46" y="425" font-size="29" fill="#176576" font-weight="780">B</text>
+<text x="88" y="425" font-size="30" fill="#173d48" font-weight="740">旋钮作用在选定部位</text>
+<text x="48" y="464" font-size="21" fill="#496974" font-weight="400">图 4 的例子：保持“用右手挥手”的提示，只把右上肢两通道的 A 放大。</text>
+<rect x="49" y="489" width="288" height="96" rx="12" fill="#fbf0dd" stroke="none"/>
+<text x="66" y="523" font-size="23" fill="#123a44" font-weight="720">三种用户操作</text>
+<text x="66" y="556" font-size="19" fill="#263e4b" font-weight="400">A 改幅度，F 改节奏</text>
+<text x="66" y="583" font-size="19" fill="#263e4b" font-weight="400">S 改周期内的相移</text>
+<rect x="389" y="489" width="321" height="96" rx="12" fill="#e7f2f1" stroke="none"/>
+<text x="406" y="523" font-size="23" fill="#123a44" font-weight="720">把参数变成圆上向量</text>
+<text x="406" y="556" font-size="19" fill="#263e4b" font-weight="400">A · [cos φ, sin φ]</text>
+<text x="406" y="583" font-size="19" fill="#263e4b" font-weight="400">φ = 2π(Fτ + S)</text>
+<rect x="757" y="489" width="311" height="96" rx="12" fill="#e8eff5" stroke="none"/>
+<text x="774" y="523" font-size="23" fill="#123a44" font-weight="720">整段条件 P：T × 20</text>
+<text x="774" y="556" font-size="19" fill="#263e4b" font-weight="400">五区 × 两通道 × 二坐标</text>
+<text x="774" y="583" font-size="19" fill="#263e4b" font-weight="400">合在同一时间轴上</text>
+<path d="M 341 536 H 378" fill="none" stroke="#497180" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M 714 536 H 747" fill="none" stroke="#497180" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="53" y="618" font-size="20" fill="#506774" font-weight="400">B 用于拟合原速度的偏置，式 6 的相位条件显式使用 A、F、S。</text>
+<rect x="26" y="662" width="1068" height="454" rx="19" fill="#fff" stroke="#bfd1d6"/>
+<text x="46" y="705" font-size="29" fill="#176576" font-weight="780">C</text>
+<text x="88" y="705" font-size="30" fill="#173d48" font-weight="740">把相位条件送到动作生成器每一层</text>
+<text x="48" y="744" font-size="21" fill="#496974" font-weight="400">两个网络接收相同的文字、采样时刻；控制分支另外读取上一步得到的 P。</text>
+<rect x="50" y="762" width="300" height="101" rx="12" fill="#e8eff5" stroke="none"/>
+<text x="67" y="796" font-size="23" fill="#123a44" font-weight="720">文本与带噪潜变量</text>
+<text x="67" y="829" font-size="19" fill="#263e4b" font-weight="400">文字 → 嵌入 c</text>
+<text x="67" y="856" font-size="19" fill="#263e4b" font-weight="400">潜变量 zₜ，采样时刻 t</text>
+<rect x="560" y="762" width="491" height="101" rx="12" fill="#e7f2f1" stroke="none"/>
+<text x="577" y="796" font-size="23" fill="#123a44" font-weight="720">相位编码器（可训练）</text>
+<text x="577" y="829" font-size="19" fill="#263e4b" font-weight="400">P → 时间卷积与投影 → g</text>
+<text x="577" y="856" font-size="19" fill="#263e4b" font-weight="400">g 经 MLP 加入控制分支的 zₜ</text>
+<rect x="50" y="912" width="443" height="103" rx="12" fill="#e8eff5" stroke="none"/>
+<text x="67" y="946" font-size="23" fill="#123a44" font-weight="720">生成主干（冻结）</text>
+<text x="67" y="979" font-size="19" fill="#263e4b" font-weight="400">MotionLCM 或潜空间 rectified flow</text>
+<text x="67" y="1006" font-size="19" fill="#263e4b" font-weight="400">各层特征 hₗ 接收对应残差 rₗ</text>
+<rect x="561" y="912" width="490" height="103" rx="12" fill="#e7f2f1" stroke="none"/>
+<text x="578" y="946" font-size="23" fill="#123a44" font-weight="720">Phase ControlNet（可训练）</text>
+<text x="578" y="979" font-size="19" fill="#263e4b" font-weight="400">镜像主干的 9 个块，读取 zₜ + MLP(g)、t、c</text>
+<text x="578" y="1006" font-size="19" fill="#263e4b" font-weight="400">每块用零初始化投影输出一个残差</text>
+<path d="M 200 867 V 900" fill="none" stroke="#497180" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M 349 807 H 452 V 883 H 610 V 900" fill="none" stroke="#497180" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M 809 866 V 900" fill="none" stroke="#497180" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M 557 970 H 505" fill="none" stroke="#497180" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="50" y="1043" width="1001" height="45" rx="10" fill="#f9f0df" stroke="none"/>
+<text x="74" y="1073" font-size="20" fill="#63451e" font-weight="580">主干采样完成 → 冻结 VAE 解码器 → 全身动作；可再提取相位，进行下一轮编辑。</text>
+<path d="M 249 1019 V 1035" fill="none" stroke="#497180" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="26" y="1137" width="1068" height="407" rx="19" fill="#fff" stroke="#bfd1d6"/>
+<text x="46" y="1180" font-size="29" fill="#176576" font-weight="780">D</text>
+<text x="88" y="1180" font-size="30" fill="#173d48" font-weight="740">训练怎样检查解码后的动作</text>
+<text x="48" y="1219" font-size="21" fill="#496974" font-weight="400">核心生成器、文本编码器和动作 VAE 在两阶段都冻结。虚线表示用于计算训练损失。</text>
+<rect x="52" y="1236" width="482" height="102" rx="12" fill="#e8eff5" stroke="none"/>
+<text x="69" y="1270" font-size="23" fill="#123a44" font-weight="720">第一阶段：学短窗速度重建</text>
+<text x="69" y="1303" font-size="19" fill="#263e4b" font-weight="400">各部位周期自编码器重建关节速度</text>
+<text x="69" y="1330" font-size="19" fill="#263e4b" font-weight="400">训练结束后冻结提取器。</text>
+<rect x="565" y="1236" width="483" height="102" rx="12" fill="#e7f2f1" stroke="none"/>
+<text x="582" y="1270" font-size="23" fill="#123a44" font-weight="720">第二阶段：训练控制分支</text>
+<text x="582" y="1303" font-size="19" fill="#263e4b" font-weight="400">用参考相位条件训练相位编码器和 ControlNet</text>
+<text x="582" y="1330" font-size="19" fill="#263e4b" font-weight="400">基础生成损失 + 加权的相位一致性损失。</text>
+<rect x="52" y="1373" width="320" height="75" rx="10" fill="#faefdf" stroke="none"/>
+<text x="68" y="1405" font-size="22" fill="#173d48" font-weight="690">预测的干净潜变量</text>
+<text x="68" y="1434" font-size="19" fill="#263e4b" font-weight="400">解码成新动作，再提取相位</text>
+<rect x="585" y="1373" width="463" height="75" rx="10" fill="#faefdf" stroke="none"/>
+<text x="602" y="1405" font-size="22" fill="#173d48" font-weight="690">与参考相位比对</text>
+<text x="602" y="1434" font-size="19" fill="#263e4b" font-weight="400">时空掩码选定位置，计算 L1</text>
+<path d="M 376 1412 H 575" fill="none" stroke="#ab6939" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#teach)"/>
+<text x="52" y="1501" font-size="20" fill="#506774" font-weight="400">这个检查约束的是输出的相位特征。其他关节的逐帧位置和接触误差需另行测量。</text>
+<text x="42" y="1583" font-size="19" fill="#54707a" font-weight="400">据 arXiv:2603.19795v1 图 2、图 4、式 5–11 重绘。</text></g></svg>
