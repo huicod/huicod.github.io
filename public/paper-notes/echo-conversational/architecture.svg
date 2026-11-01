@@ -11,9 +11,9 @@
  <text x="45" y="142" class="sub">音频定位节奏，句子说明此刻在做什么，整段谈话补充原因。</text>
  <text x="44" y="202" class="tag">01　先读谈话，在对话历史中分析当前发言</text>
  <g class="box" stroke="#a4c0b6" fill="#e8f2ec"><rect x="44" y="224" width="295" height="117" rx="14"/><rect x="391" y="224" width="294" height="117" rx="14"/><rect x="738" y="224" width="298" height="117" rx="14"/></g>
- <text x="65" y="264" class="tag">有角色的转写</text><text x="65" y="300" class="body">当前句、过去轮次、时间戳</text>
- <text x="414" y="264" class="tag">LLM 分项抽取</text><text x="414" y="300" class="body">多组提示，多次产生候选</text>
- <text x="760" y="264" class="tag">复核与检查</text><text x="760" y="300" class="body">汇集局部和全局语义</text>
+ <text x="65" y="264" class="tag">双方转写与语音</text><text x="65" y="300" class="body">起始窗口 10 句，提取情绪</text>
+ <text x="414" y="264" class="tag">LLM 分项抽取</text><text x="414" y="300" class="body">变动窗口和提示，取 3 组候选</text>
+ <text x="760" y="264" class="tag">复核与检查</text><text x="760" y="300" class="body">择一；格式不合则重新生成</text>
  <path d="M342 282H380" class="flow"/><path d="M689 282H727" class="flow"/>
  <text x="44" y="405" class="tag">02　三种时间尺度怎样汇合</text>
  <rect x="44" y="430" width="304" height="215" rx="16" fill="#e8eff6" stroke="#a1b9ca" class="box"/>
@@ -21,21 +21,21 @@
  <text x="66" y="549" class="body">音频、说话人身份、转写</text><text x="66" y="581" class="body">以及对话伙伴的动作</text><text x="66" y="617" class="small">保留声音与动作的时间变化</text>
  <rect x="389" y="430" width="301" height="215" rx="16" fill="#f6eddf" stroke="#d5b99a" class="box"/>
  <text x="410" y="468" class="k">SENTENCE　句级</text><text x="410" y="510" class="tag">当前发言的作用</text>
- <text x="410" y="549" class="body">局部意图、主动性、触发</text><text x="410" y="581" class="body">类别编码 → IF 融合块</text><text x="410" y="617" class="small">合并逐帧信号与句子条件</text>
+ <text x="410" y="549" class="body">意图、情绪、主动性、触发</text><text x="410" y="581" class="body">独热编码 → IF 融合块</text><text x="410" y="617" class="small">合并逐帧信号与句子条件</text>
  <rect x="731" y="430" width="305" height="215" rx="16" fill="#e4eeea" stroke="#9ebcaf" class="box"/>
  <text x="752" y="468" class="k">DIALOGUE　对话级</text><text x="752" y="510" class="tag">整段谈话的方向</text>
- <text x="752" y="549" class="body">摘要、全局意图</text><text x="752" y="581" class="body">文本嵌入 → IF 融合块</text><text x="752" y="617" class="small">再合并前一级的特征</text>
+ <text x="752" y="549" class="body">话题摘要、全局意图</text><text x="752" y="581" class="body">BERT 编码 → IF 融合块</text><text x="752" y="617" class="small">再合并前一级的特征</text>
  <path d="M350 536H379" class="flow"/><path d="M692 536H721" class="flow"/>
- <text x="48" y="684" class="small">IF 块内部顺序为拼接、交叉注意力、多层感知机。图中箭头表示特征融合顺序。</text>
+ <text x="48" y="684" class="small">IF 块：拼接特征作查询、单项特征作键和值，经交叉注意力和 MLP 融合。</text>
  <path d="M882 648V707" class="flow"/>
  <rect x="44" y="715" width="992" height="129" rx="16" fill="#e1ece5" stroke="#91b3a2" class="box"/>
  <text x="68" y="756" class="tag">03　接入动作生成器</text>
- <text x="68" y="795" class="body">原始条件与语义特征 → 最终拼接 → 生成模型 → 主角色骨骼动作序列</text>
+ <text x="68" y="795" class="body">帧级 Hf ＋ 句级 Hs ＋ 对话级 Hc → 拼接三层特征 → 生成主角色骨骼动作</text>
  <text x="68" y="826" class="small">触发强度表达一句话可能配多少动作；没有指定哪只手、哪一帧或哪个落点。</text>
  <rect x="44" y="889" width="992" height="190" rx="16" fill="#f6f1e7" stroke="#ceb997" class="box"/>
  <text x="68" y="931" class="tag">对照公开的训练入口</text>
  <text x="68" y="970" class="body">Diff 脚本载入每条样本的文字摘要，把词向量求和为 300 维条件。</text>
  <text x="68" y="1004" class="body">该向量沿片段时间维重复，与音频等条件一起交给动作模型。</text>
  <text x="68" y="1044" class="small">这一入口直接显示摘要怎样接入；完整 IF 网络和逐句切换效果仍需另行核验。</text>
- <text x="46" y="1131" class="small">依据作者总览图、提示词与训练脚本重绘。上部为论文设计，下部为公开实现。</text>
+ <text x="46" y="1131" class="small">依据主文算法 1、图 2–4、式 1–4、附录 §1–2 和作者公开训练脚本重绘。</text>
 </svg>
