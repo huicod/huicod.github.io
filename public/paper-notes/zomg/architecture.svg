@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1570" viewBox="0 0 1200 1570" role="img" aria-labelledby="title desc"><title id="title">ZOMG · 文本子动作在既有运动中的时间定位</title><desc id="desc">A 训练整段动作与文本的共同表示；B 在新样本上生成子查询并提取逐帧特征；C 只更新本例 k×L 个掩码；D 对每帧取最大值，合并相邻同标签区间。</desc><defs><marker id="end" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#456278"/></marker><marker id="update" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#974c14"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#193447}.title{font-size:38px;font-weight:700}.head{font-size:28px;font-weight:700}.label{font-size:23px;font-weight:700}.body{font-size:21px}.note{font-size:20px;fill:#3c576a}.edge{fill:none;stroke:#456278;stroke-width:3;marker-end:url(#end)}.gradient{fill:none;stroke:#974c14;stroke-width:3;stroke-dasharray:7 6;marker-end:url(#update)}</style><rect width="1200" height="1570" rx="22" fill="#f6f8fa"/>
+<text x="38" y="56" text-anchor="start" class="title">ZOMG · 给已有动作定位文本子事件</text>
+<text x="40" y="96" text-anchor="start" class="note">AAAI 2026 · 整段预训练 → 语言拆分与特征读取 → 逐样本掩码优化 → 帧区间</text>
+<rect x="25" y="120" width="1150" height="292" rx="15" fill="#fff" stroke="#d6e0e6" stroke-width="2"/>
+<text x="50" y="165" text-anchor="start" class="head">A　离线训练：先学整段动作与整句描述的匹配</text>
+<text x="51" y="202" text-anchor="start" class="note">使用动作—文本序列对，无需逐帧短语标注。两个编码器与注意力池化在此阶段学习。</text>
+<rect x="51" y="232" width="262" height="130" rx="15" fill="#e7f1fa" stroke="#b8cbd2" stroke-width="2"/>
+<text x="182" y="266" text-anchor="middle" class="label">配对样本</text>
+<text x="182" y="296" text-anchor="middle" class="body">动作 M，含 L 帧</text>
+<text x="182" y="325" text-anchor="middle" class="body">对应的完整描述 T</text>
+<rect x="369" y="220" width="354" height="76" rx="15" fill="#e7f1fa" stroke="#b8cbd2" stroke-width="2"/>
+<text x="546" y="254" text-anchor="middle" class="label">动作编码器 → F → 池化 P</text>
+<text x="546" y="284" text-anchor="middle" class="body">整段动作向量 m</text>
+<rect x="369" y="310" width="354" height="76" rx="15" fill="#e7f1fa" stroke="#b8cbd2" stroke-width="2"/>
+<text x="546" y="344" text-anchor="middle" class="label">文本编码器</text>
+<text x="546" y="374" text-anchor="middle" class="body">完整描述向量 t</text>
+<rect x="811" y="239" width="337" height="120" rx="15" fill="#e7f3ed" stroke="#b8cbd2" stroke-width="2"/>
+<text x="979.5" y="273" text-anchor="middle" class="label">整段对比学习</text>
+<text x="979.5" y="303" text-anchor="middle" class="body">拉近匹配文本与动作</text>
+<text x="979.5" y="332" text-anchor="middle" class="body">区分其他样本的文本</text>
+<path d="M314 286H341V259H365" class="edge"/>
+<path d="M314 310H342V349H365" class="edge"/>
+<path d="M724 259H764V281H807" class="edge"/>
+<path d="M724 349H764V319H807" class="edge"/>
+<rect x="25" y="430" width="1150" height="323" rx="15" fill="#fff" stroke="#d6e0e6" stroke-width="2"/>
+<text x="50" y="475" text-anchor="start" class="head">B　新样本：定义要找的短语，并保留逐帧特征</text>
+<text x="51" y="512" text-anchor="start" class="note">复用 A 学到的编码器与 P，保持参数冻结。语言和动作沿两条路径进入本例的优化。</text>
+<rect x="51" y="545" width="258" height="82" rx="15" fill="#e7f1fa" stroke="#b8cbd2" stroke-width="2"/>
+<text x="180" y="579" text-anchor="middle" class="label">当前动作的描述 T</text>
+<text x="180" y="609" text-anchor="middle" class="body">自由文本</text>
+<rect x="368" y="545" width="338" height="82" rx="15" fill="#f0eafa" stroke="#b8cbd2" stroke-width="2"/>
+<text x="537" y="579" text-anchor="middle" class="label">LSP · Qwen-Plus</text>
+<text x="537" y="609" text-anchor="middle" class="body">提示示例、改写与投票</text>
+<rect x="766" y="545" width="382" height="82" rx="15" fill="#f0eafa" stroke="#b8cbd2" stroke-width="2"/>
+<text x="957" y="579" text-anchor="middle" class="label">k 个子动作查询</text>
+<text x="957" y="609" text-anchor="middle" class="body">冻结文本编码器 → t₁…tₖ</text>
+<rect x="51" y="646" width="258" height="82" rx="15" fill="#e7f1fa" stroke="#b8cbd2" stroke-width="2"/>
+<text x="180" y="680" text-anchor="middle" class="label">已有运动 M</text>
+<text x="180" y="710" text-anchor="middle" class="body">L 帧 H3D 特征</text>
+<rect x="368" y="646" width="338" height="82" rx="15" fill="#e7f3ed" stroke="#b8cbd2" stroke-width="2"/>
+<text x="537" y="680" text-anchor="middle" class="label">冻结动作编码器</text>
+<text x="537" y="710" text-anchor="middle" class="body">保持每个时间位置</text>
+<rect x="766" y="646" width="382" height="82" rx="15" fill="#e7f3ed" stroke="#b8cbd2" stroke-width="2"/>
+<text x="957" y="680" text-anchor="middle" class="label">逐帧动作表示 F</text>
+<text x="957" y="710" text-anchor="middle" class="body">f₁…fL，保留帧顺序</text>
+<path d="M310 585H363" class="edge"/>
+<path d="M707 585H761" class="edge"/>
+<path d="M310 687H363" class="edge"/>
+<path d="M707 687H761" class="edge"/>
+<rect x="25" y="771" width="1150" height="375" rx="15" fill="#fff" stroke="#d6e0e6" stroke-width="2"/>
+<text x="50" y="816" text-anchor="start" class="head">C　只优化时间归属：100 步更新当前样本的掩码</text>
+<text x="51" y="853" text-anchor="start" class="note">对每一帧在 k 个查询之间做 softmax。各查询重新加权 F，再与文字向量比较。</text>
+<rect x="52" y="892" width="298" height="124" rx="15" fill="#fff1da" stroke="#b8cbd2" stroke-width="2"/>
+<text x="201" y="926" text-anchor="middle" class="label">本例变量 M ∈ ℝᵏˣᴸ</text>
+<text x="201" y="956" text-anchor="middle" class="body">同一帧由各查询竞争</text>
+<text x="201" y="985" text-anchor="middle" class="body">归一化权重之和为 1</text>
+<rect x="414" y="892" width="352" height="124" rx="15" fill="#e7f3ed" stroke="#b8cbd2" stroke-width="2"/>
+<text x="590" y="926" text-anchor="middle" class="label">逐帧加权 → 冻结池化 P</text>
+<text x="590" y="956" text-anchor="middle" class="body">每行权重 × 动作帧特征 F</text>
+<text x="590" y="985" text-anchor="middle" class="body">获得 k 个局部动作向量</text>
+<rect x="830" y="892" width="316" height="124" rx="15" fill="#fff1da" stroke="#b8cbd2" stroke-width="2"/>
+<text x="988" y="926" text-anchor="middle" class="label">三项优化目标</text>
+<text x="988" y="956" text-anchor="middle" class="body">同样本短语间的对比</text>
+<text x="988" y="985" text-anchor="middle" class="body">掩码互斥 ＋ 相邻帧平滑</text>
+<path d="M351 954H409" class="edge"/>
+<path d="M767 954H825" class="edge"/>
+<path d="M988 1017V1053H199V1021" class="gradient"/>
+<text x="610" y="1098" text-anchor="middle" class="note">虚线为梯度更新，仅作用于本例掩码；权重为 1、0.005、100。</text>
+<rect x="25" y="1165" width="1150" height="275" rx="15" fill="#fff" stroke="#d6e0e6" stroke-width="2"/>
+<text x="50" y="1210" text-anchor="start" class="head">D　解码：逐帧选查询，再合并相邻标签</text>
+<text x="51" y="1247" text-anchor="start" class="note">读取最终掩码。每个输出区间带有原始动作帧，可与对应短语组成新的检索样本。</text>
+<rect x="51" y="1280" width="313" height="130" rx="15" fill="#fff1da" stroke="#b8cbd2" stroke-width="2"/>
+<text x="207.5" y="1314" text-anchor="middle" class="label">最终 k 行软权重</text>
+<text x="207.5" y="1344" text-anchor="middle" class="body">同帧可有多个非零分数</text>
+<text x="207.5" y="1373" text-anchor="middle" class="body">每帧取 argmax</text>
+<rect x="420" y="1280" width="331" height="130" rx="15" fill="#e7f3ed" stroke="#b8cbd2" stroke-width="2"/>
+<text x="585.5" y="1314" text-anchor="middle" class="label">逐帧标签 → 连续区间</text>
+<text x="585.5" y="1344" text-anchor="middle" class="body">相邻同标签合并</text>
+<text x="585.5" y="1373" text-anchor="middle" class="body">例如：跳起转身 → 前跑</text>
+<rect x="806" y="1280" width="342" height="130" rx="15" fill="#e7f3ed" stroke="#b8cbd2" stroke-width="2"/>
+<text x="977" y="1314" text-anchor="middle" class="label">输出原动作的时间选区</text>
+<text x="977" y="1344" text-anchor="middle" class="body">每段对应一个文本短语</text>
+<text x="977" y="1373" text-anchor="middle" class="body">可构造片段—短语检索对</text>
+<path d="M365 1346H415" class="edge"/>
+<path d="M752 1346H801" class="edge"/>
+<text x="40" y="1492" text-anchor="start" class="note">依据正式论文图 2、式 1–9 重绘。LLM 给出短语顺序；解码规则没有硬性要求每句只出现一次。</text>
+<text x="40" y="1532" text-anchor="start" class="note">蓝：输入与编码　绿：动作表示与读出　紫：语义拆分　橙：本例掩码与优化</text>
+</svg>
