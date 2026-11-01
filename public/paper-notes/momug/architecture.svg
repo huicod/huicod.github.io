@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1390" viewBox="0 0 1120 1390" role="img" aria-labelledby="fig-title fig-desc">
+<title id="fig-title">MoMug 架构：连续动作与离散文字怎样使用同一个 Llama</title>
+<desc id="fig-desc">文字、时间步和每帧动作有不同的输入接口。共享主干在文生动作时反复预测全部干净帧，在动作描述时根据干净动作逐词元输出。图的末行区分生成的动作与外部语义控制。</desc>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#416d68"/></marker></defs>
+<style>text {font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#173631} .small{font-size:19px} .key{font-size:25px;font-weight:700} .over{font-size:18px;font-weight:700;letter-spacing:1.2px}</style>
+<rect width="1120" height="1390" rx="26" fill="#faf9f3"/>
+<text x="44" y="58" class="over" >METHOD ATLAS   /   MoMug   /   2025</text>
+<text x="44" y="120" class="key" style="font-size:47px">同一套主干，两个生成方向</text>
+<text x="46" y="165" class="small" >骨骼保持连续，文字保留词表。任务改变的是输入顺序、训练目标与推理循环。</text>
+<text x="44" y="237" class="over" style="fill:#2e7567">01</text>
+<text x="96" y="237" class="key" >三个输入接口汇入同一隐藏空间</text>
+<rect x="44" y="267" width="312" height="139" rx="15" fill="#e4efee" stroke="#acc8bd" stroke-width="2"/>
+<text x="64" y="304" class="key" >文字</text>
+<text x="64" y="340" class="small" >词元 ID → 词嵌入</text>
+<text x="64" y="369" class="small" >提示或待生成的描述</text>
+<rect x="404" y="267" width="312" height="139" rx="15" fill="#ece9f4" stroke="#acc8bd" stroke-width="2"/>
+<text x="424" y="304" class="key" >扩散步 t</text>
+<text x="424" y="340" class="small" >噪声等级 → MLP</text>
+<text x="424" y="369" class="small" >描述动作时取 t = 0</text>
+<rect x="764" y="267" width="312" height="139" rx="15" fill="#f4ead8" stroke="#acc8bd" stroke-width="2"/>
+<text x="784" y="304" class="key" >连续动作帧</text>
+<text x="784" y="340" class="small" >根、关节、旋转、接触</text>
+<text x="784" y="369" class="small" >每帧 → 线性输入投影</text>
+<path d="M200 407 V446" fill="none" stroke="#416d68" stroke-width="3" marker-end="url(#arr)"/>
+<path d="M560 407 V446" fill="none" stroke="#416d68" stroke-width="3" marker-end="url(#arr)"/>
+<path d="M920 407 V446" fill="none" stroke="#416d68" stroke-width="3" marker-end="url(#arr)"/>
+<rect x="44" y="450" width="1032" height="116" rx="15" fill="#d9e9e0" stroke="#90b3a6" stroke-width="2"/>
+<text x="72" y="492" class="key" >共享 Llama + LoRA</text>
+<text x="72" y="532" class="small" >按任务拼接词嵌入与动作段。动作段由起止符包住，内含时间步和各帧向量。</text>
+<text x="44" y="645" class="over" style="fill:#2e7567">02</text>
+<text x="96" y="645" class="key" >训练时如何分配监督</text>
+<rect x="44" y="675" width="492" height="160" rx="15" fill="#e7f2ec" stroke="#acc8bd" stroke-width="2"/>
+<text x="64" y="712" class="key" >文字 → 动作</text>
+<text x="64" y="748" class="small" >文字条件 + 带噪动作，t &gt; 0</text>
+<text x="64" y="777" class="small" >动作位置回归干净帧，文字位置预测词元。</text>
+<text x="64" y="806" class="small" >目标为动作均方误差 + λ × 文字损失。</text>
+<rect x="584" y="675" width="492" height="160" rx="15" fill="#e8eff6" stroke="#acc8bd" stroke-width="2"/>
+<text x="604" y="712" class="key" >动作 → 文字</text>
+<text x="604" y="748" class="small" >先输入干净帧，再放目标描述，t = 0</text>
+<text x="604" y="777" class="small" >文字位置照常学习下一个词元。</text>
+<text x="604" y="806" class="small" >这条分支的动作去噪损失为零。</text>
+<text x="44" y="906" class="over" style="fill:#2e7567">03</text>
+<text x="96" y="906" class="key" >推理时怎样得到一整段动作或一句描述</text>
+<rect x="44" y="936" width="300" height="129" rx="15" fill="#e7f2ec" stroke="#acc8bd" stroke-width="2"/>
+<text x="64" y="973" class="key" >生成动作</text>
+<text x="64" y="1009" class="small" >描述 + N 帧高斯噪声</text>
+<text x="64" y="1038" class="small" >初始化整段动作</text>
+<rect x="408" y="936" width="300" height="129" rx="15" fill="#e7f2ec" stroke="#acc8bd" stroke-width="2"/>
+<text x="428" y="973" class="key" >主干预测干净帧</text>
+<text x="428" y="1009" class="small" >输出投影 → 姿态</text>
+<text x="428" y="1038" class="small" >DDPM 再采样下一状态</text>
+<rect x="772" y="936" width="304" height="129" rx="15" fill="#e7f2ec" stroke="#acc8bd" stroke-width="2"/>
+<text x="792" y="973" class="key" >完成 50 步</text>
+<text x="792" y="1009" class="small" >得到连续骨骼序列</text>
+<text x="792" y="1038" class="small" >各帧共同经历去噪</text>
+<path d="M347 998 H400" fill="none" stroke="#416d68" stroke-width="3" marker-end="url(#arr)"/>
+<path d="M711 998 H764" fill="none" stroke="#416d68" stroke-width="3" marker-end="url(#arr)"/>
+<rect x="44" y="1090" width="300" height="129" rx="15" fill="#e8eff6" stroke="#acc8bd" stroke-width="2"/>
+<text x="64" y="1127" class="key" >生成描述</text>
+<text x="64" y="1163" class="small" >任务提示 + 干净帧</text>
+<text x="64" y="1192" class="small" >不做动作扩散</text>
+<rect x="408" y="1090" width="300" height="129" rx="15" fill="#e8eff6" stroke="#acc8bd" stroke-width="2"/>
+<text x="428" y="1127" class="key" >主干预测下一词元</text>
+<text x="428" y="1163" class="small" >已有文字作条件</text>
+<text x="428" y="1192" class="small" >从词表输出一个词元</text>
+<rect x="772" y="1090" width="304" height="129" rx="15" fill="#e8eff6" stroke="#acc8bd" stroke-width="2"/>
+<text x="792" y="1127" class="key" >重复直至结束</text>
+<text x="792" y="1163" class="small" >得到动作描述</text>
+<text x="792" y="1192" class="small" >逐步增加的是文字长度</text>
+<path d="M347 1152 H400" fill="none" stroke="#416d68" stroke-width="3" marker-end="url(#arr)"/>
+<path d="M711 1152 H764" fill="none" stroke="#416d68" stroke-width="3" marker-end="url(#arr)"/>
+<rect x="44" y="1252" width="1032" height="94" rx="15" fill="#f7efdf" stroke="#d6be93" stroke-width="2"/>
+<text x="68" y="1288" class="key" >沿原表 10 读一个例子</text>
+<text x="68" y="1326" class="small" >原地跑 → 左转 → 双臂出拳 → 右转再跑。文字提供顺序，论文未给各动作的精确帧号。</text>
+<text x="48" y="1372" class="small" style="font-size:16px">依据作者图 2、算法 1–2 与表 10 重绘。箭头表示数据流。</text>
+</svg>

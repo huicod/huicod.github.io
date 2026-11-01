@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1380" viewBox="0 0 1100 1380" role="img" aria-labelledby="title desc">
+<title id="title">GEM：动作估计与生成的共享架构</title>
+<desc id="desc">从有帧对应的观测和有作用区间的文字，到共享去噪器，再到三种监督方式和一段视频—文字—视频示例。按会议图二至四与补充材料重绘。</desc>
+<defs>
+  <marker id="arrow" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4 L0,8 Z" fill="#536475"/></marker>
+  <marker id="softarrow" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4 L0,8 Z" fill="#b5c9d6"/></marker>
+  <style>
+  text{font-family:"Microsoft YaHei","Noto Sans CJK SC","PingFang SC",sans-serif;fill:#172c3c}
+  .hero{font-size:35px;font-weight:700}.sub{font-size:18px;fill:#455a69}
+  .eyebrow{font-family:Arial,sans-serif;font-size:15px;letter-spacing:2px;font-weight:bold;fill:#38616d}
+  .section{font-size:23px;font-weight:700}.num{font:700 16px Arial,sans-serif;fill:#fff;text-anchor:middle}
+  .head{font-size:20px;font-weight:700}.body{font-size:17px}.small{font-size:15px;fill:#455a69}
+  .light{fill:#f1f7fa}.sky{fill:#b8d7df}.ice{fill:#e0eef3}
+  .arrow{stroke:#536475;stroke-width:2.2;fill:none;marker-end:url(#arrow)}
+  .softarrow{stroke:#b5c9d6;stroke-width:2.2;fill:none;marker-end:url(#softarrow)}
+  .line{stroke:#d6e0e4;stroke-width:1.5}
+  </style>
+</defs>
+<rect width="1100" height="1380" fill="#f5f7f6"/>
+<rect x="18" y="17" width="1064" height="1346" rx="22" fill="#ffffff" stroke="#dbe4e6"/>
+<text x="52" y="60" class="eyebrow">ICCV 2025   /   GENMO → GEM</text>
+<text x="52" y="107" class="hero">如何让同一模型既还原动作，又创造动作？</text>
+<text x="53" y="143" class="sub">观测越具体，越强调还原；文字或音乐留下的自由度，由扩散采样补足。</text>
+<line x1="51" y1="171" x2="1049" y2="171" class="line"/>
+
+<!-- 1 Inputs -->
+<rect x="52" y="195" width="33" height="27" rx="6" fill="#326679"/><text x="68.5" y="214" class="num">01</text>
+<text x="98" y="217" class="section">输入条件有两种时间粒度</text>
+<rect x="52" y="241" width="484" height="109" rx="12" fill="#eef7f7" stroke="#adcdcb"/>
+<rect x="565" y="241" width="483" height="109" rx="12" fill="#faf3ea" stroke="#d9c7ad"/>
+<text x="72" y="273" class="head">与帧对齐的条件</text>
+<text x="72" y="302" class="body">视频特征、相机运动、二维关节、音乐</text>
+<text x="72" y="329" class="small">每个条件带可用性掩码，缺失位置清零。</text>
+<text x="585" y="273" class="head">带起止区间的文字</text>
+<text x="585" y="302" class="body">每段提示经 T5 编码，可有多个区间。</text>
+<text x="585" y="329" class="small">区间决定哪些动作帧可直接读取这段文本。</text>
+<path d="M294 351v57" class="arrow"/><path d="M807 351v57" class="arrow"/>
+
+<!-- 2 backbone -->
+<rect x="42" y="411" width="1016" height="337" rx="16" fill="#233d4d"/>
+<rect x="61" y="431" width="33" height="27" rx="6" fill="#446d7d"/><text x="77.5" y="450" class="num">02</text>
+<text x="107" y="453" class="section light">共享去噪器</text>
+<text x="1034" y="452" class="small sky" text-anchor="end">动作序列随扩散噪声步 t 更新</text>
+<rect x="64" y="476" width="467" height="66" rx="9" fill="#d6eeeb"/>
+<text x="83" y="504" class="head">逐帧融合</text>
+<text x="83" y="529" class="small">各条件独立 MLP，再与带噪动作逐帧相加</text>
+<rect x="567" y="476" width="467" height="66" rx="9" fill="#f2e5d2"/>
+<text x="587" y="504" class="head">分时段文字注意力</text>
+<text x="587" y="529" class="small">为每条提示保留自己的注意力窗与词特征</text>
+<path d="M294 543v17" class="softarrow"/><path d="M806 543v17" class="softarrow"/>
+<rect x="64" y="563" width="970" height="72" rx="9" fill="#36596b" stroke="#7392a3"/>
+<text x="84" y="592" class="head light">16 层 Transformer</text>
+<text x="84" y="618" class="body ice">每层先做 RoPE 局部时序自注意力（窗口 120 帧），再按区间注入文本。</text>
+<path d="M549 635v17" class="softarrow"/>
+<rect x="64" y="655" width="970" height="72" rx="9" fill="#edf4f6"/>
+<text x="84" y="684" class="head">输出每一帧的干净动作预测</text>
+<text x="84" y="710" class="body">人物姿态与体形、根朝向与速度、相机相关量、手脚接触 → 恢复相机／世界坐标下的身体</text>
+
+<!-- 3 training -->
+<rect x="52" y="784" width="33" height="27" rx="6" fill="#326679"/><text x="68.5" y="803" class="num">03</text>
+<text x="98" y="806" class="section">训练时，同一预测器怎样获得监督？</text>
+<rect x="52" y="831" width="316" height="181" rx="11" fill="#eef7f7" stroke="#adcdcb"/>
+<rect x="392" y="831" width="315" height="181" rx="11" fill="#f0f3fa" stroke="#beccdd"/>
+<rect x="731" y="831" width="317" height="181" rx="11" fill="#faf3ea" stroke="#d9c7ad"/>
+<text x="70" y="862" class="head">估计模式</text>
+<text x="70" y="892" class="body">视频或二维骨架 + 纯噪声</text>
+<text x="70" y="919" class="body">→ 从最大噪声一步预测。</text>
+<line x1="70" x2="348" y1="937" y2="937" class="line"/>
+<text x="70" y="964" class="small">按标签监督动作、几何或二维</text><text x="70" y="988" class="small">投影，强化首次估计。</text>
+<text x="410" y="862" class="head">三维标注下的生成</text>
+<text x="410" y="892" class="body">干净动作 + 随机水平噪声</text>
+<text x="410" y="919" class="body">→ 条件去噪，恢复三维动作。</text>
+<line x1="410" x2="688" y1="937" y2="937" class="line"/>
+<text x="410" y="964" class="small">弱条件保留多种解。文本或音乐</text><text x="410" y="988" class="small">单独作为条件时用生成目标。</text>
+<text x="749" y="862" class="head">只有二维标注时</text>
+<text x="749" y="892" class="body">估出临时三维动作 → 加噪</text>
+<text x="749" y="919" class="body">→ 去噪 → 投影回二维关节。</text>
+<line x1="749" x2="1030" y1="937" y2="937" class="line"/>
+<text x="749" y="964" class="small">和原二维关节比误差；临时三维</text><text x="749" y="988" class="small">序列提供加噪起点。</text>
+
+<!-- 4 timeline -->
+<rect x="52" y="1050" width="33" height="27" rx="6" fill="#326679"/><text x="68.5" y="1069" class="num">04</text>
+<text x="98" y="1072" class="section">推理示例：把三段条件放进一条时间轴</text>
+<text x="52" y="1107" class="small">首尾按画面恢复，中段按用户给的时长生成。整段一起采样，仍可迭代多个去噪步。</text>
+<rect x="52" y="1127" width="282" height="57" rx="7" fill="#d6eeeb"/>
+<rect x="341" y="1127" width="417" height="57" rx="7" fill="#f2e5d2"/>
+<rect x="765" y="1127" width="283" height="57" rx="7" fill="#d6eeeb"/>
+<text x="193" y="1163" class="head" text-anchor="middle">视频 A</text>
+<text x="549" y="1163" class="head" text-anchor="middle">文字：像猴子一样活动</text>
+<text x="906" y="1163" class="head" text-anchor="middle">视频 B</text>
+<path d="M53 1200h994" class="arrow"/>
+<text x="52" y="1231" class="small">可选关键帧：每次去噪前覆盖指定帧的身体局部姿态与根朝向；全局根平移仍由模型推断。</text>
+<line x1="52" x2="1048" y1="1261" y2="1261" class="line"/>
+<text x="52" y="1298" class="small">阅读线索　实值的逐帧动作表示连接了两种任务，区间掩码只指定条件可见范围。</text>
+<text x="52" y="1329" class="small">根据 ICCV 2025 论文图 2–4、式 1–6、补充 A 与 D，以及官方示例重绘。</text>
+</svg>
