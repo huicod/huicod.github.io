@@ -1,1 +1,114 @@
-<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" width="1080" height="1530" viewBox="0 0 1080 1530"><title id="title">MIB-BodyPartPhase 身体部位相位与动作补间</title><desc id="desc">A 训练部位周期自编码器，B 训练动作 CVAE 及专家，C 用参考风格、目标关键帧和可编辑相位逐帧生成全身状态，D 在已生成的骨架上回读控制效果。</desc><defs><marker id="arr" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 1L11 6L0 11z" fill="#396073"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#163848}.title{font-weight:700;font-size:39px}.sub{font-size:23px}.section{font-size:31px;font-weight:700}.label{font-size:24px;font-weight:700}.small{font-size:19px}.fine{font-size:18px}.arrow{fill:none;stroke:#396073;stroke-width:3;marker-end:url(#arr)}</style><rect width="1080" height="1530" fill="#f1f6f6"/><rect x="25" y="20" width="1030" height="125" rx="19" fill="#13394a"/><text x="55" y="74" class="title" style="fill:white">MIB-BodyPartPhase｜关键帧之间，部位怎样动？</text><text x="55" y="114" class="sub" style="fill:#d3e8ec">目标姿态给定终点，参考动作给定风格，局部相位控制途中的幅度与节奏。</text><rect x="25" y="164" width="1030" height="265" rx="21" fill="white" stroke="#bdd0d4" stroke-width="2"/><text x="54" y="212" class="section" text-anchor="start">A  先学会从动作中读出部位相位</text><text x="54" y="247" class="sub" text-anchor="start">短窗骨架经周期自编码器重建。五部位各分配两个相位通道。</text><rect x="53" y="272" width="284" height="102" rx="12" fill="#dceefa"/><text x="195" y="306" class="label" text-anchor="middle">短窗骨架状态</text><text x="195" y="337" class="small" text-anchor="middle">坐标、速度、6D 旋转</text><path class="arrow" d="M340 323L395 323"/><rect x="400" y="272" width="280" height="102" rx="12" fill="#dcefe7"/><text x="540" y="306" class="label" text-anchor="middle">BPPAE</text><text x="540" y="337" class="small" text-anchor="middle">部位运动链 · 周期瓶颈</text><path class="arrow" d="M684 323L737 323"/><rect x="744" y="272" width="284" height="102" rx="12" fill="#f8e9c9"/><text x="886" y="306" class="label" text-anchor="middle">每帧 20 维相位</text><text x="886" y="337" class="small" text-anchor="middle">5 部位 × 2 通道 × 2 坐标</text><text x="55" y="407" class="small" text-anchor="start">每通道的二维坐标为 (A sin 2πS, A cos 2πS)，半径 A 与周期进度 S 可分开改动。</text><rect x="25" y="449" width="1030" height="259" rx="21" fill="white" stroke="#bdd0d4" stroke-width="2"/><text x="54" y="497" class="section" text-anchor="start">B  阶段一：学习能迈出下一帧的全身生成器</text><text x="54" y="532" class="sub" text-anchor="start">相邻真实状态只在这一步进入 CVAE 编码器；下面的 BPMoE 会在阶段二被冻结。</text><rect x="52" y="554" width="280" height="111" rx="12" fill="#dceefa"/><text x="192" y="588" class="label" text-anchor="middle">CVAE 编码器</text><text x="192" y="619" class="small" text-anchor="middle">当前帧 + 真实下一帧</text><text x="192" y="646" class="small" text-anchor="middle">得到 32 维控制量 z</text><path class="arrow" d="M335 609L389 609"/><rect x="396" y="554" width="281" height="111" rx="12" fill="#dcefe7"/><text x="536.5" y="588" class="label" text-anchor="middle">BPMoE · 8 个专家</text><text x="536.5" y="619" class="small" text-anchor="middle">z 与下一相位决定权重</text><text x="536.5" y="646" class="small" text-anchor="middle">结合当前状态产生增量</text><path class="arrow" d="M682 609L736 609"/><rect x="742" y="554" width="286" height="111" rx="12" fill="#f8e9c9"/><text x="885" y="588" class="label" text-anchor="middle">下一帧全身状态</text><text x="885" y="619" class="small" text-anchor="middle">当前状态 + 预测增量</text><text x="885" y="646" class="small" text-anchor="middle">重建、KL 与足部约束</text><rect x="25" y="728" width="1030" height="457" rx="21" fill="white" stroke="#bdd0d4" stroke-width="2"/><text x="54" y="776" class="section" text-anchor="start">C  阶段二与推理：给定终点，逐帧补间</text><text x="54" y="811" class="sub" text-anchor="start">移除 CVAE 编码器，训练控制预测器；推理时不需要真实中间帧。</text><rect x="53" y="834" width="310" height="102" rx="12" fill="#dceefa"/><text x="208" y="868" class="label" text-anchor="middle">风格参考</text><text x="208" y="899" class="small" text-anchor="middle">BPPAE → 部位相位流</text><path class="arrow" d="M366 885L419 885"/><rect x="423" y="834" width="288" height="102" rx="12" fill="#dcefe7"/><text x="567" y="868" class="label" text-anchor="middle">部位融合与时序卷积</text><text x="567" y="899" class="small" text-anchor="middle">参考风格编码 · 512 维</text><rect x="764" y="834" width="264" height="102" rx="12" fill="#dceefa"/><text x="896" y="868" class="label" text-anchor="middle">目标关键帧</text><text x="896" y="899" class="small" text-anchor="middle">另一路已知输入</text><path d="M567 936V951M896 936V951H217" fill="none" stroke="#396073" stroke-width="2.5"/><path class="arrow" d="M217 951V965"/><rect x="53" y="967" width="327" height="115" rx="12" fill="#dcefe7"/><text x="216.5" y="1001" class="label" text-anchor="middle">控制预测器 · LSTM</text><text x="216.5" y="1032" class="small" text-anchor="middle">当前状态、目标状态、风格</text><text x="216.5" y="1059" class="small" text-anchor="middle">解码还读当前可编辑相位</text><path class="arrow" d="M383 1025L435 1025"/><rect x="441" y="967" width="224" height="115" rx="12" fill="#f8e9c9"/><text x="553" y="1001" class="label" text-anchor="middle">这一步的输出</text><text x="553" y="1032" class="small" text-anchor="middle">控制 z 与下一相位</text><text x="553" y="1059" class="small" text-anchor="middle">全身共同使用</text><path class="arrow" d="M668 1025L717 1025"/><rect x="722" y="967" width="306" height="115" rx="12" fill="#dcefe7"/><text x="875" y="1001" class="label" text-anchor="middle">固定 BPMoE</text><text x="875" y="1032" class="small" text-anchor="middle">预测全身状态增量</text><text x="875" y="1059" class="small" text-anchor="middle">下一帧作为新的当前帧</text><text x="55" y="1119" class="small" text-anchor="start">风格编辑：替换选定部位的参考相位流。幅度编辑：缩放 A。节奏编辑：缩放 S。</text><text x="55" y="1153" class="small" text-anchor="start">循环到指定过渡结束。末帧 L1 在训练中拉向目标关键帧，正文没有给出硬投影步骤。</text><rect x="25" y="1206" width="1030" height="244" rx="21" fill="white" stroke="#bdd0d4" stroke-width="2"/><text x="54" y="1254" class="section" text-anchor="start">D  高抬腿实例：回到生成骨架检查控制是否生效</text><text x="54" y="1289" class="sub" text-anchor="start">图 5 可看膝高与峰值时刻；表 5 在 1,197 条过渡中回读生成动作。</text><rect x="54" y="1311" width="277" height="96" rx="12" fill="#dceefa"/><text x="192.5" y="1345" class="label" text-anchor="middle">输入控制</text><text x="192.5" y="1376" class="small" text-anchor="middle">下肢 A 设为 0.5×</text><path class="arrow" d="M335 1359L383 1359"/><rect x="389" y="1311" width="283" height="96" rx="12" fill="#dcefe7"/><text x="530.5" y="1345" class="label" text-anchor="middle">生成 60 帧动作</text><text x="530.5" y="1376" class="small" text-anchor="middle">冻结 BPPAE 回读振幅</text><path class="arrow" d="M676 1359L728 1359"/><rect x="735" y="1311" width="292" height="96" rx="12" fill="#f8e9c9"/><text x="881" y="1345" class="label" text-anchor="middle">配对输出均值</text><text x="881" y="1376" class="small" text-anchor="middle">振幅比 0.932 · 方向 72.8%</text><text x="50" y="1501" class="fine" text-anchor="start">按 Pacific Graphics 2026 正式版图 2–5、式 1–7 及表 5 重绘，D 中统计量来自最终动作。</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1405" viewBox="0 0 1080 1405" role="img" aria-labelledby="title desc">
+<title id="title">partphase · 总体架构</title>
+<desc id="desc">教学重绘依据 · 正式版图 2–5、式 1–7。第 3 步训练预测器时也使用末帧目标、相位与足部损失。</desc>
+<defs>
+<marker id="a" markerWidth="8" markerHeight="8" refX="7.2" refY="4" orient="auto">
+<path d="M0 0 8 4 0 8Z" fill="#446a68"/>
+</marker>
+<marker id="b" markerWidth="8" markerHeight="8" refX="7.2" refY="4" orient="auto">
+<path d="M0 0 8 4 0 8Z" fill="#99765e"/>
+</marker>
+</defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif}.e{fill:none;stroke:#446a68;stroke-width:2.5;stroke-linejoin:round;marker-end:url(#a)}.d{stroke:#99765e;stroke-dasharray:7 5;marker-end:url(#b)}.edge-label{font-size:17px;font-weight:600;paint-order:stroke;stroke:white;stroke-width:5;stroke-linejoin:round}</style>
+<rect width="1080" height="1405" fill="#f7f7f0"/>
+<rect x="20" y="180" width="1040" height="239" rx="17" fill="#fff" stroke="#d0ded8" stroke-width="1.6"/>
+<rect x="20" y="442" width="1040" height="244" rx="17" fill="#fff" stroke="#d0ded8" stroke-width="1.6"/>
+<rect x="20" y="709" width="1040" height="633" rx="17" fill="#fff" stroke="#d0ded8" stroke-width="1.6"/>
+<path d="M42 147H96" class="e"/>
+<path d="M365 147H419" class="e d"/>
+<path d="M316 340.5 L404 340.5" class="e"/>
+<path d="M676 340.5 L764 340.5" class="e d"/>
+<path d="M316 601.5 L404 601.5" class="e"/>
+<path d="M676 601.5 L764 601.5" class="e d"/>
+<path d="M316 868.5 L404 868.5" class="e"/>
+<path d="M540 918 L540 997" class="e"/>
+<path d="M900 918 L900 946 L540 946 L540 997" class="e"/>
+<path d="M316 1046.5 L404 1046.5" class="e"/>
+<path d="M676 1046.5 L764 1046.5" class="e"/>
+<path d="M900 1096 L900 1179" class="e"/>
+<path d="M764 1228.5 L316 1228.5" class="e"/>
+<path d="M540 651 L540 664 L1046 664 L1046 1046.5 L1036 1046.5" class="e"/>
+<path d="M180 1179 L180 1129 L540 1129 L540 1096" class="e"/>
+<text x="40" y="72" fill="#173b40" font-size="36" font-weight="700" text-anchor="start">MIB-BodyPartPhase · 关键帧之间逐帧补间</text>
+<text x="40" y="112" fill="#173b40" font-size="23" font-weight="400" text-anchor="start">部位相位描述“怎样动”，关键帧给出“向哪里去”。</text>
+<text x="40" y="32" fill="#19766f" font-size="18" font-weight="700" text-anchor="start">Pacific Graphics 2026   /   动作补间</text>
+<text x="108" y="154" fill="#173b40" font-size="19" font-weight="400" text-anchor="start">动作、特征或条件</text>
+<text x="430" y="154" fill="#87644b" font-size="19" font-weight="400" text-anchor="start">训练目标或真值</text>
+<text x="42" y="220" fill="#19766f" font-size="20" font-weight="700" text-anchor="start">01</text>
+<text x="94" y="220" fill="#173b40" font-size="27" font-weight="700" text-anchor="start">先从每个身体部位学习周期坐标</text>
+<text x="44" y="254" fill="#476064" font-size="19" font-weight="400" text-anchor="start">BPPAE 先独立训练。它产生可按身体区域编辑的二维相位对。</text>
+<rect data-node="x" x="44" y="291" width="272" height="99" rx="12" fill="#edf1f2" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="59" y="322" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">动作窗口</text>
+<text x="59" y="351" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">位置、速度、6D 旋转</text>
+<rect data-node="enc" x="404" y="291" width="272" height="99" rx="12" fill="#dceeed" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="419" y="322" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">BPPAE</text>
+<text x="419" y="351" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">每区提取振幅 A、进度 S</text>
+<text x="419" y="376" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">构造 Θ = A[sin, cos]</text>
+<rect data-node="rec" x="764" y="291" width="272" height="99" rx="12" fill="#f4e6dc" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="779" y="322" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">动作重建目标</text>
+<text x="779" y="351" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">周期解码重建输入</text>
+<text x="779" y="376" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">训练后复用相位表示</text>
+<text x="360" y="326" text-anchor="middle" class="edge-label" fill="#19766f">分区</text>
+<text x="720" y="326" text-anchor="middle" class="edge-label" fill="#866044">预训练</text>
+<text x="42" y="482" fill="#19766f" font-size="20" font-weight="700" text-anchor="start">02</text>
+<text x="94" y="482" fill="#173b40" font-size="27" font-weight="700" text-anchor="start">用相邻真值帧训练下一帧生成器</text>
+<text x="44" y="516" fill="#476064" font-size="19" font-weight="400" text-anchor="start">CVAE 编码器在这里可以看到下一帧；补间时替代它的是下面的控制预测器。</text>
+<rect data-node="pair" x="44" y="552" width="272" height="99" rx="12" fill="#dceeed" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="59" y="583" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">相邻真实状态</text>
+<text x="59" y="612" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">Xᵢ、Xᵢ₊₁ → CVAE 编码器</text>
+<text x="59" y="637" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">得到 32 维控制量 z</text>
+<rect data-node="experts" x="404" y="552" width="272" height="99" rx="12" fill="#dceeed" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="419" y="583" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">BPMoE 解码器</text>
+<text x="419" y="612" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">以 z、Θᵢ₊₁ 调节门控</text>
+<text x="419" y="637" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">混合八个专家算增量</text>
+<rect data-node="sup" x="764" y="552" width="272" height="99" rx="12" fill="#f4e6dc" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="779" y="583" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">下一帧监督</text>
+<text x="779" y="612" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">Xᵢ + ΔX 对照真实 Xᵢ₊₁</text>
+<text x="779" y="637" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">另有 KL 与足部约束</text>
+<text x="360" y="587" text-anchor="middle" class="edge-label" fill="#19766f">z</text>
+<text x="720" y="587" text-anchor="middle" class="edge-label" fill="#866044">ΔX</text>
+<text x="42" y="749" fill="#19766f" font-size="20" font-weight="700" text-anchor="start">03</text>
+<text x="94" y="749" fill="#173b40" font-size="27" font-weight="700" text-anchor="start">给定关键帧与参考风格，循环生成到终点附近</text>
+<text x="44" y="783" fill="#476064" font-size="19" font-weight="400" text-anchor="start">同一组相位既可用于提取风格，又可在预测器中表示当前周期进度。八个专家共享全身状态。</text>
+<rect data-node="ref" x="44" y="819" width="272" height="99" rx="12" fill="#f6e8ca" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="59" y="850" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">风格参考动作</text>
+<text x="59" y="879" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">取参考片段的部位相位</text>
+<text x="59" y="904" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">可替换选定部位流</text>
+<rect data-node="style" x="404" y="819" width="272" height="99" rx="12" fill="#dceeed" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="419" y="850" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">风格编码器</text>
+<text x="419" y="879" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">融合各部位 → 一维卷积</text>
+<text x="419" y="904" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">输出 512 维风格码</text>
+<rect data-node="kp" x="764" y="819" width="272" height="99" rx="12" fill="#edf1f2" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="779" y="850" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">当前状态与目标帧</text>
+<text x="779" y="879" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">当前状态 Xᵢ</text>
+<text x="779" y="904" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">未来目标状态 Xⱼ</text>
+<rect data-node="ph" x="44" y="997" width="272" height="99" rx="12" fill="#f6e8ca" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="59" y="1028" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">当前部位相位 Θᵢ</text>
+<text x="59" y="1057" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">可调整选定部位的 A 或 S</text>
+<text x="59" y="1082" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">S 为周期进度</text>
+<rect data-node="lstm" x="404" y="997" width="272" height="99" rx="12" fill="#dceeed" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="419" y="1028" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">控制与相位预测器</text>
+<text x="419" y="1057" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">LSTM 与预测分支</text>
+<text x="419" y="1082" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">给出 z 和下一部位相位</text>
+<rect data-node="bpm" x="764" y="997" width="272" height="99" rx="12" fill="#e6efe0" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="779" y="1028" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">已训练的 BPMoE</text>
+<text x="779" y="1057" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">固定权重，输入当前状态、</text>
+<text x="779" y="1082" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">z 与下一部位相位</text>
+<rect data-node="next" x="44" y="1179" width="272" height="99" rx="12" fill="#deece7" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="59" y="1210" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">下一步的状态／相位</text>
+<text x="59" y="1239" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">送回预测器，继续向</text>
+<text x="59" y="1264" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">目标关键帧逐帧补间</text>
+<rect data-node="out" x="764" y="1179" width="272" height="99" rx="12" fill="#deece7" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="779" y="1210" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">全身状态更新</text>
+<text x="779" y="1239" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">Xᵢ₊₁ = Xᵢ + ΔX</text>
+<text x="779" y="1264" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">写入输出序列</text>
+<text x="360" y="855" text-anchor="middle" class="edge-label" fill="#19766f">参考相位</text>
+<text x="583" y="965" text-anchor="middle" class="edge-label" fill="#19766f">风格码</text>
+<text x="726" y="937" text-anchor="middle" class="edge-label" fill="#19766f">Xᵢ、Xⱼ</text>
+<text x="360" y="1034" text-anchor="middle" class="edge-label" fill="#19766f">Θᵢ</text>
+<text x="719" y="1034" text-anchor="middle" class="edge-label" fill="#19766f">z、Θᵢ₊₁</text>
+<text x="936" y="1145" text-anchor="middle" class="edge-label" fill="#19766f">ΔX</text>
+<text x="540" y="1217" text-anchor="middle" class="edge-label" fill="#19766f">下一步 Xᵢ ← Xᵢ₊₁</text>
+<text x="370" y="1122" text-anchor="middle" class="edge-label" fill="#19766f">新的 Xᵢ 和 Θᵢ</text>
+<text x="40" y="1380" fill="#4a6263" font-size="18" font-weight="400" text-anchor="start">教学重绘依据 · 正式版图 2–5、式 1–7。第 3 步训练预测器时也使用末帧目标、相位与足部损失。</text>
+</svg>

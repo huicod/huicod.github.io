@@ -46,11 +46,11 @@ tags: ["MotionSpaceFlow", "Text-to-Motion", "Controllable-Motion", "Flow-Matchin
 
 ### 整体框架
 
-训练有两种主要配置：HumanML3D 每帧可以表示为 263 个动作特征，也可以表示为 22 个关节的 66 个全局坐标。**两套模型各自训练，沿用同一种流匹配框架。** 文本经冻结的 DistilBERT 变成逐词特征，带噪动作每帧投影成一个词元，二者进入 RA-MMDiT，输出同样长度的干净动作预测。普通文生动作由预测计算速度并逐步积分；只有全局坐标模型另有接受空间目标的推理入口。[图 2、附录 C][method]
+先确定使用哪套模型。HumanML3D 的 263 维表示含速度和旋转，默认使用因果时间注意力；另一套模型每帧直接预测 22 个关节的 66 个全局坐标，默认使用双向注意力。两者各自与文本配对训练，都先预测干净动作，再从预测计算流速。只有第二套能在采样期间直接写入某一帧、某一关节的坐标。[原文图 2、§3.1–3.5][method] · [附录 C][impl]
 
-[![MotionSpaceFlow 架构示意。训练时按表示选择时间依赖，文字与逐帧动作共同预测干净序列，推理时 XYZ 分支可接收逐帧、逐关节和逐轴的坐标约束。](/paper-notes/motionspaceflow/architecture.svg)](/paper-notes/motionspaceflow/architecture.svg)
+<figure class="paper-figure"><a href="/paper-notes/motionspaceflow/architecture.svg?v=arch-20261102-r2" target="_blank" rel="noopener"><img src="/paper-notes/motionspaceflow/architecture.svg?v=arch-20261102-r2" alt="MotionSpaceFlow 分别在 263D 特征或 XYZ 坐标中训练：带噪帧与词特征共同预测干净终点，再分流到普通生成或指定坐标的投影采样。" /></a><figcaption>01 任选一种动作表示，形成加噪训练对。02 看帧与词在哪里汇合，金色虚线通向速度监督。03 的回线仅用于带坐标约束的 XYZ 采样。 <a href="/paper-notes/motionspaceflow/architecture.svg?v=arch-20261102-r2" target="_blank" rel="noopener">查看原图</a></figcaption></figure>
 
-自绘图依据原文图 2 和算法 1–3。先看蓝色训练区如何产生带噪的整段动作，再看紫色骨干怎样把词和帧合在一起。绿色通向普通生成；橙色是推理时可选的坐标控制。虚线表示训练监督或可选输入，实线表示数据实际经过的路径。点图可放大。[§3][method] · [附录 C][impl]
+沿图走一次高踢示例：训练时，左脚坐标和其他关节一样属于干净样本；推理时，第 50 帧的左脚坐标才作为指定值 y 出现在 03 的右支。回线每轮先改干净终点，再构造下一噪声级的状态；结束时再投影一次。未标记的膝、骨盆和前后帧仍由模型预测。这里的第 50 帧属于动作时间轴，流时刻 t 指整段动作当前的去噪进度。[式 11–14][control] · [作者高踢输入][kick]
 
 ### 关键设计
 
@@ -64,7 +64,7 @@ tags: ["MotionSpaceFlow", "Text-to-Motion", "Controllable-Motion", "Flow-Matchin
 
 5. **只在干净坐标上投影，再返回正确的噪声水平。** 掩码 M 标出哪些“帧 × 关节 × 轴”已知，y 给出相应归一化坐标。式 11 保留未标记项，把标记项替换成 y。若直接把 y 写入带噪状态，就会在同一张量里混入不同噪声水平。作者从当前状态与原终点预测还原噪声分量，混入少量同尺度新噪声，再用新时刻的比例与投影后终点重组。采样还沿用 ProjFlow 的运动学度量及邻近伪观测，最后一次硬投影清除数值残差。约束 M、y 从未进入文生动作训练损失。[式 11–14、算法 3][control] · [采样实现][sample]
 
-### 一个完整例子
+### 一个完整例子：第 50 帧左脚要到哪里？
 
 作者仓库里有可逐项检查的配置：HumanML3D 示例编号 004819，长度 131 帧，提示词译为“一个人用左腿高踢”。配置同时保存了文字、关节编号、帧位置和三维数值。[高踢配置][kick] · [作者演示][project]
 
@@ -130,6 +130,8 @@ tags: ["MotionSpaceFlow", "Text-to-Motion", "Controllable-Motion", "Flow-Matchin
 补充任务更接近动画编辑：作者在每一帧给定真实骨盆与双脚的位置，只根据文本重做其余动作。此任务最好的对比基线 FID 为 0.066，MSFlow 为 0.034，R@3 为 0.794。受到硬约束的是给定的三个关节，并非下肢所有旋转。[附录 B、表 11][perjoint]
 
 ### 消融实验
+
+这里需要对照的是两个不同的生成器。比较注意力时间方向时先固定动作表示和噪声尺度，再在同一组内读 FID；不要把 263D 与 XYZ 两行当成一个模型切换开关前后的成绩。[原表 3][abl]
 
 原表 3 将表示、时间注意力、噪声尺度和网络预测目标配对比较。表中把论文的成对对照放在同一行，箭头左、右依次对应改变前后，↓ 的指标越小越好。[原表 3][abl]
 

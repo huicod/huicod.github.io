@@ -1,1 +1,85 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1805" width="1080" height="1805" role="img" aria-labelledby="title desc"><title id="title">UniMotion 的动作与帧级文本联合扩散</title><desc id="desc">从配对数据构造逐帧动作、标签向量及全局文本条件。动作和局部标签各有一个噪声时刻，同帧特征拼接进入 Transformer，预测两份干净信号。推理可固定一方或共同采样，文本由标签库近邻读出。</desc><defs><marker id="arr" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0 L9 4 L0 8 Z" fill="#426e73"/></marker></defs><rect width="1080" height="1805" fill="#f6f7f2"/><g font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif" fill="#163c43"><text x="35" y="46" font-size="21" font-weight="700" fill="#14796c">3DV 2025   /   动作生成与理解</text><text x="35" y="105" font-size="44" font-weight="700" fill="#243f45">UniMotion</text><text x="35" y="149" font-size="25" font-weight="400" fill="#243f45">每个时间位置同时表示“身体怎样动”和“这一帧在做什么”。</text><rect x="22" y="184" width="1036" height="257" rx="16" fill="#fff" stroke="#c9dbd7" stroke-width="1.6"/><text x="46" y="227" font-size="23" font-weight="700" fill="#178271">01</text><text x="106" y="227" font-size="28" font-weight="700" fill="#243f45">把三种信号放到正确的位置</text><text x="46" y="266" font-size="20" font-weight="400" fill="#243f45">以同时有两级标注的样本为例。x 和 y 共享 N 个时间位置，c 描述整段动作。</text><rect x="47" y="286" width="302" height="130" rx="13" fill="#e6f2ed" stroke="none" stroke-width="1.6"/><text x="64" y="320" font-size="24" font-weight="700" fill="#243f45">动作序列 x</text><text x="64" y="355" font-size="21" font-weight="400" fill="#243f45">每帧 263 维动作特征</text><text x="64" y="384" font-size="21" font-weight="400" fill="#243f45">姿态、根运动、接触等</text><rect x="375" y="286" width="326" height="130" rx="13" fill="#f7edda" stroke="none" stroke-width="1.6"/><text x="392" y="320" font-size="24" font-weight="700" fill="#243f45">局部标签序列 y</text><text x="392" y="355" font-size="21" font-weight="400" fill="#243f45">把 BABEL 短语铺到对应帧</text><text x="392" y="384" font-size="21" font-weight="400" fill="#243f45">CLIP 编码 → PCA 压缩</text><rect x="727" y="286" width="305" height="130" rx="13" fill="#e6eef8" stroke="none" stroke-width="1.6"/><text x="744" y="320" font-size="24" font-weight="700" fill="#243f45">整段文本 c</text><text x="744" y="355" font-size="21" font-weight="400" fill="#243f45">HumanML3D 整段描述</text><text x="744" y="384" font-size="21" font-weight="400" fill="#243f45">编码后作为全局条件</text><rect x="22" y="464" width="1036" height="396" rx="16" fill="#fff" stroke="#c9dbd7" stroke-width="1.6"/><text x="46" y="507" font-size="23" font-weight="700" fill="#178271">02</text><text x="106" y="507" font-size="28" font-weight="700" fill="#243f45">联合去噪的训练路径</text><text x="46" y="546" font-size="20" font-weight="400" fill="#243f45">从同一噪声日程独立抽取两个扩散时刻。它们指示噪声强弱，与动作的帧号不同。</text><rect x="47" y="567" width="302" height="135" rx="13" fill="#e6f2ed" stroke="none" stroke-width="1.6"/><text x="64" y="601" font-size="24" font-weight="700" fill="#243f45">动作加噪</text><text x="64" y="636" font-size="21" font-weight="400" fill="#243f45">由 x₀ 和时刻 tₓ 得到 xₜ</text><text x="64" y="665" font-size="21" font-weight="400" fill="#243f45">保留 N 个帧的位置</text><rect x="375" y="567" width="326" height="135" rx="13" fill="#f7edda" stroke="none" stroke-width="1.6"/><text x="392" y="601" font-size="24" font-weight="700" fill="#243f45">局部文本向量加噪</text><text x="392" y="636" font-size="21" font-weight="400" fill="#243f45">由 y₀ 和时刻 tᵧ 得到 yₜ</text><text x="392" y="665" font-size="21" font-weight="400" fill="#243f45">连续向量使用高斯噪声</text><rect x="727" y="567" width="305" height="135" rx="13" fill="#e6eef8" stroke="none" stroke-width="1.6"/><text x="744" y="601" font-size="24" font-weight="700" fill="#243f45">条件与噪声时刻</text><text x="744" y="636" font-size="21" font-weight="400" fill="#243f45">c 可给定或省略</text><text x="744" y="665" font-size="21" font-weight="400" fill="#243f45">tₓ、tᵧ 各有时间嵌入</text><path d="M198 702 V719 H540 V744" stroke="#426e73" stroke-width="2.8" stroke-linejoin="round" fill="none" marker-end="url(#arr)"/><path d="M538 702 V719" stroke="#426e73" stroke-width="2.8" stroke-linejoin="round" fill="none" /><path d="M879 702 V719 H734 V744" stroke="#426e73" stroke-width="2.8" stroke-linejoin="round" fill="none" marker-end="url(#arr)"/><rect x="66" y="745" width="948" height="94" rx="13" fill="#e3efef" stroke="none" stroke-width="1.6"/><text x="83" y="779" font-size="24" font-weight="700" fill="#243f45">同一帧的两路特征沿特征维拼接</text><text x="83" y="814" font-size="21" font-weight="400" fill="#243f45">每帧形成一个 token。帧序列与条件 token、位置编码一起送入时序 Transformer。</text><rect x="22" y="884" width="1036" height="306" rx="16" fill="#fff" stroke="#c9dbd7" stroke-width="1.6"/><text x="46" y="927" font-size="23" font-weight="700" fill="#178271">03</text><text x="106" y="927" font-size="28" font-weight="700" fill="#243f45">监督对齐的两份输出</text><text x="46" y="966" font-size="20" font-weight="400" fill="#243f45">同一个时序主干在每个位置估计干净的动作与文本表示，两路分别计算均方误差。</text><rect x="47" y="994" width="470" height="120" rx="13" fill="#e6f2ed" stroke="none" stroke-width="1.6"/><text x="64" y="1028" font-size="24" font-weight="700" fill="#243f45">动作输出 x̂₀</text><text x="64" y="1063" font-size="21" font-weight="400" fill="#243f45">与对应帧的干净动作 x₀ 比较</text><text x="64" y="1092" font-size="21" font-weight="400" fill="#243f45">恢复连续动作特征，可还原骨架运动</text><rect x="543" y="994" width="489" height="120" rx="13" fill="#f7edda" stroke="none" stroke-width="1.6"/><text x="560" y="1028" font-size="24" font-weight="700" fill="#243f45">标签向量输出 ŷ₀</text><text x="560" y="1063" font-size="21" font-weight="400" fill="#243f45">与对应帧的干净标签向量 y₀ 比较</text><text x="560" y="1092" font-size="21" font-weight="400" fill="#243f45">预测向量在标签库中找最近邻，读出文字</text><text x="48" y="1160" font-size="21" font-weight="400" fill="#243f45">全局描述 c 在整个过程中提供条件，不参与局部标签的去噪目标。</text><rect x="22" y="1213" width="1036" height="484" rx="16" fill="#fff" stroke="#c9dbd7" stroke-width="1.6"/><text x="46" y="1256" font-size="23" font-weight="700" fill="#178271">04</text><text x="106" y="1256" font-size="28" font-weight="700" fill="#243f45">复用同一模型切换任务</text><text x="46" y="1295" font-size="20" font-weight="400" fill="#243f45">T 表示从噪声开始，0 表示给定干净输入。下表列出采样开始时两路的状态。</text><rect x="47" y="1316" width="985" height="52" rx="4" fill="#254d54" stroke="none" stroke-width="1.6"/><text x="66" y="1349" font-size="21" font-weight="700" fill="#fff">任务</text><text x="309" y="1349" font-size="21" font-weight="700" fill="#fff">动作 / 标签时刻</text><text x="525" y="1349" font-size="20" font-weight="700" fill="#fff">输入与读出</text><rect x="47" y="1371" width="985" height="52" rx="4" fill="#edf4f0" stroke="none" stroke-width="1.6"/><text x="66" y="1404" font-size="22" font-weight="400" fill="#243e44">联合生成</text><text x="309" y="1404" font-size="21" font-weight="400" fill="#243e44">(T, T)</text><text x="525" y="1404" font-size="20" font-weight="400" fill="#243e44">两路同步去噪 → 动作和逐帧标签</text><rect x="47" y="1426" width="985" height="52" rx="4" fill="#f4f5ef" stroke="none" stroke-width="1.6"/><text x="66" y="1459" font-size="22" font-weight="400" fill="#243e44">局部文本生动作</text><text x="309" y="1459" font-size="21" font-weight="400" fill="#243e44">(T, 0)</text><text x="525" y="1459" font-size="20" font-weight="400" fill="#243e44">固定给定标签 → 生成动作，可再加全局描述 c</text><rect x="47" y="1481" width="985" height="52" rx="4" fill="#edf4f0" stroke="none" stroke-width="1.6"/><text x="66" y="1514" font-size="22" font-weight="400" fill="#243e44">动作生局部文本</text><text x="309" y="1514" font-size="21" font-weight="400" fill="#243e44">(0, T)</text><text x="525" y="1514" font-size="20" font-weight="400" fill="#243e44">固定给定动作 → 生成标签向量并做近邻读出</text><rect x="47" y="1565" width="985" height="106" rx="13" fill="#e4eeee" stroke="none" stroke-width="1.6"/><text x="64" y="1599" font-size="24" font-weight="700" fill="#243f45">编辑一段局部动作</text><text x="64" y="1634" font-size="21" font-weight="400" fill="#243f45">先生成动作与同步标签，改写选定时段的标签，再用新条件采样。</text><text x="64" y="1663" font-size="21" font-weight="400" fill="#243f45">新结果应按时段检查动作是否符合修改后的文字，以及邻近动作是否受影响。</text><text x="35" y="1750" font-size="21" font-weight="400" fill="#243f45">据 Li 等，3DV 2025，图 1–2 与 §4–5 原创整理。</text><text x="35" y="1780" font-size="20" font-weight="400" fill="#243f45">PCA 维数的论文与发布配置差异，以及采样脚本的实际接口，见正文。</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1337" viewBox="0 0 1080 1337" role="img" aria-labelledby="title desc">
+<title id="title">UniMotion · 一条时间轴，两种噪声步</title><desc id="desc">动作和局部文字按帧对齐并独立加噪，作为一条拼接序列进入 Transformer。全局句子另作条件。不同噪声组合触发不同输出。</desc>
+<defs><marker id="end" markerWidth="7" markerHeight="7" refX="6.2" refY="3.5" orient="auto"><path d="M0 0L7 3.5 0 7Z" fill="#3c6370"/></marker><marker id="sup" markerWidth="7" markerHeight="7" refX="6.2" refY="3.5" orient="auto"><path d="M0 0L7 3.5 0 7Z" fill="#976120"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#193c47} .title{font-size:36px;font-weight:700} .sub{font-size:21px;fill:#466471} .stage{font-size:28px;font-weight:700} .num{font-size:20px;fill:#fff;font-weight:700} .name{font-size:25px;font-weight:700} .field{font-size:22px} .tag{font-size:20px;fill:#3d5863} .e{fill:none;stroke:#3c6370;stroke-width:3;stroke-linejoin:round;marker-end:url(#end)} .s{fill:none;stroke:#976120;stroke-width:3;stroke-dasharray:7 5;stroke-linejoin:round;marker-end:url(#sup)} </style>
+<rect width="1080" height="1337" rx="20" fill="#f4f7f6"/>
+<text x="35" y="54" class="title" text-anchor="start">UniMotion · 一条时间轴，两种噪声步</text>
+<text x="37" y="94" class="sub" text-anchor="start">对齐局部词组与姿态，用联合扩散在生成和识别之间切换。</text>
+<path d="M39 129h55" class="e"/>
+<text x="109" y="137" class="tag" text-anchor="start">数据流</text>
+<path d="M246 129h55" class="s"/>
+<text x="315" y="137" class="tag" text-anchor="start">训练监督</text>
+<text x="512" y="137" class="tag" text-anchor="start">蓝：输入　绿：运算　黄：监督　紫：输出</text>
+<rect x="18" y="165" width="1044" height="337" rx="15" fill="#fff" stroke="#c4d2d0" stroke-width="1.6"/>
+<rect x="40" y="185" width="47" height="37" rx="8" fill="#356e68" stroke="#356e68" stroke-width="1.6"/>
+<text x="63" y="211" class="num" text-anchor="middle">01</text>
+<text x="103" y="215" class="stage" text-anchor="start">数据对齐　匹配同一个 AMASS 动作区间</text>
+<rect x="42" y="246" width="299" height="112" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="191.5" y="279.5" class="name" text-anchor="middle">人体动作</text>
+<text x="191.5" y="310.5" class="field" text-anchor="middle">每帧 263 维特征</text>
+<text x="191.5" y="341.5" class="field" text-anchor="middle">记为 x₀</text>
+<rect x="390" y="246" width="299" height="112" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="539.5" y="279.5" class="name" text-anchor="middle">BABEL 区间短语</text>
+<text x="539.5" y="310.5" class="field" text-anchor="middle">映射到对应帧</text>
+<text x="539.5" y="341.5" class="field" text-anchor="middle">CLIP + PCA → y₀</text>
+<rect x="735" y="246" width="299" height="112" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="884.5" y="279.5" class="name" text-anchor="middle">HumanML3D 描述</text>
+<text x="884.5" y="310.5" class="field" text-anchor="middle">整段句子经 CLIP</text>
+<text x="884.5" y="341.5" class="field" text-anchor="middle">可选的全局条件 c</text>
+<rect x="180" y="399" width="720" height="72" rx="12" fill="#e0efeb" stroke="#88aa9f" stroke-width="1.6"/>
+<text x="540.0" y="443.5" class="name" text-anchor="middle">第 i 帧姿态 xᵢ 和局部词向量 yᵢ 同步，c 对整段有效</text>
+<path d="M191 358V395" class="e"/>
+<path d="M540 358V395" class="e"/>
+<path d="M884 358V395" class="e"/>
+<rect x="18" y="522" width="1044" height="382" rx="15" fill="#fff" stroke="#c4d2d0" stroke-width="1.6"/>
+<rect x="40" y="542" width="47" height="37" rx="8" fill="#356e68" stroke="#356e68" stroke-width="1.6"/>
+<text x="63" y="568" class="num" text-anchor="middle">02</text>
+<text x="103" y="572" class="stage" text-anchor="start">联合训练　噪声强度不等于帧的先后位置</text>
+<rect x="42" y="609" width="272" height="84" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="178.0" y="644.0" class="name" text-anchor="middle">动作加噪</text>
+<text x="178.0" y="675.0" class="field" text-anchor="middle">x₀ → x(tₓ)</text>
+<rect x="42" y="714" width="272" height="84" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="178.0" y="749.0" class="name" text-anchor="middle">文字加噪</text>
+<text x="178.0" y="780.0" class="field" text-anchor="middle">y₀ → y(tᵧ)</text>
+<rect x="399" y="634" width="275" height="143" rx="12" fill="#e0efeb" stroke="#88aa9f" stroke-width="1.6"/>
+<text x="536.5" y="683.0" class="name" text-anchor="middle">共享 Transformer</text>
+<text x="536.5" y="714.0" class="field" text-anchor="middle">同帧拼接动作和文字</text>
+<text x="536.5" y="745.0" class="field" text-anchor="middle">另给 tₓ、tᵧ 和条件 c</text>
+<rect x="757" y="608" width="277" height="85" rx="12" fill="#fff0d7" stroke="#c3a06c" stroke-width="1.6"/>
+<text x="895.5" y="643.5" class="name" text-anchor="middle">动作头 → x̂₀</text>
+<text x="895.5" y="674.5" class="field" text-anchor="middle">对齐干净动作 x₀</text>
+<rect x="757" y="723" width="277" height="85" rx="12" fill="#fff0d7" stroke="#c3a06c" stroke-width="1.6"/>
+<text x="895.5" y="758.5" class="name" text-anchor="middle">文字头 → ŷ₀</text>
+<text x="895.5" y="789.5" class="field" text-anchor="middle">对齐局部词向量 y₀</text>
+<path d="M314 651H353V672H395" class="e"/>
+<path d="M314 756H353V741H395" class="e"/>
+<path d="M674 690H710V650H753" class="s"/>
+<path d="M674 732H710V766H753" class="s"/>
+<text x="43" y="865" class="sub" text-anchor="start">x 与 y 的均方误差相加。冻结的文本编码器提供目标向量。</text>
+<rect x="18" y="924" width="1044" height="349" rx="15" fill="#fff" stroke="#c4d2d0" stroke-width="1.6"/>
+<rect x="40" y="944" width="47" height="37" rx="8" fill="#356e68" stroke="#356e68" stroke-width="1.6"/>
+<text x="63" y="970" class="num" text-anchor="middle">03</text>
+<text x="103" y="974" class="stage" text-anchor="start">推理　已知的一路保持干净，另一条由噪声开始</text>
+<rect x="42" y="1007" width="299" height="88" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="191.5" y="1044.0" class="name" text-anchor="middle">给定局部脚本 y</text>
+<text x="191.5" y="1075.0" class="field" text-anchor="middle">(tₓ,tᵧ) 从 (T,0) 起步</text>
+<rect x="42" y="1144" width="299" height="96" rx="12" fill="#edeaf5" stroke="#afa4c5" stroke-width="1.6"/>
+<text x="191.5" y="1185.0" class="name" text-anchor="middle">输出骨骼动作</text>
+<text x="191.5" y="1216.0" class="field" text-anchor="middle">按脚本生成连续姿态</text>
+<path d="M192 1095V1140" class="e"/>
+<rect x="390" y="1007" width="299" height="88" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="539.5" y="1044.0" class="name" text-anchor="middle">给定动作 x</text>
+<text x="539.5" y="1075.0" class="field" text-anchor="middle">从 (0,T) 起步</text>
+<rect x="390" y="1144" width="299" height="96" rx="12" fill="#edeaf5" stroke="#afa4c5" stroke-width="1.6"/>
+<text x="539.5" y="1185.0" class="name" text-anchor="middle">输出逐帧短语</text>
+<text x="539.5" y="1216.0" class="field" text-anchor="middle">ŷ → 标签库最近邻</text>
+<path d="M540 1095V1140" class="e"/>
+<rect x="735" y="1007" width="299" height="88" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="884.5" y="1044.0" class="name" text-anchor="middle">仅给全局句 c</text>
+<text x="884.5" y="1075.0" class="field" text-anchor="middle">两路从 (T,T) 起步</text>
+<rect x="735" y="1144" width="299" height="96" rx="12" fill="#edeaf5" stroke="#afa4c5" stroke-width="1.6"/>
+<text x="884.5" y="1185.0" class="name" text-anchor="middle">同时输出动作和脚本</text>
+<text x="884.5" y="1216.0" class="field" text-anchor="middle">用户可改脚本再重生成</text>
+<path d="M885 1095V1140" class="e"/>
+<text x="37" y="1314" class="tag" text-anchor="start">依据正式稿图 1–2、式 3，及补充材料 D 的算法 1–3。</text>
+</svg>

@@ -45,9 +45,11 @@ MotionCLR 把去噪器中“动作帧之间怎样互相参照”和“某帧该�
 
 ### 整体框架
 
-输入是一句描述、目标长度和噪声。MotionCLR 在连续运动特征上运行 U-Net 型扩散去噪器。训练时学习文字条件与动作的对应；推理时可以同时生成参考分支和编辑分支，在选定的网络层、去噪步和动作时间范围内修改注意力，再让其余去噪步骤完成全身运动。[正文图 2、图 4，§3–4][paper]。
+“先跑、再坐下”换成“先跳、再坐下”，普通的重新采样可能连坐下的姿势也一起改变。MotionCLR 先训练一个连续动作去噪器，把词级特征引入每个 CLR 块；推理时，再让编辑分支选择性地沿用参考分支的注意关系，继续生成整段运动。[正文图 2–5、§3–4][paper]
 
-<figure class="paper-figure"><a href="/paper-notes/motionclr/architecture.svg" target="_blank" rel="noopener"><img src="/paper-notes/motionclr/architecture.svg" alt="MotionCLR 的扩散训练、CLR 块、推理注意力干预和四次跳跃的输出校验" /></a><figcaption>教学示意。A、B 说明模型怎样训练，C 是不更新模型参数的编辑，D 展示时间提示如何用于纠错。<a href="/paper-notes/motionclr/architecture.svg" target="_blank" rel="noopener">查看原图</a></figcaption></figure>
+<figure class="paper-figure"><a href="/paper-notes/motionclr/architecture.svg?v=arch-20261102-r2" target="_blank" rel="noopener"><img src="/paper-notes/motionclr/architecture.svg?v=arch-20261102-r2" alt="MotionCLR 训练两路输入在 U-Net 汇合，CLR 块内帧间和帧词注意分流，编辑时参考注意与新词值汇合，输出连续动作。" /></a><figcaption>图据论文图 2–5 与式 1–3 重绘。实线传递特征或注意关系，虚线表示与干净动作比较的训练监督。 <a href="/paper-notes/motionclr/architecture.svg?v=arch-20261102-r2" target="_blank" rel="noopener">查看原图</a></figcaption></figure>
+
+先看 **01**：扩散步 t 表示噪声强度。再看 **02**：F 是动作帧数，L 是词元数，因此两张图分别回答“本帧参考哪一帧”和“本帧读取哪个词”。最后看 **03**：旧提示提供时间布局，新提示提供“跳”的词值，编辑仍要经剩余去噪步骤才能得到骨骼。正文图 5c 是这一替换的实际示例，表 3 的未编辑区误差则是数据集统计。[原文图 5、表 3][paper] · [公开注意力实现][cross]
 
 ### 关键设计
 
@@ -77,7 +79,7 @@ MotionCLR 把去噪器中“动作帧之间怎样互相参照”和“某帧该�
 
    另一条路径是先告诉去噪器期待的时间段。图 14 中“跳四次”的初次结果实际跳了七次；作者在四个期望区域用 α=0.15 强调“跳”，其余区域用 α=−0.1 减弱，重采样后例子中出现四次。需要知道或指定这些窗口，不能把这一例改写成任意次数口令的成功率。[正文 §6、图 14][paper]。
 
-### 一个完整例子
+### 一个完整例子：把「先跑再坐」改成「先跳再坐」
 
 沿图 5c，把“先跑，然后坐下”改为“先跳，然后坐下”。编辑要求包含两个独立问题：先看跳跃是否发生，再看原先的坐下段是否受到牵连。
 
@@ -183,7 +185,7 @@ R-Precision 衡量在评估器特征空间中找回配对项的能力，MM-Dist 
 
 ### 消融实验
 
-**文字注入方式。** 表 7（p. 16）。第一项取消逐词单独建模，第二项把文字词元置于动作词元之前，替代独立的交叉注意力。完整模型的三档检索和 FID 均改善。
+**文字注入方式。** 表 7（p. 16）。第一项取消逐词单独建模，第二项把文字词元置于动作词元之前，替代独立的交叉注意力。在表 7 的相同评测下，取消逐词建模时 FID 为 0.544，完整模型为 0.269。三档检索率也同时提高。[原文表 7][paper]
 
 | 设计 | R@1 ↑ | R@2 ↑ | R@3 ↑ | FID ↓ |
 |---|---:|---:|---:|---:|

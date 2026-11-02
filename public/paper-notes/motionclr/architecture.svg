@@ -1,1 +1,84 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1194" width="1200" height="1194" role="img" aria-labelledby="title desc"><title id="title">MotionCLR 架构与编辑</title><desc id="desc">从扩散训练到词帧注意力干预，再到生成动作的误差与次数核验。</desc><defs><marker orient="auto" markerWidth="7" markerHeight="7" refX="6" refY="3.5" id="ah"><path d="M0 0 L7 3.5 L0 7 Z" fill="#446073"/></marker></defs><rect width="1200" height="1194" rx="22" fill="#f8fafc"/><g fill="#19374b" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif"><text x="40" y="61" font-size="36" font-weight="700" fill="#19374b">MotionCLR｜拆开两种注意力，编辑生成中的动作</text><text x="42" y="104" font-size="22" font-weight="400" fill="#19374b">原创教学示意 · A、B 是训练体系；C 在采样时编辑；D 展示怎样核对实际动作。</text><rect x="25" y="136" width="1150" height="246" rx="16" fill="#e4eef9"/><text x="45" y="176" font-size="27" font-weight="700" fill="#235178">A  训练一次基础模型 · 文本与动捕配对样本</text><rect x="45" y="197" width="347" height="128" rx="10" fill="white" stroke="#235178" stroke-width="1.5"/><text x="60" y="232" font-size="23" font-weight="700" fill="#235178">连续动作序列</text><text x="60" y="272" font-size="20" font-weight="400" fill="#19374b">按随机扩散步 t 加入高斯噪声</text><text x="60" y="302" font-size="20" font-weight="400" fill="#19374b">xₜ 携带当前帧特征</text><path d="M393 262h25" stroke="#446073" stroke-width="2.4" fill="none" marker-end="url(#ah)"/><rect x="425" y="197" width="347" height="128" rx="10" fill="white" stroke="#235178" stroke-width="1.5"/><text x="440" y="232" font-size="23" font-weight="700" fill="#235178">训练去噪 U-Net</text><text x="440" y="272" font-size="20" font-weight="400" fill="#19374b">同时输入噪声步与词级条件</text><text x="440" y="302" font-size="20" font-weight="400" fill="#19374b">多尺度 CLR 堆叠，估计干净动作</text><path d="M773 262h25" stroke="#446073" stroke-width="2.4" fill="none" marker-end="url(#ah)"/><rect x="805" y="197" width="347" height="128" rx="10" fill="white" stroke="#235178" stroke-width="1.5"/><text x="820" y="232" font-size="23" font-weight="700" fill="#235178">与真实动作比较</text><text x="820" y="272" font-size="20" font-weight="400" fill="#19374b">对有效帧求重建误差</text><text x="820" y="302" font-size="20" font-weight="400" fill="#19374b">更新去噪器；冻结 CLIP 编码器</text><text x="46" y="358" font-size="20" font-weight="400" fill="#235178">文字走独立支路，冻结 CLIP 产生逐词特征。配对训练不要求每个动词都有人工标好的起止帧。</text><rect x="25" y="399" width="1150" height="246" rx="16" fill="#e1f2ec"/><text x="45" y="439" font-size="27" font-weight="700" fill="#266251">B  放大一个 CLR 块 · 两种“时间”分开读</text><rect x="45" y="460" width="347" height="128" rx="10" fill="white" stroke="#266251" stroke-width="1.5"/><text x="60" y="495" font-size="23" font-weight="700" fill="#266251">Conv1D 与扩散步 t</text><text x="60" y="535" font-size="20" font-weight="400" fill="#19374b">t 表示现在噪声有多强</text><text x="60" y="565" font-size="20" font-weight="400" fill="#19374b">与骨架第几帧是两种索引</text><path d="M393 525h25" stroke="#446073" stroke-width="2.4" fill="none" marker-end="url(#ah)"/><rect x="425" y="460" width="347" height="128" rx="10" fill="white" stroke="#266251" stroke-width="1.5"/><text x="440" y="495" font-size="23" font-weight="700" fill="#266251">自注意力＋交叉注意力</text><text x="440" y="535" font-size="20" font-weight="400" fill="#19374b">先算动作帧 × 动作帧</text><text x="440" y="565" font-size="20" font-weight="400" fill="#19374b">再算动作帧 × 文本词元</text><path d="M773 525h25" stroke="#446073" stroke-width="2.4" fill="none" marker-end="url(#ah)"/><rect x="805" y="460" width="347" height="128" rx="10" fill="white" stroke="#266251" stroke-width="1.5"/><text x="820" y="495" font-size="23" font-weight="700" fill="#266251">FFN 与多尺度传播</text><text x="820" y="535" font-size="20" font-weight="400" fill="#19374b">每个采样块含两个 CLR 块</text><text x="820" y="565" font-size="20" font-weight="400" fill="#19374b">在降采样、上采样中传递特征</text><text x="46" y="621" font-size="20" font-weight="400" fill="#266251">自注意力的 Q/K/V 均来自运动。交叉注意力取运动作 Q、词特征作 K/V；两支随后共同影响生成。</text><rect x="25" y="662" width="1150" height="246" rx="16" fill="#fff0d8"/><text x="45" y="702" font-size="27" font-weight="700" fill="#875320">C  推理编辑 · 同一个预训练去噪器</text><rect x="45" y="723" width="347" height="128" rx="10" fill="white" stroke="#875320" stroke-width="1.5"/><text x="60" y="758" font-size="23" font-weight="700" fill="#875320">参考与编辑分支</text><text x="60" y="798" font-size="20" font-weight="400" fill="#19374b">生成参考运动；实际动捕可按</text><text x="60" y="828" font-size="20" font-weight="400" fill="#19374b">论文先用 DDIM 反演作起点</text><path d="M393 788h25" stroke="#446073" stroke-width="2.4" fill="none" marker-end="url(#ah)"/><rect x="425" y="723" width="347" height="128" rx="10" fill="white" stroke="#875320" stroke-width="1.5"/><text x="440" y="758" font-size="23" font-weight="700" fill="#875320">在指定去噪步干预</text><text x="440" y="798" font-size="20" font-weight="400" fill="#19374b">交叉：换词布局／强弱／局部抑制</text><text x="440" y="828" font-size="20" font-weight="400" fill="#19374b">自注意：时移／示例重排／风格 Q</text><path d="M773 788h25" stroke="#446073" stroke-width="2.4" fill="none" marker-end="url(#ah)"/><rect x="805" y="723" width="347" height="128" rx="10" fill="white" stroke="#875320" stroke-width="1.5"/><text x="820" y="758" font-size="23" font-weight="700" fill="#875320">继续去噪并解码表示</text><text x="820" y="798" font-size="20" font-weight="400" fill="#19374b">恢复全身关节序列与根运动</text><text x="820" y="828" font-size="20" font-weight="400" fill="#19374b">检查目标动作和未编辑时间段</text><text x="46" y="884" font-size="20" font-weight="400" fill="#875320">来源图 2–5、附录 F。参考图提供时序结构，编辑词提供新内容；未编辑区需对输出关节测误差。</text><rect x="25" y="925" width="1150" height="246" rx="16" fill="#eee9f8"/><text x="45" y="965" font-size="27" font-weight="700" fill="#624d87">D  诊断 · 校验“跳四次”是否真得到四次</text><rect x="45" y="986" width="347" height="128" rx="10" fill="white" stroke="#624d87" stroke-width="1.5"/><text x="60" y="1021" font-size="23" font-weight="700" fill="#624d87">观察初次生成</text><text x="60" y="1061" font-size="20" font-weight="400" fill="#19374b">人工或运动指标核对次数</text><text x="60" y="1091" font-size="20" font-weight="400" fill="#19374b">论文例子要求四次却生成七次</text><path d="M393 1051h25" stroke="#446073" stroke-width="2.4" fill="none" marker-end="url(#ah)"/><rect x="425" y="986" width="347" height="128" rx="10" fill="white" stroke="#624d87" stroke-width="1.5"/><text x="440" y="1021" font-size="23" font-weight="700" fill="#624d87">给明确的时间窗口</text><text x="440" y="1061" font-size="20" font-weight="400" fill="#19374b">四段增强 jump，其余时间减弱</text><text x="440" y="1091" font-size="20" font-weight="400" fill="#19374b">用加权后的条件重新生成</text><path d="M773 1051h25" stroke="#446073" stroke-width="2.4" fill="none" marker-end="url(#ah)"/><rect x="805" y="986" width="347" height="128" rx="10" fill="white" stroke="#624d87" stroke-width="1.5"/><text x="820" y="1021" font-size="23" font-weight="700" fill="#624d87">按输出验收</text><text x="820" y="1061" font-size="20" font-weight="400" fill="#19374b">比较根高度及动作轨迹</text><text x="820" y="1091" font-size="20" font-weight="400" fill="#19374b">自注意图的逐行峰数另作估计</text><text x="46" y="1147" font-size="20" font-weight="400" fill="#624d87">时间窗是软引导。论文展示一次纠错成功；自动数峰与目标次数的实际执行是两项不同测量。</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1275" viewBox="0 0 1080 1275" role="img" aria-labelledby="title desc">
+<title id="title">MotionCLR · 哪些帧在读哪个词？</title><desc id="desc">训练时由动作和文字学习去噪，CLR 的自注意力和交叉注意力形成不同形状的矩阵。推理时可在参考和编辑两路之间转移信息。</desc>
+<defs><marker id="end" markerWidth="7" markerHeight="7" refX="6.2" refY="3.5" orient="auto"><path d="M0 0L7 3.5 0 7Z" fill="#3c6370"/></marker><marker id="sup" markerWidth="7" markerHeight="7" refX="6.2" refY="3.5" orient="auto"><path d="M0 0L7 3.5 0 7Z" fill="#976120"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#193c47} .title{font-size:36px;font-weight:700} .sub{font-size:21px;fill:#466471} .stage{font-size:28px;font-weight:700} .num{font-size:20px;fill:#fff;font-weight:700} .name{font-size:25px;font-weight:700} .field{font-size:22px} .tag{font-size:20px;fill:#3d5863} .e{fill:none;stroke:#3c6370;stroke-width:3;stroke-linejoin:round;marker-end:url(#end)} .s{fill:none;stroke:#976120;stroke-width:3;stroke-dasharray:7 5;stroke-linejoin:round;marker-end:url(#sup)} </style>
+<rect width="1080" height="1275" rx="20" fill="#f4f7f6"/>
+<text x="35" y="54" class="title" text-anchor="start">MotionCLR · 哪些帧在读哪个词？</text>
+<text x="37" y="94" class="sub" text-anchor="start">训练一个去噪器；比较两路采样，在注意力内部改变动作。</text>
+<path d="M39 129h55" class="e"/>
+<text x="109" y="137" class="tag" text-anchor="start">数据流</text>
+<path d="M246 129h55" class="s"/>
+<text x="315" y="137" class="tag" text-anchor="start">训练监督</text>
+<text x="512" y="137" class="tag" text-anchor="start">蓝：输入　绿：运算　黄：监督　紫：输出</text>
+<rect x="18" y="165" width="1044" height="310" rx="15" fill="#fff" stroke="#c4d2d0" stroke-width="1.6"/>
+<rect x="40" y="185" width="47" height="37" rx="8" fill="#356e68" stroke="#356e68" stroke-width="1.6"/>
+<text x="63" y="211" class="num" text-anchor="middle">01</text>
+<text x="103" y="215" class="stage" text-anchor="start">训练　动作与文字从哪里进入？</text>
+<rect x="42" y="245" width="259" height="90" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="171.5" y="283.0" class="name" text-anchor="middle">动作 x₀，噪声步 t</text>
+<text x="171.5" y="314.0" class="field" text-anchor="middle">加噪得到 xₜ</text>
+<rect x="42" y="352" width="259" height="87" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="171.5" y="388.5" class="name" text-anchor="middle">文字提示</text>
+<text x="171.5" y="419.5" class="field" text-anchor="middle">CLIP 词级特征</text>
+<rect x="390" y="266" width="275" height="132" rx="12" fill="#e0efeb" stroke="#88aa9f" stroke-width="1.6"/>
+<text x="527.5" y="309.5" class="name" text-anchor="middle">时序 U-Net</text>
+<text x="527.5" y="340.5" class="field" text-anchor="middle">多尺度 CLR 块</text>
+<text x="527.5" y="371.5" class="field" text-anchor="middle">下采样、上采样与跳连</text>
+<rect x="744" y="266" width="290" height="132" rx="12" fill="#fff0d7" stroke="#c3a06c" stroke-width="1.6"/>
+<text x="889.0" y="309.5" class="name" text-anchor="middle">预测干净动作</text>
+<text x="889.0" y="340.5" class="field" text-anchor="middle">有效帧上与 x₀ 比较</text>
+<text x="889.0" y="371.5" class="field" text-anchor="middle">均方误差更新去噪器</text>
+<path d="M301 289H350V306H388" class="e"/>
+<path d="M301 394H350V365H388" class="e"/>
+<path d="M665 333H740" class="s"/>
+<rect x="18" y="495" width="1044" height="340" rx="15" fill="#fff" stroke="#c4d2d0" stroke-width="1.6"/>
+<rect x="40" y="515" width="47" height="37" rx="8" fill="#356e68" stroke="#356e68" stroke-width="1.6"/>
+<text x="63" y="541" class="num" text-anchor="middle">02</text>
+<text x="103" y="545" class="stage" text-anchor="start">放大一个 CLR 块　帧与帧、帧与词分别怎样汇合？</text>
+<rect x="42" y="583" width="213" height="105" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="148.5" y="628.5" class="name" text-anchor="middle">带噪动作特征</text>
+<text x="148.5" y="659.5" class="field" text-anchor="middle">卷积接收 t</text>
+<rect x="301" y="583" width="219" height="105" rx="12" fill="#e0efeb" stroke="#88aa9f" stroke-width="1.6"/>
+<text x="410.5" y="628.5" class="name" text-anchor="middle">帧间自注意</text>
+<text x="410.5" y="659.5" class="field" text-anchor="middle">Q、K、V 都来自动作</text>
+<rect x="570" y="583" width="230" height="105" rx="12" fill="#e0efeb" stroke="#88aa9f" stroke-width="1.6"/>
+<text x="685.0" y="628.5" class="name" text-anchor="middle">帧词交叉注意</text>
+<text x="685.0" y="659.5" class="field" text-anchor="middle">动作作 Q，词作 K、V</text>
+<rect x="850" y="583" width="186" height="105" rx="12" fill="#e0efeb" stroke="#88aa9f" stroke-width="1.6"/>
+<text x="943.0" y="628.5" class="name" text-anchor="middle">前馈层</text>
+<text x="943.0" y="659.5" class="field" text-anchor="middle">传给下一层</text>
+<path d="M255 635H297" class="e"/>
+<path d="M520 635H566" class="e"/>
+<path d="M800 635H846" class="e"/>
+<rect x="48" y="724" width="452" height="74" rx="12" fill="#edeaf5" stroke="#afa4c5" stroke-width="1.6"/>
+<text x="274.0" y="769.5" class="name" text-anchor="middle">F × F　哪些动作帧彼此关联？</text>
+<rect x="572" y="724" width="458" height="74" rx="12" fill="#edeaf5" stroke="#afa4c5" stroke-width="1.6"/>
+<text x="801.0" y="769.5" class="name" text-anchor="middle">F × L　各帧分配多少权重给各词？</text>
+<path d="M405 688V704H278V721" class="e"/>
+<path d="M687 688V704H804V721" class="e"/>
+<rect x="18" y="855" width="1044" height="361" rx="15" fill="#fff" stroke="#c4d2d0" stroke-width="1.6"/>
+<rect x="40" y="875" width="47" height="37" rx="8" fill="#356e68" stroke="#356e68" stroke-width="1.6"/>
+<text x="63" y="901" class="num" text-anchor="middle">03</text>
+<text x="103" y="905" class="stage" text-anchor="start">推理　参考生成与编辑生成共享已训练的网络</text>
+<rect x="42" y="942" width="256" height="86" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="170.0" y="978.0" class="name" text-anchor="middle">旧提示 · 参考分支</text>
+<text x="170.0" y="1009.0" class="field" text-anchor="middle">读取选中层的注意图</text>
+<rect x="42" y="1060" width="256" height="86" rx="12" fill="#e8f2fb" stroke="#99b7cb" stroke-width="1.6"/>
+<text x="170.0" y="1096.0" class="name" text-anchor="middle">新提示 · 编辑分支</text>
+<text x="170.0" y="1127.0" class="field" text-anchor="middle">生成新词的值 V</text>
+<rect x="391" y="961" width="272" height="157" rx="12" fill="#e0efeb" stroke="#88aa9f" stroke-width="1.6"/>
+<text x="527.0" y="1001.5" class="name" text-anchor="middle">干预注意力</text>
+<text x="527.0" y="1032.5" class="field" text-anchor="middle">替换时沿用参考布局</text>
+<text x="527.0" y="1063.5" class="field" text-anchor="middle">也可调整词列或时间窗</text>
+<text x="527.0" y="1094.5" class="field" text-anchor="middle">只在指定去噪步生效</text>
+<rect x="751" y="961" width="283" height="157" rx="12" fill="#edeaf5" stroke="#afa4c5" stroke-width="1.6"/>
+<text x="892.5" y="1001.5" class="name" text-anchor="middle">编辑后的整段动作</text>
+<text x="892.5" y="1032.5" class="field" text-anchor="middle">继续去噪并解码</text>
+<text x="892.5" y="1063.5" class="field" text-anchor="middle">另查新内容是否出现</text>
+<text x="892.5" y="1094.5" class="field" text-anchor="middle">及未编辑区关节偏差</text>
+<path d="M298 985H339V1003H387" class="e"/>
+<path d="M298 1103H339V1080H387" class="e"/>
+<path d="M663 1038H747" class="e"/>
+<text x="43" y="1184" class="sub" text-anchor="start">另一条操作读帧间自注意：重排时间、迁移风格或在已生成动作上计数。</text>
+<text x="37" y="1252" class="tag" text-anchor="start">依据论文图 2–5、式 1–3、附录 F；第三部分以原位词替换示意。</text>
+</svg>

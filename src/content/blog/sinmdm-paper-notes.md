@@ -46,11 +46,11 @@ tags: ["SinMDM", "Single-Motion-Synthesis", "Motion-Diffusion", "Motion-Editing"
 
 ### 整体框架
 
-训练输入是一条动作的动态特征，监督就是它自身的干净版本。训练完成后，任选输出长度，给模型相应长度的噪声。自由生成只需要这组噪声；若艺术家手里已有要保留的帧或关节，采样时再接入参考动作。[§3–5][paper]
+SinMDM 用同一条干净示范做两件事：加噪得到去噪器的输入，保留原值作为预测目标。模型只学这个角色的运动。训练结束后，改变起始噪声的帧数即可改变动画长度；有参考帧或关节时，在反向采样的一轮内部接入它们。[训练图 2][net] · [编辑图 4–5][compose]
 
-[![SinMDM 教学架构图。一条动作训练一套浅层局部去噪器，从指定长度的噪声生成动作，参考动作可在采样时接入。](/paper-notes/sinmdm/architecture.svg)](/paper-notes/sinmdm/architecture.svg)
+<figure class="paper-figure"><a href="/paper-notes/sinmdm/architecture.svg?v=arch-20261102-r2" target="_blank" rel="noopener"><img src="/paper-notes/sinmdm/architecture.svg?v=arch-20261102-r2" alt="SinMDM 的单序列训练、局部窗口、反向扩散循环，以及分别接入干净预测和带噪样本的参考动作" /></a><figcaption>教学示意。沿实线看去噪器怎样生成样本；虚线引入干净示范监督或编辑参考。 <a href="/paper-notes/sinmdm/architecture.svg?v=arch-20261102-r2" target="_blank" rel="noopener">查看原图</a></figcaption></figure>
 
-读图时先看训练段的两扇重叠窗口：去噪器在不同时间位置用同一套权重工作。再看推理段，反复执行去噪才得到完整动画。最后两种编辑入口分别对应“哪些特征要保留”和“哪些变化要从风格示范中学”。图为本文根据原文重绘，点击可看大图。[原文图 2、4、5][net]
+图中 **02 的回路**是读懂编辑的关键。先由去噪器预测干净运动，再采到下一个噪声步。03 左支像剪辑中的“锁轨”，在干净预测上保留指定的帧或关节；右支作用于带噪样本，将内容的低频与风格示范提供的高频细节组合。正式图 4 与图 5 分别描述这两个位置。[原文图 4–5][compose] · [采样写回][mask]
 
 ### 关键设计
 
@@ -78,6 +78,8 @@ tags: ["SinMDM", "Single-Motion-Synthesis", "Motion-Diffusion", "Motion-Editing"
 附录表 4 的主实验配置为 256 通道、4 个注意力头、1 个残差块、卷积核 3、batch 64、60,000 次参数更新，采用 1,000 步余弦噪声日程。64 个批内样本来自同一条示范。公开训练循环复制输入，并随机做时间缩放；仓库附的两个基准脚本各列 10 条动作，逐条训练，脚本设置的 20,000 次更新与论文主配置有区别。[附录表 4][config] · [训练循环][train] · [Mixamo 脚本][mixscript] · [HumanML3D 脚本][hmlscript]
 
 自由生成时，输出多少帧就初始化多长的噪声序列。图 8 从 **10 秒**的后退、转身示范生成 **60 秒**动画。群体演示为不同个体采样不同噪声，使它们的动作有所差别。两项实验分别说明能改变长度、能产生多个变体，均未测量多人避碰或指定时刻发生某件事的成功率。[§5.3、图 8、10][style] · [长动作与群体演示][demo]
+
+实现中，这两种参考编辑也有可定位的差别：组合模式按掩码写回干净预测；协调模式对参考做降采样与上采样以取得低频，在公开采样循环中仅当反向索引大于 20 时注入。图中的风格支路据此标在反向更新的位置。[写回代码][mask] · [低通设置][edit] · [低频注入位置](https://github.com/SinMDM/SinMDM/blob/main/diffusion/gaussian_diffusion.py#L679-L685)
 
 <span id="reading-4" class="reading-anchor"></span>
 

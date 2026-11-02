@@ -1,69 +1,83 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="640" height="1610" viewBox="0 0 640 1610" role="img" aria-labelledby="title desc">
-  <title id="title">人体动作基元如何被发现、命名，再用于识别</title>
-  <desc id="desc">从三维关节姿态开始，按六个身体部分分别最大化运动通量能量来分段。每个无标签片段按肢段长度缩放。离线学习先用最外侧关节的轨迹聚类，人工给类别代表命名，再用组三个关节建类内模型。对新片段，用这些模型和几何距离识别基元，输出部位、区间和类别。</desc>
-  <defs>
-    <style>
-      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203b45}
-      .kicker{font:700 18px Arial,sans-serif;letter-spacing:1.2px;fill:#4a6872}
-      .title{font-size:36px;font-weight:700}.head{font-size:27px;font-weight:700}
-      .body{font-size:23px}.small{font-size:21px}.bold{font-size:23px;font-weight:700}
-      .num{font:700 17px Arial,sans-serif;fill:#fff;text-anchor:middle}
-      .center{text-anchor:middle}.divider{stroke:#b9c8c7;stroke-width:1.4}
-      .arrow{fill:none;stroke:#486d78;stroke-width:2.6;marker-end:url(#a)}
-    </style>
-    <marker id="a" markerWidth="7" markerHeight="7" refX="5.8" refY="3" orient="auto"><path d="M0 0L6 3 0 6Z" fill="#486d78"/></marker>
-  </defs>
-  <rect width="640" height="1610" rx="18" fill="#f7f8f4"/>
-  <text x="28" y="44" class="kicker">MOTION PRIMITIVES  /  PLOS ONE 2019</text>
-  <text x="28" y="102" class="title">从连续轨迹读出动作基元</text>
-  <path d="M28 131H612" class="divider"/>
-
-  <rect x="28" y="155" width="44" height="34" rx="8" fill="#365e70"/>
-  <text x="50" y="178" class="num">01</text><text x="84" y="182" class="head">得到六组身体轨迹</text>
-  <rect x="28" y="207" width="584" height="158" rx="13" fill="#fffdf8" stroke="#bdcac5"/>
-  <text x="52" y="247" class="bold">动作捕捉，或从视频估计的 3D 姿态</text>
-  <text x="52" y="286" class="body">头、躯干、左右臂、左右腿，每组 3 个关节。</text>
-  <text x="52" y="326" class="small">统一参考坐标，以三次样条平滑关节轨迹。</text>
-
-  <rect x="28" y="395" width="44" height="34" rx="8" fill="#365e70"/>
-  <text x="50" y="418" class="num">02</text><text x="84" y="422" class="head">每组独立寻找片段的边界</text>
-  <rect x="28" y="447" width="584" height="314" rx="13" fill="#e7f0f2" stroke="#a0b9c1"/>
-  <text x="52" y="486" class="bold">从上一边界出发，寻找能量的局部最大值</text>
-  <text x="52" y="527" class="body">通量累积各关节沿参考方向的加速度绝对值。</text>
-  <text x="52" y="565" class="small">能量另惩罚端点速度与路径长度，抑制过长切段。</text>
-  <path d="M52 589H588" class="divider"/>
-  <text x="52" y="630" class="small">右臂</text>
-  <g transform="translate(126 606)">
-    <rect width="107" height="33" rx="5" fill="#b8d4da"/><rect x="111" width="178" height="33" rx="5" fill="#d9e7e8"/><rect x="293" width="165" height="33" rx="5" fill="#b8d4da"/>
-  </g>
-  <text x="52" y="678" class="small">左腿</text>
-  <g transform="translate(126 654)">
-    <rect width="187" height="33" rx="5" fill="#d4debf"/><rect x="191" width="115" height="33" rx="5" fill="#e4e8d9"/><rect x="310" width="148" height="33" rx="5" fill="#d4debf"/>
-  </g>
-  <text x="52" y="735" class="small">条块仅示意各组边界；此时片段尚无类别标签。</text>
-
-  <rect x="28" y="791" width="44" height="34" rx="8" fill="#365e70"/>
-  <text x="50" y="814" class="num">03</text><text x="84" y="818" class="head">从无标签片段学习类别模型</text>
-  <rect x="28" y="843" width="584" height="399" rx="13" fill="#ebf1e7" stroke="#a3b69c"/>
-  <text x="52" y="883" class="small">各片段按肢段长度缩放，减小体型差异。</text>
-  <path d="M52 908H588" class="divider"/>
-  <text x="52" y="946" class="bold">第一层　按身体组聚类</text>
-  <text x="52" y="983" class="body">取最外侧关节的轨迹特征，用狄利克雷</text>
-  <text x="52" y="1019" class="body">过程混合模型（DPM）发现组内类别。</text>
-  <path d="M64 1034v24" class="arrow"/>
-  <text x="89" y="1057" class="small">检查各类代表片段，用生物力学术语命名。</text>
-  <path d="M52 1083H588" class="divider"/>
-  <text x="52" y="1124" class="bold">第二层　为每个类别单独建模</text>
-  <text x="52" y="1162" class="body">改用组内全部 3 个关节的轨迹特征。</text>
-  <text x="52" y="1202" class="body">每类再拟合一个 DPM，容纳类内的不同变体。</text>
-
-  <rect x="28" y="1272" width="44" height="34" rx="8" fill="#365e70"/>
-  <text x="50" y="1295" class="num">04</text><text x="84" y="1299" class="head">在新的活动中识别已有类别</text>
-  <rect x="28" y="1324" width="584" height="250" rx="13" fill="#f5ebda" stroke="#c8b797"/>
-  <text x="52" y="1364" class="bold">新片段也经过分段、尺度归一和特征提取。</text>
-  <text x="52" y="1403" class="body">在所属身体组，用各类模型的概率筛候选，</text>
-  <text x="52" y="1440" class="body">再用轨迹几何代价帮助选出类别。</text>
-  <path d="M52 1469H588" class="divider"/>
-  <text x="52" y="1511" class="bold">输出　身体组、时间区间、基元名称</text>
-  <text x="52" y="1549" class="small">例如：某段右臂轨迹被识别为“屈肘”。</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1448" viewBox="0 0 1040 1448" role="img" aria-labelledby="title desc">
+<title id="title">Motion Primitive Discovery · 从轨迹到带名称的区间</title><desc id="desc">独立切段后，训练用组内聚类和人工代表命名建立词表。识别再用每类的统计模型和三关节的几何特征。用真实标注示范三个身体组的区间如何重叠。</desc>
+<defs><marker id="arrow" viewBox="0 0 9 8" refX="8" refY="4" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="11" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#416c70"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203f43}.strong{font-weight:700}.label{fill:#355a5d}.id{fill:#17756f;font-weight:700}</style>
+<rect width="1040" height="1448" fill="#f5f8f6"/>
+<text x="34" y="54" font-size="36" class="strong">Motion Primitive Discovery · 从轨迹到带名称的区间</text>
+<text x="36" y="95" font-size="22" class="label">PLOS ONE 2019　｜　六组身体部位分别切段，各自的时间区间允许重叠。</text>
+<rect x="20" y="122" width="1000" height="281" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="164" font-size="23" class="id">01</text>
+<text x="99" y="164" font-size="28" class="strong">发现边界：先知道哪一段在动</text>
+<rect x="44" y="194" width="245" height="100" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="59" y="227" font-size="24" class="strong">三维姿态</text>
+<text x="59" y="260" font-size="21" class="">18 个关节分为 6 组，</text>
+<text x="59" y="287" font-size="21" class="">每组跟踪 3 条轨迹。</text>
+<rect x="350" y="194" width="319" height="100" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="365" y="227" font-size="24" class="strong">运动通量与端点目标</text>
+<text x="365" y="260" font-size="21" class="">累积加速度在解剖轴的投影，</text>
+<text x="365" y="287" font-size="21" class="">兼顾首尾速度与轨迹弧长。</text>
+<rect x="733" y="194" width="262" height="100" rx="12" fill="#d7eeeb" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="748" y="227" font-size="24" class="strong">该组的候选基元</text>
+<text x="748" y="260" font-size="21" class="">从起点搜索局部极大值，</text>
+<text x="748" y="287" font-size="21" class="">取得无名区间 [a, b]。</text>
+<path d="M289 243 H350" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M669 243 H733" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="48" y="359" font-size="20" class="label">单组的 3 个关节共用区间；另一组的边界独立计算。全身同一帧可以同时出现多个基元。</text>
+<rect x="20" y="428" width="1000" height="384" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="470" font-size="23" class="id">02</text>
+<text x="99" y="470" font-size="28" class="strong">建立词表：先聚出类，再由人给代表片段命名</text>
+<rect x="45" y="507" width="259" height="107" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="540" font-size="24" class="strong">分段后的三关节轨迹</text>
+<text x="60" y="573" font-size="21" class="">按肢段长度归一化，</text>
+<text x="60" y="600" font-size="21" class="">选该组最外侧关节。</text>
+<rect x="367" y="507" width="298" height="107" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="382" y="540" font-size="24" class="strong">组内 DPM 聚类</text>
+<text x="382" y="573" font-size="21" class="">轨迹局部特征 → 混合成分，</text>
+<text x="382" y="600" font-size="21" class="">按 80% 归属阈值收集片段。</text>
+<rect x="725" y="507" width="269" height="107" rx="12" fill="#fcf0d6" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="740" y="540" font-size="24" class="strong">人工查看代表</text>
+<text x="740" y="573" font-size="21" class="">选类内模型评分最高者，</text>
+<text x="740" y="600" font-size="21" class="">赋予生物力学名称。</text>
+<path d="M304 561 H367" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M665 561 H725" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="367" y="687" width="627" height="92" rx="12" fill="#eeeaf7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="382" y="720" font-size="24" class="strong">每个已命名类单独训练一个 DPM</text>
+<text x="382" y="753" font-size="21" class="">恢复使用组内全部 3 个关节，学习同一类别内的多种轨迹形状。</text>
+<path d="M860 614 V687" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M175 614 V734 H367" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<rect x="20" y="836" width="1000" height="239" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="878" font-size="23" class="id">03</text>
+<text x="99" y="878" font-size="28" class="strong">识别新片段：统计似然筛选，曲线几何定类</text>
+<rect x="44" y="920" width="254" height="100" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="59" y="953" font-size="24" class="strong">新视频或动捕</text>
+<text x="59" y="986" font-size="21" class="">沿用 01 切段；提取</text>
+<text x="59" y="1013" font-size="21" class="">组内 3 个关节的特征。</text>
+<rect x="359" y="920" width="302" height="100" rx="12" fill="#eeeaf7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="374" y="953" font-size="24" class="strong">按似然筛候选</text>
+<text x="374" y="986" font-size="21" class="">仅在当前身体组的已学</text>
+<text x="374" y="1013" font-size="21" class="">类别模型中选成分。</text>
+<rect x="724" y="920" width="270" height="100" rx="12" fill="#d7eeeb" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="739" y="953" font-size="24" class="strong">比较曲线几何</text>
+<text x="739" y="986" font-size="21" class="">切平面距离与标架旋转</text>
+<text x="739" y="1013" font-size="21" class="">→ 该区间的类别名称。</text>
+<path d="M298 970 H359" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M661 970 H724" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="20" y="1099" width="1000" height="237" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="1141" font-size="23" class="id">04</text>
+<text x="99" y="1141" font-size="28" class="strong">公开记录示例 · 同一段 Directions 的三条时间线</text>
+<text x="45" y="1175" font-size="20" class="label">Human3.6M · S11_Directions1：条带是已发布的起止帧，没有表示动作强度。</text>
+<text x="45" y="1221" font-size="21" class="">右臂：肩内旋并屈肘</text>
+<rect x="335" y="1200" width="580" height="23" rx="4" fill="#edf2f0" stroke="#edf2f0" stroke-width="1.6"/>
+<rect x="335.0" y="1200" width="404.2" height="23" rx="4" fill="#88bdb2" stroke="#88bdb2" stroke-width="1.6"/>
+<text x="386.0" y="1218" font-size="18" class="">1–47 帧</text>
+<text x="45" y="1258" font-size="21" class="">左臂：肩内旋并屈肘</text>
+<rect x="335" y="1237" width="580" height="23" rx="4" fill="#edf2f0" stroke="#edf2f0" stroke-width="1.6"/>
+<rect x="446.8" y="1237" width="309.59999999999997" height="23" rx="4" fill="#aebf85" stroke="#aebf85" stroke-width="1.6"/>
+<text x="497.8" y="1255" font-size="18" class="">14–49 帧</text>
+<text x="45" y="1295" font-size="21" class="">头：前倾</text>
+<rect x="335" y="1274" width="580" height="23" rx="4" fill="#edf2f0" stroke="#edf2f0" stroke-width="1.6"/>
+<rect x="532.8" y="1274" width="387.0" height="23" rx="4" fill="#96b9cd" stroke="#96b9cd" stroke-width="1.6"/>
+<text x="583.8" y="1292" font-size="18" class="">24–68 帧</text>
+<text x="38" y="1390" font-size="20" class="label">实线是建库或识别的数据流；虚线为训练时保留的完整三关节轨迹。第 24–47 帧三组共同运动。</text>
+<text x="38" y="1424" font-size="20" class="label">据原文图 2、4、7–8、算法 1 与作者公开标注重绘。合成边界误差与类别识别另行评估。</text>
 </svg>

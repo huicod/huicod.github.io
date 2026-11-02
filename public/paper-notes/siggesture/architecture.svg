@@ -1,41 +1,106 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 1748" width="1120" height="1748" role="img" aria-labelledby="title desc">
-<title id="title">SIGGesture：按词义注入动作片段的扩散式共语手势合成</title><desc id="desc">从高质量骨骼旋转学习动作编解码，再用网络视频伪标签预训练并用动捕微调。推理时把音频和说话人送入节奏去噪器，把已按语音对齐的转录送入 GPT-4 选择动作库中的候选，用时间掩码在早期反向步骤替换局部动作潜码，后续去噪并解码输出骨骼旋转。</desc>
-<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#487381"/></marker></defs>
-<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#183a47}.title{font-size:39px;font-weight:700;fill:white}.sub{font-size:22px;fill:#d6ebee}.section{font-size:30px;font-weight:700}.note{font-size:20px;fill:#416675}.cardTitle{font-size:23px;font-weight:700}.body{font-size:19px}.foot{font-size:17px;fill:#456473}.arrow{stroke:#487381;stroke-width:3;fill:none;marker-end:url(#arrow)}</style>
-<rect x="0" y="0" width="1120" height="1748" rx="0" fill="#f1f6f6" stroke="none"/>
-<rect x="20" y="18" width="1080" height="103" rx="13" fill="#133f4c" stroke="none"/>
-<text class="title" x="48" y="70">SIGGesture｜让语义手势落在相应的词上</text>
-<text class="sub" x="48" y="103">语音塑造整段节奏，词义只在选定的时间位置引入动作参考。</text>
-<rect x="20" y="143" width="1080" height="350" rx="17" fill="#ffffff" stroke="#acc2c9"/><text class="section" x="46" y="190">A　先学会编码手势，再训练节奏模型</text><text class="note" x="46" y="222">训练阶段使用两种质量不同的数据。语义片段库单独整理，供推理时调用。</text>
-<rect x="46" y="246" width="285" height="129" rx="13" fill="#e1edf6" stroke="none"/><text class="cardTitle" x="64" y="282">骨骼旋转 → VQ-VAE</text><text class="body" x="64" y="319">相对 T 姿态的旋转矩阵</text><text class="body" x="64" y="347">30 fps；时间轴压缩 4 倍</text>
-<path d="M 333 308 L 359 308" class="arrow"/>
-<rect x="363" y="246" width="337" height="129" rx="13" fill="#dff0eb" stroke="none"/><text class="cardTitle" x="381" y="282">Gesture400 → 预训练</text><text class="body" x="381" y="319">TED / 一席视频估计骨骼</text><text class="body" x="381" y="347">70,784 段，约 393 小时</text>
-<path d="M 703 308 L 728 308" class="arrow"/>
-<rect x="732" y="246" width="342" height="129" rx="13" fill="#dff0eb" stroke="none"/><text class="cardTitle" x="750" y="282">清洗后的 BEAT → 微调</text><text class="body" x="750" y="319">约 46 小时高质量动捕</text><text class="body" x="750" y="347">延续训练同一节奏去噪器</text>
-<text class="body" x="48" y="414">监督来自真实动作或视频估计动作的潜码。先向干净潜码加噪，再训练网络估计干净状态。</text>
-<text class="note" x="48" y="454">片段库：人工选取并修整 2,537 段语义动作（每段不足 3 秒），附文字标签，用同一 VQ-VAE 编码。</text>
-<rect x="20" y="511" width="1080" height="345" rx="17" fill="#ffffff" stroke="#acc2c9"/><text class="section" x="46" y="558">B　推理输入分成两路，职责不同</text><text class="note" x="46" y="590">同一段讲话要同时提供音频、说话人身份，以及每个词已有时间位置的转录。</text>
-<rect x="46" y="616" width="450" height="130" rx="13" fill="#dff0eb" stroke="none"/><text class="cardTitle" x="64" y="652">节奏条件</text><text class="body" x="64" y="689">音频 → Jukebox 节奏特征</text><text class="body" x="64" y="717">说话人 ID → 身份特征</text>
-<path d="M 499 673 L 541 673" class="arrow"/>
-<rect x="546" y="616" width="528" height="130" rx="13" fill="#dff0eb" stroke="none"/><text class="cardTitle" x="564" y="652">Transformer 去噪器</text><text class="body" x="564" y="689">语音特征进入交叉注意力；身份参与自注意力</text><text class="body" x="564" y="717">扩散步 t 调节 Dense FiLM</text>
-<rect x="46" y="766" width="1028" height="65" rx="13" fill="#feecd5" stroke="none"/>
-<text class="body" x="64" y="795">语义条件：转录 + 类别词表 + 正反例 → GPT-4 选出「原词 → 语义标签」</text>
-<text class="foot" x="64" y="820">按标签取候选动作潜码 G；原词的语音时间给出掩码 m。</text>
-<rect x="20" y="874" width="1080" height="358" rx="17" fill="#ffffff" stroke="#acc2c9"/><text class="section" x="46" y="921">C　在反向扩散的指定时间位置注入</text><text class="note" x="46" y="953">横向两段表示去噪进度。掩码内部的时间位置则对应讲话进度，这是两种不同的时间轴。</text>
-<rect x="46" y="980" width="473" height="137" rx="13" fill="#feecd5" stroke="none"/><text class="cardTitle" x="64" y="1016">前段　T → K</text><text class="body" x="64" y="1053">从噪声 xT 开始；语音和身份持续参与。</text><text class="body" x="64" y="1081">语义时段取候选潜码，其余位置保留 xₜ。</text>
-<path d="M 522 1042 L 554 1042" class="arrow"/>
-<rect x="558" y="980" width="516" height="137" rx="13" fill="#dff0eb" stroke="none"/><text class="cardTitle" x="576" y="1016">后段　K → 1</text><text class="body" x="576" y="1053">停止写入候选，去噪器继续调整整段潜码。</text><text class="body" x="576" y="1081">VQ-VAE 解码最终潜码 → 连续 3D 骨骼旋转。</text>
-<text class="cardTitle" x="50" y="1154">x̂ₜ = m ⊙ xₜ + (1−m) ⊙ G　　m=0 选候选，m=1 留当前扩散状态。</text>
-<text class="note" x="50" y="1195">长语音另外采用 DiffCollage，合并相邻重叠窗口的分数并扣除重复的重叠项。</text>
-<rect x="20" y="1250" width="1080" height="432" rx="17" fill="#ffffff" stroke="#acc2c9"/><text class="section" x="46" y="1297">D　看一次词义如何影响最终动作</text><text class="note" x="46" y="1329">原文附录 D 图 8 的提示样例将 “you” 对应到指示类标签。一条输入词怎样进入动作见下。</text>
-<rect x="46" y="1358" width="290" height="130" rx="13" fill="#e1edf6" stroke="none"/><text class="cardTitle" x="64" y="1394">① 定位原词</text><text class="body" x="64" y="1431">转录标出 “you” 的时段</text><text class="body" x="64" y="1459">GPT-4 返回对应标签</text>
-<path d="M 338 1420 L 364 1420" class="arrow"/>
-<rect x="368" y="1358" width="343" height="130" rx="13" fill="#feecd5" stroke="none"/><text class="cardTitle" x="386" y="1394">② 查片段，建掩码</text><text class="body" x="386" y="1431">据标签选指示类示范</text><text class="body" x="386" y="1459">将其潜码写入相应时间位置</text>
-<path d="M 713 1420 L 739 1420" class="arrow"/>
-<rect x="743" y="1358" width="331" height="130" rx="13" fill="#dff0eb" stroke="none"/><text class="cardTitle" x="761" y="1394">③ 解码并看输出</text><text class="body" x="761" y="1431">节奏模型完成剩余去噪</text><text class="body" x="761" y="1459">检查手势与说词时机</text>
-<text class="note" x="49" y="1536">词与标签的匹配来自论文示例。这里未给这个词补造起止秒数，也未把选中标签当成实测轨迹。</text>
-<rect x="46" y="1572" width="1028" height="78" rx="13" fill="#efe9f3" stroke="none"/>
-<text class="body" x="66" y="1604">输出仍是采样得到的动作。词时间指导“何时”，片段提示“大致做什么”。</text>
-<text class="body" x="66" y="1634">具体指向谁、手指是否到达空间目标以及误差多少，还需在解码动作上测量。</text>
-<text class="foot" x="34" y="1723">据作者会议格式稿图 1、6–8 与 §3.1–3.4、式 8–12 重绘。蓝色表示动作表示，绿色表示节奏生成，橙色表示语义注入。</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1420" viewBox="0 0 1080 1420" role="img" aria-labelledby="title desc">
+<title id="title">siggesture · 总体架构</title>
+<desc id="desc">教学重绘依据 · 作者稿图 1、2、6 与式 7–9。晚期去噪和解码仍可改变最终手势的形状与峰值时刻。</desc>
+<defs>
+<marker id="a" markerWidth="8" markerHeight="8" refX="7.2" refY="4" orient="auto">
+<path d="M0 0 8 4 0 8Z" fill="#446a68"/>
+</marker>
+<marker id="b" markerWidth="8" markerHeight="8" refX="7.2" refY="4" orient="auto">
+<path d="M0 0 8 4 0 8Z" fill="#99765e"/>
+</marker>
+</defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif}.e{fill:none;stroke:#446a68;stroke-width:2.5;stroke-linejoin:round;marker-end:url(#a)}.d{stroke:#99765e;stroke-dasharray:7 5;marker-end:url(#b)}.edge-label{font-size:17px;font-weight:600;paint-order:stroke;stroke:white;stroke-width:5;stroke-linejoin:round}</style>
+<rect width="1080" height="1420" fill="#f7f7f0"/>
+<rect x="20" y="180" width="1040" height="235" rx="17" fill="#fff" stroke="#d0ded8" stroke-width="1.6"/>
+<rect x="20" y="437" width="1040" height="247" rx="17" fill="#fff" stroke="#d0ded8" stroke-width="1.6"/>
+<rect x="20" y="706" width="1040" height="651" rx="17" fill="#fff" stroke="#d0ded8" stroke-width="1.6"/>
+<path d="M42 147H96" class="e"/>
+<path d="M365 147H419" class="e d"/>
+<path d="M316 340.5 L404 340.5" class="e"/>
+<path d="M676 340.5 L764 340.5" class="e d"/>
+<path d="M676 602.5 L764 602.5" class="e"/>
+<path d="M316 874.5 L404 874.5" class="e"/>
+<path d="M540 924 L540 1002" class="e"/>
+<path d="M900 924 L900 946 L540 946 L540 1002" class="e"/>
+<path d="M404 1051.5 L316 1051.5" class="e"/>
+<path d="M180 1101 L180 1184" class="e"/>
+<path d="M316 1233.5 L404 1233.5" class="e"/>
+<path d="M44 602.5 L31 602.5 L31 874.5 L44 874.5" class="e"/>
+<path d="M1036 602.5 L1048 602.5 L1048 874.5 L1036 874.5" class="e"/>
+<path d="M180 924 L180 1002" class="e"/>
+<text x="40" y="72" fill="#173b40" font-size="36" font-weight="700" text-anchor="start">SIGGesture · 给语音手势注入词义</text>
+<text x="40" y="112" fill="#173b40" font-size="23" font-weight="400" text-anchor="start">节奏条件影响整段动作，语义范例只在选定词的时段进入潜空间。</text>
+<text x="40" y="32" fill="#19766f" font-size="18" font-weight="700" text-anchor="start">SIGGRAPH Asia 2024   /   共语手势生成</text>
+<text x="108" y="154" fill="#173b40" font-size="19" font-weight="400" text-anchor="start">动作、特征或条件</text>
+<text x="430" y="154" fill="#87644b" font-size="19" font-weight="400" text-anchor="start">训练目标或真值</text>
+<text x="42" y="220" fill="#19766f" font-size="20" font-weight="700" text-anchor="start">01</text>
+<text x="94" y="220" fill="#173b40" font-size="27" font-weight="700" text-anchor="start">先准备共用的动作潜表示</text>
+<text x="44" y="254" fill="#476064" font-size="19" font-weight="400" text-anchor="start">动作 VQ-VAE 学到连续码向量。扩散和范例库在同一空间交换信息。</text>
+<rect data-node="gesture" x="44" y="291" width="272" height="99" rx="12" fill="#edf1f2" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="59" y="322" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">配对语音与骨骼动作</text>
+<text x="59" y="351" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">动作编码、码本最近邻</text>
+<text x="59" y="376" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">每四帧对应一项潜表示</text>
+<rect data-node="den" x="404" y="291" width="272" height="99" rx="12" fill="#dceeed" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="419" y="322" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">节奏去噪器</text>
+<text x="419" y="351" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">真实潜动作加噪，以音频、</text>
+<text x="419" y="376" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">说话人和噪声等级为条件</text>
+<rect data-node="train" x="764" y="291" width="272" height="99" rx="12" fill="#f4e6dc" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="779" y="322" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">去噪训练目标</text>
+<text x="779" y="351" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">预测干净动作潜表示</text>
+<text x="779" y="376" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">与真实潜表示计算误差</text>
+<text x="360" y="325" text-anchor="middle" class="edge-label" fill="#19766f">潜序列</text>
+<text x="720" y="325" text-anchor="middle" class="edge-label" fill="#866044">监督</text>
+<text x="42" y="477" fill="#19766f" font-size="20" font-weight="700" text-anchor="start">02</text>
+<text x="94" y="477" fill="#173b40" font-size="27" font-weight="700" text-anchor="start">在新讲话上分别准备声音与语义</text>
+<text x="44" y="511" fill="#476064" font-size="19" font-weight="400" text-anchor="start">词的时间位置来自对齐转写。语言模型提供标签，实际动作来自人工筛选的短片段库。</text>
+<rect data-node="speech" x="44" y="553" width="272" height="99" rx="12" fill="#edf1f2" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="59" y="584" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">新语音、说话人 ID</text>
+<text x="59" y="613" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">Jukebox 提取声学节奏</text>
+<text x="59" y="638" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">与说话人条件合用</text>
+<rect data-node="words" x="404" y="553" width="272" height="99" rx="12" fill="#f6e8ca" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="419" y="584" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">转写＋词时间</text>
+<text x="419" y="613" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">GPT-4 依据上下文</text>
+<text x="419" y="638" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">为少数词选择标签</text>
+<rect data-node="lookup" x="764" y="553" width="272" height="99" rx="12" fill="#f6e8ca" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="779" y="584" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">语义动作库</text>
+<text x="779" y="613" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">按标签找已编码片段</text>
+<text x="779" y="638" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">构造候选 G 和时段掩码 m</text>
+<text x="720" y="591" text-anchor="middle" class="edge-label" fill="#19766f">类别标签</text>
+<text x="42" y="746" fill="#19766f" font-size="20" font-weight="700" text-anchor="start">03</text>
+<text x="94" y="746" fill="#173b40" font-size="27" font-weight="700" text-anchor="start">在扩散的哪一步、动作的哪一段写入范例？</text>
+<text x="44" y="780" fill="#476064" font-size="19" font-weight="400" text-anchor="start">扩散步 t 和语音时间轴是两件事。整段一直由声音调节，范例只进入部分去噪步。</text>
+<rect data-node="ac" x="44" y="825" width="272" height="99" rx="12" fill="#edf1f2" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="59" y="856" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">音频特征＋身份</text>
+<text x="59" y="885" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">条件贯穿早、晚去噪阶段</text>
+<rect data-node="xt" x="404" y="825" width="272" height="99" rx="12" fill="#dceeed" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="419" y="856" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">整段带噪潜动作</text>
+<text x="419" y="885" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">随机噪声初始化；去噪器</text>
+<text x="419" y="910" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">依音频生成当前潜值 xₜ</text>
+<rect data-node="hint" x="764" y="825" width="272" height="99" rx="12" fill="#f6e8ca" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="779" y="856" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">候选片段 G 与 m</text>
+<text x="779" y="885" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">只覆盖被选词的时间位置</text>
+<text x="779" y="910" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">在其余位置 m = 1</text>
+<rect data-node="late" x="44" y="1002" width="272" height="99" rx="12" fill="#dceeed" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="59" y="1033" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">后段 · K 至 1</text>
+<text x="59" y="1062" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">继续条件去噪</text>
+<text x="59" y="1087" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">让注入片段与上下文衔接</text>
+<rect data-node="mix" x="404" y="1002" width="272" height="99" rx="12" fill="#dceeed" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="419" y="1033" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">前段 · T 至 K</text>
+<text x="419" y="1062" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">m × xₜ + (1−m) × G</text>
+<text x="419" y="1087" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">在选中时段融合范例</text>
+<rect data-node="decode" x="44" y="1184" width="272" height="99" rx="12" fill="#e6efe0" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="59" y="1215" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">VQ-VAE 解码器</text>
+<text x="59" y="1244" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">还原完整的三维骨骼旋转</text>
+<rect data-node="out" x="404" y="1184" width="272" height="99" rx="12" fill="#deece7" stroke="#c2d1ca" stroke-width="1.3"/>
+<text x="419" y="1215" fill="#173b40" font-size="22" font-weight="700" text-anchor="start">连续共语动作</text>
+<text x="419" y="1244" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">节奏动作与被选词的手势</text>
+<text x="419" y="1269" fill="#344e50" font-size="19" font-weight="400" text-anchor="start">出现在同一条时间线上</text>
+<text x="360" y="861" text-anchor="middle" class="edge-label" fill="#19766f">条件</text>
+<text x="596" y="967" text-anchor="middle" class="edge-label" fill="#19766f">当前潜值</text>
+<text x="746" y="938" text-anchor="middle" class="edge-label" fill="#19766f">G 与 m</text>
+<text x="360" y="1036" text-anchor="middle" class="edge-label" fill="#19766f">到达 K</text>
+<text x="245" y="1144" text-anchor="middle" class="edge-label" fill="#19766f">最终潜表示</text>
+<text x="360" y="1222" text-anchor="middle" class="edge-label" fill="#19766f">骨骼帧</text>
+<text x="250" y="970" text-anchor="middle" class="edge-label" fill="#19766f">声音贯穿后段</text>
+<text x="40" y="1395" fill="#4a6263" font-size="18" font-weight="400" text-anchor="start">教学重绘依据 · 作者稿图 1、2、6 与式 7–9。晚期去噪和解码仍可改变最终手势的形状与峰值时刻。</text>
 </svg>

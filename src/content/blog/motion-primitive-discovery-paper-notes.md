@@ -46,11 +46,11 @@ tags: ["Motion-Primitives", "Motion-Segmentation", "Action-Recognition", "Biomec
 
 ### 整体框架
 
-输入可以是动作捕捉得到的三维姿态，也可以是从视频估计的三维姿态。算法对 **18 个关节、6 个身体组**分别工作，每组 3 个关节。一个基元对应这 3 条轨迹共用的一个时间区间；不同组可以在同一帧处于不同基元。[图 2–4][skeleton]
+从动作捕捉或视频估计得到三维姿态后，算法把 **18 个关节分成 6 个身体组**。它先从组内三条轨迹找出一次运动的起止，再判断这段运动的类型。建类别库时需要聚类和人工命名；新视频只需沿用分段算法，向已有类别模型查询。[图 2–4][skeleton] · [算法 1][classes]
 
-[![教学架构图：六组关节各自按运动通量切段，通过分组聚类和人工命名建立词表，再为新片段做统计和几何匹配。](/paper-notes/motion-primitive-discovery/architecture.svg)](/paper-notes/motion-primitive-discovery/architecture.svg)
+<figure class="paper-figure"><a href="/paper-notes/motion-primitive-discovery/architecture.svg?v=arch-20261102-r2" target="_blank" rel="noopener"><img src="/paper-notes/motion-primitive-discovery/architecture.svg?v=arch-20261102-r2" alt="按身体组发现边界、人工为聚类代表命名、按类建模识别，以及 Directions 序列中双臂和头部的并行时间线" /></a><figcaption>教学示意。前三段区分发现、建库、识别；第四段按发布标注对齐三个身体组的真实帧区间。 <a href="/paper-notes/motion-primitive-discovery/architecture.svg?v=arch-20261102-r2" target="_blank" rel="noopener">查看原图</a></figcaption></figure>
 
-第一次处理已有数据要建词表并给类别命名。新视频到来后，复用同一套预处理和分段方法，把片段送进已建立的类别模型，不再逐片请人命名。图为本文根据原文图 2、4、7–8 和算法 1 重绘。[框架图 4][fig4] · [类别建模与识别][recognition]
+先看 01 和 02 之间的分界：得到 [a, b] 时，系统还不知道这段运动叫“屈肘”。名称来自建库时对代表样本的人工检查。再看 03：识别新轨迹用回组内全部三个关节。04 的条带取自另一条真实发布记录，可直接检查某几帧是否存在多个局部动作。流程据原文图 4、7–8 与算法 1 重绘。[原文图 4][fig4] · [类别匹配][recognition] · [公开标注][annotations]
 
 ### 关键设计
 
@@ -111,7 +111,7 @@ tags: ["Motion-Primitives", "Motion-Segmentation", "Action-Recognition", "Biomec
 | 平均绝对误差 MAE | 2.8 | 3.2 | 2.9 | 3.4 | 3.6 | 4.1 | **3.3** |
 | 均方根误差 RMSE | 3.7 | 4.2 | 4.1 | 4.6 | 4.8 | 5.2 | **4.4** |
 
-### 主实验三与消融：类别识别依赖哪些几何量？
+### 主实验三：真值姿态与估计姿态
 
 原表 4 按 P2 协议留一名特定受试者测试。前四列是相应的单项结果，最后两列把原表末列的主值和括号值拆开。相同序列使用真值三维姿态或从视频估计姿态时，类别识别平均准确率分别为 **0.85** 与 **0.81**。[§6.3、原表 4][tab4]
 
@@ -124,6 +124,8 @@ tags: ["Motion-Primitives", "Motion-Segmentation", "Action-Recognition", "Biomec
 | 右腿 | 0.87 | 0.86 | 0.72 | 0.72 | 0.88 | 0.81 |
 | 左腿 | 0.86 | 0.86 | 0.71 | 0.73 | 0.88 | 0.82 |
 | 平均（按原表） | 0.83 | 0.82 | 0.73 | 0.76 | **0.85** | **0.81** |
+
+### 消融实验
 
 **几何项消融。** 单看切平面投影可达到 0.83，Frenet 旋转为 0.82，单看曲率或挠率分别为 0.76 和 0.73；完整组合为 0.85。较好的单项已经接近组合，各项的作用不同。[表 4][tab4]
 

@@ -1,102 +1,76 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1480" viewBox="0 0 1080 1480" role="img" aria-labelledby="title desc">
-<title id="title">SKEL-Betweener 架构：从关节把手到可编辑的整段骨骼运动</title>
-<desc id="desc">两端姿势和稀疏的关节约束进入插帧模型。同结构的编辑版使用已有动作初始化。关节编码器分别记录节点身份与状态，18 层骨骼图 Transformer 沿空间和时间邻接传播，解码所得全局旋转换算成局部旋转驱动骨架。编辑模型训练时用两组互不相交的约束合成成对数据。</desc>
-<defs><marker id="arr" viewBox="0 0 10 10" refX="8.7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#43675e"/></marker></defs>
-<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC","Arial",sans-serif;fill:#163a36}.k{font-size:24px;font-weight:700}.h{font-size:30px;font-weight:700}.p{font-size:20px}.s{font-size:17px}.mini{font-size:15px}.cap{font-size:16px;font-weight:700;letter-spacing:1.4px} .edge{fill:none;stroke:#43675e;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round}.node{fill:#f8faf5;stroke:#65988b;stroke-width:2.4}</style>
-<rect x="0" y="0" width="1080" height="1480" rx="22" fill="#fbfaf6" stroke="none" stroke-width="1.8"/>
-<text x="41" y="49" class="cap" text-anchor="start" style="fill:#44756a">MOTION AUTHORING   /   SIGGRAPH ASIA 2024</text>
-<text x="40" y="103" class="h" text-anchor="start">SKEL-Betweener</text>
-<text x="40" y="152" class="h" text-anchor="start">从两个姿势开始，拖一处关节，重算整段动作</text>
-<rect x="40" y="198" width="48" height="32" rx="8" fill="#205e58" stroke="none" stroke-width="1.8"/>
-<text x="64" y="220" class="cap" text-anchor="middle" style="fill:white">01</text>
-<text x="102" y="223" class="h" text-anchor="start">动画师先指定哪些量？</text>
-<rect x="40" y="245" width="485" height="248" rx="14" fill="#eef4f1" stroke="#c4d9cd" stroke-width="1.8"/>
-<text x="60" y="280" class="k" text-anchor="start">插帧版  ·  先画两端，再加中间把手</text>
-<text x="60" y="313" class="s" text-anchor="start">节点是「关节 × 帧」。下面只画三个关节。</text>
-<text x="155" y="350" class="mini" text-anchor="middle" style="fill:#3f635f">首帧</text>
-<text x="295" y="350" class="mini" text-anchor="middle" style="fill:#3f635f">中间帧</text>
-<text x="437" y="350" class="mini" text-anchor="middle" style="fill:#3f635f">末帧</text>
-<text x="98" y="380" class="s" text-anchor="middle" style="fill:#42665c">肩</text>
-<path d="M154 375 H436" class="edge" style="stroke:#c9d8cf"/>
-<rect x="147" y="368" width="14" height="14" rx="3" fill="#377e6f" stroke="#377e6f" stroke-width="1.8"/>
-<rect x="194" y="368" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="241" y="368" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="288" y="368" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="335" y="368" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="382" y="368" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="429" y="368" width="14" height="14" rx="3" fill="#377e6f" stroke="#377e6f" stroke-width="1.8"/>
-<text x="98" y="411" class="s" text-anchor="middle" style="fill:#42665c">肘</text>
-<path d="M154 406 H436" class="edge" style="stroke:#c9d8cf"/>
-<rect x="147" y="399" width="14" height="14" rx="3" fill="#377e6f" stroke="#377e6f" stroke-width="1.8"/>
-<rect x="194" y="399" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="241" y="399" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="288" y="399" width="14" height="14" rx="3" fill="#d78350" stroke="#d78350" stroke-width="1.8"/>
-<rect x="335" y="399" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="382" y="399" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="429" y="399" width="14" height="14" rx="3" fill="#377e6f" stroke="#377e6f" stroke-width="1.8"/>
-<text x="98" y="442" class="s" text-anchor="middle" style="fill:#42665c">腕</text>
-<path d="M154 437 H436" class="edge" style="stroke:#c9d8cf"/>
-<rect x="147" y="430" width="14" height="14" rx="3" fill="#377e6f" stroke="#377e6f" stroke-width="1.8"/>
-<rect x="194" y="430" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="241" y="430" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="288" y="430" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="335" y="430" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="382" y="430" width="14" height="14" rx="3" fill="#f7f9f6" stroke="#c9d8cf" stroke-width="1.8"/>
-<rect x="429" y="430" width="14" height="14" rx="3" fill="#377e6f" stroke="#377e6f" stroke-width="1.8"/>
-<text x="60" y="472" class="s" text-anchor="start">绿色：完整姿势　 橙色：选定关节的一项约束</text>
-<rect x="555" y="245" width="485" height="248" rx="14" fill="#f5eee6" stroke="#e1cbb6" stroke-width="1.8"/>
-<text x="576" y="280" class="k" text-anchor="start">编辑版  ·  先载入已有动作</text>
-<text x="576" y="318" class="p" text-anchor="start">已有片段提供每帧的关节初值；</text>
-<text x="576" y="350" class="p" text-anchor="start">在需要改动的帧添加位置或旋转把手。</text>
-<text x="576" y="399" class="s" text-anchor="start">这套模型采用相同的图结构，单独训练。</text>
-<text x="576" y="430" class="s" text-anchor="start">原动作的细节通过训练目标保留；</text>
-<text x="576" y="458" class="s" text-anchor="start">时间上靠近新约束的帧，允许有更大改动。</text>
-<rect x="40" y="532" width="48" height="32" rx="8" fill="#205e58" stroke="none" stroke-width="1.8"/>
-<text x="64" y="554" class="cap" text-anchor="middle" style="fill:white">02</text>
-<text x="102" y="557" class="h" text-anchor="start">关节怎样把局部编辑传到周围？</text>
-<rect x="40" y="580" width="1000" height="97" rx="14" fill="#e7efed" stroke="#b9d0c7" stroke-width="1.8"/>
-<text x="62" y="615" class="k" text-anchor="start">关节编码器</text>
-<text x="62" y="651" class="p" text-anchor="start">插帧先对位置线性插值、旋转球面插值。编辑版以已有动作代替插值初值。</text>
-<path d="M540 678 V701" class="edge" style="stroke:#43675e" marker-end="url(#arr)"/>
-<rect x="40" y="707" width="1000" height="281" rx="14" fill="#fff" stroke="#b9d0c7" stroke-width="1.8"/>
-<text x="63" y="744" class="k" text-anchor="start">骨骼图 Transformer × 18</text>
-<text x="62" y="786" class="p" text-anchor="start">每个节点同时携带两份信息</text>
-<text x="62" y="821" class="s" text-anchor="start">身份 → 查询与键：关节编号、时间、约束掩码。</text>
-<text x="62" y="851" class="s" text-anchor="start">状态 → 值：世界位置、6D 朝向、脚接触标记。</text>
-<text x="62" y="896" class="p" text-anchor="start">各层沿骨骼连接和相邻帧传递消息，</text>
-<text x="62" y="928" class="s" text-anchor="start">接前馈层和残差，只更新未受约束的状态。</text>
-<path d="M566 730 V952" class="edge" style="stroke:#d3e0d8"/>
-<text x="798" y="756" class="s" text-anchor="middle" style="fill:#34675e">以第 3 帧左肘为例</text>
-<path d="M804 801 V908" class="edge" style="stroke:#70a290"/>
-<path d="M662 855 H946" class="edge" style="stroke:#7096a6"/>
-<circle cx="804" cy="798" r="8" class="node"/>
-<circle cx="804" cy="913" r="8" class="node"/>
-<circle cx="658" cy="855" r="8" class="node"/>
-<circle cx="950" cy="855" r="8" class="node"/>
-<circle cx="804" cy="855" r="10" class="node" style="fill:#387c69"/>
-<text x="804" y="782" class="mini" text-anchor="middle">同帧左肩</text>
-<text x="804" y="945" class="mini" text-anchor="middle">同帧左腕</text>
-<text x="655" y="827" class="mini" text-anchor="middle">第 2 帧左肘</text>
-<text x="945" y="827" class="mini" text-anchor="middle">第 4 帧左肘</text>
-<rect x="752" y="865" width="104" height="18" rx="4" fill="#fff"/>
-<text x="804" y="879" class="mini" text-anchor="middle">第 3 帧左肘</text>
-<path d="M540 989 V1012" class="edge" style="stroke:#43675e" marker-end="url(#arr)"/>
-<rect x="40" y="1020" width="1000" height="104" rx="14" fill="#e3f0e8" stroke="#acd1bb" stroke-width="1.8"/>
-<text x="62" y="1058" class="k" text-anchor="start">关节解码器 → 角色与动作曲线</text>
-<text x="62" y="1096" class="s" text-anchor="start">预测朝向、位置与足接触。全局位置头只提供训练监督；推理时将全局朝向转成局部旋转驱动骨架。</text>
-<rect x="40" y="1168" width="48" height="32" rx="8" fill="#205e58" stroke="none" stroke-width="1.8"/>
-<text x="64" y="1190" class="cap" text-anchor="middle" style="fill:white">03</text>
-<text x="102" y="1193" class="h" text-anchor="start">编辑训练怎样合成配对样本？</text>
-<rect x="40" y="1218" width="1000" height="116" rx="14" fill="#f6ede2" stroke="#e1cbb6" stroke-width="1.8"/>
-<text x="60" y="1254" class="k" text-anchor="start">原始动作</text>
-<text x="60" y="1294" class="s" text-anchor="start">抽两组不重叠的位置约束 A、B</text>
-<path d="M316 1278 H359" class="edge" style="stroke:#43675e" marker-end="url(#arr)"/>
-<text x="380" y="1254" class="k" text-anchor="start">A → 已训插帧版</text>
-<text x="380" y="1294" class="s" text-anchor="start">生成一段基础动作</text>
-<path d="M584 1278 H632" class="edge" style="stroke:#43675e" marker-end="url(#arr)"/>
-<text x="656" y="1254" class="k" text-anchor="start">基础动作 + B → 编辑版</text>
-<text x="656" y="1294" class="s" text-anchor="start">以原始动作为监督目标</text>
-<text x="42" y="1381" class="p" text-anchor="start">回到界面：从生成的轨迹上选点、设为新把手，然后重新生成。输出仍可能偏离目标。</text>
-<text x="42" y="1422" class="s" text-anchor="start" style="fill:#566f66">图据原文图 1–3、5、7 与 §3–4、§6 重绘；局部邻域示例取自图 3 的说明。</text>
-<text x="42" y="1453" class="cap" text-anchor="start" style="fill:#657c70">SKEL-BETWEENER   /   METHOD STUDY</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1550" viewBox="0 0 1080 1550" role="img" aria-labelledby="title desc">
+<title id="title">SKEL-Betweener · 把关节曲线变成下一轮把手</title><desc id="desc">首尾插帧或底片编辑构成两个入口；图注意力读取骨架和相邻帧。解码旋转驱动角色，界面把新把手反馈到下一轮。</desc>
+<defs>
+<marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#3e6167"/></marker>
+<marker id="train" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#a57134"/></marker>
+</defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#1e3843} .line{stroke-linejoin:round;stroke-linecap:round;fill:none}</style>
+<rect width="1080" height="1550" rx="20" fill="#f3f7f7"/>
+<text x="38" y="59" font-size="38" font-weight="700" text-anchor="start">SKEL-Betweener · 把关节曲线变成下一轮把手</text>
+<text x="40" y="102" font-size="22" font-weight="400" text-anchor="start" style="fill:#47626b">两种单独训练的模型，共用时空骨骼图结构；实线走预测，虚线标训练信号。</text>
+<rect x="20" y="132" width="1040" height="317" rx="16" fill="#fff" stroke="#c5d3d2" stroke-width="2"/>
+<text x="48" y="174" font-size="23" font-weight="700" text-anchor="start" style="fill:#15776d">01</text>
+<text x="112" y="175" font-size="27" font-weight="700" text-anchor="start">选择当前任务，再建立 T × J 个节点</text>
+<rect x="52" y="206" width="460" height="104" rx="11" fill="#edf4fb" stroke="#a8bfd6" stroke-width="2"/>
+<text x="68" y="241" font-size="25" font-weight="700" text-anchor="start">插帧版</text>
+<text x="68" y="276" font-size="21" font-weight="400" text-anchor="start">首尾姿态＋稀疏把手 → 插值初值</text>
+<rect x="568" y="206" width="459" height="104" rx="11" fill="#f1eef8" stroke="#b9a8d1" stroke-width="2"/>
+<text x="584" y="241" font-size="25" font-weight="700" text-anchor="start">编辑版 ★</text>
+<text x="584" y="276" font-size="21" font-weight="400" text-anchor="start">已有动作作底片＋本轮新把手</text>
+<path d="M282 310 L282 331 L417 331 L417 351" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<path d="M797 310 L797 331 L667 331 L667 351" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<rect x="151" y="351" width="781" height="76" rx="11" fill="#e6f3ee" stroke="#87b4a5" stroke-width="2"/>
+<text x="541.5" y="397.0" font-size="24" font-weight="700" text-anchor="middle">同一节点分别记录位置、朝向、足接触及各自掩码</text>
+<rect x="20" y="473" width="1040" height="478" rx="16" fill="#fff" stroke="#c5d3d2" stroke-width="2"/>
+<text x="48" y="515" font-size="23" font-weight="700" text-anchor="start" style="fill:#15776d">02</text>
+<text x="112" y="516" font-size="27" font-weight="700" text-anchor="start">18 层局部传播 · 看一眼第 t 帧左肘的邻域</text>
+<rect x="52" y="552" width="282" height="92" rx="11" fill="#edf4fb" stroke="#a8bfd6" stroke-width="2"/>
+<text x="68" y="587" font-size="25" font-weight="700" text-anchor="start">节点身份 → Q／K</text>
+<text x="68" y="622" font-size="21" font-weight="400" text-anchor="start">关节、时间、约束掩码</text>
+<rect x="52" y="679" width="282" height="92" rx="11" fill="#edf4fb" stroke="#a8bfd6" stroke-width="2"/>
+<text x="68" y="714" font-size="25" font-weight="700" text-anchor="start">节点状态 → V</text>
+<text x="68" y="749" font-size="21" font-weight="400" text-anchor="start">位置、朝向、接触</text>
+<path d="M334 598 L363 598 L363 672 L386 672" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<path d="M334 726 L363 726 L363 672" class="line" stroke="#3e6167" stroke-width="2.8"/>
+<rect x="387" y="631" width="178" height="83" rx="11" fill="#e6f3ee" stroke="#87b4a5" stroke-width="2"/>
+<text x="476.0" y="680.5" font-size="24" font-weight="700" text-anchor="middle">局部注意力</text>
+<rect x="714" y="552" width="185" height="61" rx="11" fill="#f7f8fa" stroke="#bbc6ce" stroke-width="2"/>
+<text x="806.5" y="590.5" font-size="24" font-weight="700" text-anchor="middle">同帧左肩</text>
+<rect x="715" y="640" width="184" height="67" rx="11" fill="#e7f3f4" stroke="#85aeb4" stroke-width="2"/>
+<text x="807.0" y="681.5" font-size="24" font-weight="700" text-anchor="middle">t 帧左肘</text>
+<rect x="713" y="739" width="185" height="61" rx="11" fill="#f7f8fa" stroke="#bbc6ce" stroke-width="2"/>
+<text x="805.5" y="777.5" font-size="24" font-weight="700" text-anchor="middle">同帧左腕</text>
+<rect x="588" y="646" width="108" height="55" rx="11" fill="#f7f8fa" stroke="#bbc6ce" stroke-width="2"/>
+<text x="642.0" y="681.5" font-size="24" font-weight="700" text-anchor="middle">t−1</text>
+<rect x="918" y="646" width="106" height="55" rx="11" fill="#f7f8fa" stroke="#bbc6ce" stroke-width="2"/>
+<text x="971.0" y="681.5" font-size="24" font-weight="700" text-anchor="middle">t＋1</text>
+<path d="M806 613 L806 640" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<path d="M806 739 L806 707" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<path d="M696 673 L715 673" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<path d="M918 673 L899 673" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<path d="M478 714 L478 780 L563 780 L563 829" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<rect x="147" y="829" width="780" height="93" rx="11" fill="#e6f3ee" stroke="#87b4a5" stroke-width="2"/>
+<text x="163" y="864" font-size="25" font-weight="700" text-anchor="start">逐层传递，生成未知节点状态</text>
+<text x="163" y="899" font-size="21" font-weight="400" text-anchor="start">已给定把手继续作为邻居可读，解码得到旋转、位置与接触。</text>
+<rect x="20" y="973" width="1040" height="498" rx="16" fill="#fff" stroke="#c5d3d2" stroke-width="2"/>
+<text x="48" y="1015" font-size="23" font-weight="700" text-anchor="start" style="fill:#15776d">03</text>
+<text x="112" y="1016" font-size="27" font-weight="700" text-anchor="start">网络输出 → 动画师回看 → 新一轮编辑</text>
+<rect x="53" y="1053" width="429" height="104" rx="11" fill="#fcf2df" stroke="#ceb383" stroke-width="2"/>
+<text x="69" y="1088" font-size="25" font-weight="700" text-anchor="start">训练时的监督</text>
+<text x="69" y="1123" font-size="21" font-weight="400" text-anchor="start">重建＋把手误差＋足接触损失</text>
+<rect x="560" y="1053" width="466" height="104" rx="11" fill="#e7f3f4" stroke="#85aeb4" stroke-width="2"/>
+<text x="576" y="1088" font-size="25" font-weight="700" text-anchor="start">角色输出</text>
+<text x="576" y="1123" font-size="21" font-weight="400" text-anchor="start">局部旋转驱动骨架，得到关节轨迹。</text>
+<path d="M560 1105 L482 1105" class="line" stroke="#a57134" stroke-width="2.8" marker-end="url(#train)" stroke-dasharray="8 7"/>
+<path d="M793 1157 L793 1206" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<rect x="560" y="1206" width="466" height="99" rx="11" fill="#edf4fb" stroke="#a8bfd6" stroke-width="2"/>
+<text x="576" y="1241" font-size="25" font-weight="700" text-anchor="start">选轨迹上的一点</text>
+<text x="576" y="1276" font-size="21" font-weight="400" text-anchor="start">帧 t、关节 j 与新的世界位置</text>
+<path d="M560 1256 L488 1256" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<rect x="53" y="1206" width="435" height="99" rx="11" fill="#e6f3ee" stroke="#87b4a5" stroke-width="2"/>
+<text x="69" y="1241" font-size="25" font-weight="700" text-anchor="start">用新把手再次预测</text>
+<text x="69" y="1276" font-size="21" font-weight="400" text-anchor="start">可给 ★ 版提供要保留的原动作。</text>
+<path d="M270 1206 L270 1181 L520 1181 L520 1105 L560 1105" class="line" stroke="#3e6167" stroke-width="2.8" marker-end="url(#flow)"/>
+<rect x="53" y="1359" width="973" height="79" rx="11" fill="#fcf2df" stroke="#ceb383" stroke-width="2"/>
+<text x="539.5" y="1406.5" font-size="24" font-weight="700" text-anchor="middle">★ 训练配对：把手 A 合成底片 → 加入另一组把手 B → 学习重建原动捕</text>
+<text x="40" y="1522" font-size="20" font-weight="400" text-anchor="start" style="fill:#47626b">图源：正式论文图 2、3、5、7 与 §3–4；右侧邻域中的 t−1、t＋1 均指同侧左肘。</text>
 </svg>

@@ -1,91 +1,77 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="640" height="1512" viewBox="0 0 640 1512" role="img" aria-labelledby="title desc">
-  <title id="title">SinMDM 如何用一段动作生成新动画</title>
-  <desc id="desc">从单条动作的动态特征加噪，训练浅层 U-Net 还原干净动作。QnA 在相邻且重叠的时间窗口内聚合信息，各窗口共用学得的查询。生成时从指定长度的噪声反复去噪，输出原骨架上的新动态。编辑可在每步预测中按掩码写回参考帧或关节，也可用参考低频引导生成动作的高频细节。</desc>
-  <defs>
-    <style>
-      text{font-family:"Microsoft YaHei","Noto Sans CJK SC","Source Han Sans CN",sans-serif;fill:#193a37}
-      .eyebrow{font:700 18px Arial,sans-serif;letter-spacing:1.6px;fill:#44685d}
-      .title{font-size:39px;font-weight:700}
-      .section{font-size:28px;font-weight:700}
-      .strong{font-size:24px;font-weight:700}
-      .body{font-size:23px}
-      .detail{font-size:21px;fill:#46615d}
-      .num{font:700 18px Arial,sans-serif;fill:#fff}
-      .step{fill:#265d51}
-      .edge{fill:none;stroke:#4b6963;stroke-width:2.6;marker-end:url(#arrow)}
-      .guide{fill:none;stroke-width:3;stroke-linecap:round}
-      .sep{stroke:#bcc9bf;stroke-width:1.5}
-      .center{text-anchor:middle}
-    </style>
-    <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-      <path d="M0 0 6 3 0 6Z" fill="#4b6963"/>
-    </marker>
-    <g id="cell"><rect width="47" height="27" rx="5" fill="#dce9e3" stroke="#8ca99c"/></g>
-  </defs>
-  <rect width="640" height="1512" rx="18" fill="#faf8f1"/>
-  <text x="28" y="42" class="eyebrow">SinMDM  /  ICLR 2024</text>
-  <text x="28" y="103" class="title">从一段动作生成新动画</text>
-  <path d="M28 128H612" class="sep"/>
-
-  <rect x="28" y="154" width="43" height="34" rx="8" class="step"/>
-  <text x="49" y="178" class="num center">01</text>
-  <text x="84" y="180" class="section">一条训练序列对应一个模型</text>
-  <rect x="28" y="207" width="584" height="159" rx="13" fill="#fffdf8" stroke="#b9c7bc"/>
-  <text x="50" y="244" class="strong">干净动作 x₀</text>
-  <text x="50" y="279" class="body">N 帧 × F 维动态特征，骨架和骨长固定。</text>
-  <path d="M58 296v40" class="edge"/>
-  <text x="82" y="329" class="body">随机选扩散步 t，加高斯噪声得到 xₜ。</text>
-
-  <rect x="28" y="405" width="43" height="34" rx="8" class="step"/>
-  <text x="49" y="429" class="num center">02</text>
-  <text x="84" y="431" class="section">去噪器怎样只看局部？</text>
-  <rect x="28" y="459" width="584" height="342" rx="13" fill="#e9f2ed" stroke="#9fb5a7"/>
-  <text x="50" y="500" class="strong">浅层 U-Net</text>
-  <text x="50" y="535" class="body">用时域卷积处理 xₜ，t 调节残差块的缩放与平移。</text>
-  <path d="M54 553H584" class="sep"/>
-  <text x="50" y="587" class="strong">局部注意力 QnA</text>
-  <text x="50" y="619" class="detail">相邻窗口共享查询，聚合各自窗口里的帧。</text>
-  <g transform="translate(53 661)">
-    <use href="#cell" x="0"/><use href="#cell" x="52"/><use href="#cell" x="104"/>
-    <use href="#cell" x="156"/><use href="#cell" x="208"/><use href="#cell" x="260"/>
-    <use href="#cell" x="312"/><use href="#cell" x="364"/><use href="#cell" x="416"/>
-    <use href="#cell" x="468"/>
-    <path d="M53 -6v-9H205v9" class="guide" stroke="#217a63"/>
-    <path d="M105 33v9H257v-9" class="guide" stroke="#a36c31"/>
-  </g>
-  <text x="50" y="749" class="body">窗口重叠，单次预测只依赖邻近时刻。</text>
-  <text x="50" y="781" class="detail">输出干净动作估计，与 x₀ 算平方误差。</text>
-
-  <rect x="28" y="842" width="43" height="34" rx="8" class="step"/>
-  <text x="49" y="866" class="num center">03</text>
-  <text x="84" y="868" class="section">生成时改的是噪声和长度</text>
-  <rect x="28" y="894" width="155" height="66" rx="12" fill="#e6eef2" stroke="#9db2bf"/>
-  <text x="105" y="937" class="strong center">纯噪声 x<tspan baseline-shift="sub" font-size="15">T</tspan></text>
-  <path d="M185 927h32" class="edge"/>
-  <rect x="223" y="894" width="182" height="66" rx="12" fill="#e9f2ed" stroke="#9fb5a7"/>
-  <text x="314" y="937" class="strong center">逐步去噪</text>
-  <path d="M408 927h33" class="edge"/>
-  <rect x="447" y="894" width="165" height="66" rx="12" fill="#fffdf8" stroke="#b9c7bc"/>
-  <text x="529" y="937" class="strong center">新动作</text>
-  <text x="28" y="1009" class="body">指定目标帧数，用同一网络反复预测干净动作，</text>
-  <text x="28" y="1045" class="body">再采样到下一扩散步，得到同一骨架的新动画。</text>
-
-  <rect x="28" y="1098" width="43" height="34" rx="8" class="step"/>
-  <text x="49" y="1122" class="num center">04</text>
-  <text x="84" y="1124" class="section">推理时怎样加入参考动作？</text>
-  <rect x="28" y="1150" width="584" height="164" rx="13" fill="#f6eddf" stroke="#c9af86"/>
-  <text x="50" y="1188" class="strong">按位置组合 · Motion composition</text>
-  <text x="50" y="1223" class="detail">在干净动作估计中写回参考帧或关节，生成其余部分。</text>
-  <g transform="translate(51 1243)">
-    <rect width="136" height="49" rx="7" fill="#ecd4ac"/>
-    <rect x="142" width="230" height="49" rx="7" fill="#cee4db"/>
-    <rect x="378" width="136" height="49" rx="7" fill="#ecd4ac"/>
-    <text x="68" y="32" class="body center">给定开头</text>
-    <text x="257" y="32" class="body center">生成过渡</text>
-    <text x="446" y="32" class="body center">给定结尾</text>
-  </g>
-  <rect x="28" y="1330" width="584" height="150" rx="13" fill="#e6eef2" stroke="#9db2bf"/>
-  <text x="50" y="1368" class="strong">按频率协调 · Motion harmonization</text>
-  <text x="50" y="1406" class="body">带噪参考的低频 ＋ 当前生成候选的高频。</text>
-  <text x="50" y="1449" class="detail">用整段参考引导时，可将所学风格迁入新动作。</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1288" viewBox="0 0 1040 1288" role="img" aria-labelledby="title desc">
+<title id="title">SinMDM · 怎样只用一段动作训练扩散模型</title><desc id="desc">干净动作同时提供加噪输入和重建监督。局部去噪器在采样中复用，两种参考编辑接入不同位置。</desc>
+<defs><marker id="arrow" viewBox="0 0 9 8" refX="8" refY="4" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="11" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#416c70"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203f43}.strong{font-weight:700}.label{fill:#355a5d}.id{fill:#17756f;font-weight:700}</style>
+<rect width="1040" height="1288" fill="#f5f8f6"/>
+<text x="34" y="54" font-size="36" class="strong">SinMDM · 怎样只用一段动作训练扩散模型</text>
+<text x="36" y="95" font-size="22" class="label">ICLR 2024　｜　一段示范对应一套参数；同一骨架可采样不同长度。</text>
+<rect x="20" y="122" width="1000" height="374" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="164" font-size="23" class="id">01</text>
+<text x="99" y="164" font-size="28" class="strong">训练：整段输入，局部预测</text>
+<rect x="45" y="198" width="225" height="99" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="231" font-size="24" class="strong">示范 x₀</text>
+<text x="60" y="264" font-size="21" class="">N 帧 × F 个特征</text>
+<text x="60" y="291" font-size="21" class="">骨架与骨长固定。</text>
+<rect x="327" y="198" width="278" height="99" rx="12" fill="#eeeaf7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="342" y="231" font-size="24" class="strong">随机步 t 加噪</text>
+<text x="342" y="264" font-size="21" class="">混入高斯噪声，</text>
+<text x="342" y="291" font-size="21" class="">得到与 t 对应的 xₜ。</text>
+<rect x="667" y="198" width="328" height="99" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="682" y="231" font-size="24" class="strong">浅层 U-Net ＋ QnA</text>
+<text x="682" y="264" font-size="21" class="">重叠窗口共享查询；</text>
+<text x="682" y="291" font-size="21" class="">输出干净动作估计 x̂₀。</text>
+<path d="M270 248 H327" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M605 248 H667" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="667" y="363" width="328" height="84" rx="12" fill="#fcf0d6" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="682" y="396" font-size="24" class="strong">平方误差</text>
+<text x="682" y="429" font-size="21" class="">预测 x̂₀ 对齐训练示范 x₀。</text>
+<path d="M831 297 V363" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M160 297 V405 H667" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<rect x="238" y="335" width="35" height="22" rx="4" fill="#d9e9e5" stroke="#adc6bf" stroke-width="1.6"/>
+<rect x="280" y="335" width="35" height="22" rx="4" fill="#d9e9e5" stroke="#adc6bf" stroke-width="1.6"/>
+<rect x="322" y="335" width="35" height="22" rx="4" fill="#d9e9e5" stroke="#adc6bf" stroke-width="1.6"/>
+<rect x="364" y="335" width="35" height="22" rx="4" fill="#d9e9e5" stroke="#adc6bf" stroke-width="1.6"/>
+<rect x="406" y="335" width="35" height="22" rx="4" fill="#d9e9e5" stroke="#adc6bf" stroke-width="1.6"/>
+<rect x="448" y="335" width="35" height="22" rx="4" fill="#d9e9e5" stroke="#adc6bf" stroke-width="1.6"/>
+<rect x="490" y="335" width="35" height="22" rx="4" fill="#d9e9e5" stroke="#adc6bf" stroke-width="1.6"/>
+<rect x="532" y="335" width="35" height="22" rx="4" fill="#d9e9e5" stroke="#adc6bf" stroke-width="1.6"/>
+<path d="M239 331v-9h159v9 M281 361v9h159v-9" stroke="#287467" stroke-width="3" fill="none"/>
+<text x="242" y="394" font-size="20" class="label">QnA 的相邻时间窗共享查询</text>
+<text x="47" y="470" font-size="20" class="label">时间邻域限制单次预测能看到的帧数；训练过程中使用同一套网络参数。</text>
+<rect x="20" y="520" width="1000" height="295" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="562" font-size="23" class="id">02</text>
+<text x="99" y="562" font-size="28" class="strong">生成：指定噪声的时间长度，反复调用已训练网络</text>
+<rect x="44" y="600" width="218" height="90" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="59" y="633" font-size="24" class="strong">噪声 xT</text>
+<text x="59" y="666" font-size="21" class="">指定目标帧数。</text>
+<rect x="316" y="600" width="300" height="90" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="331" y="633" font-size="24" class="strong">共享去噪器 θ</text>
+<text x="331" y="666" font-size="21" class="">xₜ、t → 干净估计 x̂₀</text>
+<rect x="690" y="600" width="306" height="90" rx="12" fill="#eeeaf7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="705" y="633" font-size="24" class="strong">反向扩散更新</text>
+<text x="705" y="666" font-size="21" class="">结合当前步与估计采样 xₜ₋₁。</text>
+<path d="M262 645 H316" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M616 645 H690" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M845 690 V741 H484 V690" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="506" y="732" font-size="20" class="label">t 减 1，直至生成结束</text>
+<text x="47" y="785" font-size="20" class="label">最后一步的动态特征与原骨架经正向运动学组成姿态。图 8 展示了 10 秒示范生成 60 秒。</text>
+<rect x="20" y="840" width="1000" height="341" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="882" font-size="23" class="id">03</text>
+<text x="99" y="882" font-size="28" class="strong">编辑：同一轮去噪中的两种参考入口</text>
+<rect x="45" y="920" width="441" height="94" rx="12" fill="#fcf0d6" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="953" font-size="24" class="strong">A　指定帧或关节</text>
+<text x="60" y="986" font-size="21" class="">参考动作 y ＋ 保留区域。</text>
+<rect x="552" y="920" width="443" height="94" rx="12" fill="#fcf0d6" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="567" y="953" font-size="24" class="strong">B　保留内容变化趋势</text>
+<text x="567" y="986" font-size="21" class="">参考内容动作 y ＋ 时间低通滤波。</text>
+<rect x="45" y="1051" width="441" height="99" rx="12" fill="#d7eeeb" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="1084" font-size="24" class="strong">写回干净预测 x̂₀</text>
+<text x="60" y="1117" font-size="21" class="">已知特征取参考值，其余区域由模型补。</text>
+<rect x="552" y="1051" width="443" height="99" rx="12" fill="#d7eeeb" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="567" y="1084" font-size="24" class="strong">调整带噪样本 xₜ₋₁</text>
+<text x="567" y="1117" font-size="21" class="">参考的低频 ＋ 当前候选的高频。</text>
+<path d="M265 1014 V1051" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<path d="M773 1014 V1051" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<text x="38" y="1230" font-size="20" class="label">实线表示计算，虚线引入监督或参考。两种编辑各自作用在 02 的循环内。</text>
+<text x="38" y="1264" font-size="20" class="label">据图 2、4、5、7–9 与附录 A、D 重绘。窗口是可学习的局部关系，未给它命名或分配词元。</text>
 </svg>

@@ -48,11 +48,11 @@ UniMotion让每一帧人体动作和描述这一帧的文字向量共享同一�
 
 ### 整体框架
 
-输入包含动作序列 x、逐帧文字向量 y、可选全局描述 c。扩散的对象是 x 和 y 两个连续序列。通过同帧拼接，模型在每个时间位置同时看到该帧的动作和文字特征；独立的噪声步数告诉模型各有多少信息已知。去噪输出干净动作与干净局部文字向量，后者再通过标签数据库检索变成可读词组。
+UniMotion 在同一条动作时间线上放两种信号：每帧姿态 x 和该帧所属短语的连续向量 y。训练时，两条信号可以分别被加上不同强度的噪声，模型要把两者都还原。推理时保持一路干净，就能用脚本生成动作，或反过来用动作预测脚本；整段句子 c 还可独立提供总体意图。[正式稿图 2、式 3](https://www.cvlibs.net/publications/Li2025THREEDV.pdf#page=4)
 
-<figure class="architecture-figure"><img src="/paper-notes/unimotion/architecture.svg" alt="UniMotion的数据对齐、双模态扩散训练、文字到动作与动作到文字的条件采样，以及局部脚本编辑流程" loading="lazy" /><figcaption>依据正式稿图1–2、式3、作者补充D中的算法1–3及公开采样入口重绘。图区分动作时间、两路扩散步数和外部的全局句子条件。</figcaption></figure>
+<figure class="paper-figure"><a href="/paper-notes/unimotion/architecture.svg?v=arch-20261102-r2" target="_blank" rel="noopener"><img src="/paper-notes/unimotion/architecture.svg?v=arch-20261102-r2" alt="UniMotion 将动作、局部短语与整段描述对齐，给动作和文字分别加噪；共享 Transformer 有两个输出，按条件切换生成或识别。" /></a><figcaption>图据正式稿图 1–2、式 3 和作者补充算法 1–3 重绘。实线是对齐或去噪的数据流，虚线是两路分别计算的重建监督。 <a href="/paper-notes/unimotion/architecture.svg?v=arch-20261102-r2" target="_blank" rel="noopener">查看原图</a></figcaption></figure>
 
-[查看完整架构图](/paper-notes/unimotion/architecture.svg)。先看每个训练样本怎样取得整段与局部文字，再看两路噪声如何控制输入。动作时间决定“哪个姿态配哪个词组”；扩散步数决定“该路输入有多干净”。后者本身不指定动作应出现在哪一帧。
+在 **01** 先找到第 i 帧，回答它配哪个短语。进入 **02** 后，tₓ、tᵧ 分别表示两路有多干净，与帧 i 的先后无关。**03** 的三列是三次可选调用：保留脚本就生成姿态，保留动作就预测词向量并查标签库；两路都未知时可以用全局描述共同生成。作者图 1 的脚本编辑由第三列走回第一列。[正式稿图 1–2](https://www.cvlibs.net/publications/Li2025THREEDV.pdf#page=1) · [补充算法 2–3](https://coral79.github.io/uni-motion/paper/unimotion.pdf#page=14)
 
 ### 关键设计
 
@@ -186,13 +186,16 @@ f表示局部逐帧文字，s表示整段句子，HML∩BABEL指两种标注的�
 
 **基线设置。** TEACH对短段有限制，测试设最短8帧；DoubleTake的默认衔接/混合窗20/10让短段被补到至少70帧，作者改为2/1。STMC各局部段指定全身，FlowMDM直接输入短语及持续时长。模型训练集、能否接收全局文字和短段适配方式均需结合表格阅读。[补充C](https://coral79.github.io/uni-motion/paper/unimotion.pdf#page=12)
 
-### 消融与关键发现
+### 消融实验：训练集与测试条件分别改变了什么？
 
 1. **先固定局部脚本，看联合标注训练的作用。** 原表1中，仅用BABEL训练的UniMotion，其片段R@3为0.636、FID为0.087；用带全局描述的交集训练后，在测试仍只给 f 的情况下，两项分别变为0.668与0.071。数据组成和可用监督一同变化，这项比较支持联合训练的价值，无法把增益完全归因于某一层网络。
 2. **再固定训练模型，看测试时加入全局条件的作用。** f→f+s时，片段R@3从0.668升至0.679，片段FID从0.071降至0.066，整段FID从0.150降至0.133。这直接检验用户额外给出总体意图在本任务中的收益。
-3. **序列级分数有真实取舍。** 原表2中，相同全局输入 s 下，UniMotion的FID从MDM的0.449改善到0.195，但R@1是0.375对0.376，未领先。UniMotion仅给 f 时，三档整段检索率0.344/0.508/0.587均低于MDM使用 s 的0.376/0.536/0.639。换成 f+s 后，UniMotion相对MDM才在这三档都提高。
-4. **评估器会改变部分结论。** 只用BABEL训练时，在TMR++下UniMotion片段FID优于FlowMDM（0.087对0.101）；换成Guo评估器，片段FID则落后（1.206对0.885）。原表1中同样只用BABEL时，整段多样性1.374也略逊FlowMDM的1.375，两者都低于真实值1.391。
-5. **理解和编辑主要是定性展示。** 图4给出MoCap与视频姿态的标签，图5–6展示联合生成，补充图10–11对照GPT-4o和MotionGPT的单例。没有报告标签逐帧分类准确率、动作边界误差或编辑保持误差。主文说同帧拼接与PCA有效，但未给逐项移除这些设计的完整数值表。[正式稿图4–6、表2](https://www.cvlibs.net/publications/Li2025THREEDV.pdf#page=7)、[补充E–G](https://coral79.github.io/uni-motion/paper/unimotion.pdf#page=14)
+
+### 关键发现
+
+1. **序列级分数有真实取舍。** 原表2中，相同全局输入 s 下，UniMotion的FID从MDM的0.449改善到0.195，但R@1是0.375对0.376，未领先。UniMotion仅给 f 时，三档整段检索率0.344/0.508/0.587均低于MDM使用 s 的0.376/0.536/0.639。换成 f+s 后，UniMotion相对MDM才在这三档都提高。
+2. **评估器会改变部分结论。** 只用BABEL训练时，在TMR++下UniMotion片段FID优于FlowMDM（0.087对0.101）；换成Guo评估器，片段FID则落后（1.206对0.885）。原表1中同样只用BABEL时，整段多样性1.374也略逊FlowMDM的1.375，两者都低于真实值1.391。
+3. **理解和编辑主要是定性展示。** 图4给出MoCap与视频姿态的标签，图5–6展示联合生成，补充图10–11对照GPT-4o和MotionGPT的单例。没有报告标签逐帧分类准确率、动作边界误差或编辑保持误差。主文说同帧拼接与PCA有效，但未给逐项移除这些设计的完整数值表。[正式稿图4–6、表2](https://www.cvlibs.net/publications/Li2025THREEDV.pdf#page=7)、[补充E–G](https://coral79.github.io/uni-motion/paper/unimotion.pdf#page=14)
 
 <span id="reading-5" class="reading-anchor"></span>
 
