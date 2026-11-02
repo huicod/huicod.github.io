@@ -44,12 +44,24 @@ const pictures: Picture[] = [
   <tbody>
     <tr><th scope="row">纯 YOLO</th><td>501 / 230 / 260</td><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
     <tr><th scope="row">纯 VLM</th><td>251 / 979 / 510</td><td>20.41%</td><td>32.98%</td><td>25.21%</td></tr>
-    <tr><th scope="row">YOLO＋VLM，自动删改或新增框</th><td>477 / 441 / 284</td><td>51.96%</td><td>62.68%</td><td>56.82%</td></tr>
-    <tr><th scope="row">YOLO＋VLM，保留原框、分歧待审</th><td>501 / 230 / 260</td><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
+    <tr><th scope="row">guided-confidence-v2：允许自动删改或新增框</th><td>477 / 441 / 284</td><td>51.96%</td><td>62.68%</td><td>56.82%</td></tr>
+    <tr><th scope="row">guided-conservative-v1：保留原框、分歧待审</th><td>501 / 230 / 260</td><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
   </tbody>
 </table>
-<p>精确率衡量报出的框有多少命中，召回率衡量标注中有多少被找到，F1 综合两者。自动采用 <code>qwen3.8-max</code> 的意见后，F1 下降了 <strong>10.34 个百分点</strong>。先看删框和改类，命中数从 501 降到 463；再接纳 242 个参与评分的新增框，只有 14 个匹配标注。前一步漏掉了已有目标，后一步增加了多报。</p>
-<p>表中最后一行用<strong>同一批已保存的复检意见</strong>重算，没有重新调用模型。当前策略保留自动检测结果，把争议位置留给审核人，因此这一行与纯 YOLO 持平。<a href={repo + "/.trellis/tasks/09-18-vlm-conservative-fusion/report.md"}>复检策略对照记录（需项目权限）</a></p>
+<p>精确率衡量报出的框有多少命中，召回率衡量标注中有多少被找到，F1 综合两者。自动采用 <code>qwen3.8-max</code> 的意见后，F1 下降了 <strong>10.34 个百分点</strong>。先看删框和改类，命中数从 501 降到 463，框级 F1 从 67.16% 降到 64.44%；再接纳 242 个参与评分的新增框，只有 14 个匹配标注。前一步漏掉了已有目标，后一步增加了多报。</p>
+<h3 id="fusion-history">VLM 在哪一版可以删除原框？</h3>
+<p><strong>9 月 11 日，按置信度裁决。</strong>在 <code>guided-confidence-v2</code> 中，VLM 逐框判断接受、拒绝或改类。YOLO 分数低于 0.85 且复检证据明确时，拒绝会从融合预测中删除该框，改类会直接改变其标签；高分框受保护，证据不确定时保留待审。主集第 17 图中，VLM 将两个腐蚀候选判为字幕干扰，两框实际被删除。第 11 图的变形框得分 0.866，虽然 VLM 同样拒绝，最终仍保留。</p>
+<table>
+  <thead><tr><th scope="col">9 月 11 日样本</th><th scope="col">方案</th><th scope="col">命中 / 多报 / 漏检</th><th scope="col">精确率</th><th scope="col">召回率</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">36 张主集</th><td>纯 YOLO</td><td>29 / 8 / 5</td><td>78.38%</td><td>85.29%</td></tr>
+    <tr><th scope="row">36 张主集</th><td>VLM 按置信度裁决</td><td>24 / 34 / 10</td><td>41.38%</td><td>70.59%</td></tr>
+    <tr><th scope="row">12 张回归图</th><td>纯 YOLO</td><td>11 / 3 / 1</td><td>78.57%</td><td>91.67%</td></tr>
+    <tr><th scope="row">12 张回归图</th><td>VLM 按置信度裁决</td><td>10 / 13 / 2</td><td>43.48%</td><td>83.33%</td></tr>
+  </tbody>
+</table>
+<p><strong>9 月 16 日，接入在线图片检查。</strong>当时新建图片任务采用上述自动裁决策略。用先前的 36＋12 张图回放，48 张的框、类别、分数和处理动作均与原实验一致。这次验证的是线上实现能否复现原结果。<a href={repo + "/.trellis/tasks/09-11-confidence-review/report.md"}>9 月 11 日逐框实验</a> · <a href={repo + "/.trellis/tasks/09-16-online-guided-review/report.md"}>9 月 16 日接入与测试记录</a></p>
+<p><strong>9 月 18 日，在 606 张图上对照两版策略。</strong>自动删改和新增框的 F1 为 56.82%。随后切换到 <code>guided-conservative-v1</code>，用同一份复检意见重放得到 67.16%。项目开发分支的新图片任务默认使用这一版：VLM 仍逐框给出意见，明确接受的候选可获确认；拒绝、改类及新增建议留给人工，自动评分的原框保持不变。后续 60 图实验又检验了是否采用新增框，以及第二次请求能否筛掉误报，结果列在第 3 节。<a href={repo + "/.trellis/tasks/09-18-vlm-conservative-fusion/report.md"}>606 图重放与默认策略切换记录</a></p>
 
 <FiveClassDetection />
 
