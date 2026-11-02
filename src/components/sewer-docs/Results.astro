@@ -34,8 +34,8 @@ const pictures: Picture[] = [
 ];
 ---
 
-<h2 id="latest">最新结果 · VLM 补检找回了什么？</h2>
-<p>9 月 23 日完成的图像分类评估，使用 9 月 18 日留存的 60 张验证图预测。以腐蚀为例，12 张带腐蚀标注的图片中，YOLO 识别出 7 张；加入 VLM 首轮补检后识别出 <strong>9 张</strong>，另有 1 张多报。腐蚀的分类 F1 从 <strong>73.68% 升到 81.82%</strong>。同一批图中，堵塞多报了 8 张，所以各类别合计的精确率下降。</p>
+<h2 id="latest">视觉语言模型（VLM）补检找回了哪些缺陷？</h2>
+<p>60 张验证图中有 12 张标注了腐蚀。其中，YOLO 识别出 7 张；加入 VLM 首轮补检后识别出 <strong>9 张</strong>，另有 1 张多报。腐蚀的分类 F1 从 <strong>73.68% 升到 81.82%</strong>。同一批图中，堵塞多报了 8 张，所以各类别合计的精确率下降。</p>
 <p>第二次请求让 VLM 重新审视首轮提出的新框。按目标检测计，误报框从 60 个减至 52 个，同时少了 1 个命中；按图像分类计，整图类别全部正确的图片从 39 张增至 41 张，YOLO 基线为 48 张。<a href="#score60">查看 60 图两项任务及五类明细</a>。</p>
 
 <h2 id="test606">1. 单独运行 YOLO</h2>
@@ -48,15 +48,16 @@ const pictures: Picture[] = [
   <tbody>
     <tr><th scope="row">纯 YOLO</th><td>501 / 230 / 260</td><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
     <tr><th scope="row">纯 VLM</th><td>251 / 979 / 510</td><td>20.41%</td><td>32.98%</td><td>25.21%</td></tr>
-    <tr><th scope="row">guided-confidence-v2：允许自动删改或新增框</th><td>477 / 441 / 284</td><td>51.96%</td><td>62.68%</td><td>56.82%</td></tr>
-    <tr><th scope="row">guided-conservative-v1：保留原框、分歧待审</th><td>501 / 230 / 260</td><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
+    <tr><th scope="row">VLM 复检，可自动删改或新增框</th><td>477 / 441 / 284</td><td>51.96%</td><td>62.68%</td><td>56.82%</td></tr>
+    <tr><th scope="row">VLM 复检，保留原框、分歧交人工</th><td>501 / 230 / 260</td><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
   </tbody>
 </table>
 <p>精确率衡量报出的框有多少命中，召回率衡量标注中有多少被找到，F1 综合两者。自动采用 <code>qwen3.8-max</code> 的意见后，F1 下降了 <strong>10.34 个百分点</strong>。先看删框和改类，命中数从 501 降到 463，框级 F1 从 67.16% 降到 64.44%；再接纳 242 个参与评分的新增框，只有 14 个匹配标注。前一步漏掉了已有目标，后一步增加了多报。</p>
-<h3 id="fusion-history">VLM 在哪一版可以删除原框？</h3>
-<p><strong>9 月 11 日，按置信度裁决。</strong>在 <code>guided-confidence-v2</code> 中，VLM 逐框判断接受、拒绝或改类。YOLO 分数低于 0.85 且复检证据明确时，拒绝会从融合预测中删除该框，改类会直接改变其标签；高分框受保护，证据不确定时保留待审。主集第 17 图中，VLM 将两个腐蚀候选判为字幕干扰，两框实际被删除。第 11 图的变形框得分 0.866，虽然 VLM 同样拒绝，最终仍保留。</p>
+<h3 id="fusion-history">VLM 在什么情况下会删除检测框？</h3>
+<p>采用<strong>自动裁决</strong>时，VLM 逐框给出意见。YOLO 分数低于 0.85 且复检证据明确时，系统可以删除候选框或改变其类别。例如，VLM 把两个疑似腐蚀的区域识别为视频字幕，系统删除了这两个框。另一张图中，VLM 也否决了一个变形框，但该框得分为 0.866，达到保护阈值，因此仍被保留。证据不明确的候选交给人工复核。</p>
+<p>下表比较两组图片的逐框结果。36 张主集用于评估检测效果，另列的 12 张回归图用于复查已有样本。</p>
 <table>
-  <thead><tr><th scope="col">9 月 11 日样本</th><th scope="col">方案</th><th scope="col">命中 / 多报 / 漏检</th><th scope="col">精确率</th><th scope="col">召回率</th></tr></thead>
+  <thead><tr><th scope="col">图片组</th><th scope="col">方案</th><th scope="col">命中 / 多报 / 漏检</th><th scope="col">精确率</th><th scope="col">召回率</th></tr></thead>
   <tbody>
     <tr><th scope="row">36 张主集</th><td>纯 YOLO</td><td>29 / 8 / 5</td><td>78.38%</td><td>85.29%</td></tr>
     <tr><th scope="row">36 张主集</th><td>VLM 按置信度裁决</td><td>24 / 34 / 10</td><td>41.38%</td><td>70.59%</td></tr>
@@ -64,8 +65,7 @@ const pictures: Picture[] = [
     <tr><th scope="row">12 张回归图</th><td>VLM 按置信度裁决</td><td>10 / 13 / 2</td><td>43.48%</td><td>83.33%</td></tr>
   </tbody>
 </table>
-<p><strong>9 月 16 日，接入在线图片检查。</strong>当时新建图片任务采用上述自动裁决策略。用先前的 36＋12 张图回放，48 张的框、类别、分数和处理动作均与原实验一致。这次验证的是线上实现能否复现原结果。<a href={repo + "/.trellis/tasks/09-11-confidence-review/report.md"}>9 月 11 日逐框实验</a> · <a href={repo + "/.trellis/tasks/09-16-online-guided-review/report.md"}>9 月 16 日接入与测试记录</a></p>
-<p><strong>9 月 18 日，在 606 张图上对照两版策略。</strong>自动删改和新增框的 F1 为 56.82%。随后切换到 <code>guided-conservative-v1</code>，用同一份复检意见重放得到 67.16%。项目开发分支的新图片任务默认使用这一版：VLM 仍逐框给出意见，明确接受的候选可获确认；拒绝、改类及新增建议留给人工，自动评分的原框保持不变。后续 60 图实验又检验了是否采用新增框，以及第二次请求能否筛掉误报，结果列在第 3 节。<a href={repo + "/.trellis/tasks/09-18-vlm-conservative-fusion/report.md"}>606 图重放与默认策略切换记录</a></p>
+<p>工作台默认的图片复检保留 YOLO 原框。VLM 可以确认候选；对它建议删除、改类或新增的位置，审核人可以回看原图再作决定。在 606 张测试图上，采用这套规则的框级 F1 为 67.16%，自动采纳删改和新增的方案为 56.82%。<a href={repo + "/.trellis/tasks/09-18-vlm-conservative-fusion/report.md"}>两种复检策略的对照数据（需项目权限）</a></p>
 
 <FiveClassDetection />
 

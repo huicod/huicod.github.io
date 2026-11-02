@@ -19,7 +19,7 @@ export function getStaticPaths() {
     { slug: "examples", label: "演示案例", group: "使用指南", title: "演示案例", lead: "按五类缺陷选择图片，对照同图多类场景，再用短视频查看候选事件和证据帧。", component: Examples },
     { slug: "features", label: "功能", group: "使用指南", title: "功能", lead: "从提交素材到人工复核，了解每一步做什么、使用哪种模型，以及在哪里查看证据。", component: Features },
     { slug: "model", label: "模型与数据集", group: "技术参考", title: "模型与数据集", lead: "了解线上 YOLO26s 的类别、权重来源和训练方法，以及离线 YOLO26m 的数据划分。", component: Model },
-    { slug: "results", label: "实验结果", group: "技术参考", title: "实验结果", lead: "最新的 60 图实验分别统计 VLM 找回的类别和新增误报；606 张测试图则用来比较逐框裁决对五类缺陷定位的影响。", component: Results },
+    { slug: "results", label: "实验结果", group: "技术参考", title: "实验结果", lead: "60 张验证图用于比较补检找回了哪些缺陷、增加了多少误报。606 张测试图用于评估五类缺陷的定位效果。", component: Results },
     { slug: "architecture", label: "系统架构", group: "技术参考", title: "系统架构", lead: "从上传、工作流编排、模型执行到结果存储，跟随一次检查。", component: Architecture },
   ];
   const nav = pages.map(({ component, ...meta }) => meta);
