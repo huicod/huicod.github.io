@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="1512" viewBox="0 0 640 1512" role="img" aria-labelledby="title desc">
+  <title id="title">SinMDM 如何用一段动作生成新动画</title>
+  <desc id="desc">从单条动作的动态特征加噪，训练浅层 U-Net 还原干净动作。QnA 在相邻且重叠的时间窗口内聚合信息，各窗口共用学得的查询。生成时从指定长度的噪声反复去噪，输出原骨架上的新动态。编辑可在每步预测中按掩码写回参考帧或关节，也可用参考低频引导生成动作的高频细节。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC","Source Han Sans CN",sans-serif;fill:#193a37}
+      .eyebrow{font:700 18px Arial,sans-serif;letter-spacing:1.6px;fill:#44685d}
+      .title{font-size:39px;font-weight:700}
+      .section{font-size:28px;font-weight:700}
+      .strong{font-size:24px;font-weight:700}
+      .body{font-size:23px}
+      .detail{font-size:21px;fill:#46615d}
+      .num{font:700 18px Arial,sans-serif;fill:#fff}
+      .step{fill:#265d51}
+      .edge{fill:none;stroke:#4b6963;stroke-width:2.6;marker-end:url(#arrow)}
+      .guide{fill:none;stroke-width:3;stroke-linecap:round}
+      .sep{stroke:#bcc9bf;stroke-width:1.5}
+      .center{text-anchor:middle}
+    </style>
+    <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+      <path d="M0 0 6 3 0 6Z" fill="#4b6963"/>
+    </marker>
+    <g id="cell"><rect width="47" height="27" rx="5" fill="#dce9e3" stroke="#8ca99c"/></g>
+  </defs>
+  <rect width="640" height="1512" rx="18" fill="#faf8f1"/>
+  <text x="28" y="42" class="eyebrow">SinMDM  /  ICLR 2024</text>
+  <text x="28" y="103" class="title">从一段动作生成新动画</text>
+  <path d="M28 128H612" class="sep"/>
+
+  <rect x="28" y="154" width="43" height="34" rx="8" class="step"/>
+  <text x="49" y="178" class="num center">01</text>
+  <text x="84" y="180" class="section">一条训练序列对应一个模型</text>
+  <rect x="28" y="207" width="584" height="159" rx="13" fill="#fffdf8" stroke="#b9c7bc"/>
+  <text x="50" y="244" class="strong">干净动作 x₀</text>
+  <text x="50" y="279" class="body">N 帧 × F 维动态特征，骨架和骨长固定。</text>
+  <path d="M58 296v40" class="edge"/>
+  <text x="82" y="329" class="body">随机选扩散步 t，加高斯噪声得到 xₜ。</text>
+
+  <rect x="28" y="405" width="43" height="34" rx="8" class="step"/>
+  <text x="49" y="429" class="num center">02</text>
+  <text x="84" y="431" class="section">去噪器怎样只看局部？</text>
+  <rect x="28" y="459" width="584" height="342" rx="13" fill="#e9f2ed" stroke="#9fb5a7"/>
+  <text x="50" y="500" class="strong">浅层 U-Net</text>
+  <text x="50" y="535" class="body">用时域卷积处理 xₜ，t 调节残差块的缩放与平移。</text>
+  <path d="M54 553H584" class="sep"/>
+  <text x="50" y="587" class="strong">局部注意力 QnA</text>
+  <text x="50" y="619" class="detail">相邻窗口共享查询，聚合各自窗口里的帧。</text>
+  <g transform="translate(53 661)">
+    <use href="#cell" x="0"/><use href="#cell" x="52"/><use href="#cell" x="104"/>
+    <use href="#cell" x="156"/><use href="#cell" x="208"/><use href="#cell" x="260"/>
+    <use href="#cell" x="312"/><use href="#cell" x="364"/><use href="#cell" x="416"/>
+    <use href="#cell" x="468"/>
+    <path d="M53 -6v-9H205v9" class="guide" stroke="#217a63"/>
+    <path d="M105 33v9H257v-9" class="guide" stroke="#a36c31"/>
+  </g>
+  <text x="50" y="749" class="body">窗口重叠，单次预测只依赖邻近时刻。</text>
+  <text x="50" y="781" class="detail">输出干净动作估计，与 x₀ 算平方误差。</text>
+
+  <rect x="28" y="842" width="43" height="34" rx="8" class="step"/>
+  <text x="49" y="866" class="num center">03</text>
+  <text x="84" y="868" class="section">生成时改的是噪声和长度</text>
+  <rect x="28" y="894" width="155" height="66" rx="12" fill="#e6eef2" stroke="#9db2bf"/>
+  <text x="105" y="937" class="strong center">纯噪声 x<tspan baseline-shift="sub" font-size="15">T</tspan></text>
+  <path d="M185 927h32" class="edge"/>
+  <rect x="223" y="894" width="182" height="66" rx="12" fill="#e9f2ed" stroke="#9fb5a7"/>
+  <text x="314" y="937" class="strong center">逐步去噪</text>
+  <path d="M408 927h33" class="edge"/>
+  <rect x="447" y="894" width="165" height="66" rx="12" fill="#fffdf8" stroke="#b9c7bc"/>
+  <text x="529" y="937" class="strong center">新动作</text>
+  <text x="28" y="1009" class="body">指定目标帧数，用同一网络反复预测干净动作，</text>
+  <text x="28" y="1045" class="body">再采样到下一扩散步，得到同一骨架的新动画。</text>
+
+  <rect x="28" y="1098" width="43" height="34" rx="8" class="step"/>
+  <text x="49" y="1122" class="num center">04</text>
+  <text x="84" y="1124" class="section">推理时怎样加入参考动作？</text>
+  <rect x="28" y="1150" width="584" height="164" rx="13" fill="#f6eddf" stroke="#c9af86"/>
+  <text x="50" y="1188" class="strong">按位置组合 · Motion composition</text>
+  <text x="50" y="1223" class="detail">在干净动作估计中写回参考帧或关节，生成其余部分。</text>
+  <g transform="translate(51 1243)">
+    <rect width="136" height="49" rx="7" fill="#ecd4ac"/>
+    <rect x="142" width="230" height="49" rx="7" fill="#cee4db"/>
+    <rect x="378" width="136" height="49" rx="7" fill="#ecd4ac"/>
+    <text x="68" y="32" class="body center">给定开头</text>
+    <text x="257" y="32" class="body center">生成过渡</text>
+    <text x="446" y="32" class="body center">给定结尾</text>
+  </g>
+  <rect x="28" y="1330" width="584" height="150" rx="13" fill="#e6eef2" stroke="#9db2bf"/>
+  <text x="50" y="1368" class="strong">按频率协调 · Motion harmonization</text>
+  <text x="50" y="1406" class="body">带噪参考的低频 ＋ 当前生成候选的高频。</text>
+  <text x="50" y="1449" class="detail">用整段参考引导时，可将所学风格迁入新动作。</text>
+</svg>
