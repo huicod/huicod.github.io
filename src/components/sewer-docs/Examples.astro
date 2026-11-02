@@ -1,34 +1,98 @@
-<p>想先认一下界面？<a href="/projects/sewer-agent/workbench/">查看工作台截图与操作步骤</a>。</p>
-<h2>01 · 上传图片，看原始候选</h2>
-<figure class="media">
-  <img src="/projects/sewer-agent/media/lighting-review.jpg" width="960" height="540" alt="带有模拟标记的管道内壁，左侧有细线和环形接缝，底部有反光" />
-  <figcaption>图片和下面的视频使用同一原创合成场景。左侧细线、接缝和底部反光可以用于讲解模型如何提出候选；素材没有现场缺陷真值。</figcaption>
+---
+const media = "/projects/sewer-agent/media/";
+const cases = media + "cases/";
+const privateExamples = "https://github.com/huicod/sewer-agent/tree/dev/agent-v1/example";
+const singleCases = [
+  { id: "09", label: "PL", title: "破裂", stem: "pl-fracture", cue: "沿壁面找不规则、分叉的细线，和形状规则的管节接缝对照。", task: "指出疑似破裂的位置，说明哪些线条可能只是接缝。" },
+  { id: "10", label: "BX", title: "变形", stem: "bx-deformation", cue: "观察截面轮廓是否被压扁，并与透视造成的椭圆外观对照。", task: "标出疑似变形的区域，说明轮廓给出的依据。" },
+  { id: "11", label: "FS", title: "腐蚀", stem: "fs-corrosion", cue: "对照管顶成片浅灰色剥蚀、外露骨料与下方较平整的管壁。", task: "指出可能的腐蚀范围，区分表面变化和光照阴影。" },
+  { id: "12", label: "BLOCK", title: "堵塞类", stem: "block-deposit", cue: "看管底堆积物是否占据通道，分别观察堆积边缘与反光水面。", task: "标出堆积区域及还可见的通道，只报告图中可见的范围。" },
+  { id: "13", label: "AJ", title: "支管暗接", stem: "aj-lateral", cue: "沿侧壁寻找支管开口，注意开口边缘与暗部阴影的区别。", task: "指出疑似支管入口及其边缘，列出无法判断的部分。" },
+];
+const videos = [
+  { id: "15", title: "结构变化", stem: "structure-pass", poster: "pl-fracture", chapters: ["破裂 PL", "变形 BX", "腐蚀 FS"], task: "逐段记录候选类别、起止时间和证据帧。对照两个切换点，看不同区域是否被聚合为同一事件。" },
+  { id: "16", title: "支管、堆积与同帧多类", stem: "flow-pass", poster: "aj-lateral", chapters: ["支管暗接 AJ", "堵塞类 BLOCK", "破裂 PL 与堵塞类 BLOCK"], task: "查看最后一段是否留下不同类别的候选。逐项对照证据帧，再决定哪些发现需要人工复核。" },
+];
+---
+<p class="guide-links"><a href="#single">五类单图</a> · <a href="#multi">同图多类</a> · <a href="#video">视频时间线</a> · <a href="#field">现场对照</a></p>
+<p>公开素材是为教学挑选的模拟影像。每个标题说明要观察的线索，工作台实际返回的框、分数和复检意见以该次运行为准。这些样例不用于计算模型准确率。先下载一张图，在“新建检查”选择“纯 YOLO（不复检）”并启动，再用同一原图新建视觉复检。<a href="/projects/sewer-agent/workbench/">对照工作台操作截图</a></p>
+
+<h2 id="single">五类缺陷，各看一张</h2>
+<div class="case-grid">
+  {singleCases.map(c => (
+    <section class="case-item">
+      <h3>{c.id} · {c.title} <code>{c.label}</code></h3>
+      <a href={cases + c.stem + ".jpg"}><img src={cases + c.stem + ".jpg"} alt={c.title + "的模拟管内画面"} loading="lazy" /></a>
+      <p>{c.cue}</p>
+      <p><strong>试着问：</strong>{c.task}</p>
+      <p class="downloads"><a href={cases + c.stem + ".jpg"} download>下载图片</a> · <a href={cases + c.stem + "-prompt.md"} download>下载操作指令</a></p>
+    </section>
+  ))}
+</div>
+
+<h2 id="multi">同一张图，同时检查两类线索</h2>
+<figure>
+  <a href={cases + "multi-defect.jpg"}><img src={cases + "multi-defect.jpg"} alt="同时设计了管壁破裂与底部堆积线索的模拟场景" loading="lazy" /></a>
+  <figcaption>示例 14 · 管壁与管底分别有破裂（PL）和堵塞类（BLOCK）的观察线索。</figcaption>
 </figure>
-<p class="actions"><a class="button primary" href="/projects/sewer-agent/media/lighting-review.jpg" download="lighting-review.jpg">下载示例图片 ↓</a></p>
-<ol>
-  <li>在“新建检查”上传图片，选择“纯 YOLO（不复检）”，提交后点击“启动检查”。</li>
-  <li>打开“检查依据”，找出检测框、类别和分数，记录任务 ID。本次用发布的五类 YOLO26s、输入尺寸 960、置信度阈值 0.25 实测，左壁出现 1 个 PL（破裂）候选，分数 0.286。</li>
-  <li>在同一对话里选中该任务，提问“请解释这个任务已保存的检测框和复检状态”。若要对比复检，点击“用原图新建复检”，再对照两次任务各自的证据。对话与视觉复检会使用配置的外部 API。</li>
-</ol>
-<h2>02 · 播放视频，检查时间线</h2>
-<figure class="media">
-  <video controls playsinline preload="none" poster="/projects/sewer-agent/media/lighting-review.jpg" width="960" height="540" aria-label="模拟管道巡检视频，约四秒时最暗，无音轨">
-    <source src="/projects/sewer-agent/media/timeline.mp4" type="video/mp4" />
-    <a href="/projects/sewer-agent/media/timeline.mp4">下载视频</a>
+<p>本次纯 YOLO 实测同时在右侧管壁返回 PL 候选、在左下管底返回 BLOCK 候选。可以问：“分别指出管壁的裂纹和管底的堆积。每一处对应哪个类别和位置？哪些是检测器输出，哪些只是复检建议？”保留原任务，再在复检结果里核对有没有漏掉第二类，或者把同一处重复算了两次。</p>
+<p><a href={cases + "multi-defect.jpg"} download>下载多类图片</a> · <a href={cases + "multi-defect-prompt.md"} download>下载操作指令</a></p>
+
+<h2 id="video">视频：从时间范围回到证据帧</h2>
+<p>下面两段各长 9 秒，每 3 秒切换一个模拟场景。它们是分段教学短片，不代表摄像头连续经过同一段管道。在“新建检查”上传 MP4 后，视频固定走“YOLO＋VLM 复检”；启动任务，打开“视频候选时间线”核对实际事件。</p>
+{videos.map(v => (
+  <section class="clip-case">
+    <h3>{v.id} · {v.title}</h3>
+    <figure>
+      <video controls playsinline preload="none" width="960" height="540" poster={cases + v.poster + ".jpg"} aria-label={v.title + "的分段模拟视频，无音轨"}>
+        <source src={cases + v.stem + ".mp4"} type="video/mp4" />
+        <a href={cases + v.stem + ".mp4"}>下载视频</a>
+      </video>
+      <figcaption>0–3 秒：{v.chapters[0]}；3–6 秒：{v.chapters[1]}；6–9 秒：{v.chapters[2]}。</figcaption>
+    </figure>
+    <p>{v.task}</p>
+    <p><a href={cases + v.stem + ".mp4"} download>下载 MP4</a> · <a href={cases + v.stem + "-prompt.md"} download>下载操作指令</a></p>
+  </section>
+))}
+<details>
+  <summary>试试原有的光照变化案例（07、08）</summary>
+  <p>示例 07 的 <a href={media + "lighting-review.jpg"} download>模拟图片</a> 可用于对照原始候选和复检意见。此前本地初查在左壁给出 1 个 PL 候选，分数约 0.29。</p>
+  <video controls playsinline preload="none" width="960" height="540" poster={media + "lighting-review.jpg"} aria-label="8 秒模拟光照变化，无音轨">
+    <source src={media + "timeline.mp4"} type="video/mp4" />
   </video>
-  <figcaption>8 秒，12 帧/秒，共 96 帧，无音轨。镜头从静态图缓慢放大，2–6 秒模拟光照减弱和恢复，约 4 秒时最暗。</figcaption>
-</figure>
-<p class="actions"><a class="button" href="/projects/sewer-agent/media/timeline.mp4" download="timeline.mp4">下载示例视频 ↓</a></p>
-<ol>
-  <li>另建检查，上传 MP4。视频使用“YOLO＋VLM 复检”。可填写“请列出候选事件的时间范围、证据帧和检查覆盖情况”，然后提交并启动。</li>
-  <li>展开视频候选时间线，核对扫描帧数、是否完整解码及各事件对应的证据帧。对这段素材单独运行本地初查时，96 帧完整解码，形成 4 个候选事件并提取了 8 张证据帧。这次验证仅覆盖初查与证据提取。</li>
-  <li>任务完成或部分完成后，在实际保存的证据帧中选一帧，再提出“请对选中的证据帧做低照度增强”。打开关联任务，对照原帧与增强图，用父任务 ID 和时间戳定位原帧。</li>
-</ol>
-<h2>03 · 在项目里继续试</h2>
-<p>私有项目的 <code>example/</code> 内还有六组管道原图和逐步提示。若已有仓库访问权限，可从下面三组开始。现场原图保留在项目内。</p>
-<table><thead><tr><th>样例</th><th>演示任务</th><th>观察点</th></tr></thead><tbody>
-<tr><td><code>01_wall_trace</code></td><td>对比纯 YOLO 与视觉复检；对给定像素框做分割</td><td>原图位置、局部掩膜、相对量化</td></tr>
-<tr><td><code>05_dark_obstruction</code></td><td>检查暗部，再对同一任务追加增强</td><td>增强前后的可见区域、是否保留原始证据</td></tr>
-<tr><td><code>06_blur_reflection</code></td><td>解读模糊和反光下的检测结果</td><td>区分没有五类候选、覆盖不全和需要复核</td></tr>
-</tbody></table>
-<p><a href="https://github.com/huicod/sewer-agent/tree/dev/agent-v1/example">完整示例目录（需仓库权限）</a></p>
+  <p>示例 08 的 <a href={media + "timeline.mp4"} download>8 秒短片</a> 在 2–6 秒变暗并恢复。此前本地初查完整解码 96 帧，聚合出 4 个候选事件并提取 8 张证据帧。需要追问暗部时，选择实际保存的一帧，再请求“对选中的证据帧做低照度增强”。</p>
+</details>
+<details>
+  <summary>对照本地 YOLO 的实际输出</summary>
+  <p>用发布的五类 YOLO26s、输入尺寸 960、阈值 0.25，逐一运行了 09–14。五张单类图分别检出了各自设计的类别，14 同时检出了 PL 与 BLOCK。15、16 的 108 帧均完整扫描，分别聚合出 4 个和 7 个候选事件。记录包含每张图的实际候选框和分数，以及每段视频的事件类别、时间范围与证据帧数。这里只执行了本地初查。</p>
+  <p><a href={cases + "detector-check.json"} download>下载初查结果 JSON</a></p>
+</details>
+<p><a href={cases + "sources.json"} download>下载公开案例的素材来源与制作记录</a></p>
+
+<h2 id="field">与现场样本对照</h2>
+<p>有项目权限的读者还可以用已标注的现场图片复现同一套流程。下表对照数据集的参考标注和本次实际运行的 YOLO26s 初查（输入 960、阈值 0.25）。这些按教学目的选取的图片不用于估计准确率。</p>
+<table>
+  <thead><tr><th>项目样例</th><th>参考标注</th><th>初查返回</th></tr></thead>
+  <tbody>
+    <tr><td><a href={privateExamples + "/01_wall_trace"}>01 · 细线纹理</a></td><td>PL</td><td>PL 0.709</td></tr>
+    <tr><td><a href={privateExamples + "/02_pipe_shape"}>02 · 管道形状</a></td><td>BX</td><td>BX 0.943</td></tr>
+    <tr><td><a href={privateExamples + "/03_wall_texture"}>03 · 侧壁纹理</a></td><td>FS</td><td>FS 0.841</td></tr>
+    <tr><td><a href={privateExamples + "/04_branch_opening"}>04 · 接入口</a></td><td>AJ</td><td>AJ 0.941</td></tr>
+    <tr><td><a href={privateExamples + "/05_dark_obstruction"}>05 · 暗光画面</a></td><td>BLOCK</td><td>BLOCK 0.895，另有 AJ 0.318 候选</td></tr>
+    <tr><td><a href={privateExamples + "/06_blur_reflection"}>06 · 模糊与反光</a></td><td>无五类标注</td><td>无候选；仅凭这一帧不能判断管道正常</td></tr>
+    <tr><td><a href={privateExamples + "/17_field_multi"}>17 · 一图三类</a></td><td>PL、FS 各 1 框，BLOCK 4 框</td><td>PL、FS 各 1 框，BLOCK 5 框；需逐框核对位置</td></tr>
+  </tbody>
+</table>
+<p><a href={privateExamples + "/18_field_video"}>18 · 连续现场录像（需项目权限）</a> 提供一段 10.4 秒的连续现场录像。本次本地初查完整扫描 260 帧，聚合出 2 个 FS 候选事件，分别在 8.88–8.92 秒和 9.80 秒。可按时间戳返回原帧，观察短事件与连续多帧事件的区别。</p>
+
+<style>
+  .case-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 22px; }
+  .case-item { min-width: 0; }
+  .case-item h3 { margin: 0 0 8px; }
+  .case-item img { display: block; width: 100%; height: auto; border-radius: 4px; }
+  .case-item p { margin: 6px 0; }
+  .downloads { font-size: 14px; }
+  .clip-case { margin: 1.4rem 0; }
+  details video { display: block; max-width: 100%; height: auto; }
+  @media (max-width: 600px) { .case-grid { grid-template-columns: 1fr; } }
+</style>

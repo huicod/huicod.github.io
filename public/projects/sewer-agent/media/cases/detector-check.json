@@ -1,0 +1,189 @@
+{
+  "model": "YOLO26s Sewer2403 five-class best.pt",
+  "runtime": "Project detector adapter and video primary-scan tool; no chat/VLM requests.",
+  "imgsz": 960,
+  "confidence": 0.25,
+  "note": "Teaching examples are curated, not evaluation samples. These are raw model candidates, not reference labels.",
+  "images": [
+    {
+      "id": "09_pl_fracture",
+      "file": "pl-fracture.jpg",
+      "candidates": [
+        {
+          "label": "PL",
+          "score": 0.86,
+          "bbox_xyxy": [
+            378.3,
+            0.0,
+            960.0,
+            518.7
+          ]
+        }
+      ]
+    },
+    {
+      "id": "10_bx_deformation",
+      "file": "bx-deformation.jpg",
+      "candidates": [
+        {
+          "label": "BX",
+          "score": 0.82,
+          "bbox_xyxy": [
+            0.0,
+            6.0,
+            697.9,
+            271.7
+          ]
+        }
+      ]
+    },
+    {
+      "id": "11_fs_corrosion",
+      "file": "fs-corrosion.jpg",
+      "candidates": [
+        {
+          "label": "FS",
+          "score": 0.45,
+          "bbox_xyxy": [
+            94.5,
+            0.0,
+            948.0,
+            403.6
+          ]
+        }
+      ]
+    },
+    {
+      "id": "12_block_deposit",
+      "file": "block-deposit.jpg",
+      "candidates": [
+        {
+          "label": "BLOCK",
+          "score": 0.909,
+          "bbox_xyxy": [
+            259.6,
+            249.0,
+            960.0,
+            540.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": "13_aj_lateral",
+      "file": "aj-lateral.jpg",
+      "candidates": [
+        {
+          "label": "AJ",
+          "score": 0.874,
+          "bbox_xyxy": [
+            130.4,
+            10.3,
+            389.2,
+            331.3
+          ]
+        }
+      ]
+    },
+    {
+      "id": "14_multi_defect",
+      "file": "multi-defect.jpg",
+      "candidates": [
+        {
+          "label": "BLOCK",
+          "score": 0.776,
+          "bbox_xyxy": [
+            0.0,
+            315.3,
+            353.0,
+            527.7
+          ]
+        },
+        {
+          "label": "PL",
+          "score": 0.623,
+          "bbox_xyxy": [
+            538.7,
+            0.0,
+            960.0,
+            492.2
+          ]
+        }
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "id": "15_video_structure",
+      "file": "structure-pass.mp4",
+      "processed_frames": 108,
+      "saved_evidence_frames": 11,
+      "candidate_events": [
+        {
+          "label": "PL",
+          "start_seconds": 0.0,
+          "end_seconds": 2.917
+        },
+        {
+          "label": "PL",
+          "start_seconds": 2.667,
+          "end_seconds": 2.833
+        },
+        {
+          "label": "BX",
+          "start_seconds": 3.0,
+          "end_seconds": 5.917
+        },
+        {
+          "label": "FS",
+          "start_seconds": 6.0,
+          "end_seconds": 8.917
+        }
+      ]
+    },
+    {
+      "id": "16_video_flow",
+      "file": "flow-pass.mp4",
+      "processed_frames": 108,
+      "saved_evidence_frames": 20,
+      "candidate_events": [
+        {
+          "label": "AJ",
+          "start_seconds": 0.0,
+          "end_seconds": 2.917
+        },
+        {
+          "label": "AJ",
+          "start_seconds": 0.75,
+          "end_seconds": 1.583
+        },
+        {
+          "label": "BLOCK",
+          "start_seconds": 3.0,
+          "end_seconds": 5.917
+        },
+        {
+          "label": "BLOCK",
+          "start_seconds": 6.0,
+          "end_seconds": 8.917
+        },
+        {
+          "label": "PL",
+          "start_seconds": 6.0,
+          "end_seconds": 8.917
+        },
+        {
+          "label": "PL",
+          "start_seconds": 6.25,
+          "end_seconds": 6.333
+        },
+        {
+          "label": "PL",
+          "start_seconds": 7.917,
+          "end_seconds": 8.917
+        }
+      ]
+    }
+  ],
+  "device": "NVIDIA GPU"
+}

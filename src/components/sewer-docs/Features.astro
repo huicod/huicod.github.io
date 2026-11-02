@@ -1,29 +1,67 @@
-<h2>从一张管道图片开始</h2>
-<p>上传一张管道 CCTV 图片。想先看检测器本身的判断，可以在会话右上角点击“新建检查”，选择“纯 YOLO（不复检）”。打开结果，查看每个框的原始类别、分数和位置。若没有候选框，页面会标为“未检出五类缺陷（未复检）”。仅凭这条结果还无法判断整个管段正常。</p>
-<p>希望同时看看视觉模型的意见，可以选“YOLO＋VLM 复检”，也可以在对话里提出“检查这张图片的五类缺陷，生成报告”。文字指令由对话模型解析。选择手动纯 YOLO 可以只运行本地检测。<a href="/projects/sewer-agent/examples/">查看图片检查示例</a></p>
+<h2>一份巡检影像如何成为检查记录</h2>
+<figure class="inspection-map" aria-labelledby="inspection-map-caption">
+  <ol class="map-stages" role="list">
+    <li class="map-node"><strong>上传原图或离线视频</strong><span>在“新建检查”中手动提交，或在对话中说明要检查什么。</span></li>
+    <li class="map-node"><strong>本地 YOLO26s 初查</strong><span>保存原始候选框、五类标签和检测分数。</span></li>
+    <li class="map-branch">
+      <ul class="map-paths" role="list">
+        <li><strong>图片 · 纯 YOLO</strong><span>直接查看检测框</span></li>
+        <li><strong>图片 · 视觉复检</strong><span>复核原图与候选局部图</span></li>
+        <li><strong>视频 · 事件复检</strong><span>聚合相邻帧，选择证据帧</span></li>
+      </ul>
+    </li>
+    <li class="map-node"><strong>查看证据与发现项</strong><span>有争议的发现进入人工审核，完成的任务可导出报告。</span></li>
+  </ol>
+  <figcaption id="inspection-map-caption">图 1 · 工作台当前执行的检查流程。增强与几何分析由使用者另外请求。</figcaption>
+</figure>
+<p>早期架构研究把高频检测与按需复检分开，并讨论了 YOLOE 开放词表补检和跟踪器。当前工作台使用五类 YOLO26s，视频按类别、时间差和框重叠关联事件，开放词表补检已停用。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/vlm_review/VLM_YOLO_ARCHITECTURE_AND_RESEARCH_SUMMARY.md">早期架构图（需仓库权限）</a> · <a href="/projects/sewer-agent/architecture/">已实现的系统架构</a></p>
 
-<h2>复检时，对照三层证据</h2>
-<ol>
-  <li><strong>检测器看到了什么。</strong>在“检查依据”查看原图上的 YOLO 候选框。分数属于当时的检测类别。</li>
-  <li><strong>视觉模型如何判断。</strong>图片复检会查看原图，并结合已有候选的局部区域。即使 YOLO 没有给出框，复检也会检查原图。</li>
-  <li><strong>最后留下了哪些发现。</strong>逐项查看规则如何处理复检意见，再看当前任务中的发现项。高置信候选与复检意见冲突、类别不明确等情况会进入人工审核。</li>
-</ol>
-<p>例如，如果 YOLO 将一处管壁痕迹标成“破裂”，复检却认为对比度不足，可以打开原图核对边缘与纹理。需要审核的发现项允许确认、拒绝或改类，并记录理由。任务状态会显示哪些发现仍待审核。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/RUNNING.md">工作台使用手册（需仓库权限）</a></p>
+<h2>图片检查：先看原框，再读复检意见</h2>
+<p><strong>纯 YOLO。</strong>在“新建检查”上传图片并选择“纯 YOLO（不复检）”。本地 YOLO26s 给出位置、类别和分数；零候选时显示“未检出五类缺陷（未复检）”。这个结果不能确定整段管道正常。<a href="/projects/sewer-agent/examples/">用示例图片试一次</a></p>
+<p><strong>YOLO＋VLM。</strong>图片复检会读取原图、已有候选及其局部图；零候选也会复核原图。默认部署将文字对话与视觉复检都配置为百炼 <code>qwen3.8-max</code>。文字模型解析“检查这张图”等指令，视觉模型给出候选意见和可见证据。手动纯 YOLO 图片检查可以只用本地检测。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/.env.docker.example">默认模型配置（需仓库权限）</a></p>
+<p>在“检查依据”分别查看 YOLO 原始框、视觉意见和当前发现。当前图片复检策略保留检测原框；视觉模型建议否决、改类或新增时，由规则保留建议供人工复审。例如，模型把管壁线条框成“破裂”，复检却认为可能是接缝时，应回看同一位置的原图。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/backend/src/pipe_inspector/agent/guided_fusion.py">复检意见处理规则（需仓库权限）</a></p>
 
-<h2>沿时间线查看一段视频</h2>
-<p>上传离线巡检视频后，系统对可解码帧逐帧做 YOLO 初查，将连续候选整理为事件，再选取证据帧按流程复检。展开事件可以查看时间范围、保存的原帧，以及哪些帧实际接受了复检。长视频处理需要等待，可在任务页查看扫描进度。</p>
-<p>若某个事件出现在光线很暗的位置，在时间线中选择一张<strong>已存证据帧</strong>，就可以请求“对所选帧做低照度增强”。该操作生成关联的单帧结果，原视频的检查结论会保留。</p>
+<h2>视频检查：沿事件时间线回看原帧</h2>
+<p>对离线视频，工作台用 FFmpeg 解码、用 YOLO26s 检查每个可解码帧，将相邻的同类候选整理成事件，再按预算选择证据帧交给视觉模型。展开时间线可查看事件起止时间、保存的原帧和实际复检覆盖。“已选帧”和“已完成复检”分别记录，未覆盖的部分仍需判断。<a href="/projects/sewer-agent/examples/">播放视频示例</a> · <a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/.trellis/tasks/09-14-m5-video-selection/report.md">选帧与覆盖记录（需仓库权限）</a></p>
+<p>若一个事件恰好落在暗处，在时间线中选中一张<strong>已存证据帧</strong>，再提出“对所选帧做低照度增强”。这种请求只生成关联的单帧结果。视频帧需要明确指定工具类型，分割、相对量化或局部超分还需要给出该帧的像素区域。</p>
 
-<h2>按问题选择辅助工具</h2>
+<h2>画面增强：选择与画质问题匹配的模型</h2>
+<p>对需要复检的原图，可以明确请求一种增强，或允许工作台按画质决定使用或跳过。查看原图、派生图与处理范围，判断原先看不清的部位是否更易辨认。已有纯 YOLO 图片可用同一原图新建复检任务，再调用工具。</p>
 <table>
-  <thead><tr><th scope="col">你想看什么</th><th scope="col">操作与输出</th></tr></thead>
+  <thead><tr><th scope="col">画面情况</th><th scope="col">本地模型</th><th scope="col">可以查看的结果</th></tr></thead>
   <tbody>
-    <tr><td>暗处或模糊处的细节</td><td>对图片明确允许按需增强，查看原图和派生图的对照。请求局部超分辨率时，给出原图像素区域。</td></tr>
-    <tr><td>某个区域的边界</td><td>为图片指定候选发现或原图坐标，生成分割掩膜。对已存视频帧做分割时，需提供该帧的原始像素区域。</td></tr>
-    <tr><td>画面中哪些位置较近或较远</td><td>查看相对深度图，或在指定区域内查看相对深度统计。结果以相对值表达，无法据此换算实际毫米尺寸。</td></tr>
+    <tr><td>局部太暗或照明不均</td><td>DarkIR-m</td><td>低照度增强图，检查暗处管壁的可见范围。</td></tr>
+    <tr><td>画面有运动拖影</td><td>Restormer（运动去模糊）</td><td>去模糊图，回看边缘与细线是否更清晰。</td></tr>
+    <tr><td>雾幕或散射降低对比度</td><td>DehazeFormer-MCT</td><td>去雾图，与原片对照受雾幕影响的区域。</td></tr>
+    <tr><td>需要放大小块细节</td><td>Real-ESRGAN general x4v3</td><td>给出原图像素区域后，生成该区域的 4 倍超分图。判读时仍须核对原始像素。</td></tr>
   </tbody>
 </table>
-<p>这些工具在复检模式下使用。对已完成的纯 YOLO 图片，可以复用同一原图新建复检任务，再追加增强或几何分析。增强图和掩膜作为辅助证据与原图分开保存。</p>
+<p>增强结果作为辅助证据单独保存，原始检查记录继续可查。<a href="https://huggingface.co/suwewa/sewer-agent-models">项目模型清单与来源</a></p>
 
-<h2>交接相同位置的两次检查</h2>
-<p>工作台支持比较已保存的检查结果。交接时先核对选中的任务和素材，再对照各自的发现与证据。拍摄角度和审核状态的变化都可能影响解读。已完成或部分完成的检查可打开对应报告，对话中的“统一报告”支持 HTML 和 JSON。当前规范检索还在等待确定的标准版本和原文，工程评级仍需依据适用规范与人工判读。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/RUNNING.md#当前范围">当前功能范围（需仓库权限）</a></p>
+<h2>区域分析：边界、像素面积和相对深度</h2>
+<p><strong>SAM 2.1 Hiera Large</strong> 根据指定区域生成分割掩膜。在原图叠加边界，就能看出模型圈定了哪些像素。原图任务可以指定像素框，或引用已有发现项的位置。相对量化可给出掩膜面积和占整张图的像素比例。</p>
+<p><strong>Depth Anything V2 Small</strong> 估计单张图中各位置的相对远近，可查看深度预览，并在已有掩膜时查看掩膜内的相对深度分布。像素比例和相对深度都不提供毫米尺度，无法直接用来量取管径、裂缝深度或真实堵塞率。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/.trellis/tasks/09-13-m4-geometry-online/report.md">分割与相对深度实测（需仓库权限）</a></p>
+
+<h2>人工审核与报告：保留每次判断的依据</h2>
+<p>遇到待审核项时，先核对原图或视频证据帧，再选择确认、拒绝或改类并填写理由。原始检测分数属于检测时的类别，审核意见和当前发现另行展示。任务进入终态后可查看任务报告；同一会话的“统一报告”可导出 HTML 和 JSON，也可以对照两次已保存的检查结果。</p>
+<p>交接时可把任务标识、候选位置、视频时间段与审核理由一起交给下一位复核者。工程评级还需要适用规范与现场依据，规范检索功能仍待确定标准版本及原文。<a href="/projects/sewer-agent/workbench/">工作台界面</a> · <a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/RUNNING.md">操作手册（需仓库权限）</a></p>
+
+<style>
+  .inspection-map { padding: 16px; border: 1px solid var(--line, #d4dbe3); border-radius: 6px; }
+  .inspection-map .map-stages, .inspection-map .map-paths { margin: 0; padding: 0; list-style: none; }
+  .map-stages > li + li { margin-top: 0; }
+  .map-stages > li + li::before {
+    content: ""; display: block; width: 1px; height: 12px; margin: 0 auto;
+    background: #8896a6;
+  }
+  .map-node { text-align: center; }
+  .map-node > strong, .map-paths strong { display: block; line-height: 1.5; }
+  .map-node span, .map-paths span { display: block; color: var(--muted, #526171); font-size: .9rem; }
+  .inspection-map .map-paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .map-paths li { padding: 8px 10px; border: 1px solid var(--line, #d4dbe3); border-radius: 4px; background: #f4f7fa; text-align: center; }
+  .inspection-map figcaption { margin-top: 13px; }
+  @media (max-width: 550px) {
+    .inspection-map .map-paths { grid-template-columns: 1fr; gap: 4px; }
+    .map-paths li { text-align: left; }
+  }
+</style>

@@ -1,0 +1,285 @@
+{
+  "scope": "Original simulated media for cases 09–16. Intended visual labels are teaching topics. Cases 11 and 14 report one actual detector run after output-aware selection. No ground-truth labels, measured prevalence or verified physical severity are supplied.",
+  "cases": [
+    {
+      "id": "09_pl_fracture",
+      "title": "PL · 管壁破裂",
+      "provenance": "Original synthetic teaching media created for this demonstration. No uploaded reference, dataset photograph or site footage was used.",
+      "intended_visual_labels": [
+        "PL"
+      ],
+      "observation_guide": "上方偏右有一条分叉暗线，边缘不规则。沿它追踪连续性，同时观察管壁接缝、光照阴影与水面的边界。",
+      "ground_truth": null,
+      "model_outputs": null,
+      "size_pixels": [
+        960,
+        540
+      ],
+      "public_media": "pl-fracture.jpg",
+      "public_prompt": "pl-fracture-prompt.md",
+      "kind": "ai_generated_synthetic_still",
+      "generator": "OpenAI built-in image generation tool, no input images",
+      "generation_prompt": "Scientific-educational visualization for a public sewer CCTV software demonstration. Original simulated photorealistic inspection frame of a fictional underground drain, wide 16:9. Industrial crawler headlamp, centered-distance perspective, moderately muted true colors, slightly grainy sensor. Frame the key feature toward center or mid-periphery so it is easy for a technical reader to locate. Single realistic still, coherent geometry. Do not include text, people, logos, dates, labels, borders, boxes, graphic overlays, rulers, or any external/source images. One visibly broken reinforced concrete wall, close view, a jagged branching dark fracture opens diagonally across the upper-right pipe wall and interrupts its surface texture. Small broken lips and unequal offsets at the fissure, not an ordinary smooth circumferential joint. Shallow water below, darker vanishing point to the left. No branches, obstruction or extensive corrosion.",
+      "processing": "Resized to 960 × 540, add a visible SYNTHETIC DEMO provenance label, encode as JPEG."
+    },
+    {
+      "id": "10_bx_deformation",
+      "title": "BX · 管道变形",
+      "provenance": "Original synthetic teaching media created for this demonstration. No uploaded reference, dataset photograph or site footage was used.",
+      "intended_visual_labels": [
+        "BX"
+      ],
+      "observation_guide": "前部轮廓局部内凹，较远的轮廓提供形状参照。用相邻截面的差异检查透视和镜头倾斜能否解释所见。",
+      "ground_truth": null,
+      "model_outputs": null,
+      "size_pixels": [
+        960,
+        540
+      ],
+      "public_media": "bx-deformation.jpg",
+      "public_prompt": "bx-deformation-prompt.md",
+      "kind": "ai_generated_synthetic_still",
+      "generator": "OpenAI built-in image generation tool, no input images",
+      "generation_prompt": "Scientific-educational visualization for a public sewer CCTV software demonstration. Original simulated photorealistic inspection frame of a fictional underground drain, wide 16:9. Industrial crawler headlamp, centered-distance perspective, moderately muted true colors, slightly grainy sensor. Frame the key feature toward center or mid-periphery so it is easy for a technical reader to locate. Single realistic still, coherent geometry. Do not include text, people, logos, dates, labels, borders, boxes, graphic overlays, rulers, or any external/source images. Camera looking straight down the center of a deformed ochre ribbed plastic drainage pipe, top wall buckled downward on the left, so the closest pipe cross section looks visibly pinched, broad and flattened while several downstream rings recover a round contour. Show the inward folds, neutral longitudinal camera angle and regular rings for perspective comparison. Dry invert with only a trace of silt. No jagged cracks, side outlet, logos, overlaid graphics or human figures.",
+      "processing": "Resized to 960 × 540, add a visible SYNTHETIC DEMO provenance label, encode as JPEG."
+    },
+    {
+      "id": "11_fs_corrosion",
+      "title": "FS · 管壁腐蚀",
+      "provenance": "Original synthetic teaching media created for this demonstration. No uploaded reference, dataset photograph or site footage was used.",
+      "intended_visual_labels": [
+        "FS"
+      ],
+      "observation_guide": "上方管壁有成片浅灰色粗糙剥蚀与外露骨料，下方管壁相对平整。对照斑块边界、纹理与照明变化。",
+      "ground_truth": null,
+      "model_outputs": {
+        "detector": "UltralyticsDetector / sewer2403_5class_yolo26s_img960_e100/weights/best.pt, CPU, imgsz 960, conf 0.25, batch 1",
+        "note": "One local run on the published JPEG; scores rounded to four decimals, coordinates to one decimal in original image pixels. These are unreviewed candidates.",
+        "detections": [
+          {
+            "label": "FS",
+            "score": 0.448,
+            "bbox_xyxy": [
+              94.4,
+              0.0,
+              948.1,
+              403.6
+            ]
+          }
+        ]
+      },
+      "size_pixels": [
+        960,
+        540
+      ],
+      "public_media": "fs-corrosion.jpg",
+      "public_prompt": "fs-corrosion-prompt.md",
+      "kind": "ai_generated_synthetic_still",
+      "generator": "OpenAI built-in image generation tool, no input images",
+      "generation_prompt": "Create a single contact sheet containing FOUR independent, original photorealistic synthetic municipal sewer CCTV camera frames for an educational software demo. Exact flush 2x2 grid with four equal landscape 16:9 quadrants. Overall image ratio 16:9. Each quadrant is a different plausible camera photograph filling the entire quadrant; no panel borders, whitespace or gaps. No labels, watermarks, writing, overlay, people, private location details or text. Nothing photographic is supplied as input. Muted authentic inspection-headlamp lighting, practical older camera color, modest sharpness, slight moist specular reflections. Four distinct camera positions and wall textures; each has a recognizable pipe bore or curved wall. Show FOUR DIFFERENT types of widespread gray concrete wall material degradation: top left: in older large cast concrete sewer pipe looking straight down barrel, pale powdery leached, corroded concrete and salt stains on the upper and BOTH sidewalls, rough aggregate exposed, muted sepia gray footage and puddle below. Top right: close sidewall view of acid-eroded concrete over much of a ring, mottled granular cream/white surface, washed-out gray and tan patch tapering toward intact material, dark opening diagonally right, no black fracture lines. Bottom left: a dark damp, brownish concrete sewer tube looking straight forward, broad blotched streaky brown areas and pocked, delaminated concrete around the entire barrel, inside-camera light reveals rough aggregate, deep bore black. Bottom right: rough porous whitish-gray concrete crown has progressively spalled and pitted with crumbling uneven grain and exposed aggregate on a much smoother dark gray wall; angle from axial pipe CCTV, no longitudinal narrow crack, avoid structured brick or ribbed material. Use weathering rather than metal rust, no debris piles or openings on the side.",
+      "processing": "Extracted the lower-right quadrant of an independently generated 2×2 sheet. Trimmed a 2 px edge, applied PIL contrast 0.80 and brightness 1.15, resized to 960 × 540, added SYNTHETIC DEMO, then encoded JPEG.",
+      "selection_note": "This illustrative frame was chosen after running the real detector on several original synthetic candidates. It is selected for demonstration and is not an independent accuracy or generalization evaluation."
+    },
+    {
+      "id": "12_block_deposit",
+      "title": "BLOCK · 沉积与堵塞",
+      "provenance": "Original synthetic teaching media created for this demonstration. No uploaded reference, dataset photograph or site footage was used.",
+      "intended_visual_labels": [
+        "BLOCK"
+      ],
+      "observation_guide": "管底有明显隆起的砂砾堆，上方仍能看到通行空间。观察堆积区域与普通湿痕、淤泥颜色之间的差别。",
+      "ground_truth": null,
+      "model_outputs": null,
+      "size_pixels": [
+        960,
+        540
+      ],
+      "public_media": "block-deposit.jpg",
+      "public_prompt": "block-deposit-prompt.md",
+      "kind": "ai_generated_synthetic_still",
+      "generator": "OpenAI built-in image generation tool, no input images",
+      "generation_prompt": "Scientific-educational visualization for a public sewer CCTV software demonstration. Original simulated photorealistic inspection frame of a fictional underground drain, wide 16:9. Industrial crawler headlamp, centered-distance perspective, moderately muted true colors, slightly grainy sensor. Frame the key feature toward center or mid-periphery so it is easy for a technical reader to locate. Single realistic still, coherent geometry. Do not include text, people, logos, dates, labels, borders, boxes, graphic overlays, rulers, or any external/source images. A low, wide mound of tan grit, gravel and small trapped fragments spans much of the invert in a gray concrete storm drain and rises into the lower third of the opening; some dark bore remains freely visible above the mound. Close, low camera viewpoint from upstream, a narrow wet path along the edge catches light and explains partial obstruction. No human figures, street text, branches, wall fractures or cluttered props.",
+      "processing": "Resized to 960 × 540, add a visible SYNTHETIC DEMO provenance label, encode as JPEG."
+    },
+    {
+      "id": "13_aj_lateral",
+      "title": "AJ · 支管暗接",
+      "provenance": "Original synthetic teaching media created for this demonstration. No uploaded reference, dataset photograph or site footage was used.",
+      "intended_visual_labels": [
+        "AJ"
+      ],
+      "observation_guide": "侧壁伸出一段支管，能辨认支管口、外缘与主通道各自的方向。注意规则接入口与异常突入的可见差异。",
+      "ground_truth": null,
+      "model_outputs": null,
+      "size_pixels": [
+        960,
+        540
+      ],
+      "public_media": "aj-lateral.jpg",
+      "public_prompt": "aj-lateral-prompt.md",
+      "kind": "ai_generated_synthetic_still",
+      "generator": "OpenAI built-in image generation tool, no input images",
+      "generation_prompt": "Scientific-educational visualization for a public sewer CCTV software demonstration. Original simulated photorealistic inspection frame of a fictional underground drain, wide 16:9. Industrial crawler headlamp, centered-distance perspective, moderately muted true colors, slightly grainy sensor. Frame the key feature toward center or mid-periphery so it is easy for a technical reader to locate. Single realistic still, coherent geometry. Do not include text, people, logos, dates, labels, borders, boxes, graphic overlays, rulers, or any external/source images. Close sewer CCTV view toward a lateral pipe connection opening on the upper left sidewall at about ten o'clock. A short circular clay pipe mouth projects visibly into the host gray concrete pipe with a crude, irregular mortar annulus and a chipped rim. Show both the small dark lateral lumen and the distinct main sewer vanishing point at the right, with a little water below. Avoid portraying a hole through the roof into open sky, avoid cracks or heavy debris.",
+      "processing": "Resized to 960 × 540, add a visible SYNTHETIC DEMO provenance label, encode as JPEG."
+    },
+    {
+      "id": "14_multi_defect",
+      "title": "同框复核 · 破裂与沉积",
+      "provenance": "Original synthetic teaching media created for this demonstration. No uploaded reference, dataset photograph or site footage was used.",
+      "intended_visual_labels": [
+        "PL",
+        "BLOCK"
+      ],
+      "observation_guide": "同一帧中，右侧管壁有分叉裂隙，左下管底有砂砾堆。分别检查两个区域，记录可能漏掉的线索。",
+      "ground_truth": null,
+      "model_outputs": {
+        "detector": "UltralyticsDetector / sewer2403_5class_yolo26s_img960_e100/weights/best.pt, CPU, imgsz 960, conf 0.25, batch 1",
+        "note": "One local run on the published JPEG; scores rounded to four decimals, coordinates to one decimal in original image pixels. These are unreviewed candidates.",
+        "detections": [
+          {
+            "label": "BLOCK",
+            "score": 0.7765,
+            "bbox_xyxy": [
+              0.0,
+              315.3,
+              353.0,
+              527.7
+            ]
+          },
+          {
+            "label": "PL",
+            "score": 0.6236,
+            "bbox_xyxy": [
+              538.7,
+              0.0,
+              960.0,
+              492.2
+            ]
+          }
+        ]
+      },
+      "size_pixels": [
+        960,
+        540
+      ],
+      "public_media": "multi-defect.jpg",
+      "public_prompt": "multi-defect-prompt.md",
+      "kind": "ai_generated_synthetic_still",
+      "generator": "OpenAI built-in image generation tool, no input images",
+      "generation_prompt": "Create a single contact sheet containing FOUR independent, original photorealistic synthetic municipal sewer CCTV camera frames for an educational software demo. Exact flush 2x2 grid with four equal landscape 16:9 quadrants. Overall image ratio 16:9. Each quadrant is a different plausible camera photograph filling the entire quadrant; no panel borders, whitespace or gaps. No labels, watermarks, writing, overlay, people, private location details or text. Nothing photographic is supplied as input. Muted authentic inspection-headlamp lighting, practical older camera color, modest sharpness, slight moist specular reflections. Four distinct camera positions and wall textures; each has a recognizable pipe bore or curved wall. Every quadrant depicts a single coherent natural fictional pipe scene with two clearly separated visual features: a prominent, high-contrast jagged open longitudinal diagonal fracture with two or three branches on the center-right gray cement wall, AND a smaller but clearly localized piled-up sand/gravel/mud obstruction in lower-left foreground with water flowing around it. Give both high visibility: the fissure is about a third of the image in extent, with chipped lips and shadows. Avoid confusing it with an intact ring joint. Keep the deposit about the lower fifth to third of the frame, no heaps that hide the crack. Top-left: low forward camera, bore disappears leftward, strong uneven fracture and separate low tan gravel mound. Top-right: near forward-facing shot lit from camera, coarse pale concrete, dark open split and a smaller triangular mound along invert. Bottom left: side-on light, distinct large branching angular broken wall near center, mud and loose small stones confined to foreground lower left. Bottom right: near-frontal small storm drain, large branched fracture on the right face and clear wedge of light sandy sediment blocking lower left. Different realistic textures and tones for each. All cues must be on the same frame, do not split a single quadrant.",
+      "processing": "Extracted the lower-left quadrant of an independently generated 2×2 sheet. Trimmed a 2 px edge, resized to 960 × 540, added SYNTHETIC DEMO, then encoded JPEG.",
+      "selection_note": "This illustrative frame was chosen after running the real detector on several original synthetic candidates. It is selected for demonstration and is not an independent accuracy or generalization evaluation."
+    },
+    {
+      "id": "15_video_structure",
+      "title": "结构线索短片",
+      "provenance": "Original synthetic teaching media created for this demonstration. No uploaded reference, dataset photograph or site footage was used.",
+      "intended_visual_labels": [
+        "PL",
+        "BX",
+        "FS"
+      ],
+      "observation_guide": "0–<3 秒展示破裂场景，3–<6 秒展示变形场景，6–<9 秒展示腐蚀场景。三个镜头来自不同的模拟图片。",
+      "ground_truth": null,
+      "model_outputs": null,
+      "size_pixels": [
+        960,
+        540
+      ],
+      "public_media": "structure-pass.mp4",
+      "public_prompt": "structure-pass-prompt.md",
+      "kind": "edited_synthetic_video",
+      "encoding": "H.264 in MP4, yuv420p, no audio",
+      "duration_seconds": 9,
+      "frames_per_second": 12,
+      "frame_count": 108,
+      "editing": "Three independently generated scenes joined with hard cuts. Odd shots scale from 1.000 to 1.055; the middle shot scales from 1.055 to 1.000. The upper-left shot marker is a production overlay.",
+      "chapters": [
+        {
+          "start_seconds": 0,
+          "end_seconds_exclusive": 3,
+          "source_case": "09_pl_fracture",
+          "source_image": "pl-fracture.jpg",
+          "intended_visual_labels": [
+            "PL"
+          ]
+        },
+        {
+          "start_seconds": 3,
+          "end_seconds_exclusive": 6,
+          "source_case": "10_bx_deformation",
+          "source_image": "bx-deformation.jpg",
+          "intended_visual_labels": [
+            "BX"
+          ]
+        },
+        {
+          "start_seconds": 6,
+          "end_seconds_exclusive": 9,
+          "source_case": "11_fs_corrosion",
+          "source_image": "fs-corrosion.jpg",
+          "intended_visual_labels": [
+            "FS"
+          ]
+        }
+      ],
+      "selection_note": "The third shot comes from a synthetic still chosen after testing the still with the project detector. The observed still-image scores do not describe this video."
+    },
+    {
+      "id": "16_video_flow",
+      "title": "接入、堵塞与同框线索短片",
+      "provenance": "Original synthetic teaching media created for this demonstration. No uploaded reference, dataset photograph or site footage was used.",
+      "intended_visual_labels": [
+        "AJ",
+        "BLOCK",
+        "PL"
+      ],
+      "observation_guide": "0–<3 秒展示侧壁支管口，3–<6 秒展示管底堆积，6–<9 秒展示右上裂隙及左下堆积同框。",
+      "ground_truth": null,
+      "model_outputs": null,
+      "size_pixels": [
+        960,
+        540
+      ],
+      "public_media": "flow-pass.mp4",
+      "public_prompt": "flow-pass-prompt.md",
+      "kind": "edited_synthetic_video",
+      "encoding": "H.264 in MP4, yuv420p, no audio",
+      "duration_seconds": 9,
+      "frames_per_second": 12,
+      "frame_count": 108,
+      "editing": "Three independently generated scenes joined with hard cuts. Odd shots scale from 1.000 to 1.055; the middle shot scales from 1.055 to 1.000. The upper-left shot marker is a production overlay.",
+      "chapters": [
+        {
+          "start_seconds": 0,
+          "end_seconds_exclusive": 3,
+          "source_case": "13_aj_lateral",
+          "source_image": "aj-lateral.jpg",
+          "intended_visual_labels": [
+            "AJ"
+          ]
+        },
+        {
+          "start_seconds": 3,
+          "end_seconds_exclusive": 6,
+          "source_case": "12_block_deposit",
+          "source_image": "block-deposit.jpg",
+          "intended_visual_labels": [
+            "BLOCK"
+          ]
+        },
+        {
+          "start_seconds": 6,
+          "end_seconds_exclusive": 9,
+          "source_case": "14_multi_defect",
+          "source_image": "multi-defect.jpg",
+          "intended_visual_labels": [
+            "PL",
+            "BLOCK"
+          ]
+        }
+      ],
+      "selection_note": "The third shot comes from a synthetic still chosen after testing the still with the project detector. The observed still-image scores do not describe this video."
+    }
+  ]
+}

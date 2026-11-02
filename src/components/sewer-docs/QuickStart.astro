@@ -9,23 +9,36 @@ const tunnel = 'ssh -N -L 18000:127.0.0.1:8000 用户名@服务器地址';
 
 <h2>准备一台运行工作台的主机</h2>
 <p>使用 Linux x86-64、NVIDIA 显卡、支持 CUDA 12.8 的驱动，以及已配置的 NVIDIA Container Toolkit。主机还需要 Git、Python 3.10 或更新版本、Docker Engine 和 Docker Compose v2（建议 2.30 或更新版本）。为镜像构建预留至少 25 GiB 可用空间，完整模型另需约 1.07 GiB，并为上传媒体和数据库留出空间。</p>
-<p>应用源码需要私有仓库读取权限，或由维护者提供代码副本。首次启动需要联网获取镜像、Python 依赖和模型。准备已开通默认模型 <code>qwen3.8-max</code> 的阿里云百炼北京地域 API Key。<a href="https://docs.docker.com/engine/install/">Docker 安装指南</a> · <a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html">NVIDIA 容器运行环境</a></p>
+<p>应用源码需要私有仓库读取权限，或由维护者提供代码副本。首次启动需要联网获取镜像、Python 依赖和模型。<a href="https://docs.docker.com/engine/install/">Docker 安装指南</a> · <a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html">NVIDIA 容器运行环境</a></p>
+
+<h2 id="api-key">从阿里云百炼获取 API Key</h2>
+<p>默认配置使用百炼北京地域的 <code>qwen3.8-max</code>。对话和视觉复检共用一把密钥，账号和所属业务空间都需要有该模型的调用权限。</p>
+<ol>
+  <li>登录阿里云百炼，进入北京地域的 API Key 页面，在右上角确认地域为“华北2（北京）”。<a href="https://bailian.console.aliyun.com/cn-beijing/model/settings/api-key">打开北京地域密钥管理</a></li>
+  <li>复制已有的可用密钥，或点击“创建 API Key”，选择归属账号和业务空间，确认后复制新密钥。若当前账号无法创建，请联系业务空间管理员。<a href="https://help.aliyun.com/zh/model-studio/get-api-key/">百炼官方操作说明</a></li>
+</ol>
 
 <h2>取得部署分支并启动</h2>
 <p>在主机终端执行以下命令。若已有维护者交付的部署代码，可直接进入该目录执行最后一行。</p>
 <pre><code>{install}</code></pre>
-<p>根据终端提示输入 API Key，输入时字符不会回显。脚本会生成本机配置和数据库密码，按固定版本从 Hugging Face 下载并校验七个线上模型，之后构建镜像、初始化数据库和工作流服务。已校验通过的本地模型可以复用。<a href="https://huggingface.co/suwewa/sewer-agent-models">线上模型包</a></p>
+<p>首次启动时，在部署主机的终端看到 <code>DashScope API Key (hidden):</code> 后粘贴刚才复制的密钥并按回车。输入时不会显示字符。脚本将它保存到 <code>.env.docker</code> 的 <code>DASHSCOPE_API_KEY</code> 字段，该文件仅供当前用户读写。请将密钥保存在服务端，避免出现在代码仓库、截图或聊天中。</p>
+<p>脚本还会生成数据库密码，按固定版本从 Hugging Face 匿名下载并校验七个线上模型，再构建镜像并启动工作台。再次启动会复用已有配置和校验通过的模型。<a href="https://huggingface.co/suwewa/sewer-agent-models">线上模型包</a></p>
+<details>
+  <summary>使用其他模型服务，或提前填写密钥</summary>
+  <p>进入部署目录，在首次启动前运行 <code>python3 scripts/docker_setup.py</code>，生成 <code>.env.docker</code>。文件已存在时直接编辑，保留原数据库密码。使用默认百炼服务时，只需填写 <code>DASHSCOPE_API_KEY</code>。</p>
+  <p>更换服务时，分别设置文字模型的 <code>SEWER_LLM_BASE_URL</code>、<code>SEWER_LLM_MODEL</code>、<code>SEWER_LLM_API_KEY</code>，以及视觉模型对应的 <code>SEWER_VLM_BASE_URL</code>、<code>SEWER_VLM_MODEL</code>、<code>SEWER_VLM_API_KEY</code>。密钥要与端点和地域匹配，视觉模型须支持图片输入。保存后运行 <code>python3 scripts/docker_setup.py up</code>。</p>
+</details>
 
 <h2>打开网页，做第一次图片检查</h2>
 <pre><code>{check}</code></pre>
 <p>健康接口返回的 <code>status</code> 为 <code>alive</code> 表示网页 API 已响应。Compose 列表中的初始化任务正常退出后会显示 <code>Exited (0)</code>。接下来用一张图片验证检测是否能从头跑完。</p>
 <ol>
-  <li>主机上直接打开 <a href="http://127.0.0.1:8000/">本机工作台</a>。若服务装在远程主机，在自己的电脑上另开终端执行下方命令，替换用户名和地址，保持连接，再打开 <a href="http://127.0.0.1:18000/">转发后的工作台</a>。</li>
+  <li>主机上直接打开 本机工作台 <code>http://127.0.0.1:8000</code>。若服务装在远程主机，在自己的电脑上另开终端执行下方命令，替换用户名和地址，保持连接，再打开 转发地址 <code>http://127.0.0.1:18000</code>。</li>
   <li>在会话右上角点击“新建检查”，上传一张管道图片，选择“纯 YOLO（不复检）”并点击“提交检查”。随后在任务卡上点击“启动检查”。<a href="/projects/sewer-agent/workbench/">对照工作台截图</a></li>
-  <li>打开任务查看原图、检测候选和模型分数。纯 YOLO 图片检查只运行本地检测。使用对话或选择视觉复检时，会调用配置的外部模型账户。</li>
+  <li>打开任务查看原图、检测候选和模型分数。通过上述表单提交纯 YOLO 图片检查时，只运行本地检测。使用对话会调用文字模型，视觉复检会把相关影像发送给配置的模型服务。这些调用可能产生费用。</li>
 </ol>
 <pre><code>{tunnel}</code></pre>
-<p>在 <a href="/projects/sewer-agent/examples/">示例</a> 中可以先熟悉证据的阅读方式；要从程序提交同类任务，可参考 <a href="/projects/sewer-agent/api/">API 示例</a>。</p>
+<p>想对照同一张图查看结果，可以使用这里的<a href="/projects/sewer-agent/examples/">可下载示例</a>。</p>
 
 <h2>停止与恢复</h2>
 <pre><code>{'docker compose --env-file .env.docker down\npython3 scripts/docker_setup.py up'}</code></pre>
