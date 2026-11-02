@@ -1,6 +1,6 @@
 ---
 // Mixed, 606-image results from the 2026-09-18 comparison's category_metrics.json.
-const methods = ["纯 YOLO／当前保守融合", "纯 VLM", "按置信度自动裁决"];
+const methods = ["YOLO 基线", "纯 VLM", "按置信度自动裁决"];
 const classes = [
   { label: "AJ 支管暗接", boxes: 100, metrics: [["80.77", "84.00", "82.35"], ["69.35", "43.00", "53.09"], ["82.98", "78.00", "80.41"]] },
   { label: "BX 变形", boxes: 16, metrics: [["38.89", "43.75", "41.18"], ["0.00", "0.00", "0.00"], ["27.27", "18.75", "22.22"]] },
@@ -11,7 +11,7 @@ const classes = [
 ---
 
 <h3 id="class-detection">606 张测试图的五类目标检测结果</h3>
-<p>下表按缺陷类别拆分 9 月 18 日的测试结果。Sewer2403 的 562 张图参与五类评分，SEDD 的 44 张图只参与破裂和堵塞评分。当前保守融合保留了纯 YOLO 的预测框，两者在各类上的分数相同。</p>
+<p>下表按缺陷类别拆分 9 月 18 日的测试结果。Sewer2403 的 562 张图参与五类评分，SEDD 的 44 张图只参与破裂和堵塞评分。第三种方案由 VLM 复查 YOLO 候选，可接受、拒绝、改类或提出新框。</p>
 <table aria-labelledby="class-detection">
   <thead>
     <tr><th scope="col">类别与标注框数</th><th scope="col">方案</th><th scope="col">精确率</th><th scope="col">召回率</th><th scope="col">F1</th></tr>

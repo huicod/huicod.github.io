@@ -34,6 +34,10 @@ const pictures: Picture[] = [
 ];
 ---
 
+<h2 id="latest">最新结果 · VLM 补检找回了什么？</h2>
+<p>9 月 23 日完成的图像分类评估，使用 9 月 18 日留存的 60 张验证图预测。以腐蚀为例，12 张带腐蚀标注的图片中，YOLO 识别出 7 张；加入 VLM 首轮补检后识别出 <strong>9 张</strong>，另有 1 张多报。腐蚀的分类 F1 从 <strong>73.68% 升到 81.82%</strong>。同一批图中，堵塞多报了 8 张，所以各类别合计的精确率下降。</p>
+<p>第二次请求让 VLM 重新审视首轮提出的新框。按目标检测计，误报框从 60 个减至 52 个，同时少了 1 个命中；按图像分类计，整图类别全部正确的图片从 39 张增至 41 张，YOLO 基线为 48 张。<a href="#score60">查看 60 图两项任务及五类明细</a>。</p>
+
 <h2 id="test606">1. 单独运行 YOLO</h2>
 <p>这次实验用 <strong>YOLO26m</strong> 检查 606 张测试图，其中 Sewer2403 有 562 张，SEDD 有 44 张。共 761 个参与评分的标注框。预测框必须与标注<strong>类别相同，且交并比（IoU）至少为 0.5</strong>，才算命中。每处标注只匹配一次。</p>
 <p>纯 YOLO 命中 <strong>501</strong> 处，多报 230 个框，漏掉 260 处，<strong>F1 为 67.16%</strong>。YOLO＋VLM 方案都从这份检测结果出发；纯 VLM 对照独立看图。工作台实际部署的 YOLO26s 有独立的<a href="/projects/sewer-agent/model/#deployed-validation">验证成绩</a>。</p>
@@ -99,7 +103,7 @@ const pictures: Picture[] = [
 <table>
   <thead><tr><th scope="col">方案</th><th scope="col">目标检测<br/>精确率 / 召回率 / F1</th><th scope="col">多标签分类<br/>精确率 / 召回率 / F1</th><th scope="col">整图全对</th></tr></thead>
   <tbody>
-    <tr><th scope="row">纯 YOLO / 保留原框的复检</th><td>64.49% / 63.89% / 64.19%</td><td>98.33% / 84.29% / 90.77%</td><td>48/60（80.00%）</td></tr>
+    <tr><th scope="row">YOLO 基线</th><td>64.49% / 63.89% / 64.19%</td><td>98.33% / 84.29% / 90.77%</td><td>48/60（80.00%）</td></tr>
     <tr><th scope="row">首轮 VLM 新增框</th><td>53.85% / 64.81% / 58.82%</td><td>80.26% / 87.14% / 83.56%</td><td>39/60（65.00%）</td></tr>
     <tr><th scope="row">同一 VLM 二次确认新增框</th><td>57.02% / 63.89% / 60.26%</td><td>84.29% / 84.29% / 84.29%</td><td>41/60（68.33%）</td></tr>
   </tbody>
@@ -108,7 +112,7 @@ const pictures: Picture[] = [
 
 <h3>五类缺陷的图像分类结果</h3>
 <table>
-  <thead><tr><th scope="col">缺陷</th><th scope="col">有该类标注的图片</th><th scope="col">纯 YOLO / 保留原框<br/>精确率 / 召回率 / F1</th><th scope="col">首轮新增框<br/>F1</th><th scope="col">二次确认<br/>F1</th></tr></thead>
+  <thead><tr><th scope="col">缺陷</th><th scope="col">有该类标注的图片</th><th scope="col">YOLO 基线<br/>精确率 / 召回率 / F1</th><th scope="col">首轮新增框<br/>F1</th><th scope="col">二次确认<br/>F1</th></tr></thead>
   <tbody>
     <tr><th scope="row">AJ 支管暗接</th><td>12</td><td>100.00% / 100.00% / 100.00%</td><td>100.00%</td><td>100.00%</td></tr>
     <tr><th scope="row">BX 变形</th><td>12</td><td>100.00% / 75.00% / 85.71%</td><td>85.71%</td><td>85.71%</td></tr>
@@ -117,7 +121,7 @@ const pictures: Picture[] = [
     <tr><th scope="row">BLOCK 堵塞</th><td>12</td><td>100.00% / 83.33% / 90.91%</td><td>66.67%</td><td>68.97%</td></tr>
   </tbody>
 </table>
-<p>首轮新增框找回了一些腐蚀，但也在更多图片上多报了堵塞，整体分类精确率从 98.33% 降至 80.26%。SEDD 只评分破裂和堵塞，另外三类只统计 Sewer2403。<a href={repo + "/.trellis/tasks/09-18-vlm-calibration-run/image_level_report.md"}>逐类完整指标与评估方法（需项目权限）</a></p>
+<p>第二次确认后，堵塞的分类误报由 8 张减至 7 张，破裂由 6 张减至 3 张，但首轮找回的两张腐蚀图也随之失去。SEDD 只评分破裂和堵塞，另外三类只统计 Sewer2403。<a href={repo + "/.trellis/tasks/09-18-vlm-calibration-run/image_level_report.md"}>逐类完整指标与评估方法（需项目权限）</a></p>
 
 <h3>怎样处理疑似漏标？</h3>
 <p>分类评估能消除框的位置、数量和拆分方式带来的差异，但仍会惩罚报错类别。例如一张按标注无缺陷的图被报为堵塞，会计一次分类误报，整图也判错。这 60 张中只有 1 张为空标注，无法据此估计正常管道的误报率。</p>
