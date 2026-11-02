@@ -1,6 +1,6 @@
 ---
 title: "[NeurIPS2026] PhaseDance：同样踩在拍上，为什么舞蹈的律动仍会不同？"
-description: "会议摘要导读。用两个八拍例子读懂音乐与动作的周期对应，以及作者如何用拉班动作分析描述舞蹈的表达品质。"
+description: "会议摘要导读。用同一段八拍的两种跳法，解释局部踩拍与跨拍律动的区别，以及 15 项拉班指标与舞蹈文字描述的关系。"
 pubDate: "2026-11-02T16:20:00+08:00"
 badge: "Paper · 摘要导读"
 tags: ["PhaseDance", "Music-to-Dance", "Motion-Phase", "Laban", "Paper-Notes"]
@@ -12,11 +12,11 @@ tags: ["PhaseDance", "Music-to-Dance", "Motion-Phase", "Laban", "Paper-Notes"]
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
-**阅读版本：NeurIPS 2026 官方海报摘要。** 会议页面已确认题名、作者和摘要；本次未取得可核对的方法正文与实验表。下文据摘要解释研究思路，八拍例子和概念图均为教学示意。[会议条目][poster] · [OpenReview 入口][forum]
+**阅读版本：NeurIPS 2026 官方摘要，2026 年 11 月 2 日复核。** 截至此次更新，会议条目仅链接到 OpenReview，共同作者 Soomin Park 的论文列表也尚未附原文。本次未取得可核对的正文。下文的八拍例子和概念图均为教学示意。[会议摘要][poster] · [作者论文列表][authorpub] · [OpenReview 入口][forum]
 
 <details class="paper-meta"><summary>论文信息与出处</summary>
 
-*PhaseDance: Capturing Rhythm and Expressivity in Dance Modeling*。作者为 Meongeun Kim、Taehui Lee、Soomin Park 和 Sung-Hee Lee。NeurIPS 2026 官方目录将其列为海报，条目编号 153947。[会议目录][directory] · [官方摘要][poster]
+*PhaseDance: Capturing Rhythm and Expressivity in Dance Modeling*。作者为 KAIST 的 Meongeun Kim、Taehui Lee、Soomin Park 和 Sung-Hee Lee。Soomin Park 于 2026 年 9 月公布录用消息。NeurIPS 将其列入悉尼海报场次，条目编号 153947。[录用公告][authornews] · [官方会议条目][poster]
 
 </details>
 
@@ -58,7 +58,7 @@ tags: ["PhaseDance", "Music-to-Dance", "Motion-Phase", "Laban", "Paper-Notes"]
 
 1. **让动作周期与音乐周期建立对应。** 摘要将音乐与动作的周期对齐作为建模目标，并提出相位条件框架。“相位”的教学直觉是给重复过程标记进度：两次动作都发生在整拍上，它们在四拍循环中的位置仍可能不同。摘要没有给出相位的维数、提取公式、定义在全身还是各部位，也未披露相位由谁监督。[会议摘要][poster]
 
-2. **用运动品质给舞蹈描述提供依据。** 作者提出 15 项与音乐相关、源自拉班动作分析的指标，涉及用力、形态与动态。舞种名称可以概括整段舞的风格，却很难区分同一段里的两次摆臂怎样用力。摘要确认这些指标用于支撑文字描述；各项名称、计算窗口，以及文字是否作为推理时可编辑的条件，仍需要原文核对。[会议摘要][poster]
+2. **用运动品质给舞蹈描述提供依据。** 舞种标签可以概括整段舞，却难以描述同一名舞者的两次摆臂有什么差别。作者用 15 项与音乐相关、源自拉班动作分析的指标来支撑文字描述，并点出用力（effort）、形态（shape）和动态（dynamics）三个描述维度。摘要只交代了指标与文字的关系。要判断能否在生成时输入“第二次摆臂更舒展”，还需知道文字如何进入模型、哪些条件可由用户指定，以及生成的姿态是否呈现了这项变化。[会议摘要][poster]
 
 ### 一个完整例子：同样八次落脚，两段舞为什么听起来不同？
 
@@ -76,9 +76,14 @@ tags: ["PhaseDance", "Music-to-Dance", "Motion-Phase", "Laban", "Paper-Notes"]
 
 ## 实验关键数据
 
-会议摘要报告两项定性结论：生成的编舞在节奏连贯性上有所改善，模型对舞蹈表达的理解更丰富。摘要没有列出数据集、对照方法、指标数值、误差范围或消融结果。上文的 **15** 是作者使用的指标个数，不能据此推算实验提升多少。[会议摘要][poster]
+作者在摘要里报告了两个方向的改善，但没有给出实验表。下表把两项主张分开，便于判断日后拿到全文时哪些结果最值得看。[官方摘要][poster]
 
-要把两项结论分开验证，需要在全文中追踪两组证据：第一组比较完整模型和去掉相位条件后的节奏表现，尤其是跨拍关系能否优于只看局部拍点；第二组检查引入拉班指标后，评价者或测量指标能否分辨不同的运动品质。这里列的是待核查的问题，摘要没有说明作者是否采用了这些具体对照。[OpenReview 论文入口][forum]
+| 研究问题 | 摘要报告了什么 | 全文中值得核对的证据 |
+|---|---|---|
+| 编舞能否更好地呼应音乐节奏？ | 作者报告生成编舞的节奏连贯性优于已有模型。 | 评价量能否区分上例的 A 与 B？若只统计落脚和最近拍点的距离，两种跳法的结果会相同。 |
+| 模型能否更好地理解舞蹈的表达品质？ | 作者报告对舞蹈表达的理解更丰富，并说明文字描述以 15 项指标为依据。 | 评价的是文字能否描述已有动作，还是生成动作能否符合文字？两种任务需要不同的对照。 |
+
+**消融。** 摘要没有列出移除相位条件或拉班指标的对照，也没有给出数据集、基线名称或分数。表中的 **15** 是指标个数，从中无法读出任何一项设计带来的增益。[官方摘要][poster]
 
 <span id="reading-5" class="reading-anchor"></span>
 
@@ -105,13 +110,17 @@ tags: ["PhaseDance", "Music-to-Dance", "Motion-Phase", "Laban", "Paper-Notes"]
 
 ## 来源
 
-- [NeurIPS 2026 官方海报条目及摘要][poster] · [NeurIPS 2026 会议目录][directory]
-- [OpenReview 论文记录][forum] · [论文 PDF 入口][pdf]。本次访问 PDF 入口返回浏览器验证页，未核对全文，也未运行模型。
+- 会议公布了摘要。该条目的资源栏只指向 OpenReview，会议节目数据没有为它列出单独的 PDF 地址。[官方海报条目及摘要][poster] · [会议节目数据][program]
+- 共同作者 Soomin Park 的论文列表收录了本篇。此次复核时，作者网站的书目源将资料链接标为待补。[作者论文列表][authorpub] · [对应版本的书目源][authorbib]
+- 供读者自行查看的入口。本次访问收到站点的浏览器验证页，未取得论文文件。[OpenReview 论文记录][forum] · [PDF 入口][pdf]
 
 </div>
 
 [poster]: https://neurips.cc/virtual/2026/poster/153947
-[directory]: https://neurips.cc/Downloads/2026
+[program]: https://neurips.cc/static/virtual/data/neurips-2026-orals-posters.json
+[authorpub]: https://www.soominpark.xyz/publications/
+[authornews]: https://www.soominpark.xyz/news/
+[authorbib]: https://github.com/soomean/soomean.github.io/blob/9a8a23f21e0892e8a9ce9d87c0ff071dfe97eba2/_bibliography/papers.bib#L3-L10
 [forum]: https://openreview.net/forum?id=HN7bfQQd3M
 [pdf]: https://openreview.net/pdf?id=HN7bfQQd3M
 [bailando]: https://openaccess.thecvf.com/content/CVPR2022/html/Siyao_Bailando_3D_Dance_Generation_by_Actor-Critic_GPT_With_Choreographic_Memory_CVPR_2022_paper.html
