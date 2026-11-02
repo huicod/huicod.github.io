@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1592" viewBox="0 0 1040 1592" role="img" aria-labelledby="title desc">
+<title id="title">TransPhase · 边界两侧怎样一起生成？</title><desc id="desc">单段动作经 ACT-PAE 编码为四组相位参数，文本与邻段分别训练两个去噪器，每一步混合预测。过渡覆盖两段的一部分，解码输出按时间交叠融合。</desc>
+<defs><marker id="arrow" viewBox="0 0 9 8" refX="8" refY="4" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="11" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#416c70"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203f43}.strong{font-weight:700}.label{fill:#355a5d}.id{fill:#17756f;font-weight:700}</style>
+<rect width="1040" height="1592" fill="#f5f8f6"/>
+<text x="34" y="54" font-size="36" class="strong">TransPhase · 边界两侧怎样一起生成？</text>
+<text x="36" y="95" font-size="22" class="label">NeurIPS 2025　｜　以先走路再坐下为例。语义段与过渡段占用同一条时间轴。</text>
+<rect x="20" y="120" width="1000" height="300" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="162" font-size="23" class="id">01</text>
+<text x="99" y="162" font-size="28" class="strong">先训练动作表示：每段得到固定大小的相位参数</text>
+<rect x="44" y="195" width="260" height="103" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="59" y="228" font-size="24" class="strong">带时长的动作 X</text>
+<text x="59" y="261" font-size="21" class="">N 帧 × 269 个特征</text>
+<text x="59" y="288" font-size="21" class="">每段的 N 可以不同。</text>
+<rect x="375" y="195" width="294" height="103" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="390" y="228" font-size="24" class="strong">ACT-PAE 编码器</text>
+<text x="390" y="261" font-size="21" class="">Transformer 读完整段</text>
+<text x="390" y="288" font-size="21" class="">→ 频率、幅值、偏置、相移。</text>
+<rect x="742" y="195" width="250" height="103" rx="12" fill="#eeeaf7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="757" y="228" font-size="24" class="strong">按帧重建周期信号</text>
+<text x="757" y="261" font-size="21" class="">P = [F, A, B, S]</text>
+<text x="757" y="288" font-size="21" class="">Q = A sin(F(T−S)) + B</text>
+<path d="M304 246 H375" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M669 246 H742" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="375" y="325" width="294" height="67" rx="12" fill="#d7eeeb" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="390" y="358" font-size="24" class="strong">ACT-PAE 解码器 → X̂</text>
+<path d="M867 298 V357 H669" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M174 298 V357 H375" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<text x="48" y="405" font-size="20" class="label">训练目标：用干净动作 X 监督重建 X̂。后续扩散学习 P，输出动作时再用这个解码器。</text>
+<rect x="20" y="444" width="1000" height="373" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="486" font-size="23" class="id">02</text>
+<text x="99" y="486" font-size="28" class="strong">训练去噪器：相同的目标，不同的条件</text>
+<rect x="45" y="525" width="271" height="89" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="558" font-size="24" class="strong">带噪的目标段 Pₖ</text>
+<text x="60" y="591" font-size="21" class="">同时提供它展开的逐帧 Q。</text>
+<rect x="45" y="660" width="271" height="91" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="693" font-size="24" class="strong">按方向选邻段</text>
+<text x="60" y="726" font-size="21" class="">训练时从真动作取得</text>
+<text x="60" y="753" font-size="21" class="">干净的邻段相位。</text>
+<rect x="385" y="527" width="298" height="84" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="400" y="560" font-size="24" class="strong">SPDM · 文本条件</text>
+<text x="400" y="593" font-size="21" class="">CLIP 文本 + Pₖ 与 Q。</text>
+<rect x="385" y="660" width="298" height="91" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="400" y="693" font-size="24" class="strong">TPDM · 邻段条件</text>
+<text x="400" y="726" font-size="21" class="">目标与前段或后段的相位</text>
+<text x="400" y="753" font-size="21" class="">通过交叉注意力交换信息。</text>
+<rect x="759" y="580" width="233" height="112" rx="12" fill="#fcf0d6" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="774" y="613" font-size="24" class="strong">预测加入的噪声</text>
+<text x="774" y="646" font-size="21" class="">两路各自计算 L1；</text>
+<text x="774" y="673" font-size="21" class="">采样器换算干净估计。</text>
+<path d="M316 569 H385" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M311 591 H343 V635 H500 V660" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M316 706 H385" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M683 569 H721 V615 H759" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M683 706 H721 V665 H759" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="48" y="788" font-size="20" class="label">SPDM 读当前段的描述。TPDM 的前向、后向条件让缺口两侧都参与过渡。</text>
+<rect x="20" y="840" width="1000" height="404" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="882" font-size="23" class="id">03</text>
+<text x="99" y="882" font-size="28" class="strong">采样：交换上一步的估计，再更新每段的相位</text>
+<text x="52" y="919" font-size="20" class="label">前段（走 2.4 秒）</text>
+<text x="523" y="919" font-size="20" class="label">后段（坐下 3.6 秒）</text>
+<rect x="50" y="932" width="380" height="29" rx="12" fill="#bedcd4" stroke="#bedcd4" stroke-width="1.6"/>
+<rect x="430" y="932" width="558" height="29" rx="12" fill="#c6dbea" stroke="#c6dbea" stroke-width="1.6"/>
+<rect x="240" y="970" width="469" height="26" rx="12" fill="#ebd29e" stroke="#ebd29e" stroke-width="1.6"/>
+<text x="251" y="990" font-size="19" class="">过渡段：前段的后半 ＋ 后段的前半</text>
+<rect x="48" y="1037" width="272" height="106" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="63" y="1070" font-size="24" class="strong">语义估计</text>
+<text x="63" y="1103" font-size="21" class="">两个语义段各自读提示，</text>
+<text x="63" y="1130" font-size="21" class="">过渡段没有独立提示。</text>
+<rect x="378" y="1037" width="294" height="106" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="393" y="1070" font-size="24" class="strong">邻段估计</text>
+<text x="393" y="1103" font-size="21" class="">前段 ↔ 过渡 ↔ 后段</text>
+<text x="393" y="1130" font-size="21" class="">读取上一轮的干净估计。</text>
+<rect x="740" y="1037" width="250" height="106" rx="12" fill="#eeeaf7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="755" y="1070" font-size="24" class="strong">相位混合 ＋ DDIM</text>
+<text x="755" y="1103" font-size="21" class="">按当前噪声步分配权重，</text>
+<text x="755" y="1130" font-size="21" class="">更新至下一噪声级。</text>
+<path d="M184 1143 V1175 H852 V1143" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M672 1090 H740" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="47" y="1220" font-size="20" class="label">早期偏向邻段衔接，后期偏向文字细节。三个潜变量共同迭代；固定轮数仍受硬件与批大小限制。</text>
+<rect x="20" y="1266" width="1000" height="222" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="1308" font-size="23" class="id">04</text>
+<text x="99" y="1308" font-size="28" class="strong">解码与组合：真实补间和自由生成使用不同的输入</text>
+<rect x="44" y="1342" width="437" height="102" rx="12" fill="#d7eeeb" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="59" y="1375" font-size="24" class="strong">自由生成</text>
+<text x="59" y="1408" font-size="21" class="">解码前段、过渡段、后段；在交叠区域</text>
+<text x="59" y="1435" font-size="21" class="">按时间权重混合，输出连续骨骼动作。</text>
+<rect x="548" y="1342" width="446" height="102" rx="12" fill="#fcf0d6" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="563" y="1375" font-size="24" class="strong">给定两端动作的补间</text>
+<text x="563" y="1408" font-size="21" class="">固定两端的编码，生成缺口与两侧过渡；</text>
+<text x="563" y="1435" font-size="21" class="">若要求缺口执行指定动作，再接 SPDM。</text>
+<text x="38" y="1534" font-size="20" class="label">实线为数据路径，虚线为重建监督。图示比例按图 5 的秒数绘制，过渡段不增加总时长。</text>
+<text x="38" y="1568" font-size="20" class="label">根据正式论文图 2–5、式 1–2 和附录算法 1 重绘；P 为每段四组参数，Q 为展开后的帧级信号。</text>
+</svg>

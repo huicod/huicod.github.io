@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1546" viewBox="0 0 1040 1546" role="img" aria-labelledby="title desc">
+<title id="title">FunPhase · 一个运动片段，两种查询</title><desc id="desc">关节旋转和根位置分别编码，联合分解为周期参数，再按查询坐标解码。另训扩散模型在变换后的参数空间生成动作。</desc>
+<defs><marker id="arrow" viewBox="0 0 9 8" refX="8" refY="4" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="11" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#416c70"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203f43}.strong{font-weight:700}.label{fill:#355a5d}.id{fill:#17756f;font-weight:700}</style>
+<rect width="1040" height="1546" fill="#f5f8f6"/>
+<text x="34" y="54" font-size="36" class="strong">FunPhase · 一个运动片段，两种查询</text>
+<text x="36" y="95" font-size="22" class="label">ICML 2026　｜　给定关节与时刻，读取姿态；给定类别或局部观测，采样整段动作。</text>
+<rect x="20" y="122" width="1000" height="386" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="164" font-size="23" class="id">01</text>
+<text x="99" y="164" font-size="28" class="strong">学习运动函数：两条观测支路汇入同一个周期瓶颈</text>
+<rect x="45" y="200" width="255" height="96" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="233" font-size="24" class="strong">关节的 6D 旋转</text>
+<text x="60" y="266" font-size="21" class="">时间编码 ＋ 关节图编码</text>
+<rect x="45" y="337" width="255" height="96" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="370" font-size="24" class="strong">根的世界位置</text>
+<text x="60" y="403" font-size="21" class="">三维平移 ＋ 时间编码</text>
+<rect x="376" y="200" width="245" height="96" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="391" y="233" font-size="24" class="strong">关节 Perceiver</text>
+<text x="391" y="266" font-size="21" class="">汇集观测到的关节、帧。</text>
+<rect x="376" y="337" width="245" height="96" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="391" y="370" font-size="24" class="strong">根 Perceiver</text>
+<text x="391" y="403" font-size="21" class="">独立编码整体位移。</text>
+<path d="M300 248 H376" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M300 385 H376" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="709" y="258" width="284" height="117" rx="12" fill="#eeeaf7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="724" y="291" font-size="24" class="strong">拼接与 1D 卷积</text>
+<text x="724" y="324" font-size="21" class="">逐通道提取频率、振幅、</text>
+<text x="724" y="351" font-size="21" class="">偏置，再回归相移。</text>
+<path d="M621 248 H660 V296 H709" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M621 385 H660 V348 H709" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="47" y="478" font-size="20" class="label">输出 θ：每个通道 4 个数。256 通道对应每段 1,024 个标量，通道没有预设的身体部位名称。</text>
+<rect x="20" y="531" width="1000" height="365" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="573" font-size="23" class="id">02</text>
+<text x="99" y="573" font-size="28" class="strong">重建：用周期参数还原特征，用坐标选择输出</text>
+<rect x="45" y="612" width="268" height="101" rx="12" fill="#eeeaf7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="645" font-size="24" class="strong">片段参数 θ</text>
+<text x="60" y="678" font-size="21" class="">相移 s · 振幅 a</text>
+<text x="60" y="705" font-size="21" class="">频率 f · 偏置 b</text>
+<rect x="376" y="612" width="261" height="101" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="391" y="645" font-size="24" class="strong">合成通道正弦</text>
+<text x="391" y="678" font-size="21" class="">再经逆瓶颈映射，</text>
+<text x="391" y="705" font-size="21" class="">拆回关节和根特征。</text>
+<rect x="718" y="612" width="276" height="101" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="733" y="645" font-size="24" class="strong">坐标查询</text>
+<text x="733" y="678" font-size="21" class="">关节支路：(新时刻, 关节)</text>
+<text x="733" y="705" font-size="21" class="">根支路：新时刻</text>
+<path d="M313 662 H376" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="368" y="766" width="350" height="96" rx="12" fill="#d7eeeb" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="383" y="799" font-size="24" class="strong">两个 Perceiver 解码器</text>
+<text x="383" y="832" font-size="21" class="">按查询输出关节旋转、根位置。</text>
+<path d="M506 713 V766" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M856 713 V812 H718" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="45" y="766" width="258" height="96" rx="12" fill="#fcf0d6" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="799" font-size="24" class="strong">训练监督</text>
+<text x="60" y="832" font-size="21" class="">旋转、根、FK、足部损失</text>
+<path d="M368 814 H303" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<rect x="20" y="921" width="1000" height="505" rx="18" fill="#fff" stroke="#cbd8d3" stroke-width="1.6"/>
+<text x="43" y="963" font-size="23" class="id">03</text>
+<text x="99" y="963" font-size="28" class="strong">生成：冻结自编码器，学习风格或观测条件下的参数分布</text>
+<rect x="45" y="1001" width="265" height="102" rx="12" fill="#eeeaf7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="1034" font-size="24" class="strong">训练片段的 θ</text>
+<text x="60" y="1067" font-size="21" class="">把相移与振幅换成圆坐标，</text>
+<text x="60" y="1094" font-size="21" class="">频率映到实数，偏置保留。</text>
+<rect x="376" y="1001" width="281" height="102" rx="12" fill="#e8f1f7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="391" y="1034" font-size="24" class="strong">带噪参数 zₖ</text>
+<text x="391" y="1067" font-size="21" class="">训练时从真实参数加噪；</text>
+<text x="391" y="1094" font-size="21" class="">采样时从高斯噪声开始。</text>
+<rect x="731" y="1001" width="264" height="102" rx="12" fill="#fcf0d6" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="746" y="1034" font-size="24" class="strong">条件</text>
+<text x="746" y="1067" font-size="21" class="">风格／物种、扩散步；</text>
+<text x="746" y="1094" font-size="21" class="">可选局部动作的编码。</text>
+<path d="M310 1051 H376" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="376" y="1162" width="281" height="95" rx="12" fill="#e3f1e9" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="391" y="1195" font-size="24" class="strong">DiT 预测 v</text>
+<text x="391" y="1228" font-size="21" class="">去噪的是 C × 4 参数。</text>
+<rect x="45" y="1162" width="265" height="95" rx="12" fill="#fcf0d6" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="1195" font-size="24" class="strong">训练目标 v</text>
+<text x="60" y="1228" font-size="21" class="">由干净参数与噪声构造。</text>
+<path d="M516 1103 V1162" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M863 1103 V1211 H657" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M376 1211 H310" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="8 6"/>
+<rect x="45" y="1312" width="401" height="77" rx="12" fill="#eeeaf7" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="60" y="1345" font-size="24" class="strong">采样 → 逆变换 → θ</text>
+<text x="60" y="1378" font-size="21" class="">回到 02 的两个已训练解码器。</text>
+<rect x="577" y="1312" width="418" height="77" rx="12" fill="#d7eeeb" stroke="#c4d4ce" stroke-width="1.6"/>
+<text x="592" y="1345" font-size="24" class="strong">查询坐标 → 生成的骨骼运动</text>
+<text x="592" y="1378" font-size="21" class="">重建指标与生成指标分别评估。</text>
+<path d="M516 1257 V1284 H246 V1312" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M446 1351 H577" fill="none" stroke="#416c70" stroke-width="2.7" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="38" y="1488" font-size="20" class="label">实线为计算或条件传递，虚线为训练监督。运动时刻与扩散步 k 分别位于 02 与 03。</text>
+<text x="38" y="1522" font-size="20" class="label">据正式稿图 2、式 1、4–9 和附录 A.1–A.2 重绘；图 4 另展示关键帧及缺失右腿条件。</text>
+</svg>
