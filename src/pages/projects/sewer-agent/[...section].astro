@@ -22,7 +22,7 @@ export function getStaticPaths() {
     { slug: "model", label: "模型与数据集", group: "技术参考", title: "模型与数据集", lead: "了解线上 YOLO26s 的类别、权重来源和训练方法，以及离线 YOLO26m 的数据划分。", component: Model },
     { slug: "results", label: "实验结果", group: "技术参考", title: "实验结果", lead: "在同一批样本上比较纯 YOLO 与视觉复检，再看评分从检测框变成整张图时，数字为何不同。", component: Results },
     { slug: "architecture", label: "系统架构", group: "技术参考", title: "系统架构", lead: "从上传、工作流编排、模型执行到结果存储，跟随一次检查。", component: Architecture },
-    { slug: "api", label: "开发者 API", group: "技术参考", title: "开发者 API", lead: "在自己的工作台上创建会话，上传素材，启动任务并读取报告。", component: Api },
+    { slug: "api", label: "开发者 API", group: "技术参考", title: "开发者 API", lead: "在服务器上配置大模型密钥。下列接口路径均相对于你部署的工作台地址。", component: Api },
   ];
   const nav = pages.map(({ component, ...meta }) => meta);
   return pages.map(({ component, ...meta }, index) => ({
