@@ -1,0 +1,25 @@
+---
+interface Page {
+  slug: string;
+  label: string;
+  group: string;
+}
+interface Props {
+  pages: Page[];
+  current: string;
+}
+const { pages, current } = Astro.props;
+const groups = [...new Set(pages.map(page => page.group))];
+---
+<nav class="section-nav" aria-label="文档目录">
+  {groups.map(group => (
+    <div>
+      <p>{group}</p>
+      {pages.filter(page => page.group === group).map(page => (
+        <a href={`/projects/sewer-agent/${page.slug ? page.slug + "/" : ""}`} aria-current={current === page.slug ? "page" : undefined}>
+          {page.label}
+        </a>
+      ))}
+    </div>
+  ))}
+</nav>

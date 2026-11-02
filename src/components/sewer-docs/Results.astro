@@ -1,0 +1,73 @@
+<p><strong>在已报告的对照实验中，加入视觉复检后的框级 F1 未超过单独 YOLO。</strong> 在这批 606 张冻结测试图上，离线 YOLO26m 的框级 F1 为 67.16%，当时的复检融合为 56.82%。另取 60 张验证图，对同一批纯 YOLO 预测按“有哪些类别”评分，F1 为 90.77%。若同时要求定位正确，F1 为 64.19%。<a href="#test606">606 张测试图对照</a> · <a href="#score60">60 张校准图复算</a></p>
+
+<h2>部署模型在 Sewer2403 验证集上表现如何？</h2>
+<p>工作台使用的 YOLO26s 在原实验的 <strong>1,904 张验证图</strong>上，精确率为 63.6%，召回率为 59.2%，mAP50 为 58.2%，mAP50–95 为 38.9%。验证集中有 1,407 个五类标注框。按 mAP50 分类别看，支管暗接为 91.7%，堵塞类为 80.4%，破裂为 58.5%，腐蚀为 35.9%，变形为 24.6%。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/yolov26/docs/sewer2403_5class_experiment_report.md">YOLO26s 原始报告（需仓库权限）</a></p>
+
+<details>
+  <summary>YOLO26m 单独训练后的分来源测试结果</summary>
+  <p>以下是训练结束后的独立评测。Sewer2403 评五类，SEDD 只评破裂与堵塞类。P、R 和 F1 使用置信度 0.25、同类框 IoU ≥ 0.5；mAP50 在多个置信度下计算。</p>
+  <table><thead><tr><th scope="col">测试来源</th><th scope="col">图像</th><th scope="col">mAP50</th><th scope="col">精确率</th><th scope="col">召回率</th><th scope="col">F1</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Sewer2403</th><td>562</td><td>63.18%</td><td>68.85%</td><td>65.17%</td><td>66.96%</td></tr>
+    <tr><th scope="row">SEDD</th><td>44</td><td>76.11%</td><td>64.47%</td><td>71.01%</td><td>67.59%</td></tr>
+  </tbody></table>
+  <p>这些是 YOLO26m 的同来源留出集结果。下方 606 张复检实验采用该次运行自己的 YOLO 基线，两次运行相差一个匹配框。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/yolov26/docs/merged_five_yolo26m_evaluation_20260917.md">训练后评测记录（需仓库权限）</a></p>
+</details>
+
+<h2>同一张图，三种判分方法</h2>
+<p>假设一张图的标注是两处破裂，模型只在另一段管壁画了一个“破裂”框。问“这张图有无五类异常”，它答对了。问“图上有哪些类别”，它也答对了。若要求指出每处破裂的位置，这个框没有匹配任何一处标注，两处破裂都算漏检。</p>
+<table>
+  <thead><tr><th scope="col">评估单位</th><th scope="col">命中条件</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">整图有无异常</th><td>只要出现至少一种可评类别就记为阳性，类别、位置和数量均不影响判分。一张图只计一次。</td></tr>
+    <tr><th scope="row">图片与类别</th><td>每张图内，同一类别出现多次只计一次。先逐图核对哪些类多报或漏报，再跨图累加。整图完全正确还要求预测类别集合与标注完全相同。</td></tr>
+    <tr><th scope="row">目标框</th><td>预测和标注必须同类，框的交并比（IoU）至少为 0.5，且一对一匹配。重复框与错位框会影响分数。</td></tr>
+  </tbody>
+</table>
+<p>表中的 TP / FP / FN 分别表示命中、多报、漏报，单位随评分方法改变。精确率看预测中有多少命中，召回率看标注中找到了多少，F1 是两者的调和平均。以下固定阈值实验保留置信度至少 0.25 的 YOLO 候选。上面的 mAP 则综合不同置信度下的表现。</p>
+
+<h2>YOLO26s 加入视觉复检后，多报和漏报怎样变化？</h2>
+<p>9 月 11 日的实验在 36 张主集图片和另列的 12 张回归图片上，使用同一份 YOLO26s 输出，对比原始检测与当时的 <code>qwen3.8-max</code> 置信度分层复检方案。两组图片均来自 Sewer2403。分数达到 0.85 的原框受保护，较低分候选可以按复检意见处理，新框也可以按当时的规则加入。0.85 是复检处理分界，检测输出阈值仍为 0.25。</p>
+<table>
+  <thead><tr><th scope="col">样本</th><th scope="col">方案</th><th scope="col">框级 TP / FP / FN</th><th scope="col">精确率</th><th scope="col">召回率</th></tr></thead>
+  <tbody>
+    <tr><td>主集 36 张</td><td>YOLO26s</td><td>29 / 8 / 5</td><td>78.38%</td><td>85.29%</td></tr>
+    <tr><td>主集 36 张</td><td>加入复检</td><td>24 / 34 / 10</td><td>41.38%</td><td>70.59%</td></tr>
+    <tr><td>回归组 12 张</td><td>YOLO26s</td><td>11 / 3 / 1</td><td>78.57%</td><td>91.67%</td></tr>
+    <tr><td>回归组 12 张</td><td>加入复检</td><td>10 / 13 / 2</td><td>43.48%</td><td>83.33%</td></tr>
+  </tbody>
+</table>
+<p>两组都没有通过复检找回原 YOLO 漏掉的标注目标。样本包含增强图片，原划分无法还原，可能与训练集重叠。这里的多报均相对于现有标注，部分新增框仍值得人工检查。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/.trellis/tasks/09-11-confidence-review/report.md">48 张配对实验的分组与评分记录（需仓库权限）</a></p>
+
+<h2 id="test606">离线 YOLO26m 在 606 张测试图上的对照</h2>
+<p>9 月 18 日的实验改用离线 YOLO26m 和 <code>qwen3.8-max</code>，仍以同类别、IoU 至少 0.5 做一对一框匹配。冻结测试集为 Sewer2403 的 562 张图与 SEDD 的 44 张图，共 761 个参与评分的标注框。Sewer2403 评五类，SEDD 只评破裂与堵塞类。为保持可比性，表内的 YOLO 基线取自这次复检使用的原始检测输出。</p>
+<table>
+  <thead><tr><th scope="col">同批图上的方案</th><th scope="col">TP / FP / FN</th><th scope="col">精确率</th><th scope="col">召回率</th><th scope="col">F1</th></tr></thead>
+  <tbody>
+    <tr><td>单独 YOLO26m</td><td>501 / 230 / 260</td><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
+    <tr><td>单独视觉语言模型</td><td>251 / 979 / 510</td><td>20.41%</td><td>32.98%</td><td>25.21%</td></tr>
+    <tr><td>YOLO26m ＋当时的复检融合</td><td>477 / 441 / 284</td><td>51.96%</td><td>62.68%</td><td>56.82%</td></tr>
+    <tr><td>保守复检（缓存重放）</td><td>501 / 230 / 260</td><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
+  </tbody>
+</table>
+<p>在这次实验中，对低置信候选改类或删除会丢失原先命中的框，复检新增的框也产生了更多未匹配预测。随后用保守策略重放同批缓存，得到的框级计数与 YOLO 基线相同。工作台部署权重仍为 YOLO26s。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/.trellis/tasks/09-18-vlm-yolo26m-comparison/fusion_diagnosis.md">复检差异分析（需仓库权限）</a> · <a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/.trellis/tasks/09-18-vlm-conservative-fusion/report.md">保守策略缓存重放（需仓库权限）</a></p>
+
+<h2 id="score60">60 张校准图上，怎样理解看似更高的分数？</h2>
+<p>另从合并<strong>验证集</strong>选取 60 张校准图，其中 Sewer2403 有 37 张、SEDD 有 23 张。下表把同一批 YOLO26m 和复检输出分别按类别集合和目标框计分。首轮接受新增框与同一视觉模型二次请求确认新增框，都是离线实验方案。</p>
+<table>
+  <thead><tr><th scope="col">预测方案</th><th scope="col">图片与类别<br />TP / FP / FN · F1</th><th scope="col">整图类别全对</th><th scope="col">目标框<br />TP / FP / FN · F1</th></tr></thead>
+  <tbody>
+    <tr><td>纯 YOLO 或保守复检</td><td>59 / 1 / 11 · 90.77%</td><td>48/60</td><td>69 / 38 / 39 · 64.19%</td></tr>
+    <tr><td>接受首轮新增框</td><td>61 / 15 / 9 · 83.56%</td><td>39/60</td><td>70 / 60 / 38 · 58.82%</td></tr>
+    <tr><td>新增框再请求一次确认</td><td>59 / 11 / 11 · 84.29%</td><td>41/60</td><td>69 / 52 / 39 · 60.26%</td></tr>
+  </tbody>
+</table>
+<p>同一批纯 YOLO 预测的类别 F1 为 90.77%，定位 F1 为 64.19%。类别计分允许在正确图片上报对类别、却框错位置。用于定位缺陷时应看框级一列。这 60 张中有 48 张（80.00%）的所有可评类别都判断正确。只有 1 张空标注图片，无法据此估计正常管段上的误报率。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/.trellis/tasks/09-18-vlm-calibration-run/image_level_report.md">逐类、分来源和框级复算（需仓库权限）</a> · <a href="/projects/sewer-agent/model/">模型与数据集</a></p>
+
+<details>
+  <summary>补充复算：只问“这张图有没有异常”</summary>
+  <p>这项数字是本页用原实验保存的 60 条逐图记录额外计算的。把每张图的可评类别集合折成“有”或“无”，不重新调用模型。纯 YOLO 和保守复检都得到 52 张真阳性、0 张假阳性、7 张假阴性、1 张真阴性。二分类 F1 为 93.69%，答对 53/60 张。</p>
+  <p>这 60 张中有 59 张带可评异常标注。即使对所有图片都回答“有”，也会答对 59/60 张。因此要衡量正常管段的误报，需要有足够正常样本的独立测试集。</p>
+</details>
+
+<p><a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/docs/EXPERIMENT_RESULTS_SUMMARY.md">原项目实验汇总与各轮报告索引（需仓库权限）</a></p>

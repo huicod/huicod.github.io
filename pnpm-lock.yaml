@@ -29,6 +29,9 @@ importers:
       dayjs:
         specifier: ^1.11.9
         version: 1.11.9
+      github-markdown-css:
+        specifier: 5.9.0
+        version: 5.9.0
       sharp:
         specifier: ^0.32.6
         version: 0.32.6
@@ -947,6 +950,10 @@ packages:
 
   github-from-package@0.0.0:
     resolution: {integrity: sha512-SyHy3T1v2NUXn29OsWdxmK6RwHD+vkj3v8en8AOBZ1wBQ/hCAQ5bAQTD02kW4W9tUp/3Qh6J8r9EvntiyCmOOw==}
+
+  github-markdown-css@5.9.0:
+    resolution: {integrity: sha512-tmT5sY+zvg2302XLYEfH2mtkViIM1SWf2nvYoF5N1ZsO0V6B2qZTiw3GOzw4vpjLygK/KG35qRlPFweHqfzz5w==}
+    engines: {node: '>=10'}
 
   github-slugger@2.0.0:
     resolution: {integrity: sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw==}
@@ -3109,6 +3116,8 @@ snapshots:
   get-stream@8.0.1: {}
 
   github-from-package@0.0.0: {}
+
+  github-markdown-css@5.9.0: {}
 
   github-slugger@2.0.0: {}
 

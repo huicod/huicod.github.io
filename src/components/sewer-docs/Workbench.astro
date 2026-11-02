@@ -1,0 +1,29 @@
+<p>截图取自项目的实际网页工作台。使用的是<a href="/projects/sewer-agent/examples/">公开合成图片与视频</a>，可以下载同一份素材，在自己的部署上重走这些步骤。点击截图可查看原尺寸。<a href="/projects/sewer-agent/media/workbench-overview.webp">查看完整工作台画面</a>。</p>
+
+<h2>提交检查</h2>
+<p>在已有对话右上角点击“新建检查”，打开“提交现场资料”。在“现场文件”中选择素材，填写“检查要求”。图片可以选“纯 YOLO（不复检）”；视频使用“YOLO＋VLM 复检”。点击“提交检查”后，在任务卡点击“启动检查”。</p>
+<figure>
+  <a href="/projects/sewer-agent/media/workbench-submit.webp">
+    <img src="/projects/sewer-agent/media/workbench-submit.webp" alt="真实工作台的提交现场资料表单，已选 clip.mp4，视频模式固定为 YOLO＋VLM 复检" width="756" height="734" />
+  </a>
+  <figcaption>此处选中了演示短片，检查模式固定为“YOLO＋VLM 复检”。截图记录提交前的界面。</figcaption>
+</figure>
+
+<h2>查看原始检测与证据</h2>
+<p>使用示例 07 建立纯 YOLO 图片任务。检测结束后，打开“展开检查依据”，对照原图上的位置与候选项。左侧管壁出现了一个 PL（破裂）候选，截图中的分数约为 0.287。纯 YOLO 模式会标明未复检，这个框仍需结合原图判断。</p>
+<figure>
+  <a href="/projects/sewer-agent/media/workbench-result.webp">
+    <img src="/projects/sewer-agent/media/workbench-result.webp" alt="工作台的原始检测面板在模拟管壁左侧标出 PL 候选，并列出置信度和像素框" width="840" height="752" loading="lazy" />
+  </a>
+  <figcaption>图片结果来自本地五类 YOLO26s 对合成样图的实际检测。这一步没有调用视觉语言模型。</figcaption>
+</figure>
+
+<h2>沿视频时间线继续查</h2>
+<p>打开视频任务中的“展开视频候选时间线”，先看解码覆盖，再选候选事件和对应的证据帧。需要检查暗部时，在“选择已存证据帧”中选一帧，明确提出“对选中的证据帧做低照度增强”。用新任务关联的父任务 ID 和时间戳回到原帧。</p>
+<figure>
+  <a href="/projects/sewer-agent/media/workbench-evidence.webp">
+    <img src="/projects/sewer-agent/media/workbench-evidence.webp" alt="视频候选时间线显示已扫描 96 帧、选出 8 张证据帧，以及 0.25 秒处的 PL 候选证据" width="886" height="1015" loading="lazy" />
+  </a>
+  <figcaption>本次运行未配置外部 VLM。界面显示场景筛选回退；“已选详细复检 8 帧”表示这些帧入选，并不表示它们已被 VLM 确认。</figcaption>
+</figure>
+<p>示例短片长 8 秒。图中显示 96 帧已完整解码，事件条目保留了原视频时间和证据图。在另一次独立本地初查中，同一段视频聚合出 4 个候选事件。<a href="/projects/sewer-agent/examples/">打开视频与分步说明</a></p>

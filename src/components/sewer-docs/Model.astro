@@ -16,10 +16,6 @@
 <h2>线上权重是怎样训练的</h2>
 <p>训练从通用预训练权重 <code>yolo26s.pt</code> 开始。数据准备脚本把原始管道标注转换成五类 YOLO 边界框标签；沉积、结垢和障碍物统一映射到 BLOCK。模型以 960 像素输入训练 100 轮，使用自动批大小和混合精度。每轮记录验证指标，部署清单固定使用这次实验的 <code>best.pt</code>。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/yolov26/README.md">训练与评估步骤（需仓库权限）</a></p>
 
-<h2>线上模型的验证成绩</h2>
-<p>YOLO26s 在原 Sewer2403 验证集的 1,904 张图上，精确率为 63.6%，召回率为 59.2%，mAP50 为 58.2%，mAP50–95 为 38.9%。其中，支管暗接和堵塞类的 mAP50 分别为 91.7% 和 80.4%，变形和腐蚀分别为 24.6% 和 35.9%。检查变形或腐蚀时，尤其值得回看原图。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/yolov26/docs/sewer2403_5class_experiment_report.md">原模型的验证集报告（需仓库权限）</a></p>
-<p>mAP50 衡量模型在框重叠度达到 50% 时，各类别的平均检测表现。mAP50–95 将多个更严格的重叠度阈值一起计算。这两个数描述整组样本的表现，不能直接读成某张图片判对的概率。</p>
-
 <h2>单独评估的 YOLO26m</h2>
 <p>项目另行训练了 YOLO26m，目前仍用于离线研究。它使用的合并数据集共有 12,120 张图。划分前先把能识别出的同源视频和近似图片归入同组，避免这些图片分别落入训练和测试。</p>
 <table>
@@ -30,6 +26,5 @@
     <tr><th scope="row">合计</th><td>10,908</td><td>606</td><td>606</td><td>按来源评分</td></tr>
   </tbody>
 </table>
-<p>SEDD 的裂缝对应 PL，沉积对应 BLOCK。该来源没有为其余三类提供可用真值。YOLO26m 在 Sewer2403 五类测试集上的 mAP50 / mAP50–95 为 <strong>63.18% / 42.47%</strong>，在 SEDD 两类测试集上为 <strong>76.11% / 42.35%</strong>。两个模型采用了不同划分，旧模型可能见过新测试集中的 Sewer2403 图像或相邻帧，因此不能用这些数字给两个模型排出部署优先级。<a href="https://github.com/huicod/sewer-agent/blob/dev/agent-v1/yolov26/docs/merged_five_yolo26m_evaluation_20260917.md">分来源测试报告（需仓库权限）</a> · <a href="https://thusigsiclab.github.io/thu.github.io/dataset.html">SEDD 数据来源</a></p>
-
-<p>实际检查时如何在页面上复核候选框，见<a href="/projects/sewer-agent/features/">工作台功能</a>。</p>
+<p>SEDD 的裂缝对应 PL，沉积对应 BLOCK。这个来源只评这两类。旧模型可能见过新划分中的部分 Sewer2403 图像或相邻帧，两份权重在不同划分上的数字不宜直接排名。<a href="https://thusigsiclab.github.io/thu.github.io/dataset.html">SEDD 数据来源</a></p>
+<p><a href="/projects/sewer-agent/results/">查看两个模型的指标、YOLO 与 VLM 复检对照，以及图像级、框级评分</a>。</p>
