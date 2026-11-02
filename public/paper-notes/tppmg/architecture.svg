@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1578" viewBox="0 0 1080 1578" role="img" aria-labelledby="title desc">
+<title id="title">TPPMG · 从阶段脚本到按预算输出的动作</title>
+<desc id="desc">规划器以文字产生阶段及秒数，校准器用真实段长学习。固定窗口去噪器训练时接受逐块不同的噪声。推理循环每次输出八帧，上一阶段的尾块在下一段开头硬冻结，段末裁到指定帧数。</desc>
+<defs><marker id="edge" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="10" refX="10.5" refY="5" orient="auto"><path d="M0 0L11 5L0 10Z" fill="#3d6871"/></marker><marker id="loss" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="10" refX="10.5" refY="5" orient="auto"><path d="M0 0L11 5L0 10Z" fill="#946324"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif}.flow{fill:none;stroke:#3d6871;stroke-width:3;stroke-linejoin:round;marker-end:url(#edge)}.train{fill:none;stroke:#946324;stroke-width:3;stroke-dasharray:8 5;stroke-linejoin:round;marker-end:url(#loss)}</style>
+<rect x="0" y="0" width="1080" height="1578" rx="18" fill="#f4f7f6" stroke="#f4f7f6" stroke-width="1.6"/>
+<text x="34" y="54" font-size="36" font-weight="700" text-anchor="start" fill="#25414a">TPPMG · 从阶段脚本到按预算输出的动作</text>
+<text x="36" y="94" font-size="22" font-weight="400" text-anchor="start" fill="#25414a">IJCAI 2026　｜　计划用秒，生成用帧。模型训练窗口保持固定。</text>
+<path class="flow" d="M38 128 H94"/>
+<text x="110" y="136" font-size="20" font-weight="400" text-anchor="start" fill="#25414a">数据流</text>
+<path class="train" d="M230 128 H286"/>
+<text x="304" y="136" font-size="20" font-weight="400" text-anchor="start" fill="#25414a">训练监督</text>
+<text x="500" y="136" font-size="20" font-weight="400" text-anchor="start" fill="#25414a">蓝：输入　绿：模型　黄：监督　紫：输出</text>
+<rect x="18" y="161" width="1044" height="358" rx="16" fill="#fff" stroke="#c1d1cc" stroke-width="1.6"/>
+<rect x="39" y="181" width="50" height="35" rx="8" fill="#326963" stroke="#326963" stroke-width="1.6"/>
+<text x="64" y="206" font-size="21" font-weight="700" text-anchor="middle" fill="#fff">01</text>
+<text x="107" y="207" font-size="28" font-weight="700" text-anchor="start" fill="#25414a">时间规划 · 先确定各阶段该做什么、做多久</text>
+<rect x="40" y="240" width="238" height="109" rx="12" fill="#e7f1f8" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="56" y="274" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">文本指令</text>
+<text x="56" y="308" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">按顺序描述动作，</text>
+<text x="56" y="336" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">不要求附总帧数。</text>
+<rect x="331" y="240" width="283" height="109" rx="12" fill="#e4f2ea" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="347" y="274" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">LLM 阶段脚本</text>
+<text x="347" y="308" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">固定 JSON 格式：</text>
+<text x="347" y="336" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">子指令、初始时长。</text>
+<rect x="680" y="240" width="359" height="109" rx="12" fill="#e4f2ea" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="696" y="274" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">时长校准器 hψ</text>
+<text x="696" y="308" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">冻结的子句编码 ＋ 初始秒数</text>
+<text x="696" y="336" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">→ 正值变换与范围约束。</text>
+<path class="flow" d="M278 294 H331"/>
+<path class="flow" d="M614 294 H680"/>
+<rect x="40" y="396" width="372" height="90" rx="12" fill="#fff0d8" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="56" y="430" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">真实阶段时长</text>
+<text x="56" y="464" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">来自单段样本或拼接片段。</text>
+<rect x="525" y="396" width="514" height="90" rx="12" fill="#eee9f6" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="541" y="430" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">阶段 i 的生成预算</text>
+<text x="541" y="464" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">校准秒数 × 20 fps，取整得到 Tᵢ 帧。</text>
+<path class="flow" d="M856 349 V396"/>
+<path class="train" d="M412 441 H475 V372 H750 V349"/>
+<text x="483" y="429" font-size="19" font-weight="700" text-anchor="start" fill="#875c25">L1</text>
+<rect x="18" y="544" width="1044" height="268" rx="16" fill="#fff" stroke="#c1d1cc" stroke-width="1.6"/>
+<rect x="39" y="564" width="50" height="35" rx="8" fill="#326963" stroke="#326963" stroke-width="1.6"/>
+<text x="64" y="589" font-size="21" font-weight="700" text-anchor="middle" fill="#fff">02</text>
+<text x="107" y="590" font-size="28" font-weight="700" text-anchor="start" fill="#25414a">训练去噪器 · 只学习固定长度窗口</text>
+<rect x="41" y="622" width="267" height="106" rx="12" fill="#e7f1f8" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="57" y="656" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">真实动作窗 x₀</text>
+<text x="57" y="690" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">64 帧，划成 8 块；</text>
+<text x="57" y="718" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">每块长 8 帧。</text>
+<rect x="353" y="622" width="287" height="106" rx="12" fill="#e4f2ea" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="369" y="656" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">分块加噪</text>
+<text x="369" y="690" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">块内共用噪声尺度；</text>
+<text x="369" y="718" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">从前到后逐块升高。</text>
+<rect x="693" y="622" width="347" height="106" rx="12" fill="#e4f2ea" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="709" y="656" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">文本条件 EDM 去噪器</text>
+<text x="709" y="690" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">读入带噪动作、逐帧噪声嵌入、</text>
+<text x="709" y="718" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">文本条件，预测 v。</text>
+<path class="flow" d="M308 674 H353"/>
+<path class="flow" d="M640 674 H693"/>
+<text x="45" y="781" font-size="22" font-weight="700" text-anchor="start" fill="#875c25">有效帧上的 v 目标</text>
+<path class="train" d="M243 774 H872 V728"/>
+<rect x="18" y="837" width="1044" height="365" rx="16" fill="#fff" stroke="#c1d1cc" stroke-width="1.6"/>
+<rect x="39" y="857" width="50" height="35" rx="8" fill="#326963" stroke="#326963" stroke-width="1.6"/>
+<text x="64" y="882" font-size="21" font-weight="700" text-anchor="middle" fill="#fff">03</text>
+<text x="107" y="883" font-size="28" font-weight="700" text-anchor="start" fill="#25414a">推理 · 根据阶段预算反复移动同一扇窗</text>
+<text x="43" y="925" font-size="22" font-weight="400" text-anchor="start" fill="#25414a">初始化噪声窗口并预热。窗内前部噪声低，后部噪声高。</text>
+<text x="43" y="994" font-size="23" font-weight="700" text-anchor="start" fill="#25414a">当前窗</text>
+<rect x="206" y="966" width="82" height="43" rx="5" fill="#c9e5d7" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="247" y="995" font-size="20" font-weight="700" text-anchor="middle" fill="#25414a">块 1</text>
+<rect x="298" y="966" width="82" height="43" rx="5" fill="#cee6da" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="339" y="995" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 2</text>
+<rect x="390" y="966" width="82" height="43" rx="5" fill="#d3e7df" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="431" y="995" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 3</text>
+<rect x="482" y="966" width="82" height="43" rx="5" fill="#d6e8e3" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="523" y="995" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 4</text>
+<rect x="574" y="966" width="82" height="43" rx="5" fill="#d8e8e8" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="615" y="995" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 5</text>
+<rect x="666" y="966" width="82" height="43" rx="5" fill="#d6e6ed" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="707" y="995" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 6</text>
+<rect x="758" y="966" width="82" height="43" rx="5" fill="#d3e3f0" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="799" y="995" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 7</text>
+<rect x="850" y="966" width="82" height="43" rx="5" fill="#cde0ef" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="891" y="995" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 8</text>
+<text x="43" y="1051" font-size="23" font-weight="700" text-anchor="start" fill="#25414a">一次迭代</text>
+<text x="217" y="1050" font-size="22" font-weight="400" text-anchor="start" fill="#25414a">去噪 → 输出首块 → 左移一块 → 末尾追加全噪声块</text>
+<text x="43" y="1120" font-size="23" font-weight="700" text-anchor="start" fill="#25414a">下一窗</text>
+<rect x="206" y="1091" width="82" height="43" rx="5" fill="#c9e5d7" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="247" y="1120" font-size="20" font-weight="700" text-anchor="middle" fill="#25414a">块 2</text>
+<rect x="298" y="1091" width="82" height="43" rx="5" fill="#cee6da" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="339" y="1120" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 3</text>
+<rect x="390" y="1091" width="82" height="43" rx="5" fill="#d3e7df" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="431" y="1120" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 4</text>
+<rect x="482" y="1091" width="82" height="43" rx="5" fill="#d6e8e3" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="523" y="1120" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 5</text>
+<rect x="574" y="1091" width="82" height="43" rx="5" fill="#d8e8e8" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="615" y="1120" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 6</text>
+<rect x="666" y="1091" width="82" height="43" rx="5" fill="#d6e6ed" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="707" y="1120" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 7</text>
+<rect x="758" y="1091" width="82" height="43" rx="5" fill="#d3e3f0" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="799" y="1120" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">块 8</text>
+<rect x="850" y="1091" width="82" height="43" rx="5" fill="#cde0ef" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="891" y="1120" font-size="20" font-weight="400" text-anchor="middle" fill="#25414a">新噪声</text>
+<path class="flow" d="M945 1112 H992 V987 H949"/>
+<text x="43" y="1174" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">每轮输出 C = 8 帧；执行 ⌈Tᵢ / 8⌉ 轮。窗口大小不会随目标段长改变。</text>
+<rect x="18" y="1227" width="1044" height="261" rx="16" fill="#fff" stroke="#c1d1cc" stroke-width="1.6"/>
+<rect x="39" y="1247" width="50" height="35" rx="8" fill="#326963" stroke="#326963" stroke-width="1.6"/>
+<text x="64" y="1272" font-size="21" font-weight="700" text-anchor="middle" fill="#fff">04</text>
+<text x="107" y="1273" font-size="28" font-weight="700" text-anchor="start" fill="#25414a">跨阶段 · 保留接缝上下文，输出长度对齐预算</text>
+<rect x="41" y="1310" width="269" height="108" rx="12" fill="#e7f1f8" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="57" y="1344" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">上一阶段的尾块</text>
+<text x="57" y="1378" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">取最后 8 帧，</text>
+<text x="57" y="1406" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">带入下一阶段。</text>
+<rect x="360" y="1310" width="319" height="108" rx="12" fill="#e4f2ea" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="376" y="1344" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">下一阶段的初始窗</text>
+<text x="376" y="1378" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">首块复制该尾块并硬冻结；</text>
+<text x="376" y="1406" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">其余块由新指令引导去噪。</text>
+<rect x="731" y="1310" width="306" height="108" rx="12" fill="#eee9f6" stroke="#c1d1cc" stroke-width="1.6"/>
+<text x="747" y="1344" font-size="24" font-weight="700" text-anchor="start" fill="#25414a">阶段输出</text>
+<text x="747" y="1378" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">末块超出的帧在段末裁掉，</text>
+<text x="747" y="1406" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">阶段长度与帧预算对齐。</text>
+<path class="flow" d="M310 1365 H360"/>
+<path class="flow" d="M679 1365 H731"/>
+<text x="43" y="1460" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">段长来自脚本；骨骼动作何时真正切换，需对生成轨迹另做边界检测。</text>
+<text x="36" y="1532" font-size="21" font-weight="400" text-anchor="start" fill="#25414a">依据 IJCAI 正文图 2、§3.1–3.2、式 4–14 与 §4.3 原创重绘。</text>
+</svg>
