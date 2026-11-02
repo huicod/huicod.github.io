@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="2030" viewBox="0 0 640 2030" role="img" aria-labelledby="title desc">
+  <title id="title">GANimator 如何从一段动画学习多尺度生成器</title>
+  <desc id="desc">训练时将同一段动画变成七种时间分辨率的样本。第一级从噪声生成粗动作，后续层上采样、加噪并用骨架感知卷积预测残差。每层的局部判别器比较同尺度真实与生成片段，并施加重建与接触一致性损失。自由生成沿生成器从粗到细采样。关键帧与风格编辑使用已有模型的粗层入口；根轨迹控制需要另行训练条件生成器，在每层输入与输出处写入轨迹。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#173b33}
+      .eyebrow{font:700 18px Arial,sans-serif;letter-spacing:1.2px;fill:#45675b}
+      .title{font-size:37px;font-weight:700}.head{font-size:27px;font-weight:700}
+      .body{font-size:23px}.small{font-size:21px}.bold{font-size:23px;font-weight:700}
+      .number{font:700 17px Arial,sans-serif;fill:#fff;text-anchor:middle}
+      .center{text-anchor:middle}.arrow{fill:none;stroke:#4e6c60;stroke-width:2.6;marker-end:url(#a)}
+      .line{fill:none;stroke:#799589;stroke-width:2}.divider{stroke:#bdcbbf;stroke-width:1.4}
+    </style>
+    <marker id="a" markerWidth="7" markerHeight="7" refX="5.8" refY="3" orient="auto"><path d="M0 0L6 3 0 6Z" fill="#4e6c60"/></marker>
+  </defs>
+  <rect width="640" height="2030" rx="18" fill="#faf8f2"/>
+  <text x="28" y="44" class="eyebrow">GANimator  /  SIGGRAPH 2022</text>
+  <text x="28" y="102" class="title">一段动画，七种时间尺度</text>
+  <path d="M28 131H612" class="divider"/>
+
+  <rect x="28" y="158" width="44" height="34" rx="8" fill="#285f50"/>
+  <text x="50" y="181" class="number">01</text><text x="84" y="185" class="head">用同一条示范监督每个尺度</text>
+  <rect x="28" y="211" width="584" height="233" rx="13" fill="#fffdf8" stroke="#bbcabd"/>
+  <text x="51" y="253" class="bold">示范 T</text>
+  <text x="51" y="290" class="body">每帧含关节旋转、根位移和足部接触标签。</text>
+  <text x="51" y="338" class="small">粗采样</text><path d="M156 330H556" class="line"/><circle cx="156" cy="330" r="5" fill="#92632d"/><circle cx="223" cy="330" r="5" fill="#92632d"/><circle cx="289" cy="330" r="5" fill="#92632d"/><circle cx="356" cy="330" r="5" fill="#92632d"/><circle cx="423" cy="330" r="5" fill="#92632d"/><circle cx="489" cy="330" r="5" fill="#92632d"/><circle cx="556" cy="330" r="5" fill="#92632d"/>
+  <text x="51" y="380" class="small">细采样</text><path d="M156 372H556" class="line"/><circle cx="156" cy="372" r="4" fill="#276954"/><circle cx="183" cy="372" r="4" fill="#276954"/><circle cx="209" cy="372" r="4" fill="#276954"/><circle cx="236" cy="372" r="4" fill="#276954"/><circle cx="263" cy="372" r="4" fill="#276954"/><circle cx="289" cy="372" r="4" fill="#276954"/><circle cx="316" cy="372" r="4" fill="#276954"/><circle cx="343" cy="372" r="4" fill="#276954"/><circle cx="369" cy="372" r="4" fill="#276954"/><circle cx="396" cy="372" r="4" fill="#276954"/><circle cx="423" cy="372" r="4" fill="#276954"/><circle cx="449" cy="372" r="4" fill="#276954"/><circle cx="476" cy="372" r="4" fill="#276954"/><circle cx="503" cy="372" r="4" fill="#276954"/><circle cx="529" cy="372" r="4" fill="#276954"/><circle cx="556" cy="372" r="4" fill="#276954"/>
+  <text x="51" y="418" class="small">点代表帧；同一动作的持续时间保持一致。</text>
+
+  <rect x="28" y="474" width="44" height="34" rx="8" fill="#285f50"/>
+  <text x="50" y="497" class="number">02</text><text x="84" y="501" class="head">生成器从粗动作逐层补细节</text>
+  <rect x="28" y="528" width="584" height="325" rx="13" fill="#e8f2eb" stroke="#9ab5a6"/>
+  <rect x="50" y="551" width="116" height="54" rx="9" fill="#f6e9d2"/>
+  <text x="108" y="586" class="bold center">噪声 z₁</text>
+  <path d="M169 578h43" class="arrow"/>
+  <rect x="218" y="551" width="142" height="54" rx="9" fill="#fffdf8"/>
+  <text x="289" y="586" class="bold center">生成器 G₁</text>
+  <path d="M363 578h44" class="arrow"/>
+  <rect x="413" y="551" width="174" height="54" rx="9" fill="#cde3d5"/>
+  <text x="500" y="586" class="bold center">粗动作 Q₁</text>
+  <path d="M52 631H588" class="divider"/>
+  <text x="51" y="672" class="bold">第 2 至 7 层重复同一步</text>
+  <text x="51" y="714" class="body">① 将上一层动作线性上采样，得基底 B。</text>
+  <text x="51" y="754" class="body">② 用骨架感知卷积从 B ＋ 本层噪声估计残差。</text>
+  <text x="51" y="794" class="body">③ 输出 B ＋ 残差，再传给更细一层。</text>
+  <text x="51" y="830" class="small">相邻层的时间分辨率按 4/3 的比例提高。</text>
+
+  <rect x="28" y="884" width="44" height="34" rx="8" fill="#285f50"/>
+  <text x="50" y="907" class="number">03</text><text x="84" y="911" class="head">训练时怎样判断学得像不像？</text>
+  <rect x="28" y="938" width="584" height="243" rx="13" fill="#f5ebd9" stroke="#c9b394"/>
+  <text x="52" y="979" class="bold">每层都有自己的局部判别器 Dᵢ</text>
+  <text x="52" y="1018" class="body">比较真实 Tᵢ 与生成 Qᵢ 的短时间窗，</text>
+  <text x="52" y="1055" class="body">把各窗口评分取平均，形成对抗训练信号。</text>
+  <path d="M52 1078H588" class="divider"/>
+  <text x="52" y="1117" class="small">重建：固定一组噪声，应能重建原示范。</text>
+  <text x="52" y="1155" class="small">接触：预测脚着地时，惩罚过大的脚速。</text>
+
+  <rect x="28" y="1210" width="44" height="34" rx="8" fill="#285f50"/>
+  <text x="50" y="1233" class="number">04</text><text x="84" y="1237" class="head">自由生成时只走生成器</text>
+  <rect x="28" y="1264" width="584" height="172" rx="13" fill="#e6eff2" stroke="#a0b8c0"/>
+  <text x="52" y="1306" class="bold">重新采样噪声，指定所需的序列长度。</text>
+  <text x="52" y="1346" class="body">原文图 4 从 371 帧的江南 Style 舞蹈示范</text>
+  <text x="52" y="1382" class="body">生成 600 帧变体；保留角色的原有骨架。</text>
+  <text x="52" y="1417" class="small">输出的接触标签可用于逆向运动学后处理。</text>
+
+  <rect x="28" y="1468" width="44" height="34" rx="8" fill="#285f50"/>
+  <text x="50" y="1491" class="number">05</text><text x="84" y="1495" class="head">编辑从哪里进入生成链？</text>
+  <rect x="28" y="1522" width="584" height="208" rx="13" fill="#e8f2eb" stroke="#9ab5a6"/>
+  <text x="52" y="1560" class="bold">粗层编辑　使用已有生成器</text>
+  <text x="52" y="1597" class="small">关键帧：手动改最粗层的选定姿势。</text>
+  <text x="52" y="1632" class="small">风格：用下采样的内容动作替换风格模型的 Q₁。</text>
+  <rect x="52" y="1653" width="218" height="54" rx="9" fill="#fffdf8"/>
+  <text x="161" y="1687" class="small center">给定粗层姿势</text>
+  <path d="M277 1680h61" class="arrow"/>
+  <rect x="350" y="1653" width="238" height="54" rx="9" fill="#cde3d5"/>
+  <text x="469" y="1687" class="small center">细层生成过渡与细节</text>
+
+  <rect x="28" y="1748" width="584" height="248" rx="13" fill="#f5ebd9" stroke="#c9b394"/>
+  <text x="52" y="1786" class="bold">根轨迹控制　另训条件生成器</text>
+  <text x="52" y="1823" class="small">训练约束取自已有生成器的样本；使用时由人给定。</text>
+  <text x="52" y="1858" class="small">各尺度都写入相应帧率的根位置与朝向：</text>
+  <rect x="52" y="1879" width="154" height="54" rx="9" fill="#fffdf8"/>
+  <text x="129" y="1913" class="small center">输入写入轨迹</text>
+  <path d="M210 1906h26" class="arrow"/>
+  <rect x="243" y="1879" width="144" height="54" rx="9" fill="#ecd5ad"/>
+  <text x="315" y="1913" class="small center">条件生成器</text>
+  <path d="M392 1906h27" class="arrow"/>
+  <rect x="428" y="1879" width="160" height="54" rx="9" fill="#fffdf8"/>
+  <text x="508" y="1913" class="small center">输出写回轨迹</text>
+  <text x="52" y="1969" class="small">其余关节由模型生成，跟随给定的根轨迹运动。</text>
+</svg>
