@@ -1,4 +1,5 @@
 ---
+import FiveClassDetection from "./FiveClassDetection.astro";
 const repo = "https://github.com/huicod/sewer-agent/blob/dev/agent-v1";
 const evidence = repo + "/docs/experiment-cases/README.md";
 type Box = [number, number, number, number];
@@ -35,19 +36,22 @@ const pictures: Picture[] = [
 
 <h2 id="test606">1. 单独运行 YOLO</h2>
 <p>这次实验用 <strong>YOLO26m</strong> 检查 606 张测试图，其中 Sewer2403 有 562 张，SEDD 有 44 张。共 761 个参与评分的标注框。预测框必须与标注<strong>类别相同，且交并比（IoU）至少为 0.5</strong>，才算命中。每处标注只匹配一次。</p>
-<p>纯 YOLO 命中 <strong>501</strong> 处，多报 230 个框，漏掉 260 处，<strong>F1 为 67.16%</strong>。下表的复检方案都从这同一份检测结果出发。工作台实际部署的 YOLO26s 有独立的<a href="/projects/sewer-agent/model/#deployed-validation">验证成绩</a>。</p>
+<p>纯 YOLO 命中 <strong>501</strong> 处，多报 230 个框，漏掉 260 处，<strong>F1 为 67.16%</strong>。YOLO＋VLM 方案都从这份检测结果出发；纯 VLM 对照独立看图。工作台实际部署的 YOLO26s 有独立的<a href="/projects/sewer-agent/model/#deployed-validation">验证成绩</a>。</p>
 
 <h2>2. 加入视觉复检，结果怎样变化？</h2>
 <table>
-  <thead><tr><th scope="col">检测与复检方式</th><th scope="col">精确率</th><th scope="col">召回率</th><th scope="col">框级 F1</th></tr></thead>
+  <thead><tr><th scope="col">方案</th><th scope="col">命中 / 多报 / 漏检（框）</th><th scope="col">精确率</th><th scope="col">召回率</th><th scope="col">框级 F1</th></tr></thead>
   <tbody>
-    <tr><th scope="row">纯 YOLO，保留原始检测</th><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
-    <tr><th scope="row">允许复检自动删除、改类或新增框</th><td>51.96%</td><td>62.68%</td><td>56.82%</td></tr>
-    <tr><th scope="row">当前策略：保留原框，分歧和新增交给人工</th><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
+    <tr><th scope="row">纯 YOLO</th><td>501 / 230 / 260</td><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
+    <tr><th scope="row">纯 VLM</th><td>251 / 979 / 510</td><td>20.41%</td><td>32.98%</td><td>25.21%</td></tr>
+    <tr><th scope="row">YOLO＋VLM，自动删改或新增框</th><td>477 / 441 / 284</td><td>51.96%</td><td>62.68%</td><td>56.82%</td></tr>
+    <tr><th scope="row">YOLO＋VLM，保留原框、分歧待审</th><td>501 / 230 / 260</td><td>68.54%</td><td>65.83%</td><td>67.16%</td></tr>
   </tbody>
 </table>
 <p>精确率衡量报出的框有多少命中，召回率衡量标注中有多少被找到，F1 综合两者。自动采用 <code>qwen3.8-max</code> 的意见后，F1 下降了 <strong>10.34 个百分点</strong>。先看删框和改类，命中数从 501 降到 463；再接纳 242 个参与评分的新增框，只有 14 个匹配标注。前一步漏掉了已有目标，后一步增加了多报。</p>
 <p>表中最后一行用<strong>同一批已保存的复检意见</strong>重算，没有重新调用模型。当前策略保留自动检测结果，把争议位置留给审核人，因此这一行与纯 YOLO 持平。<a href={repo + "/.trellis/tasks/09-18-vlm-conservative-fusion/report.md"}>复检策略对照记录（需项目权限）</a></p>
+
+<FiveClassDetection />
 
 <h3>两张测试图里的变化</h3>
 <p class="case-note">两幅框图按测试图片的真实坐标绘制，第二幅放大了管底区域。绿色虚线是数据标注，蓝色实线是 YOLO 框，橙色点线是复检新增框。</p>
@@ -71,16 +75,41 @@ const pictures: Picture[] = [
   </figure>
 ))}
 
-<h2 id="score60">3. 同一批预测，换个评分标准</h2>
-<p>9 月 23 日的复算使用另外 60 张验证图（Sewer2403 有 37 张，SEDD 有 23 张）。图片、参考标注和 YOLO26m 的预测都不变，只改变判分方法。</p>
+<h2 id="score60">3. 目标检测与图像级多标签分类</h2>
+<p><strong>目标检测</strong>要回答“每处缺陷在哪里，是什么”。同类预测框与标注框的位置要足够重合，每个标注框只能匹配一次。<strong>图像级多标签分类</strong>要回答“这张图有哪些缺陷类别”。例如，一张图同时有破裂和堵塞，就需要报出这两类；同一类报几处、框画在哪里，不影响分类得分。</p>
+
+<h3>为什么补充分类评估？</h3>
+<p>在部分测试图中，VLM 会按局部纹理或部位把缺陷分得更细。例如上面的堵塞案例，模型认出了图中有堵塞，又把上方疑似杂物单独圈出。按现有标注，类别识别正确，额外的框却计为一次多报。反过来，变形案例里复检删掉了原本命中的框，这是真正的检测损失。两种情况需要分开看。</p>
+<p>数据集的标注粒度也会影响结果。Sewer2403 的 1560_1 图在同一区域同时标了腐蚀和破裂；VLM 注意到线状裂纹，把一个腐蚀框改报为破裂。它认出的裂纹有标注依据，但这次改类仍丢了一个腐蚀命中。为公平比较各方案的<strong>类别识别能力</strong>，我们保留逐框检测成绩，另外从每个方案已有的预测框提取类别，用同一批图、同一份标注做多标签分类评估。<a href={repo + "/.trellis/tasks/09-18-vlm-yolo26m-comparison/fusion_diagnosis.md"}>逐框复检分析（需项目权限）</a></p>
+
+<h3>60 张验证图上的两项任务</h3>
+<p>这批验证图来自 Sewer2403（37 张）和 SEDD（23 张），与上面的 606 张测试图分开统计。下表并列报告两项任务的精确率、召回率和 F1。分类指标按所有可评分的“图片－类别”汇总；只有预测类别集合与标注完全一致，才计为整图全对。</p>
 <table>
-  <thead><tr><th scope="col">问的问题</th><th scope="col">怎样算对</th><th scope="col">精确率</th><th scope="col">召回率</th><th scope="col">F1</th></tr></thead>
+  <thead><tr><th scope="col">方案</th><th scope="col">目标检测<br/>精确率 / 召回率 / F1</th><th scope="col">多标签分类<br/>精确率 / 召回率 / F1</th><th scope="col">整图全对</th></tr></thead>
   <tbody>
-    <tr><th scope="row">每处缺陷在哪里？</th><td>类别和框的位置都匹配</td><td>64.49%</td><td>63.89%</td><td>64.19%</td></tr>
-    <tr><th scope="row">这张图出现了哪些类别？</th><td>每种类别按图计一次，忽略位置和数量</td><td>98.33%</td><td>84.29%</td><td>90.77%</td></tr>
+    <tr><th scope="row">纯 YOLO / 保留原框的复检</th><td>64.49% / 63.89% / 64.19%</td><td>98.33% / 84.29% / 90.77%</td><td>48/60（80.00%）</td></tr>
+    <tr><th scope="row">首轮 VLM 新增框</th><td>53.85% / 64.81% / 58.82%</td><td>80.26% / 87.14% / 83.56%</td><td>39/60（65.00%）</td></tr>
+    <tr><th scope="row">同一 VLM 二次确认新增框</th><td>57.02% / 63.89% / 60.26%</td><td>84.29% / 84.29% / 84.29%</td><td>41/60（68.33%）</td></tr>
   </tbody>
 </table>
-<p>60 张中有 <strong>48 张（80%）</strong>把全部类别都报对了。例如在 SEDD 的 01213 号图中，标注和预测都包含“破裂”和“堵塞”，按类别算全对；但管底的一个框究竟是破裂还是堵塞，复检仍有异议。90.77% 回答的是类别识别问题，不能据此判断定位能力提高了。<a href={repo + "/.trellis/tasks/09-18-vlm-calibration-run/image_level_report.md"}>评分方法与逐图案例（需项目权限）</a></p>
+<p>后两行是离线新增框实验。以 SEDD 的 01213 号图为例，标注和预测都包含破裂、堵塞，整图分类全对；但管底一个框究竟属于哪一类，复检仍有分歧。这也解释了为什么同一组 YOLO 预测能在分类上取得 90.77% 的 F1，而定位缺陷的 F1 为 64.19%。</p>
+
+<h3>五类缺陷的图像分类结果</h3>
+<table>
+  <thead><tr><th scope="col">缺陷</th><th scope="col">有该类标注的图片</th><th scope="col">纯 YOLO / 保留原框<br/>精确率 / 召回率 / F1</th><th scope="col">首轮新增框<br/>F1</th><th scope="col">二次确认<br/>F1</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">AJ 支管暗接</th><td>12</td><td>100.00% / 100.00% / 100.00%</td><td>100.00%</td><td>100.00%</td></tr>
+    <tr><th scope="row">BX 变形</th><td>12</td><td>100.00% / 75.00% / 85.71%</td><td>85.71%</td><td>85.71%</td></tr>
+    <tr><th scope="row">FS 腐蚀</th><td>12</td><td>100.00% / 58.33% / 73.68%</td><td>81.82%</td><td>70.00%</td></tr>
+    <tr><th scope="row">PL 破裂</th><td>22</td><td>95.45% / 95.45% / 95.45%</td><td>85.71%</td><td>91.30%</td></tr>
+    <tr><th scope="row">BLOCK 堵塞</th><td>12</td><td>100.00% / 83.33% / 90.91%</td><td>66.67%</td><td>68.97%</td></tr>
+  </tbody>
+</table>
+<p>首轮新增框找回了一些腐蚀，但也在更多图片上多报了堵塞，整体分类精确率从 98.33% 降至 80.26%。SEDD 只评分破裂和堵塞，另外三类只统计 Sewer2403。<a href={repo + "/.trellis/tasks/09-18-vlm-calibration-run/image_level_report.md"}>逐类完整指标与评估方法（需项目权限）</a></p>
+
+<h3>怎样处理疑似漏标？</h3>
+<p>分类评估能消除框的位置、数量和拆分方式带来的差异，但仍会惩罚报错类别。例如一张按标注无缺陷的图被报为堵塞，会计一次分类误报，整图也判错。这 60 张中只有 1 张为空标注，无法据此估计正常管道的误报率。</p>
+<p>对有争议的区域，应由人工对照原图核实缺陷类别、范围和数量。确认漏标或错标后，应保留原标注，另存修订版，让所有方案按同一版本重新评测。以上结果均按现有标注计算。</p>
 
 <style>
   .case-note { color: #475569; font-size: .9rem; }
