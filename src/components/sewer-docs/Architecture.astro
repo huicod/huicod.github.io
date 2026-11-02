@@ -1,0 +1,30 @@
+<figure class="architecture-flow">
+  <div><strong>网页 / FastAPI</strong><span>会话、上传与任务 ID</span></div>
+  <div><strong>Temporal</strong><span>持久工作流与任务队列</span></div>
+  <div><strong>CPU / GPU 工作进程</strong><span>编排、检测、复检和证据</span></div>
+  <figcaption>执行过程写入 PostgreSQL，原图、证据帧和派生媒体保存在资产存储中。工作台用任务 ID 重新查阅结果。</figcaption>
+</figure>
+<h2>一项检查如何流转</h2>
+<ol>
+  <li><strong>接收输入。</strong> 网页把图片或视频上传到 FastAPI。服务保存原始媒体并返回资产 ID 和版本。手动提交将资产与会话关联；对话入口还会调用文字模型理解指令，再按支持的操作安排任务。</li>
+  <li><strong>启动任务。</strong> 服务将检查配置与工作流绑定。Temporal 按任务阶段调度执行，持久化运行进度。用户可用任务 ID 查询快照、重试记录和工具调用。</li>
+  <li><strong>执行检测。</strong> GPU 工作进程从专用队列取任务。对图片，五类 YOLO26s 在原图上生成候选框和分数；对视频，工作进程解码并逐帧初查，后续阶段把连续出现的候选聚合为事件，选取证据帧。</li>
+  <li><strong>复检和审核。</strong> 新图片可选择纯 YOLO，或让视觉语言模型结合原图、候选及局部图复核。视频按选帧策略复核。需要判断的任务进入人工审核，审核决定和当时的任务快照一并保留。</li>
+  <li><strong>导出证据。</strong> 终态报告包括任务结论、发现项和工具尝试，图片任务还可查看原检测和复核意见。视频保留事件时间线与证据帧，便于回到原位置复查。</li>
+</ol>
+
+<h2>部署中的服务分工</h2>
+<table>
+  <thead><tr><th scope="col">服务</th><th scope="col">职责</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">网页与 FastAPI</th><td>同一入口提供前端、媒体上传、任务启动、状态查询和报告。上传返回的资产引用贯穿后续步骤。</td></tr>
+    <tr><th scope="row">Temporal</th><td>调度图片、视频、对话和追加检查工作流。已完成的检查步骤保存后可在工作进程重启时复用。</td></tr>
+    <tr><th scope="row">CPU 工作进程</th><td>运行工作流，调度阶段，准备证据，调用外部语言或视觉模型，汇总检测和复检结果。</td></tr>
+    <tr><th scope="row">GPU 工作进程</th><td>串行执行本地检测和获准使用的视觉工具，包括增强、分割与相对深度估计。</td></tr>
+    <tr><th scope="row">PostgreSQL 与媒体卷</th><td>数据库保存业务记录及 Temporal 状态；共享媒体卷保存原文件、帧、裁剪图、掩膜和深度图。恢复历史任务需要同时恢复两者。</td></tr>
+  </tbody>
+</table>
+
+<h2>理解结果与运行状态</h2>
+<p>例如，一张模糊的照片可能完成检测却得到零个框。此时只能说检测器没有给出候选，无法据此认定管道正常。报告分别记录任务是否完成、检查结论以及覆盖与画质是否充分。任务若处于 <code>waiting_review</code>，审核人应先查看原图、候选和意见，再决定是否确认、驳回或调整发现项。</p>
+<p>增强图和几何结果保留来源与对应任务，供人工对照。无现场标定时，几何工具给出的像素或相对量不能直接换算为真实管径或缺陷尺寸。<a href="/projects/sewer-agent/model/">检测模型</a> · <a href="/projects/sewer-agent/features/">功能与边界</a> · <a href="/projects/sewer-agent/examples/">阅读示例</a></p>

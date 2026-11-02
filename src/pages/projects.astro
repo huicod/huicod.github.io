@@ -4,6 +4,13 @@ import HorizontalCard from "../components/HorizontalCard.astro";
 
 const projects = [
   {
+    title: "Sewer Agent · 管网检测",
+    desc: "从管道巡检图片和视频中定位缺陷线索，回看证据帧，交由人工复核。打开项目文档查看部署步骤与演示素材。",
+    url: "/projects/sewer-agent/",
+    badge: "Python",
+    tags: ["YOLO26", "Temporal", "FastAPI", "Computer Vision"],
+  },
+  {
     title: "review-service",
     desc: "电商评价中台的核心 RPC 服务，基于 Go 和 Kratos v2 实现评价业务与服务治理。",
     url: "https://github.com/huicod/review-service",
@@ -95,6 +102,7 @@ const projects = [
           title={project.title}
           desc={project.desc}
           url={project.url}
+          target={project.url.startsWith("/") ? "_self" : "_blank"}
           badge={project.badge}
           tags={project.tags}
           tagLinks={false}

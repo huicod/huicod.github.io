@@ -1,0 +1,83 @@
+---
+const clientExample = `import json
+import os
+from pathlib import Path
+import sys
+import time
+import uuid
+
+import requests
+
+base = os.environ.get("SEWER_URL", "http://127.0.0.1:8000").rstrip("/")
+
+def api(method, path, **kwargs):
+    response = requests.request(method, base + path, timeout=120, **kwargs)
+    response.raise_for_status()
+    return response.json()
+
+image = Path(sys.argv[1])
+session = api("POST", "/api/sessions")
+with image.open("rb") as file:
+    asset = api("POST", "/api/assets", files={"file": (image.name, file)})
+
+payload = {
+    "request_id": str(uuid.uuid4()),
+    "session_id": session["session_id"],
+    "input_asset": asset["ref"],
+    "instruction": "检查这张管道图片",
+    "inspection_mode": "yolo_only",
+}
+task = api("POST", "/api/tasks", json=payload)
+task_id = task["snapshot"]["task_id"]
+path = f"/api/tasks/{task_id}"
+print("任务 ID", task_id, flush=True)
+api("POST", path + "/start")
+
+deadline = time.monotonic() + 600
+while time.monotonic() < deadline:
+    snapshot = api("GET", path)["snapshot"]
+    status = snapshot["runtime_status"]
+    print(status, snapshot["stage"], flush=True)
+    if status in {"completed", "partial", "failed", "cancelled"}:
+        report = api("GET", path + "/report?format=json")
+        target = Path(f"report-{task_id}.json")
+        target.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+        print("结论", snapshot["inspection_result"], "报告", target)
+        print("HTML 报告", base + path + "/report?format=html")
+        break
+    if status == "waiting_review":
+        print("请在工作台完成人工审核，然后使用同一任务 ID 获取报告。")
+        print("审核详情", base + path + "/review")
+        break
+    time.sleep(2)
+else:
+    print("本次轮询已超时，可用相同任务 ID 继续查询：", base + path)`;
+---
+
+<h2>在自己的部署上调用</h2>
+<p>工作台运行后即可访问同一主机上的 <a href="http://127.0.0.1:8000/docs">交互式 API 文档</a> 和 <a href="http://127.0.0.1:8000/openapi.json">OpenAPI 定义</a>。默认地址为 <code>http://127.0.0.1:8000</code>；通过 SSH 转发时使用本地转发端口。尚未启动服务时，请先完成 <a href="/projects/sewer-agent/quick-start/">快速开始</a>。</p>
+
+<h2>提交图片并取得报告</h2>
+<p>以下 Python 客户端使用手动任务接口，创建会话、上传一张图片并执行纯 YOLO 检查。它从响应中读取实际的资产引用和任务 ID，等待终态后将 JSON 报告保存在当前目录。准备一张 JPEG 或 PNG 格式的管道图片，将下方程序另存为 <code>inspect_image.py</code>，在安装了 Python 的环境中执行：</p>
+<pre><code>{'python3 -m pip install requests\npython3 inspect_image.py ./inspection.jpg'}</code></pre>
+<p>将 <code>./inspection.jpg</code> 换成你的图片路径。通过上述 SSH 转发调用时，可在命令前设置 <code>SEWER_URL=http://127.0.0.1:18000</code>。</p>
+<pre><code>{clientExample}</code></pre>
+
+<h2>任务接口</h2>
+<table>
+  <thead><tr><th scope="col">接口</th><th scope="col">用途与返回</th></tr></thead>
+  <tbody>
+    <tr><td><code>POST /api/sessions</code></td><td>无需请求体。创建会话，返回 <code>201</code> 和 <code>session_id</code>。</td></tr>
+    <tr><td><code>POST /api/assets</code></td><td>用 multipart 的 <code>file</code> 字段上传单个文件。返回 <code>201</code>；将 <code>ref</code> 中的 <code>asset_id</code> 和 <code>version</code> 一起用于任务提交。</td></tr>
+    <tr><td><code>POST /api/tasks</code></td><td>创建任务，返回 <code>201</code> 和 <code>snapshot.task_id</code>。图片不指定模式时默认 <code>yolo_vlm</code>，视频使用复检流程。</td></tr>
+    <tr><td><code>POST /api/tasks/&#123;id&#125;/start</code></td><td>显式启动，返回 <code>202</code>。相同任务重试启动时沿用原工作流。</td></tr>
+    <tr><td><code>GET /api/tasks/&#123;id&#125;</code></td><td><code>snapshot.runtime_status</code> 表示运行状态，<code>stage</code> 表示当前步骤，<code>inspection_result</code> 表示检查结论。</td></tr>
+    <tr><td><code>GET /api/tasks/&#123;id&#125;/image-evidence</code></td><td>查看图片的原始检测、复检意见和当前发现；纯 YOLO 模式会标明跳过复检。</td></tr>
+    <tr><td><code>GET /api/tasks/&#123;id&#125;/calls</code></td><td>查看各工具的调用和重试记录，定位失败发生在哪一步。</td></tr>
+    <tr><td><code>GET /api/tasks/&#123;id&#125;/report</code></td><td>终态可按 <code>format=json</code> 或 <code>format=html</code> 导出；提前请求返回 <code>409</code>。</td></tr>
+  </tbody>
+</table>
+
+<h2>重试与人工审核</h2>
+<p>提交任务时由客户端生成 UUID 作为 <code>request_id</code>。若请求已发出但响应丢失，使用同一 ID、会话、资产和参数重新提交，会取回原任务；同一 ID 改传其他内容会返回 <code>409</code>。已取得任务 ID 后，可以单独查询进度，避免重复创建。</p>
+<p><code>waiting_review</code> 表示任务正在等待人作决定。可通过 <code>GET /api/tasks/&#123;id&#125;/review</code> 读取审核快照，在工作台处理；开发者也可按 OpenAPI 的 <code>POST /api/tasks/&#123;id&#125;/review</code> 契约提交，携带审核人、快照时间、请求 ID 和完整决定。若快照已变，应重新读取。<code>partial</code>、<code>failed</code> 和 <code>cancelled</code> 都能导出报告，调用方需同时读取状态与结论。</p>

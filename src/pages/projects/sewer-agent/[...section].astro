@@ -1,0 +1,89 @@
+---
+import QuickStart from "../../../components/sewer-docs/QuickStart.astro";
+import Examples from "../../../components/sewer-docs/Examples.astro";
+import Features from "../../../components/sewer-docs/Features.astro";
+import Model from "../../../components/sewer-docs/Model.astro";
+import Architecture from "../../../components/sewer-docs/Architecture.astro";
+import Api from "../../../components/sewer-docs/Api.astro";
+import Overview from "../../../components/sewer-docs/Overview.astro";
+import "../../../styles/sewer-docs.css";
+
+export function getStaticPaths() {
+  const pages = [
+    { slug: "", label: "项目概览", en: "Overview", title: "管网检测 Agent", lead: "用巡检图片和视频定位管壁异常，沿时间轴回看证据，再交由人工复核。", component: Overview },
+    { slug: "quick-start", label: "快速开始", en: "Quick start", title: "运行第一次检测", lead: "在有 NVIDIA 显卡的 Linux 主机上启动工作台，用一张图片走完从上传到查看结果的流程。", component: QuickStart },
+    { slug: "examples", label: "演示案例", en: "Examples", title: "用图片和视频试一遍", lead: "下载同一模拟管道场景的图片和视频，分别体验单图检测、视频检查和基于已有任务的追问。", component: Examples },
+    { slug: "features", label: "功能与边界", en: "Features", title: "可以交给 Agent 的任务", lead: "根据手头的素材和要回答的问题，选择初查、复检、局部分析或报告。", component: Features },
+    { slug: "model", label: "模型与数据集", en: "Model & data", title: "YOLO 如何识别管道线索", lead: "了解上线权重的五个类别、训练数据和验证指标，以及后续 YOLO26m 实验的范围。", component: Model },
+    { slug: "architecture", label: "系统架构", en: "Architecture", title: "一次检查如何完成", lead: "沿着上传、任务编排、模型执行和结果存储，理解每个组件的职责。", component: Architecture },
+    { slug: "api", label: "开发者 API", en: "API reference", title: "从 API 提交检查", lead: "在自己的工作台上创建会话，上传素材，启动任务并读取报告。", component: Api },
+  ];
+  const nav = pages.map(({ component, ...meta }) => meta);
+  return pages.map(({ component, ...meta }, index) => ({
+    params: { section: meta.slug || undefined },
+    props: { meta, nav, index, Content: component },
+  }));
+}
+const { meta, nav, index, Content } = Astro.props;
+const url = (slug: string) => "/projects/sewer-agent/" + (slug ? slug + "/" : "");
+const number = (n: number) => String(n).padStart(2, "0");
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={meta.lead} />
+    <meta name="theme-color" content="#f7f8f4" />
+    <link rel="canonical" href={new URL(url(meta.slug), Astro.site)} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{meta.label} · Sewer Agent 文档 | huicod</title>
+  </head>
+  <body>
+    <a class="skip" href="#article">跳到正文</a>
+    <header class="mast"><div class="mast-inner">
+      <a class="brand" href={url("")} aria-label="Sewer Agent 文档首页">
+        <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#184c43"/><g fill="none" stroke="#e1ef83" stroke-width="1.6"><circle cx="16" cy="16" r="10"/><circle cx="16" cy="16" r="6"/><path d="M16 6v10l7 7"/></g></svg>
+        Sewer Agent <small>文档</small></a>
+      <a class="portfolio" href="/projects/">← huicod / Projects</a>
+    </div></header>
+    <div class="frame">
+      <aside class="rail">
+        <p class="eyebrow">CONTENTS</p>
+        <nav aria-label="文档导航">{nav.map((page, i) => (
+          <a href={url(page.slug)} aria-current={page.slug === meta.slug ? "page" : undefined}><span>{number(i + 1)}</span>{page.label}</a>
+        ))}</nav>
+        <a class="model-link" href="https://huggingface.co/suwewa/sewer-agent-models">部署模型库 ↗</a>
+      </aside>
+      <main id="article">
+        <p class="eyebrow"><span class="mark"></span>SEWER AGENT <b>/</b> {meta.en.toUpperCase()}</p>
+        <h1>{meta.title}</h1>
+        <p class="lead">{meta.lead}</p>
+        <article class="content"><Content /></article>
+        <nav class="pager" aria-label="相邻章节">
+          {index > 0 && <a href={url(nav[index - 1].slug)}><small>← 上一节</small>{nav[index - 1].label}</a>}
+          {index + 1 < nav.length && <a class="next" href={url(nav[index + 1].slug)}><small>下一节 →</small>{nav[index + 1].label}</a>}
+        </nav>
+      </main>
+    </div>
+    <footer class="foot"><a href="/projects/">huicod / Projects</a><span>Sewer Agent · 项目文档</span></footer>
+    <script>
+      if (navigator.clipboard) {
+        for (const pre of document.querySelectorAll(".content pre")) {
+          const code = pre.textContent ?? "";
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "copy-code";
+          button.textContent = "复制";
+          button.setAttribute("aria-label", "复制代码");
+          button.onclick = async () => {
+            try { await navigator.clipboard.writeText(code); button.textContent = "已复制"; }
+            catch { button.textContent = "请选中复制"; }
+            setTimeout(() => { button.textContent = "复制"; }, 1600);
+          };
+          pre.before(button);
+        }
+      }
+    </script>
+  </body>
+</html>

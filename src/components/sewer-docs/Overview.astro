@@ -1,0 +1,21 @@
+<div class="actions"><a class="button primary" href="/projects/sewer-agent/quick-start/">快速开始 <span>→</span></a><a class="button" href="/projects/sewer-agent/examples/">下载演示素材 <span>↓</span></a></div>
+<figure class="scan">
+  <div class="scan-strip"><span>FIG. 01 &nbsp; / &nbsp; 单图初查</span><span>YOLO26s · 960</span></div>
+  <svg viewBox="0 0 960 540" role="img" aria-labelledby="scan-title">
+    <title id="scan-title">合成管道图片，五类检测器在左侧管壁给出一个破裂候选</title>
+    <image href="/projects/sewer-agent/media/lighting-review.jpg" width="960" height="540" />
+    <rect x="1" y="34.37" width="256.88" height="350.79" fill="none" stroke="#eeff81" stroke-width="3"/>
+    <rect x="3" y="354" width="144" height="29" fill="#eeff81"/>
+    <text x="11" y="375" font-size="20" font-family="monospace" fill="#17382b">PL · 0.286</text>
+  </svg>
+  <figcaption>原创合成场景上的实际 YOLO 输出。左侧框是模型提出的破裂候选，分数为 0.286。<a href="/projects/sewer-agent/examples/">试用同一张图 →</a></figcaption>
+</figure>
+<h2>从哪个环节开始</h2>
+<div class="routes">
+  <a href="/projects/sewer-agent/examples/"><small>01 / TRY</small><strong>演示一次检查</strong><span>上传图片或视频，对照模型分数、证据帧和报告。</span></a>
+  <a href="/projects/sewer-agent/architecture/"><small>02 / UNDERSTAND</small><strong>跟随一个任务</strong><span>看请求怎样经过工作流、检测器和人工审核。</span></a>
+  <a href="/projects/sewer-agent/api/"><small>03 / BUILD</small><strong>接入自己的工具</strong><span>从创建会话到读取结果，按顺序调用本地 API。</span></a>
+</div>
+<h2>从素材到报告</h2>
+<p>单图检查可以只运行本地 YOLO，也可以让视觉语言模型结合原图和候选区域复检。视频检查先逐帧扫描，再把有代表性的帧送去复检。报告保留任务状态、发现项和对应证据，方便人员回看和修正。当前项目是管网巡检原型，使用者仍需根据现场条件判断缺陷。</p>
+<p><a href="/projects/sewer-agent/features/">查看可用功能</a> · <a href="/projects/sewer-agent/model/">了解模型和数据来源</a></p>

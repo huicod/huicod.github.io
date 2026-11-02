@@ -1,0 +1,33 @@
+<h2>01 · 上传图片，看原始候选</h2>
+<figure class="media">
+  <img src="/projects/sewer-agent/media/lighting-review.jpg" width="960" height="540" alt="带有模拟标记的管道内壁，左侧有细线和环形接缝，底部有反光" />
+  <figcaption>图片和下面的视频使用同一原创合成场景。左侧细线、接缝和底部反光可以用于讲解模型如何提出候选；素材没有现场缺陷真值。</figcaption>
+</figure>
+<p class="actions"><a class="button primary" href="/projects/sewer-agent/media/lighting-review.jpg" download="lighting-review.jpg">下载示例图片 ↓</a></p>
+<ol>
+  <li>在“新建检查”上传图片，选择“纯 YOLO（不复检）”，提交后点击“启动检查”。</li>
+  <li>打开“检查依据”，找出检测框、类别和分数，记录任务 ID。本次用发布的五类 YOLO26s、输入尺寸 960、置信度阈值 0.25 实测，左壁出现 1 个 PL（破裂）候选，分数 0.286。</li>
+  <li>在同一对话里选中该任务，提问“请解释这个任务已保存的检测框和复检状态”。若要对比复检，点击“用原图新建复检”，再对照两次任务各自的证据。对话与视觉复检会使用配置的外部 API。</li>
+</ol>
+<h2>02 · 播放视频，检查时间线</h2>
+<figure class="media">
+  <video controls playsinline preload="none" poster="/projects/sewer-agent/media/lighting-review.jpg" width="960" height="540" aria-label="模拟管道巡检视频，约四秒时最暗，无音轨">
+    <source src="/projects/sewer-agent/media/timeline.mp4" type="video/mp4" />
+    <a href="/projects/sewer-agent/media/timeline.mp4">下载视频</a>
+  </video>
+  <figcaption>8 秒，12 帧/秒，共 96 帧，无音轨。镜头从静态图缓慢放大，2–6 秒模拟光照减弱和恢复，约 4 秒时最暗。</figcaption>
+</figure>
+<p class="actions"><a class="button" href="/projects/sewer-agent/media/timeline.mp4" download="timeline.mp4">下载示例视频 ↓</a></p>
+<ol>
+  <li>另建检查，上传 MP4。视频使用“YOLO＋VLM 复检”。可填写“请列出候选事件的时间范围、证据帧和检查覆盖情况”，然后提交并启动。</li>
+  <li>展开视频候选时间线，核对扫描帧数、是否完整解码及各事件对应的证据帧。对这段素材单独运行本地初查时，96 帧完整解码，形成 4 个候选事件并提取了 8 张证据帧。这次验证仅覆盖初查与证据提取。</li>
+  <li>任务完成或部分完成后，在实际保存的证据帧中选一帧，再提出“请对选中的证据帧做低照度增强”。打开关联任务，对照原帧与增强图，用父任务 ID 和时间戳定位原帧。</li>
+</ol>
+<h2>03 · 在项目里继续试</h2>
+<p>私有项目的 <code>example/</code> 内还有六组管道原图和逐步提示。若已有仓库访问权限，可从下面三组开始。现场原图保留在项目内。</p>
+<table><thead><tr><th>样例</th><th>演示任务</th><th>观察点</th></tr></thead><tbody>
+<tr><td><code>01_wall_trace</code></td><td>对比纯 YOLO 与视觉复检；对给定像素框做分割</td><td>原图位置、局部掩膜、相对量化</td></tr>
+<tr><td><code>05_dark_obstruction</code></td><td>检查暗部，再对同一任务追加增强</td><td>增强前后的可见区域、是否保留原始证据</td></tr>
+<tr><td><code>06_blur_reflection</code></td><td>解读模糊和反光下的检测结果</td><td>区分没有五类候选、覆盖不全和需要复核</td></tr>
+</tbody></table>
+<p><a href="https://github.com/huicod/sewer-agent/tree/dev/agent-v1/example">完整示例目录（需仓库权限）</a></p>
