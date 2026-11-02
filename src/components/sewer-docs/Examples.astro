@@ -14,7 +14,22 @@ const videos = [
   { id: "16", title: "支管、堆积与同帧多类", stem: "flow-pass", poster: "aj-lateral", chapters: ["支管暗接 AJ", "堵塞类 BLOCK", "破裂 PL 与堵塞类 BLOCK"], task: "查看最后一段是否留下不同类别的候选。逐项对照证据帧，再决定哪些发现需要人工复核。" },
 ];
 ---
-<p class="guide-links"><a href="#single">五类单图</a> · <a href="#multi">同图多类</a> · <a href="#video">视频时间线</a> · <a href="#field">现场对照</a></p>
+<p class="guide-links"><a href="#field-videos">内置现场短片</a> · <a href="#single">五类单图</a> · <a href="#multi">同图多类</a> · <a href="#video">视频时间线</a> · <a href="#field">现场对照</a></p>
+<h2 id="field-videos">直接使用现场录像，无需上传</h2>
+<p>这五段是从五份真实巡检录像中截取的连续片段，随私有项目部署。进入工作台会话，点右上角<strong>新建检查 → 素材来源 → 项目示例</strong>，选择短片。检查要求会自动填入，可以编辑；点“提交检查”，再在任务卡点“启动检查”。视频从部署目录直接读入。<a href="/projects/sewer-agent/media/workbench-field-picker.webp">查看选择器截图</a></p>
+<table>
+  <thead><tr><th>工作台里的名称</th><th>时长</th><th>适合演示的观察点</th></tr></thead>
+  <tbody>
+    <tr><td><a href={privateExamples + "/19_field_lateral"}>19 · 侧壁支管接入口</a></td><td>9 秒</td><td>沿帧追踪同一个开口，判断多个 AJ 候选事件是否指向同一结构。</td></tr>
+    <tr><td><a href={privateExamples + "/20_field_obstruction"}>20 · 管底堆积物</a></td><td>9 秒</td><td>对照管底物体、反光水面和还可见的通道，回看 BLOCK 候选。</td></tr>
+    <tr><td><a href={privateExamples + "/21_field_wall_lines"}>21 · 壁面线痕与环形接缝</a></td><td>8 秒</td><td>核对 PL、AJ 候选的位置，区分纵向细线、接缝与透视。</td></tr>
+    <tr><td><a href={privateExamples + "/22_field_hanging"}>22 · 悬垂的根须状物</a></td><td>8 秒</td><td>画面中有悬垂物，检测器短暂报出 PL。结合连续帧判断这个框是否合理。</td></tr>
+    <tr><td><a href={privateExamples + "/18_field_video"}>18 · 原现场录像：腐蚀候选</a></td><td>10.4 秒</td><td>沿时间线定位 8.88 秒和 9.80 秒附近的 FS 候选。</td></tr>
+  </tbody>
+</table>
+<p>上表链接需私有项目权限。片段已去除现场叠字、音轨和源文件元数据。检测结果属于未经人工确认的候选。已有 Docker 部署需更新到含“项目示例”的版本并重建一次，以后演示直接在网页选片即可。</p>
+
+<h2 id="public-demos">可公开下载的模拟素材</h2>
 <p>公开素材是为教学挑选的模拟影像。每个标题说明要观察的线索，工作台实际返回的框、分数和复检意见以该次运行为准。这些样例不用于计算模型准确率。先下载一张图，在“新建检查”选择“纯 YOLO（不复检）”并启动，再用同一原图新建视觉复检。<a href="/projects/sewer-agent/workbench/">对照工作台操作截图</a></p>
 
 <h2 id="single">五类缺陷，各看一张</h2>
@@ -83,7 +98,7 @@ const videos = [
     <tr><td><a href={privateExamples + "/17_field_multi"}>17 · 一图三类</a></td><td>PL、FS 各 1 框，BLOCK 4 框</td><td>PL、FS 各 1 框，BLOCK 5 框；需逐框核对位置</td></tr>
   </tbody>
 </table>
-<p><a href={privateExamples + "/18_field_video"}>18 · 连续现场录像（需项目权限）</a> 提供一段 10.4 秒的连续现场录像。本次本地初查完整扫描 260 帧，聚合出 2 个 FS 候选事件，分别在 8.88–8.92 秒和 9.80 秒。可按时间戳返回原帧，观察短事件与连续多帧事件的区别。</p>
+
 
 <style>
   .case-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 22px; }

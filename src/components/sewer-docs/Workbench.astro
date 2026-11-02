@@ -1,13 +1,15 @@
 <p>截图取自项目的实际网页工作台。使用的是<a href="/projects/sewer-agent/examples/">公开合成图片与视频</a>，可以下载同一份素材，在自己的部署上重走这些步骤。点击截图可查看原尺寸。<a href="/projects/sewer-agent/media/workbench-overview.webp">查看完整工作台画面</a>。</p>
 
 <h2>提交检查</h2>
-<p>在已有对话右上角点击“新建检查”，打开“提交现场资料”。在“现场文件”中选择素材，填写“检查要求”。图片可以选“纯 YOLO（不复检）”；视频使用“YOLO＋VLM 复检”。点击“提交检查”后，在任务卡点击“启动检查”。</p>
+<p>在已有对话右上角点击“新建检查”，打开“提交现场资料”。可以上传自己的现场文件，也可以在“素材来源”选择“项目示例”，直接选一段随项目提供的真实短片。图片可以选“纯 YOLO（不复检）”；视频使用“YOLO＋VLM 复检”。点击“提交检查”后，在任务卡点击“启动检查”。</p>
 <figure>
   <a href="/projects/sewer-agent/media/workbench-submit.webp">
     <img src="/projects/sewer-agent/media/workbench-submit.webp" alt="真实工作台的提交现场资料表单，已选 clip.mp4，视频模式固定为 YOLO＋VLM 复检" width="756" height="734" />
   </a>
   <figcaption>此处选中了演示短片，检查模式固定为“YOLO＋VLM 复检”。截图记录提交前的界面。</figcaption>
 </figure>
+
+<p>想省去下载和上传，可以直接选择“管底堆积物”等<a href="/projects/sewer-agent/examples/#field-videos">内置录像</a>。工作台会带入可编辑的检查要求。<a href="/projects/sewer-agent/media/workbench-field-picker.webp">查看项目示例选择界面</a></p>
 
 <h2>查看原始检测与证据</h2>
 <p>使用示例 07 建立纯 YOLO 图片任务。检测结束后，打开“展开检查依据”，对照原图上的位置与候选项。左侧管壁出现了一个 PL（破裂）候选，截图中的分数约为 0.287。纯 YOLO 模式会标明未复检，这个框仍需结合原图判断。</p>
