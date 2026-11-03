@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1720" width="1080" height="1720" role="img" aria-labelledby="title desc">
+<title id="title">MOCO · 每轮去噪都让全身重新协调</title><desc id="desc">四路模型分别训练，文字、语音和轨迹通过动作状态与时间线汇合。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#3a646d"/></marker><marker id="gold" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#b68a3d"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203544}.title{font-size:30px;font-weight:700}.sub{font-size:20px;fill:#5e7180}.sec{font-size:25px;font-weight:700}.box{font-size:23px;font-weight:600}.line{font-size:20px;fill:#3e5667}.label{font-size:18px;fill:#46616d}</style>
+<rect width="1080" height="1720" fill="#fffefb"/>
+<text x="40" y="49" class="title" text-anchor="start">MOCO · 每轮去噪都让全身重新协调</text>
+<text x="40" y="87" class="sub" text-anchor="start">四路模型分别训练，文字、语音和轨迹通过动作状态与时间线汇合。</text>
+<rect x="24" y="118" width="1032" height="210" rx="18" fill="#fcfcf8" stroke="#d8e0e1"/>
+<text x="44" y="154" class="sec" text-anchor="start">01 分别训练 · 每种条件使用已有配对数据</text>
+<rect x="55" y="177" width="455" height="110" rx="12" fill="#fff2d9" stroke="#c9ac72" stroke-width="1.7"/>
+<text x="282.5" y="209" class="box" text-anchor="middle">HumanML3D 的 AMASS 子集</text>
+<text x="282.5" y="240" class="line" text-anchor="middle">文字—动作 → T2M</text>
+<text x="282.5" y="268" class="line" text-anchor="middle">轨迹—根速度 → T2V</text>
+<rect x="570" y="177" width="455" height="110" rx="12" fill="#fff2d9" stroke="#c9ac72" stroke-width="1.7"/>
+<text x="797.5" y="209" class="box" text-anchor="middle">BEAT2 语音—动作子集</text>
+<text x="797.5" y="240" class="line" text-anchor="middle">语音—身体 → S2G</text>
+<text x="797.5" y="268" class="line" text-anchor="middle">语音—脸部与手指 → S2D</text>
+<text x="55" y="315" class="label" text-anchor="start">训练关系用金色表示；下方四个去噪器均复用各自学得的参数。</text>
+<rect x="24" y="352" width="1032" height="322" rx="18" fill="#fcfcf8" stroke="#d8e0e1"/>
+<text x="44" y="388" class="sec" text-anchor="start">02 推理准备 · 时间范围可编辑，轨迹分支可选</text>
+<rect x="55" y="411" width="455" height="80" rx="12" fill="#edf3fb" stroke="#9fb6d2" stroke-width="1.7"/>
+<text x="282.5" y="443" class="box" text-anchor="middle">复杂文字 + 音频时长</text>
+<text x="282.5" y="474" class="line" text-anchor="middle">可选 GPT-4o mini 规划</text>
+<path d="M282,491 L282,526" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="55" y="526" width="455" height="111" rx="12" fill="#f6f7f9" stroke="#b7c1cc" stroke-width="1.7"/>
+<text x="282.5" y="558" class="box" text-anchor="middle">时间线与身体掩码 I</text>
+<text x="282.5" y="589" class="line" text-anchor="middle">起止时间、条件、身体部位</text>
+<text x="282.5" y="617" class="line" text-anchor="middle">同步输入可直接给定范围</text>
+<rect x="570" y="411" width="455" height="80" rx="12" fill="#edf3fb" stroke="#9fb6d2" stroke-width="1.7"/>
+<text x="797.5" y="443" class="box" text-anchor="middle">目标平面轨迹 + 速度噪声</text>
+<text x="797.5" y="474" class="line" text-anchor="middle">先完成 T2V 去噪循环</text>
+<path d="M797,491 L797,526" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="570" y="526" width="455" height="111" rx="12" fill="#e7f4ed" stroke="#86b19b" stroke-width="1.7"/>
+<text x="797.5" y="558" class="box" text-anchor="middle">T2V + FK / L-BFGS</text>
+<text x="797.5" y="589" class="line" text-anchor="middle">轨迹误差优化 → 根速度 v₀</text>
+<text x="797.5" y="617" class="line" text-anchor="middle">完成后在身体采样中反复注入</text>
+<rect x="24" y="700" width="1032" height="773" rx="18" fill="#fcfcf8" stroke="#d8e0e1"/>
+<text x="44" y="736" class="sec" text-anchor="start">03 身体与细节 · 循环去噪至 t = 0</text>
+<rect x="65" y="764" width="300" height="78" rx="12" fill="#edf3fb" stroke="#9fb6d2" stroke-width="1.7"/>
+<text x="215.0" y="796" class="box" text-anchor="middle">共同全身状态 bₜ</text>
+<text x="215.0" y="827" class="line" text-anchor="middle">205 维 × 动作帧数</text>
+<rect x="680" y="764" width="330" height="78" rx="12" fill="#edf3fb" stroke="#9fb6d2" stroke-width="1.7"/>
+<text x="845.0" y="796" class="box" text-anchor="middle">细节状态 dₜ</text>
+<text x="845.0" y="827" class="line" text-anchor="middle">286 维 × 动作帧数</text>
+<rect x="65" y="902" width="300" height="108" rx="12" fill="#e7f4ed" stroke="#86b19b" stroke-width="1.7"/>
+<text x="215.0" y="934" class="box" text-anchor="middle">文字 → CLIP → T2M</text>
+<text x="215.0" y="965" class="line" text-anchor="middle">预测 b̂₀，覆写根速度 v₀</text>
+<text x="215.0" y="993" class="line" text-anchor="middle">加噪得到文字侧 bₜ₋₁</text>
+<rect x="680" y="902" width="330" height="108" rx="12" fill="#e7f4ed" stroke="#86b19b" stroke-width="1.7"/>
+<text x="845.0" y="934" class="box" text-anchor="middle">语音 → Wav2Vec2 → S2D</text>
+<text x="845.0" y="965" class="line" text-anchor="middle">预测面部与手部细节 d̂₀</text>
+<text x="845.0" y="993" class="line" text-anchor="middle">无音频区间使用空条件</text>
+<rect x="65" y="1076" width="300" height="108" rx="12" fill="#e7f4ed" stroke="#86b19b" stroke-width="1.7"/>
+<text x="215.0" y="1108" class="box" text-anchor="middle">语音 → Wav2Vec2 → S2G</text>
+<text x="215.0" y="1139" class="line" text-anchor="middle">读取同一全身片段，预测 b̂₀</text>
+<text x="215.0" y="1167" class="line" text-anchor="middle">加噪得到语音侧 bₜ₋₁</text>
+<path d="M215,842 L215,902" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M365,804 L402,804 L402,1054 L215,1054 L215,1076" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M845,842 L845,902" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="430" y="1080" width="195" height="118" rx="12" fill="#e8f4f5" stroke="#82aeb4" stroke-width="1.7"/>
+<text x="527.5" y="1112" class="box" text-anchor="middle">空间组合</text>
+<text x="527.5" y="1143" class="line" text-anchor="middle">文字取脊柱腿部</text>
+<text x="527.5" y="1171" class="line" text-anchor="middle">语音取头臂</text>
+<path d="M365,954 L528,954 L528,1080" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="431" y="940" class="label" text-anchor="start">文字候选</text>
+<path d="M365,1130 L430,1130" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M282,637 L282,681 L640,681 L640,1070 L610,1070 L610,1080" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="530" y="1060" class="label" text-anchor="start">时间线 I</text>
+<path d="M797,637 L797,681 L655,681 L655,1029 L380,1029 L380,982 L365,982" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="415" y="1010" class="label" text-anchor="start">根速度 v₀</text>
+<rect x="680" y="1080" width="330" height="118" rx="12" fill="#f6f7f9" stroke="#b7c1cc" stroke-width="1.7"/>
+<text x="845.0" y="1112" class="box" text-anchor="middle">细节采样更新</text>
+<text x="845.0" y="1143" class="line" text-anchor="middle">d̂₀ → dₜ₋₁</text>
+<text x="845.0" y="1171" class="line" text-anchor="middle">每轮继续生成脸部与手指</text>
+<path d="M845,1010 L845,1080" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M1010,1139 L1040,1139 L1040,744 L845,744 L845,764" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M528,1198 L528,1268" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="355" y="1268" width="270" height="110" rx="12" fill="#f6f7f9" stroke="#b7c1cc" stroke-width="1.7"/>
+<text x="490.0" y="1300" class="box" text-anchor="middle">共享下一步状态</text>
+<text x="490.0" y="1331" class="line" text-anchor="middle">按掩码合成的 bₜ₋₁</text>
+<text x="490.0" y="1359" class="line" text-anchor="middle">下一轮两路共同读取</text>
+<path d="M355,1315 L42,1315 L42,804 L65,804" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="62" y="1294" class="label" text-anchor="start">共同状态回到两路</text>
+<text x="680" y="1265" class="line" text-anchor="start">异步区间按时间线选择片段</text>
+<text x="680" y="1294" class="line" text-anchor="start">重叠边界采用 DiffCollage</text>
+<path d="M490,1378 L490,1423" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="490" y="1451" class="box" text-anchor="middle">完整身体 b₀</text>
+<path d="M845,1198 L845,1220 L1020,1220 L1020,1395 L845,1395 L845,1423" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="845" y="1451" class="box" text-anchor="middle">完整细节 d₀</text>
+<rect x="24" y="1500" width="1032" height="153" rx="18" fill="#fcfcf8" stroke="#d8e0e1"/>
+<text x="44" y="1536" class="sec" text-anchor="start">04 最终输出</text>
+<path d="M490,1473 L490,1521 L655,1521 L655,1550" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M845,1473 L845,1521 L655,1521" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="385" y="1550" width="540" height="80" rx="12" fill="#e8f4f5" stroke="#82aeb4" stroke-width="1.7"/>
+<text x="655.0" y="1582" class="box" text-anchor="middle">491 维逐帧 SMPL-X 动作</text>
+<text x="655.0" y="1613" class="line" text-anchor="middle">粗身体 + 根移动 + 面部 + 手部细节</text>
+<text x="40" y="1693" class="sub" text-anchor="start">依据原文图 2、式 2–10 与附录 C–D 重绘。轨迹先求解，细节在最后并入身体。</text>
+</svg>

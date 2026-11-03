@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1690" viewBox="0 0 1120 1690" role="img" aria-labelledby="title desc">
+<title id="title">Language of Motion · 用同一语言模型连接语音与身体</title><desc id="desc">依据原文图 2–3、§3 与附录 §7.3 / §7.6 重绘，按论文 v1</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#4e6b69"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#233d3d} .title{font-size:31px;font-weight:700} .sub{font-size:20px;fill:#59706f} .section{font-size:24px;font-weight:700} .head{font-size:22px;font-weight:700} .body{font-size:20px} .small{font-size:18px;fill:#536b69} .line{fill:none;stroke:#4e6b69;stroke-width:2.5;marker-end:url(#arrow)} .dash{stroke-dasharray:7 5;stroke:#9b8058}</style>
+<rect width="1120" height="1690" fill="#fafbf8"/>
+<text x="32" y="48" class="title">Language of Motion · 用同一语言模型连接语音与身体</text>
+<text x="32" y="82" class="sub">依据原文图 2–3、§3 与附录 §7.3 / §7.6 重绘，按论文 v1</text>
+<rect x="24" y="108" width="1072" height="355" rx="16" fill="#ffffff" stroke="#c8d7d1"/>
+<text x="44" y="144" class="section">01  训练准备 · 动作词表先准备，语言模型再分两阶段训练</text>
+<rect x="48" y="171" width="300" height="116" rx="10" fill="#e3f0e9" stroke="#a7bfb7"/>
+<text x="62" y="203" class="head">空间动作预训练</text>
+<text x="62" y="233" class="body">随机给定一些身体部位</text>
+<text x="62" y="260" class="body">预测其余部位的 token</text>
+<rect x="409" y="171" width="300" height="116" rx="10" fill="#e3f0e9" stroke="#a7bfb7"/>
+<text x="423" y="203" class="head">时间动作预训练</text>
+<text x="423" y="233" class="body">屏蔽若干动作帧</text>
+<text x="423" y="260" class="body">预测完整动作 token</text>
+<rect x="770" y="171" width="300" height="116" rx="10" fill="#e3f0e9" stroke="#a7bfb7"/>
+<text x="784" y="203" class="head">语音—文字预训练</text>
+<text x="784" y="233" class="body">HuBERT 语音 token</text>
+<text x="784" y="260" class="body">→ 转写文字 token</text>
+<rect x="199" y="335" width="722" height="90" rx="10" fill="#e3f0e9" stroke="#a7bfb7"/>
+<text x="213" y="367" class="head">Flan-T5 全参数预训练 → 配对任务指令微调</text>
+<text x="213" y="397" class="body">语音手势 / 文字动作 / 部位任务 / 情绪任务，各自提供目标序列</text>
+<path d="M197 287 V307 H340 V329" class="line dash"/>
+<path d="M559 287 V329" class="line dash"/>
+<path d="M920 287 V307 H780 V329" class="line dash"/>
+<text x="203" y="449" class="small">四个动作 VQ-VAE 先学习重建姿态、网格及其速度 / 加速度。</text>
+<rect x="24" y="487" width="1072" height="770" rx="16" fill="#ffffff" stroke="#c8d7d1"/>
+<text x="44" y="523" class="section">02  推理主线 · 模态专属 token 汇入 T5，输出按模态解码</text>
+<rect x="48" y="552" width="300" height="88" rx="10" fill="#f1f3ef" stroke="#a7bfb7"/>
+<text x="62" y="584" class="head">文字与任务提示</text>
+<text x="62" y="614" class="body">描述 / 目标部位 / 输出任务</text>
+<rect x="410" y="552" width="300" height="88" rx="10" fill="#f1f3ef" stroke="#a7bfb7"/>
+<text x="424" y="584" class="head">16 kHz 讲话音频</text>
+<text x="424" y="614" class="body">节奏与语音信息</text>
+<rect x="772" y="552" width="300" height="88" rx="10" fill="#f1f3ef" stroke="#a7bfb7"/>
+<text x="786" y="584" class="head">已有动作（可选）</text>
+<text x="786" y="614" class="body">脸 / 手 / 上身 / 下身</text>
+<rect x="48" y="676" width="300" height="104" rx="10" fill="#e9f1f8" stroke="#a7bfb7"/>
+<text x="62" y="708" class="head">SentencePiece</text>
+<text x="62" y="738" class="body">沿用 T5 的文字词表</text>
+<text x="62" y="765" class="body">32,000 个文字 token</text>
+<rect x="410" y="676" width="300" height="104" rx="10" fill="#e9f1f8" stroke="#a7bfb7"/>
+<text x="424" y="708" class="head">HuBERT 离散化</text>
+<text x="424" y="738" class="body">论文 v1 的语音 tokenizer</text>
+<text x="424" y="765" class="body">约 50 个 token / 秒</text>
+<rect x="772" y="676" width="300" height="104" rx="10" fill="#e9f1f8" stroke="#a7bfb7"/>
+<text x="786" y="708" class="head">四个独立动作 VQ-VAE</text>
+<text x="786" y="738" class="body">每部位单独编码与量化</text>
+<text x="786" y="765" class="body">每部位有专属 token</text>
+<path d="M198 640 V670" class="line"/>
+<path d="M560 640 V670" class="line"/>
+<path d="M922 640 V670" class="line"/>
+<rect x="198" y="843" width="724" height="137" rx="10" fill="#e3f0e9" stroke="#a7bfb7"/>
+<text x="212" y="875" class="head">统一词表 → Flan-T5 编码器—解码器</text>
+<text x="212" y="905" class="body">起止标记保留模态身份，任务提示指定要生成的内容</text>
+<text x="212" y="932" class="body">编码器读条件；解码器自回归预测目标 token</text>
+<text x="212" y="959" class="body">最大输入长度 512，论文骨干为 220M Flan-T5-base</text>
+<path d="M198 780 V818 H360 V837" class="line"/>
+<path d="M560 780 V837" class="line"/>
+<path d="M922 780 V818 H760 V837" class="line"/>
+<path d="M921 380 H1082 V826 H928 V893" class="line dash"/>
+<rect x="48" y="1036" width="622" height="100" rx="10" fill="#fff0d9" stroke="#a7bfb7"/>
+<text x="62" y="1068" class="head">脸 / 手 / 上身 / 下身 token → 对应 VQ 解码器</text>
+<text x="62" y="1098" class="body">恢复表情与部位旋转 → 组成 SMPL-X 身体</text>
+<rect x="733" y="1036" width="339" height="100" rx="10" fill="#fff0d9" stroke="#a7bfb7"/>
+<text x="747" y="1068" class="head">文字 token → 文字输出</text>
+<text x="747" y="1098" class="body">动作描述或情绪回答</text>
+<path d="M370 980 V1030" class="line"/>
+<path d="M770 980 V1007 H902 V1030" class="line"/>
+<rect x="48" y="1170" width="622" height="57" rx="10" fill="#e9f1f8" stroke="#a7bfb7"/>
+<text x="62" y="1202" class="head">下身 → 四层 TCN-VAE → 全局平移</text>
+<path d="M359 1136 V1164" class="line"/>
+<text x="735" y="1187" class="small">平移模块单独估计身体位移，</text>
+<text x="735" y="1217" class="small">补足局部身体旋转的空间位置。</text>
+<rect x="24" y="1281" width="1072" height="300" rx="16" fill="#ffffff" stroke="#c8d7d1"/>
+<text x="44" y="1317" class="section">03  论文的“边走边说”案例 · 两次部位条件调用后组合</text>
+<rect x="48" y="1350" width="300" height="83" rx="10" fill="#e3f0e9" stroke="#a7bfb7"/>
+<text x="62" y="1382" class="head">讲话音频 + 上身提示</text>
+<text x="62" y="1412" class="body">调用 T5 → 上身解码</text>
+<rect x="48" y="1462" width="300" height="83" rx="10" fill="#e3f0e9" stroke="#a7bfb7"/>
+<text x="62" y="1494" class="head">“走路”文字 + 下身提示</text>
+<text x="62" y="1524" class="body">再次调用 → 下身解码</text>
+<rect x="433" y="1395" width="295" height="118" rx="10" fill="#fff0d9" stroke="#a7bfb7"/>
+<text x="447" y="1427" class="head">组合部位动作</text>
+<text x="447" y="1457" class="body">上身跟随语音</text>
+<text x="447" y="1484" class="body">下身按文字生成</text>
+<rect x="805" y="1395" width="267" height="118" rx="10" fill="#fff0d9" stroke="#a7bfb7"/>
+<text x="819" y="1427" class="head">全身运动 + 平移</text>
+<text x="819" y="1457" class="body">案例展示组合效果</text>
+<text x="819" y="1484" class="body">检查衔接与连贯性</text>
+<path d="M348 1392 H393 V1435 H427" class="line"/>
+<path d="M348 1503 H393 V1473 H427" class="line"/>
+<path d="M728 1455 H799" class="line"/>
+<text x="35" y="1625" class="small">蓝色  分词 / 编解码组件      绿色  语言模型训练与调用      橙色  生成结果</text>
+<text x="35" y="1660" class="small">实线  数据与特征流      虚线  预训练监督及参数复用；本文示意按 CVPR 2025 论文绘制。</text>
+</svg>

@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1840" viewBox="0 0 1100 1840" role="img" aria-labelledby="title desc">
+<title id="title">CustomDance 的规划、检索与局部生成流程</title>
+<desc id="desc">完整流程从音乐与整体意图到四秒时间槽，三模态检索和人工挑选舞句，再经音乐条件扩散补空白、诊断并局部重做。离线训练与运行反馈分开显示。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#455b66" stroke-width="1.5"/></marker><marker id="train" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#a57832" stroke-width="1.5"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#233c49}.title{font-size:32px;font-weight:700}.sec{font-size:25px;font-weight:700}.node{font-size:23px;font-weight:700}.small{font-size:20px}.label{font-size:18px;fill:#50656e}.foot{font-size:19px;fill:#6c675a}</style>
+<rect width="1100" height="1840" rx="20" fill="#fbfaf7"/>
+<text x="42" y="55" class="title">CustomDance · 先决定舞句，再补齐整段舞</text>
+<text x="42" y="88" class="small">论文版完整流程  ·  按图 2、§4–6 重绘</text>
+<rect x="28" y="115" width="1044" height="300" rx="18" fill="#fff" stroke="#d6dedc" stroke-width="2"/><text x="48" y="154" class="sec">01  编舞规划 · 音乐结构变成可编辑的时间槽</text>
+<rect x="55" y="185" width="235" height="155" rx="12" fill="#e9f1fb" stroke="#aabcb7" stroke-width="1.4"/><text x="71" y="218" class="node">用户输入</text>
+<text x="71" y="252" class="small">整段音乐</text>
+<text x="71" y="281" class="small">整体文字意图</text>
+<text x="71" y="310" class="small">例：有力量的 Locking</text>
+<rect x="345" y="200" width="290" height="125" rx="12" fill="#e5f1ec" stroke="#aabcb7" stroke-width="1.4"/><text x="361" y="233" class="node">Gemini 规划</text>
+<text x="361" y="267" class="small">分析乐段、节奏与能量</text>
+<text x="361" y="296" class="small">输出锚点 + 创意提示</text>
+<rect x="730" y="185" width="310" height="160" rx="12" fill="#e9f1fb" stroke="#aabcb7" stroke-width="1.4"/><text x="746" y="218" class="node">四秒时间槽</text>
+<text x="746" y="252" class="small">时间排序、去重、裁剪</text>
+<text x="746" y="281" class="small">槽 = [锚点, 锚点 + 4 s]</text>
+<text x="746" y="310" class="small">用户审阅与修改局部文字</text>
+<path d="M290 260 H345" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="310" y="190" class="label">音乐 + 文字</text>
+<path d="M635 260 H730" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="650" y="245" class="label">JSON</text>
+<text x="55" y="386" class="label">锚点安排舞句起点，候选动作在下一阶段决定。</text>
+<rect x="28" y="440" width="1044" height="610" rx="18" fill="#fff" stroke="#d6dedc" stroke-width="2"/><text x="48" y="479" class="sec">02  舞句检索 · 三路条件汇合，再由用户选择具体动作</text>
+<rect x="55" y="515" width="250" height="215" rx="12" fill="#e9f1fb" stroke="#aabcb7" stroke-width="1.4"/><text x="71" y="548" class="node">当前槽的条件</text>
+<text x="71" y="582" class="small">局部音乐 → Librosa</text>
+<text x="71" y="611" class="small">局部文字 → CLIP 512D</text>
+<text x="71" y="640" class="small">六组 × 两项滑杆 → MLP</text>
+<text x="71" y="669" class="small">强度 / 运动多样性</text>
+<rect x="365" y="515" width="310" height="110" rx="12" fill="#e5f1ec" stroke="#aabcb7" stroke-width="1.4"/><text x="381" y="548" class="node">条件融合</text>
+<text x="381" y="582" class="small">文字 + 滑杆通过 FiLM</text>
+<text x="381" y="611" class="small">调制局部音乐特征</text>
+<rect x="365" y="685" width="310" height="100" rx="12" fill="#e5f1ec" stroke="#aabcb7" stroke-width="1.4"/><text x="381" y="718" class="node">查询 Transformer</text>
+<text x="381" y="752" class="small">输出该槽的查询向量</text>
+<rect x="745" y="515" width="295" height="145" rx="12" fill="#f9efdb" stroke="#aabcb7" stroke-width="1.4"/><text x="761" y="548" class="node">舞句库（离线）</text>
+<text x="761" y="582" class="small">四秒 SMPL 动作片段</text>
+<text x="761" y="611" class="small">动作编码器 + Transformer</text>
+<text x="761" y="640" class="small">预计算每段的向量</text>
+<rect x="745" y="705" width="295" height="100" rx="12" fill="#e5f1ec" stroke="#aabcb7" stroke-width="1.4"/><text x="761" y="738" class="node">相似度检索</text>
+<text x="761" y="772" class="small">余弦排序 · 返回 Top 10</text>
+<rect x="745" y="875" width="295" height="115" rx="12" fill="#e9f1fb" stroke="#aabcb7" stroke-width="1.4"/><text x="761" y="908" class="node">用户预览与选择</text>
+<text x="761" y="942" class="small">挑选、替换、撤销</text>
+<text x="761" y="971" class="small">把具体舞句写入草稿</text>
+<rect x="365" y="875" width="310" height="115" rx="12" fill="#e5f1ec" stroke="#aabcb7" stroke-width="1.4"/><text x="381" y="908" class="node">带空白的编舞草稿</text>
+<text x="381" y="942" class="small">已选舞句 = 已知动作</text>
+<text x="381" y="971" class="small">间隔 = 待生成区域</text>
+<rect x="55" y="845" width="250" height="145" rx="12" fill="#f9efdb" stroke="#aabcb7" stroke-width="1.4"/><text x="71" y="878" class="node">检索器训练</text>
+<text x="71" y="912" class="small">音乐 / 文本 / 滑杆</text>
+<text x="71" y="941" class="small">与对应舞句配对</text>
+<text x="71" y="970" class="small">InfoNCE + 模态丢弃</text>
+<path d="M885 345 V427 H43 V495 H180 V515" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<path d="M305 570 H365" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<path d="M520 625 V685" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="532" y="659" class="label">融合特征</text>
+<path d="M675 735 H745" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="674" y="688" class="label">查询向量</text>
+<path d="M892 660 V705" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="907" y="690" class="label">库向量</text>
+<path d="M892 805 V875" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="903" y="849" class="label">可预览候选</text>
+<path d="M745 930 H675" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="679" y="915" class="label">选择结果</text>
+<path d="M180 845 V805 H343 V730 H365" fill="none" stroke="#a57832" stroke-width="2.3" stroke-dasharray="8 6" marker-end="url(#train)"/>
+<text x="55" y="1026" class="label">改条件、换候选或撤销，可回到检索阶段。</text>
+<rect x="28" y="1080" width="1044" height="670" rx="18" fill="#fff" stroke="#d6dedc" stroke-width="2"/><text x="48" y="1119" class="sec">03  补全与局部重做 · 固定已知区域，反复生成其余区域</text>
+<rect x="55" y="1160" width="250" height="145" rx="12" fill="#e5f1ec" stroke="#aabcb7" stroke-width="1.4"/><text x="71" y="1193" class="node">草稿与遮罩</text>
+<text x="71" y="1227" class="small">首次：空白帧未知</text>
+<text x="71" y="1256" class="small">已有舞句保持为已知</text>
+<text x="71" y="1285" class="small">输入当前带噪动作</text>
+<rect x="55" y="1360" width="250" height="100" rx="12" fill="#e9f1fb" stroke="#aabcb7" stroke-width="1.4"/><text x="71" y="1393" class="node">对齐音乐特征</text>
+<text x="71" y="1427" class="small">逐帧提供节奏条件</text>
+<rect x="365" y="1170" width="310" height="170" rx="12" fill="#e5f1ec" stroke="#aabcb7" stroke-width="1.4"/><text x="381" y="1203" class="node">音乐条件扩散网络</text>
+<text x="381" y="1237" class="small">BiMamba 时序建模</text>
+<text x="381" y="1266" class="small">Transformer 跨模态交互</text>
+<text x="381" y="1295" class="small">预测干净 SMPL 动作</text>
+<text x="381" y="1324" class="small">DDIM 迭代 + 遮罩写回</text>
+<rect x="745" y="1185" width="295" height="130" rx="12" fill="#e5f1ec" stroke="#aabcb7" stroke-width="1.4"/><text x="761" y="1218" class="node">完整舞蹈</text>
+<text x="761" y="1252" class="small">输出 SMPL 动作序列</text>
+<text x="761" y="1281" class="small">保留选定舞句与其余约束</text>
+<text x="761" y="1310" class="small">用户回放检查</text>
+<rect x="745" y="1395" width="295" height="125" rx="12" fill="#e5f1ec" stroke="#aabcb7" stroke-width="1.4"/><text x="761" y="1428" class="node">Diagnoser 诊断</text>
+<text x="761" y="1462" class="small">AKE / RKE 运动能量曲线</text>
+<text x="761" y="1491" class="small">辅助发现平移或旋转突变</text>
+<rect x="365" y="1485" width="310" height="140" rx="12" fill="#e9f1fb" stroke="#aabcb7" stroke-width="1.4"/><text x="381" y="1518" class="node">用户圈选修复区域</text>
+<text x="381" y="1552" class="small">时间窗 + 关节组</text>
+<text x="381" y="1581" class="small">选中区域改为未知</text>
+<text x="381" y="1610" class="small">Remaker 复用扩散模型</text>
+<rect x="55" y="1540" width="250" height="165" rx="12" fill="#f9efdb" stroke="#aabcb7" stroke-width="1.4"/><text x="71" y="1573" class="node">扩散模型训练</text>
+<text x="71" y="1607" class="small">八秒动作与音乐配对</text>
+<text x="71" y="1636" class="small">加噪 → 预测干净动作</text>
+<text x="71" y="1665" class="small">重建 + 位置 / 速度</text>
+<text x="71" y="1694" class="small">及脚速度损失</text>
+<path d="M520 990 V1040 H1053 V1147 H180 V1160" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="570" y="1140" class="label">选定动作 + 时间范围</text>
+<path d="M305 1225 H365" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="309" y="1210" class="label">xₜ、M</text>
+<path d="M305 1410 H338 V1300 H365" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="310" y="1373" class="label">音乐</text>
+<path d="M675 1250 H745" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="675" y="1169" class="label">预测并写回</text>
+<path d="M892 1315 V1395" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="903" y="1357" class="label">完整动作</text>
+<path d="M745 1452 H710 V1540 H675" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="580" y="1460" class="label">曲线 + 回放</text>
+<path d="M520 1485 V1390 H345 V1265 H365" fill="none" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/>
+<text x="388" y="1417" class="label">更新 M 后重做</text>
+<path d="M180 1540 V1490 H327 V1330 H365" fill="none" stroke="#a57832" stroke-width="2.3" stroke-dasharray="8 6" marker-end="url(#train)"/>
+<text x="365" y="1692" class="label">论文支持全身或单组遮罩重做。</text><text x="365" y="1720" class="label">能量峰值由用户判断，也可能是有意的舞蹈重音。</text>
+<path d="M48 1790 H105" stroke="#455b66" stroke-width="2.3" marker-end="url(#arrow)"/><text x="120" y="1797" class="foot">运行数据流</text><path d="M305 1790 H362" stroke="#a57832" stroke-width="2.3" stroke-dasharray="8 6" marker-end="url(#train)"/><text x="378" y="1797" class="foot">离线训练 / 预计算</text><text x="700" y="1797" class="foot">教学示意 · 原论文版本</text></svg>

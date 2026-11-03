@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1510" width="1080" height="1510" role="img" aria-labelledby="title desc">
+<title id="title">TeMuDance · 在音乐去噪中加入文字控制</title><desc id="desc">共享动作空间补训练条件，文字支路用残差影响每一次生成。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#3a646d"/></marker><marker id="gold" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#b68a3d"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203544}.title{font-size:30px;font-weight:700}.sub{font-size:20px;fill:#5e7180}.sec{font-size:25px;font-weight:700}.box{font-size:23px;font-weight:600}.line{font-size:20px;fill:#3e5667}.label{font-size:18px;fill:#46616d}</style>
+<rect width="1080" height="1510" fill="#fffefb"/>
+<text x="40" y="49" class="title" text-anchor="start">TeMuDance · 在音乐去噪中加入文字控制</text>
+<text x="40" y="87" class="sub" text-anchor="start">共享动作空间补训练条件，文字支路用残差影响每一次生成。</text>
+<rect x="24" y="118" width="1032" height="538" rx="18" fill="#fcfcf8" stroke="#d8e0e1"/>
+<text x="44" y="154" class="sec" text-anchor="start">01 训练准备 · 动作是两个数据库的共同索引</text>
+<rect x="55" y="177" width="430" height="88" rx="12" fill="#edf3fb" stroke="#9fb6d2" stroke-width="1.7"/>
+<text x="270.0" y="209" class="box" text-anchor="middle">FineDance</text>
+<text x="270.0" y="240" class="line" text-anchor="middle">音乐 + 舞蹈配对</text>
+<rect x="595" y="177" width="430" height="88" rx="12" fill="#edf3fb" stroke="#9fb6d2" stroke-width="1.7"/>
+<text x="810.0" y="209" class="box" text-anchor="middle">HumanML3D</text>
+<text x="810.0" y="240" class="line" text-anchor="middle">文字 + 动作配对</text>
+<path d="M270,265 L270,301" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M810,265 L810,301" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="175" y="301" width="730" height="94" rx="12" fill="#fff2d9" stroke="#c9ac72" stroke-width="1.7"/>
+<text x="540.0" y="333" class="box" text-anchor="middle">共享动作编码器 + 两路对比对齐</text>
+<text x="540.0" y="364" class="line" text-anchor="middle">音乐↔舞蹈、文字↔动作；约束两域均值与协方差</text>
+<path d="M540,395 L540,431" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="175" y="431" width="730" height="85" rx="12" fill="#fff2d9" stroke="#c9ac72" stroke-width="1.7"/>
+<text x="540.0" y="463" class="box" text-anchor="middle">冻结编码器，建立两个 Motion-Centred Bank</text>
+<text x="540.0" y="494" class="line" text-anchor="middle">查询相似动作，取得它关联的音乐或文字</text>
+<path d="M540,516 L540,551" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="562" y="542" class="label" text-anchor="start">余弦相似度 ≥ 0.8；否则补空条件</text>
+<rect x="175" y="551" width="730" height="82" rx="12" fill="#fff2d9" stroke="#c9ac72" stroke-width="1.7"/>
+<text x="540.0" y="583" class="box" text-anchor="middle">两路伪三元组交替训练控制支路</text>
+<text x="540.0" y="614" class="line" text-anchor="middle">原配对 + 检索条件；平衡文字控制与音乐舞蹈</text>
+<rect x="24" y="680" width="1032" height="775" rx="18" fill="#fcfcf8" stroke="#d8e0e1"/>
+<text x="44" y="716" class="sec" text-anchor="start">02 联合生成 · 蓝色音乐骨干预训练后冻结</text>
+<rect x="55" y="742" width="260" height="78" rx="12" fill="#edf3fb" stroke="#9fb6d2" stroke-width="1.7"/>
+<text x="185.0" y="774" class="box" text-anchor="middle">文字指令</text>
+<text x="185.0" y="805" class="line" text-anchor="middle">双手举过头顶</text>
+<rect x="410" y="742" width="260" height="78" rx="12" fill="#edf3fb" stroke="#9fb6d2" stroke-width="1.7"/>
+<text x="540.0" y="774" class="box" text-anchor="middle">带噪动作 xₜ</text>
+<text x="540.0" y="805" class="line" text-anchor="middle">120 帧 × 319 维</text>
+<rect x="765" y="742" width="260" height="78" rx="12" fill="#edf3fb" stroke="#9fb6d2" stroke-width="1.7"/>
+<text x="895.0" y="774" class="box" text-anchor="middle">音乐片段</text>
+<text x="895.0" y="805" class="line" text-anchor="middle">4 秒音乐</text>
+<path d="M185,820 L185,854" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M540,820 L540,854" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M895,820 L895,854" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="55" y="854" width="260" height="80" rx="12" fill="#e9f1fb" stroke="#9aafd0" stroke-width="1.7"/>
+<text x="185.0" y="886" class="box" text-anchor="middle">BERT + 条件投影</text>
+<text x="185.0" y="917" class="line" text-anchor="middle">逐词文字特征 c_E</text>
+<rect x="410" y="854" width="260" height="80" rx="12" fill="#e9f1fb" stroke="#9aafd0" stroke-width="1.7"/>
+<text x="540.0" y="886" class="box" text-anchor="middle">七部位层级编码</text>
+<text x="540.0" y="917" class="line" text-anchor="middle">融合成动作特征 hₜ</text>
+<rect x="765" y="854" width="260" height="80" rx="12" fill="#e9f1fb" stroke="#9aafd0" stroke-width="1.7"/>
+<text x="895.0" y="886" class="box" text-anchor="middle">音乐特征编码</text>
+<text x="895.0" y="917" class="line" text-anchor="middle">音乐条件 c_M</text>
+<path d="M185,934 L185,990" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M540,934 L540,990" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M410,897 L350,897 L350,966 L275,966 L275,990" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="320" y="953" class="label" text-anchor="start">hₜ</text>
+<rect x="55" y="990" width="260" height="122" rx="12" fill="#e7f4ed" stroke="#86b19b" stroke-width="1.7"/>
+<text x="185.0" y="1022" class="box" text-anchor="middle">文字控制支路</text>
+<text x="185.0" y="1053" class="line" text-anchor="middle">复制前 K 个块</text>
+<text x="185.0" y="1081" class="line" text-anchor="middle">文字交叉注意力</text>
+<rect x="410" y="990" width="260" height="122" rx="12" fill="#e9f1fb" stroke="#9aafd0" stroke-width="1.7"/>
+<text x="540.0" y="1022" class="box" text-anchor="middle">冻结音乐去噪块</text>
+<text x="540.0" y="1053" class="line" text-anchor="middle">时间 + 音乐注意力</text>
+<text x="540.0" y="1081" class="line" text-anchor="middle">逐层叠加文字残差</text>
+<path d="M315,1050 L410,1050" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="347" y="1035" class="label" text-anchor="start">Δℓ</text>
+<text x="321" y="1084" class="label" text-anchor="start">零初始化</text>
+<text x="333" y="1107" class="label" text-anchor="start">线性层</text>
+<path d="M895,934 L895,1050 L670,1050" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="759" y="1034" class="label" text-anchor="start">音乐特征</text>
+<path d="M540,1112 L540,1170" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="410" y="1170" width="260" height="80" rx="12" fill="#e8f4f5" stroke="#82aeb4" stroke-width="1.7"/>
+<text x="540.0" y="1202" class="box" text-anchor="middle">干净动作预测 x̂₀</text>
+<text x="540.0" y="1233" class="line" text-anchor="middle">关节旋转、根轨迹等</text>
+<rect x="55" y="1170" width="260" height="80" rx="12" fill="#fff2d9" stroke="#c9ac72" stroke-width="1.7"/>
+<text x="185.0" y="1202" class="box" text-anchor="middle">训练监督</text>
+<text x="185.0" y="1233" class="line" text-anchor="middle">重建 + 运动学损失</text>
+<path d="M410,1210 L315,1210" fill="none" stroke="#b68a3d" stroke-width="2.5" marker-end="url(#gold)" stroke-dasharray="7 6"/>
+<path d="M185,1170 L185,1112" fill="none" stroke="#b68a3d" stroke-width="2.5" marker-end="url(#gold)" stroke-dasharray="7 6"/>
+<text x="66" y="1151" class="label" text-anchor="start">仅更新支路</text>
+<path d="M175,592 L40,592 L40,1210 L55,1210" fill="none" stroke="#b68a3d" stroke-width="2.5" marker-end="url(#gold)" stroke-dasharray="7 6"/>
+<path d="M540,1250 L540,1290" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="410" y="1290" width="260" height="80" rx="12" fill="#f6f7f9" stroke="#b7c1cc" stroke-width="1.7"/>
+<text x="540.0" y="1322" class="box" text-anchor="middle">DDPM 采样更新</text>
+<text x="540.0" y="1353" class="line" text-anchor="middle">按下一噪声级继续</text>
+<path d="M670,1330 L1040,1330 L1040,723 L540,723 L540,742" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="740" y="1314" class="label" text-anchor="start">迭代 1,000 步</text>
+<path d="M540,1370 L540,1411" fill="none" stroke="#3a646d" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="540" y="1441" class="box" text-anchor="middle">输出连续舞蹈 · 52 关节</text>
+<text x="40" y="1490" class="sub" text-anchor="start">实线为生成数据流，金色虚线为训练监督。依据原文图 2–5、式 5–12 重绘。</text>
+</svg>
