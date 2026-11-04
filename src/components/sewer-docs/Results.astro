@@ -1,37 +1,6 @@
 ---
 import FiveClassDetection from "./FiveClassDetection.astro";
 const repo = "https://github.com/huicod/sewer-agent/blob/dev/agent-v1";
-const evidence = repo + "/docs/experiment-cases/README.md";
-type Box = [number, number, number, number];
-interface Picture {
-  title: string;
-  area: string;
-  reference: Box;
-  detector: Box;
-  added?: Box;
-  explanation: string;
-  anchor: string;
-}
-// Coordinates from the per-image records of the same 606-image experiment, in source pixels.
-const pictures: Picture[] = [
-  {
-    title: "变形：命中标注的框被删除",
-    area: "0 0 640 640",
-    reference: [157, 96, 476, 534],
-    detector: [86.0, 74.8, 574.1, 538.7],
-    explanation: "DF_53 图中，YOLO 找到了标注的变形，IoU 为 0.62。视觉模型把同一区域解释为规则的波纹和远处的透视收缩。自动删掉这个框，原本命中的一处变形就成了漏检。",
-    anchor: "deformation",
-  },
-  {
-    title: "堵塞：保留了正确框，又多报一处",
-    area: "780 615 420 350",
-    reference: [875, 828, 1094, 923],
-    detector: [957.3, 818.0, 1105.7, 924.0],
-    added: [854.4, 664.2, 1123.2, 826.2],
-    explanation: "管底只有一处堵塞标注，YOLO 已经命中。复检保留了它，又在上方圈出疑似散落杂物。新增框与标注没有重叠，计为一次多报。那里是否确有漏标的杂物，仍需人工核实。",
-    anchor: "obstruction",
-  },
-];
 ---
 
 <h2 id="latest">视觉语言模型（VLM）补检找回了哪些缺陷？</h2>
@@ -69,33 +38,11 @@ const pictures: Picture[] = [
 
 <FiveClassDetection />
 
-<h3>两张测试图里的变化</h3>
-<p class="case-note">两幅框图按测试图片的真实坐标绘制，第二幅放大了管底区域。绿色虚线是数据标注，蓝色实线是 YOLO 框，橙色点线是复检新增框。</p>
-{pictures.map(pic => (
-  <figure class="case-figure">
-    <figcaption><strong>{pic.title}</strong></figcaption>
-    <div class="case-pair">
-      {["纯 YOLO", "复检自动改框后"].map((step, i) => (
-        <div>
-          <span>{step}</span>
-          <svg viewBox={pic.area} role="img" aria-label={pic.title + "，" + step}
-               preserveAspectRatio="xMidYMid meet">
-            <rect x={pic.reference[0]} y={pic.reference[1]} width={pic.reference[2] - pic.reference[0]} height={pic.reference[3] - pic.reference[1]} class="reference" />
-            {(i === 0 || pic.added) && <rect x={pic.detector[0]} y={pic.detector[1]} width={pic.detector[2] - pic.detector[0]} height={pic.detector[3] - pic.detector[1]} class="detector" />}
-            {i === 1 && pic.added && <rect x={pic.added[0]} y={pic.added[1]} width={pic.added[2] - pic.added[0]} height={pic.added[3] - pic.added[1]} class="added" />}
-          </svg>
-        </div>
-      ))}
-    </div>
-    <p>{pic.explanation} <a href={evidence + "#" + pic.anchor}>查看这张图的原始对照（需项目权限）</a></p>
-  </figure>
-))}
-
 <h2 id="score60">3. 目标检测与图像级多标签分类</h2>
 <p><strong>目标检测</strong>要回答“每处缺陷在哪里，是什么”。同类预测框与标注框的位置要足够重合，每个标注框只能匹配一次。<strong>图像级多标签分类</strong>要回答“这张图有哪些缺陷类别”。例如，一张图同时有破裂和堵塞，就需要报出这两类；同一类报几处、框画在哪里，不影响分类得分。</p>
 
 <h3>为什么补充分类评估？</h3>
-<p>在部分测试图中，VLM 会按局部纹理或部位把缺陷分得更细。例如上面的堵塞案例，模型认出了图中有堵塞，又把上方疑似杂物单独圈出。按现有标注，类别识别正确，额外的框却计为一次多报。反过来，变形案例里复检删掉了原本命中的框，这是真正的检测损失。两种情况需要分开看。</p>
+<p>在部分测试图中，VLM 会按局部纹理或部位把缺陷分得更细。类别识别正确，并不代表框的位置和数量也正确；额外的框仍可能计为多报。因此，分类得分与逐框检测结果需要分别核对。</p>
 <p>数据集的标注粒度也会影响结果。Sewer2403 的 1560_1 图在同一区域同时标了腐蚀和破裂；VLM 注意到线状裂纹，把一个腐蚀框改报为破裂。它认出的裂纹有标注依据，但这次改类仍丢了一个腐蚀命中。为公平比较各方案的<strong>类别识别能力</strong>，我们保留逐框检测成绩，另外从每个方案已有的预测框提取类别，用同一批图、同一份标注做多标签分类评估。<a href={repo + "/.trellis/tasks/09-18-vlm-yolo26m-comparison/fusion_diagnosis.md"}>逐框复检分析（需项目权限）</a></p>
 
 <h3>60 张验证图上的两项任务</h3>
@@ -126,17 +73,3 @@ const pictures: Picture[] = [
 <h3>怎样处理疑似漏标？</h3>
 <p>分类评估能消除框的位置、数量和拆分方式带来的差异，但仍会惩罚报错类别。例如一张按标注无缺陷的图被报为堵塞，会计一次分类误报，整图也判错。这 60 张中只有 1 张为空标注，无法据此估计正常管道的误报率。</p>
 <p>对有争议的区域，应由人工对照原图核实缺陷类别、范围和数量。确认漏标或错标后，应保留原标注，另存修订版，让所有方案按同一版本重新评测。以上结果均按现有标注计算。</p>
-
-<style>
-  .case-note { color: #475569; font-size: .9rem; }
-  .case-figure { padding: 10px 14px; border-left: 3px solid #d0d7de; }
-  .case-figure figcaption { font-size: 1rem; color: inherit; margin: 0 0 6px; }
-  .case-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 400px; }
-  .case-pair span { font-size: .85rem; color: #475569; }
-  .case-pair svg { display: block; background: #f6f8fa; width: 100%; height: 92px; border: 1px solid #d0d7de; }
-  .case-pair rect { fill: none; stroke-width: 2; vector-effect: non-scaling-stroke; }
-  .reference { stroke: #18724f; stroke-dasharray: 6 3; }
-  .detector { stroke: #125eae; }
-  .added { stroke: #ad4714; stroke-dasharray: 2 2; }
-  .case-figure p { margin: 8px 0 0; }
-</style>
