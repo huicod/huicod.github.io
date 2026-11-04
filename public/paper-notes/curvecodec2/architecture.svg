@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="3240" viewBox="0 0 1120 3240" role="img" aria-labelledby="title desc">
+<title id="title">CurveCodec 2 完整架构教学示意</title><desc id="desc">编码端对局部曲线量化与关键样本选择，实际重建后通过骨架前向运动学和最大或平均误差约束验收。离线训练仅学习预测残差的概率；固定预测器和定点概率网络驱动 rANS。解码端精确恢复整数，再通过反量化、Catmull–Rom 和 Exp 恢复运动。论文基准最终进行全片验收、裕量重编码和 ACL 回退；公开 CLI 版本行为需要另行核查。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#456b73"/></marker><marker id="trainArrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#907022"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#203c48}.title{font-size:30px;font-weight:700}.section{font-size:25px;font-weight:700}.name{font-size:23px;font-weight:700}.body{font-size:21px}.small{font-size:20px;fill:#45677c}.panel{stroke:#ccd9d8;stroke-width:1.5;fill:#fff}.node{stroke:#aac5c6;stroke-width:1.5}.flow{fill:none;stroke:#456b73;stroke-width:2.5;marker-end:url(#arrow)}.train{fill:none;stroke:#907022;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#trainArrow)}</style>
+<rect width="1120" height="3240" rx="18" fill="#fafbf9"/>
+<text x="34" y="47" class="title" text-anchor="start">CurveCodec 2 · 闭环选择运动数据，再学习残差概率</text>
+<text x="34" y="80" class="small" text-anchor="start">arXiv 2026 v2 · 依据图 3、算法 1、§3.3 与 §4 教学重绘</text>
+<path d="M40 106 H104" class="flow"/>
+<text x="116" y="113" class="small" text-anchor="start">数据流 / 编解码</text>
+<path d="M398 106 H462" class="train"/>
+<text x="474" y="113" class="small" text-anchor="start">离线训练 / 权重复用</text>
+<text x="814" y="113" class="small" text-anchor="start">绿色：概率模型</text>
+<rect x="24" y="140" width="1072" height="870" rx="14" class="panel" fill="#fff"/>
+<text x="44" y="178" class="section" text-anchor="start">01 有损前端 · 只在编码端搜索，按解码后的误差决定存什么</text>
+<rect x="48" y="220" width="480" height="140" rx="14" class="node" fill="#edf3fa"/>
+<text x="64" y="254" class="name" text-anchor="start">已有动画 + 骨架 + 设置</text>
+<text x="64" y="282" class="body" text-anchor="start">局部旋转 q / 平移 t；帧率</text>
+<text x="64" y="309" class="body" text-anchor="start">父子层级；名义精度 p</text>
+<text x="64" y="336" class="body" text-anchor="start">选 max gate 或 mean gate</text>
+<rect x="580" y="220" width="480" height="140" rx="14" class="node" fill="#edf3fa"/>
+<text x="596" y="254" class="name" text-anchor="start">ACL 参考压缩与误差统计</text>
+<text x="596" y="282" class="body" text-anchor="start">同一片段、骨架及 p</text>
+<text x="596" y="309" class="body" text-anchor="start">逐关节最大 / 均值、全片均值</text>
+<text x="596" y="336" class="body" text-anchor="start">超过 p 的比例；供门限判断</text>
+<path d="M528 290 H580" class="flow"/>
+<rect x="48" y="425" width="280" height="130" rx="14" class="node" fill="#edf3fa"/>
+<text x="64" y="459" class="name" text-anchor="start">曲线预处理</text>
+<text x="64" y="487" class="body" text-anchor="start">折叠静态轨道</text>
+<text x="64" y="514" class="body" text-anchor="start">统一符号 → Log(q)</text>
+<text x="64" y="541" class="body" text-anchor="start">初始保留全部采样点</text>
+<rect x="380" y="425" width="320" height="130" rx="14" class="node" fill="#fff2d7"/>
+<text x="396" y="459" class="name" text-anchor="start">候选修改 / RD 搜索</text>
+<text x="396" y="487" class="body" text-anchor="start">先闭环增大量化步长 s</text>
+<text x="396" y="514" class="body" text-anchor="start">再尝试删关键样本</text>
+<text x="396" y="541" class="body" text-anchor="start">mean：比较失真 / 比特</text>
+<rect x="752" y="425" width="308" height="130" rx="14" class="node" fill="#edf3fa"/>
+<text x="768" y="459" class="name" text-anchor="start">实际重建候选</text>
+<text x="768" y="487" class="body" text-anchor="start">n = rint(v/s) → n·s</text>
+<text x="768" y="514" class="body" text-anchor="start">固定 Catmull–Rom</text>
+<text x="768" y="541" class="body" text-anchor="start">旋转经 Exp；平移直取</text>
+<path d="M288 360 V390 H188 V425" class="flow"/>
+<path d="M328 490 H380" class="flow"/>
+<path d="M700 490 H752" class="flow"/>
+<rect x="752" y="620" width="308" height="130" rx="14" class="node" fill="#edf3fa"/>
+<text x="768" y="654" class="name" text-anchor="start">受影响子树的 FK</text>
+<text x="768" y="682" class="body" text-anchor="start">更新后代对象空间变换</text>
+<text x="768" y="709" class="body" text-anchor="start">三个轴向 shell 虚拟点</text>
+<text x="768" y="736" class="body" text-anchor="start">只在原采样时刻测误差</text>
+<rect x="380" y="620" width="320" height="130" rx="14" class="node" fill="#edf3fa"/>
+<text x="396" y="654" class="name" text-anchor="start">检查所选误差约束</text>
+<text x="396" y="682" class="body" text-anchor="start">max：最坏值 + 超阈比例</text>
+<text x="396" y="709" class="body" text-anchor="start">mean：局部 / 全片均值</text>
+<text x="396" y="736" class="body" text-anchor="start">并检查最大误差保护</text>
+<rect x="48" y="620" width="280" height="130" rx="14" class="node" fill="#edf3fa"/>
+<text x="64" y="654" class="name" text-anchor="start">接受 / 拒绝候选</text>
+<text x="64" y="682" class="body" text-anchor="start">不通过：撤回 / 细查</text>
+<text x="64" y="709" class="body" text-anchor="start">通过：更新当前状态</text>
+<text x="64" y="736" class="body" text-anchor="start">继续直到搜索结束</text>
+<path d="M906 555 V620" class="flow"/>
+<path d="M752 685 H700" class="flow"/>
+<path d="M380 685 H328" class="flow"/>
+<path d="M1060 290 H1080 V590 H670 V620" class="flow"/>
+<text x="770" y="580" class="small" text-anchor="start">ACL 参考统计</text>
+<path d="M48 685 H34 V582 H540 V555" class="flow"/>
+<text x="70" y="607" class="small" text-anchor="start">继续提出候选</text>
+<rect x="330" y="840" width="460" height="125" rx="14" class="node" fill="#fff2d7"/>
+<text x="346" y="874" class="name" text-anchor="start">前端结果：K、i、n</text>
+<text x="346" y="902" class="body" text-anchor="start">关键位置 K；步长索引 i</text>
+<text x="346" y="929" class="body" text-anchor="start">各保留位置的量化整数 n</text>
+<text x="346" y="956" class="body" text-anchor="start">损失由这一步确定</text>
+<path d="M188 750 V792 H560 V840" class="flow"/>
+<text x="48" y="993" class="small" text-anchor="start">误差在骨架上验证；这些关键位置是压缩选择，不是动作语义标签。</text>
+<rect x="24" y="1040" width="1072" height="430" rx="14" class="panel" fill="#fff"/>
+<text x="44" y="1078" class="section" text-anchor="start">02 离线训练 · 唯一学习目标是残差概率，训练后共享权重</text>
+<rect x="48" y="1120" width="300" height="120" rx="14" class="node" fill="#edf3fa"/>
+<text x="64" y="1154" class="name" text-anchor="start">训练动画语料</text>
+<text x="64" y="1182" class="body" text-anchor="start">886 小时训练切分</text>
+<text x="64" y="1209" class="body" text-anchor="start">无需事件 / 语义标签</text>
+<rect x="408" y="1120" width="300" height="120" rx="14" class="node" fill="#edf3fa"/>
+<text x="424" y="1154" class="name" text-anchor="start">确定性前端 + 预测器</text>
+<text x="424" y="1182" class="body" text-anchor="start">量化 / 关键样本 → n</text>
+<text x="424" y="1209" class="body" text-anchor="start">收集整数残差 r</text>
+<rect x="768" y="1120" width="292" height="120" rx="14" class="node" fill="#e8f3ed"/>
+<text x="784" y="1154" class="name" text-anchor="start">概率模型训练</text>
+<text x="784" y="1182" class="body" text-anchor="start">历史特征 → P(r)</text>
+<text x="784" y="1209" class="body" text-anchor="start">最小化预计码长</text>
+<path d="M348 1180 H408" class="flow"/>
+<path d="M708 1180 H768" class="train"/>
+<rect x="300" y="1300" width="520" height="130" rx="14" class="node" fill="#e8f3ed"/>
+<text x="316" y="1334" class="name" text-anchor="start">共享定点概率模型 Pθ</text>
+<text x="316" y="1362" class="body" text-anchor="start">max gate：22K MLP；mean：108K Transformer</text>
+<text x="316" y="1389" class="body" text-anchor="start">部署时权重固定，编码与解码两端一致</text>
+<text x="316" y="1416" class="body" text-anchor="start">模型输出分布；不输出缺失动作帧</text>
+<path d="M914 1240 V1270 H560 V1300" class="train"/>
+<rect x="24" y="1510" width="1072" height="620" rx="14" class="panel" fill="#fff"/>
+<text x="44" y="1548" class="section" text-anchor="start">03 无损编码 · 在已确定的整数上消除时间与统计冗余</text>
+<rect x="48" y="1600" width="480" height="125" rx="14" class="node" fill="#edf3fa"/>
+<text x="64" y="1634" class="name" text-anchor="start">固定预测：r = n − n̂</text>
+<text x="64" y="1662" class="body" text-anchor="start">从同一曲线的已恢复过去值预测</text>
+<text x="64" y="1689" class="body" text-anchor="start">差分 / 间隔修正 / 整数 NLMS</text>
+<text x="64" y="1716" class="body" text-anchor="start">并记录预测器及轨道模式</text>
+<rect x="580" y="1600" width="480" height="125" rx="14" class="node" fill="#e8f3ed"/>
+<text x="596" y="1634" class="name" text-anchor="start">复用 Pθ：36 个整数特征</text>
+<text x="596" y="1662" class="body" text-anchor="start">残差历史、差分、间隔、深度类别</text>
+<text x="596" y="1689" class="body" text-anchor="start">轨道类别、步长、帧率、精度等</text>
+<text x="596" y="1716" class="body" text-anchor="start">不读取关节身份或骨架专属参数</text>
+<path d="M330 902 H12 V1663 H48" class="flow"/>
+<path d="M528 1663 H580" class="flow"/>
+<path d="M820 1365 H1072 V1663 H1060" class="train"/>
+<rect x="48" y="1800" width="480" height="130" rx="14" class="node" fill="#fff2d7"/>
+<text x="64" y="1834" class="name" text-anchor="start">将残差拆成符号与低位</text>
+<text x="64" y="1862" class="body" text-anchor="start">零 / 符号 / 位长度 / 前导位</text>
+<text x="64" y="1889" class="body" text-anchor="start">159 类符号 + 直接保存的低位</text>
+<text x="64" y="1916" class="body" text-anchor="start">预测没猜对的部分完整保留</text>
+<rect x="580" y="1800" width="480" height="130" rx="14" class="node" fill="#e8f3ed"/>
+<text x="596" y="1834" class="name" text-anchor="start">离散残差概率 / 整数频率</text>
+<text x="596" y="1862" class="body" text-anchor="start">三分量 logistic mixture</text>
+<text x="596" y="1889" class="body" text-anchor="start">概率转为 15 位频率表</text>
+<text x="596" y="1916" class="body" text-anchor="start">定点网络确保两端概率同步</text>
+<path d="M288 1725 V1800" class="flow"/>
+<path d="M820 1725 V1800" class="flow"/>
+<rect x="300" y="1995" width="520" height="110" rx="14" class="node" fill="#fff2d7"/>
+<text x="316" y="2029" class="name" text-anchor="start">rANS 编码 → 候选 .cc2 码流</text>
+<text x="316" y="2057" class="body" text-anchor="start">包含关键位置、步长与模式等头部</text>
+<text x="316" y="2084" class="body" text-anchor="start">无损恢复的是整数；原动画仍有量化损失</text>
+<path d="M288 1930 V1960 H430 V1995" class="flow"/>
+<path d="M820 1930 V1960 H690 V1995" class="flow"/>
+<rect x="24" y="2160" width="1072" height="1020" rx="14" class="panel" fill="#fff"/>
+<text x="44" y="2198" class="section" text-anchor="start">04 解码与最终验收 · 固定规则恢复动作，编码端确认整片结果</text>
+<rect x="48" y="2240" width="300" height="110" rx="14" class="node" fill="#fff2d7"/>
+<text x="64" y="2274" class="name" text-anchor="start">输入候选码流</text>
+<text x="64" y="2302" class="body" text-anchor="start">读取头部与编码字节</text>
+<text x="64" y="2329" class="body" text-anchor="start">共享权重另行提供</text>
+<rect x="408" y="2240" width="300" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="424" y="2274" class="name" text-anchor="start">rANS 解码</text>
+<text x="424" y="2302" class="body" text-anchor="start">同一整数概率表</text>
+<text x="424" y="2329" class="body" text-anchor="start">逐步恢复残差 r</text>
+<rect x="768" y="2240" width="292" height="110" rx="14" class="node" fill="#e8f3ed"/>
+<text x="784" y="2274" class="name" text-anchor="start">复用同一个 Pθ</text>
+<text x="784" y="2302" class="body" text-anchor="start">由已解码历史算概率</text>
+<text x="784" y="2329" class="body" text-anchor="start">与编码端保持同步</text>
+<path d="M560 2105 V2145 H198 V2240" class="flow"/>
+<path d="M348 2295 H408" class="flow"/>
+<path d="M768 2295 H708" class="flow"/>
+<path d="M1072 1663 V2295 H1060" class="train"/>
+<rect x="48" y="2430" width="300" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="64" y="2464" class="name" text-anchor="start">恢复整数 n = n̂ + r</text>
+<text x="64" y="2492" class="body" text-anchor="start">复用同一固定预测器</text>
+<text x="64" y="2519" class="body" text-anchor="start">整数序列精确还原</text>
+<rect x="408" y="2430" width="300" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="424" y="2464" class="name" text-anchor="start">反量化 + 固定插值</text>
+<text x="424" y="2492" class="body" text-anchor="start">v̂ = n·s；读关键位置</text>
+<text x="424" y="2519" class="body" text-anchor="start">Catmull–Rom 补采样</text>
+<rect x="768" y="2430" width="292" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="784" y="2464" class="name" text-anchor="start">Exp → 重建动画</text>
+<text x="784" y="2492" class="body" text-anchor="start">旋转映回四元数</text>
+<text x="784" y="2519" class="body" text-anchor="start">输出局部变换序列</text>
+<path d="M558 2350 V2390 H198 V2430" class="flow"/>
+<path d="M348 2485 H408" class="flow"/>
+<path d="M708 2485 H768" class="flow"/>
+<rect x="240" y="2600" width="640" height="90" rx="14" class="node" fill="#edf3fa"/>
+<text x="256" y="2634" class="name" text-anchor="start">把已解码历史送入下一步</text>
+<text x="256" y="2662" class="body" text-anchor="start">因果更新固定预测器与概率特征；按时间逐步恢复</text>
+<path d="M198 2540 V2645 H240" class="flow"/>
+<path d="M880 2645 H1090 V2212 H914 V2240" class="flow"/>
+<rect x="48" y="2770" width="1012" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="64" y="2804" class="name" text-anchor="start">编码端全片验收（论文评测流程）</text>
+<text x="64" y="2832" class="body" text-anchor="start">用完整解码片段重新计算 FK / shell 误差，并复核所选约束</text>
+<text x="64" y="2859" class="body" text-anchor="start">概率 / 整数按构造 bit-exact；后续浮点重建跨平台一致性为实测结果</text>
+<path d="M914 2540 V2730 H554 V2770" class="flow"/>
+<rect x="48" y="2950" width="480" height="135" rx="14" class="node" fill="#fff2d7"/>
+<text x="64" y="2984" class="name" text-anchor="start">最终交付与计量</text>
+<text x="64" y="3012" class="body" text-anchor="start">通过验收：保存 .cc2</text>
+<text x="64" y="3039" class="body" text-anchor="start">否则可交付 ACL 回退码流</text>
+<text x="64" y="3066" class="body" text-anchor="start">头部及回退字节均计入实验</text>
+<rect x="580" y="2950" width="480" height="135" rx="14" class="node" fill="#fff2d7"/>
+<text x="596" y="2984" class="name" text-anchor="start">不通过 / 自家码流更大</text>
+<text x="596" y="3012" class="body" text-anchor="start">先用 .98 / .95 / .90 裕量重编码</text>
+<text x="596" y="3039" class="body" text-anchor="start">仍失败或更大 → 保存 ACL 码流</text>
+<text x="596" y="3066" class="body" text-anchor="start">这是论文协议，见下方版本边界</text>
+<path d="M554 2880 V2915 H288 V2950" class="flow"/>
+<path d="M554 2915 H820 V2950" class="flow"/>
+<text x="310" y="2940" class="small" text-anchor="start">通过</text>
+<text x="842" y="2940" class="small" text-anchor="start">失败</text>
+<path d="M580 3018 H528" class="flow"/>
+<path d="M1060 3018 H1104 V403 H540 V425" class="flow"/>
+<text x="750" y="396" class="small" text-anchor="start">收紧裕量，重新编码</text>
+<text x="48" y="3125" class="small" text-anchor="start">版本边界：所查公开 main 只实现 mean；失败时报告 contract_met:false，</text>
+<text x="48" y="3156" class="small" text-anchor="start">保留最后 .cc2，未实现论文的最终 ACL 回退。图示不等于该 CLI 的保证。</text>
+<text x="40" y="3214" class="small" text-anchor="start">来源：arXiv:2610.04211v2，2026-10-31；教学重绘于 2026-11-04，未运行模型。</text>
+</svg>
