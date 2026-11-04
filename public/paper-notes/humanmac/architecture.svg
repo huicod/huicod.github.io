@@ -1,0 +1,323 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="3240" viewBox="0 0 1200 3240" role="img" aria-labelledby="title desc">
+<title id="title">HumanMAC：完整动作训练、历史调制与频域—时域补全</title>
+<desc id="desc">训练完整历史与未来的 DCT 噪声预测器，历史条件单独由已知帧填充取得。推理将观测加噪支线与 DDIM 去噪支线先逆变换到时间域，再按时空掩码合并和投影，循环后输出未来；截断投影不保证最终已知值逐点相等。</desc>
+<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#496176"/></marker><marker id="green" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#218271"/></marker><marker id="orange" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#b36b28"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#19334a} .hd{font-size:29px;font-weight:700} .label{font-size:24px;font-weight:700}.small{font-size:21px}.muted{fill:#52687b}.edge{fill:none;stroke:#496176;stroke-width:3;marker-end:url(#arr);stroke-linejoin:round;stroke-linecap:round}.cond{stroke:#b36b28;marker-end:url(#orange)}.learn{stroke:#218271;marker-end:url(#green)}.reuse{stroke:#218271;stroke-dasharray:9 7;marker-end:url(#green)}</style>
+<rect width="1200" height="3240" fill="#ffffff"/>
+
+<text x="600" y="55" text-anchor="middle" font-size="35" font-weight="700">
+<tspan x="600" dy="0">HumanMAC · 从已知骨架到多个可能未来</tspan>
+</text>
+<text x="600" y="97" text-anchor="middle" font-size="22" style="fill:#52687b">
+<tspan x="600" dy="0">ICCV 2023｜教学重绘：主文图1–2、补充图9与官方实现</tspan>
+</text>
+<rect x="25" y="140" width="1150" height="700" rx="20" fill="#f8fafc" stroke="#cbd8e2" stroke-width="2"/>
+<text x="55" y="183" text-anchor="start" font-size="28" font-weight="700">
+<tspan x="55" dy="0">A 训练｜完整动作是监督目标，历史是独立条件</tspan>
+</text>
+<text x="55" y="218" text-anchor="start" font-size="21" style="fill:#52687b">
+<tspan x="55" dy="0">两条支线共享同一段已知历史；未知未来只进入左侧监督，不进入右侧条件。</tspan>
+</text>
+<rect x="60" y="245" width="480" height="80" rx="14" fill="#edf4fc" stroke="#9abbd6" stroke-width="2"/>
+<text x="300.0" y="277" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="300.0" dy="0">完整训练动作 X</tspan>
+</text>
+<text x="300.0" y="311" text-anchor="middle" font-size="21">
+<tspan x="300.0" dy="0">H 帧历史 + F 帧真实未来</tspan>
+</text>
+<rect x="660" y="245" width="480" height="80" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="900.0" y="277" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="900.0" dy="0">只截取 H 帧已知历史</tspan>
+</text>
+<text x="900.0" y="311" text-anchor="middle" font-size="21">
+<tspan x="900.0" dy="0">右侧不读取未来真值</tspan>
+</text>
+<path d="M300 325 V355" class="edge "/>
+<path d="M900 325 V355" class="edge cond"/>
+<rect x="60" y="355" width="480" height="80" rx="14" fill="#edf4fc" stroke="#9abbd6" stroke-width="2"/>
+<text x="300.0" y="387" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="300.0" dy="0">沿时间做 DCT，截取前 L 项</tspan>
+</text>
+<text x="300.0" y="421" text-anchor="middle" font-size="21">
+<tspan x="300.0" dy="0">C₀：L × 3J，完整动作频谱</tspan>
+</text>
+<rect x="660" y="355" width="480" height="80" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="900.0" y="387" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="900.0" dy="0">重复末帧 → 填满 H+F → DCT</tspan>
+</text>
+<text x="900.0" y="421" text-anchor="middle" font-size="21">
+<tspan x="900.0" dy="0">m：L × 3J，历史条件频谱</tspan>
+</text>
+<path d="M300 435 V475" class="edge "/>
+<path d="M900 435 V475" class="edge cond"/>
+<rect x="60" y="475" width="480" height="90" rx="14" fill="#edf4fc" stroke="#9abbd6" stroke-width="2"/>
+<text x="300.0" y="507" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="300.0" dy="0">随机 t + 高斯噪声 ε</tspan>
+</text>
+<text x="300.0" y="541" text-anchor="middle" font-size="21">
+<tspan x="300.0" dy="0">Cₜ = √ᾱₜ C₀ + √(1−ᾱₜ) ε</tspan>
+</text>
+<rect x="660" y="475" width="480" height="90" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="900.0" y="507" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="900.0" dy="0">历史 m 展平 → MLP；t → 嵌入</tspan>
+</text>
+<text x="900.0" y="541" text-anchor="middle" font-size="21">
+<tspan x="900.0" dy="0">两者相加，生成 FiLM 调制信号</tspan>
+</text>
+<path d="M300 565 V625" class="edge "/>
+<path d="M900 565 V625" class="edge cond"/>
+<rect x="60" y="625" width="480" height="90" rx="14" fill="#e8f6f1" stroke="#78b6a3" stroke-width="2"/>
+<text x="300.0" y="657" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="300.0" dy="0">TransLinear εθ(Cₜ,t,m)</tspan>
+</text>
+<text x="300.0" y="691" text-anchor="middle" font-size="21">
+<tspan x="300.0" dy="0">预测所加噪声 ε̂；可训练参数 θ</tspan>
+</text>
+<rect x="660" y="625" width="480" height="90" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="900.0" y="657" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="900.0" dy="0">按配置启用 / 随机丢弃历史调制</tspan>
+</text>
+<text x="900.0" y="691" text-anchor="middle" font-size="21">
+<tspan x="900.0" dy="0">条件来自历史，扩散时间始终可用</tspan>
+</text>
+<path d="M660 670 H545" class="edge cond"/>
+<text x="600" y="651" text-anchor="middle" font-size="20" style="fill:#a46226">
+<tspan x="600" dy="0">m,t</tspan>
+</text>
+<path d="M300 715 V755" class="edge learn"/>
+<rect x="60" y="755" width="480" height="60" rx="14" fill="#e8f6f1" stroke="#78b6a3" stroke-width="2"/>
+<text x="300.0" y="794.0" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="300.0" dy="0">噪声 MSE：‖ε − ε̂‖²</tspan>
+</text>
+<text x="900" y="767" text-anchor="middle" font-size="22">
+<tspan x="900" dy="0">H36M：L=20，8个 block</tspan>
+<tspan x="900" dy="33">HumanEva：L=10，4个 block</tspan>
+</text>
+<rect x="25" y="875" width="1150" height="420" rx="20" fill="#f8fafc" stroke="#cbd8e2" stroke-width="2"/>
+<text x="55" y="918" text-anchor="start" font-size="28" font-weight="700">
+<tspan x="55" dy="0">B TransLinear 内部｜主干去噪 + 条件调制</tspan>
+</text>
+<text x="55" y="953" text-anchor="start" font-size="21" style="fill:#52687b">
+<tspan x="55" dy="0">绿色模块在训练中学习；采样时复用。频率位置间 self-attention，特征宽度512。</tspan>
+</text>
+<rect x="250" y="985" width="750" height="175" rx="14" fill="#f0f8f4" stroke="#9ccab9" stroke-width="2"/>
+<rect x="60" y="1015" width="170" height="90" rx="14" fill="#e8f6f1" stroke="#78b6a3" stroke-width="2"/>
+<text x="145.0" y="1047" text-anchor="middle" font-size="22" font-weight="700">
+<tspan x="145.0" dy="0">输入线性层</tspan>
+</text>
+<text x="145.0" y="1081" text-anchor="middle" font-size="21">
+<tspan x="145.0" dy="0">3J → 512</tspan>
+</text>
+<rect x="270" y="1015" width="170" height="90" rx="14" fill="#e8f6f1" stroke="#78b6a3" stroke-width="2"/>
+<text x="355.0" y="1047" text-anchor="middle" font-size="22" font-weight="700">
+<tspan x="355.0" dy="0">Self-Attn</tspan>
+</text>
+<text x="355.0" y="1081" text-anchor="middle" font-size="21">
+<tspan x="355.0" dy="0">自注意力</tspan>
+</text>
+<rect x="480" y="1015" width="140" height="90" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="550.0" y="1047" text-anchor="middle" font-size="23" font-weight="700">
+<tspan x="550.0" dy="0">FiLM</tspan>
+</text>
+<text x="550.0" y="1081" text-anchor="middle" font-size="21">
+<tspan x="550.0" dy="0">条件调制</tspan>
+</text>
+<rect x="660" y="1015" width="140" height="90" rx="14" fill="#e8f6f1" stroke="#78b6a3" stroke-width="2"/>
+<text x="730.0" y="1047" text-anchor="middle" font-size="23" font-weight="700">
+<tspan x="730.0" dy="0">FFN</tspan>
+</text>
+<text x="730.0" y="1081" text-anchor="middle" font-size="21">
+<tspan x="730.0" dy="0">前馈变换</tspan>
+</text>
+<rect x="840" y="1015" width="140" height="90" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="910.0" y="1047" text-anchor="middle" font-size="23" font-weight="700">
+<tspan x="910.0" dy="0">FiLM</tspan>
+</text>
+<text x="910.0" y="1081" text-anchor="middle" font-size="21">
+<tspan x="910.0" dy="0">条件调制</tspan>
+</text>
+<rect x="1020" y="1015" width="140" height="90" rx="14" fill="#e8f6f1" stroke="#78b6a3" stroke-width="2"/>
+<text x="1090.0" y="1047" text-anchor="middle" font-size="22" font-weight="700">
+<tspan x="1090.0" dy="0">输出线性层</tspan>
+</text>
+<text x="1090.0" y="1081" text-anchor="middle" font-size="21">
+<tspan x="1090.0" dy="0">512 → 3J</tspan>
+</text>
+<path d="M230 1060 H265" class="edge "/>
+<path d="M440 1060 H475" class="edge "/>
+<path d="M620 1060 H655" class="edge "/>
+<path d="M800 1060 H835" class="edge "/>
+<path d="M980 1060 H1015" class="edge "/>
+<text x="145" y="991" text-anchor="middle" font-size="22" font-weight="700">
+<tspan x="145" dy="0">Cₜ</tspan>
+</text>
+<text x="1090" y="991" text-anchor="middle" font-size="22" font-weight="700">
+<tspan x="1090" dy="0">预测 ε̂</tspan>
+</text>
+<text x="625" y="1008" text-anchor="middle" font-size="20" style="fill:#366e61">
+<tspan x="625" dy="0">中间 block 重复 N 次，并使用跨层跳连</tspan>
+</text>
+<rect x="435" y="1200" width="590" height="65" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="730.0" y="1241.5" text-anchor="middle" font-size="22" font-weight="700">
+<tspan x="730.0" dy="0">历史频谱 MLP(m) + 时间嵌入 MLP(t)</tspan>
+</text>
+<path d="M550 1200 V1178 H550 V1110" class="edge cond"/>
+<path d="M910 1200 V1110" class="edge cond"/>
+<rect x="25" y="1330" width="1150" height="1570" rx="20" fill="#f8fafc" stroke="#cbd8e2" stroke-width="2"/>
+<text x="55" y="1373" text-anchor="start" font-size="28" font-weight="700">
+<tspan x="55" dy="0">C 推理｜两条支线在时间域合并，再回到频域</tspan>
+</text>
+<text x="55" y="1408" text-anchor="start" font-size="21" style="fill:#52687b">
+<tspan x="55" dy="0">从高斯噪声开始，重复100步 DDIM；t → s 表示前往更低噪声水平，不一定是相邻训练步。</tspan>
+</text>
+<rect x="60" y="1445" width="480" height="100" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="300.0" y="1477" text-anchor="middle" font-size="23" font-weight="700">
+<tspan x="300.0" dy="0">已知运动 + 时空掩码 M</tspan>
+</text>
+<text x="300.0" y="1511" text-anchor="middle" font-size="21">
+<tspan x="300.0" dy="0">必需：历史；可选：末端 / 身体部位轨迹</tspan>
+</text>
+<rect x="660" y="1445" width="480" height="100" rx="14" fill="#edf4fc" stroke="#9abbd6" stroke-width="2"/>
+<text x="900.0" y="1477" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="900.0" dy="0">当前待生成频谱 Cₜ</tspan>
+</text>
+<text x="900.0" y="1511" text-anchor="middle" font-size="21">
+<tspan x="900.0" dy="0">首步从高斯噪声 C_T 初始化</tspan>
+</text>
+<path d="M300 1545 V1590" class="edge cond"/>
+<path d="M900 1545 V1590" class="edge "/>
+<rect x="60" y="1590" width="480" height="90" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="300.0" y="1622" text-anchor="middle" font-size="23" font-weight="700">
+<tspan x="300.0" dy="0">观测频谱与历史条件 m 分开构造</tspan>
+</text>
+<text x="300.0" y="1656" text-anchor="middle" font-size="21">
+<tspan x="300.0" dy="0">历史末帧填充；指定目标另取 DCT</tspan>
+</text>
+<rect x="660" y="1590" width="480" height="90" rx="14" fill="#e8f6f1" stroke="#78b6a3" stroke-width="2"/>
+<text x="900.0" y="1622" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="900.0" dy="0">复用 TransLinear → 预测 ε̂</tspan>
+</text>
+<text x="900.0" y="1656" text-anchor="middle" font-size="21">
+<tspan x="900.0" dy="0">输入当前 Cₜ、t 与历史调制 m</tspan>
+</text>
+<path d="M540 1635 H655" class="edge cond"/>
+<text x="600" y="1604" text-anchor="middle" font-size="21" style="fill:#a46226">
+<tspan x="600" dy="0">m,t</tspan>
+</text>
+<text x="600" y="1627" text-anchor="middle" font-size="18" style="fill:#a46226">
+<tspan x="600" dy="0">仅历史</tspan>
+</text>
+<path d="M540 700 H580 V853 H1185 V1350 H1160 V1635 H1145" class="edge reuse"/>
+<text x="1033" y="1373" text-anchor="middle" font-size="20" style="fill:#218271">
+<tspan x="1033" dy="0">虚线：复用训练参数 θ</tspan>
+</text>
+<path d="M300 1680 V1750" class="edge cond"/>
+<path d="M900 1680 V1750" class="edge "/>
+<rect x="60" y="1750" width="480" height="90" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="300.0" y="1782" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="300.0" dy="0">历史 / 可选目标各自加噪到 s</tspan>
+</text>
+<text x="300.0" y="1816" text-anchor="middle" font-size="21">
+<tspan x="300.0" dy="0">目标不进入 m；各支观测用于时域合并</tspan>
+</text>
+<rect x="660" y="1750" width="480" height="90" rx="14" fill="#edf4fc" stroke="#9abbd6" stroke-width="2"/>
+<text x="900.0" y="1782" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="900.0" dy="0">执行一次 DDIM 更新</tspan>
+</text>
+<text x="900.0" y="1816" text-anchor="middle" font-size="21">
+<tspan x="900.0" dy="0">得到更低噪声的 Cˢ_pred</tspan>
+</text>
+<path d="M300 1840 V1905" class="edge cond"/>
+<path d="M900 1840 V1905" class="edge "/>
+<rect x="60" y="1905" width="480" height="85" rx="14" fill="#fff4e6" stroke="#e4bc86" stroke-width="2"/>
+<text x="300.0" y="1937" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="300.0" dy="0">各观测支线 iDCT → 已知运动</tspan>
+</text>
+<text x="300.0" y="1971" text-anchor="middle" font-size="21">
+<tspan x="300.0" dy="0">Xˢ_known：(H+F) × 3J</tspan>
+</text>
+<rect x="660" y="1905" width="480" height="85" rx="14" fill="#edf4fc" stroke="#9abbd6" stroke-width="2"/>
+<text x="900.0" y="1937" text-anchor="middle" font-size="24" font-weight="700">
+<tspan x="900.0" dy="0">iDCT → 模型预测支线</tspan>
+</text>
+<text x="900.0" y="1971" text-anchor="middle" font-size="21">
+<tspan x="900.0" dy="0">Xˢ_pred：(H+F) × 3J</tspan>
+</text>
+<path d="M300 1990 V2055" class="edge cond"/>
+<path d="M900 1990 V2055" class="edge "/>
+<rect x="60" y="2055" width="1080" height="115" rx="14" fill="#fff0db" stroke="#d8a86a" stroke-width="2"/>
+<text x="600.0" y="2087" text-anchor="middle" font-size="25" font-weight="700">
+<tspan x="600.0" dy="0">按时间与关节坐标合并：已知取左支，未知取右支</tspan>
+</text>
+<text x="600.0" y="2121" text-anchor="middle" font-size="21">
+<tspan x="600.0" dy="0">Xˢ_mix = M ⊙ Xˢ_known + (1−M) ⊙ Xˢ_pred</tspan>
+</text>
+<path d="M600 2170 V2240" class="edge "/>
+<rect x="210" y="2240" width="780" height="95" rx="14" fill="#eaf2fc" stroke="#92b4d5" stroke-width="2"/>
+<text x="600.0" y="2272" text-anchor="middle" font-size="25" font-weight="700">
+<tspan x="600.0" dy="0">再次 DCT → 仅保留前 L 个系数</tspan>
+</text>
+<text x="600.0" y="2306" text-anchor="middle" font-size="21">
+<tspan x="600.0" dy="0">Cₛ = DCT_L(Xˢ_mix)：回到生成空间</tspan>
+</text>
+<path d="M990 2288 H1155 V1495 H1145" class="edge "/>
+<text x="1080" y="2368" text-anchor="middle" font-size="20" style="fill:#496176">
+<tspan x="1080" dy="0">尚未结束：</tspan>
+<tspan x="1080" dy="33">Cₛ 成为下一步 Cₜ</tspan>
+</text>
+<path d="M600 2335 V2440" class="edge "/>
+<text x="745" y="2398" text-anchor="middle" font-size="21" style="fill:#52687b">
+<tspan x="745" dy="0">全部采样步结束</tspan>
+</text>
+<rect x="210" y="2440" width="780" height="90" rx="14" fill="#edf4fc" stroke="#9abbd6" stroke-width="2"/>
+<text x="600.0" y="2472" text-anchor="middle" font-size="25" font-weight="700">
+<tspan x="600.0" dy="0">最终 iDCT → 恢复完整时间序列</tspan>
+</text>
+<text x="600.0" y="2506" text-anchor="middle" font-size="21">
+<tspan x="600.0" dy="0">没有额外的最终已知值覆写步骤</tspan>
+</text>
+<path d="M600 2530 V2595" class="edge "/>
+<rect x="210" y="2595" width="780" height="90" rx="14" fill="#e8f6f1" stroke="#78b6a3" stroke-width="2"/>
+<text x="600.0" y="2627" text-anchor="middle" font-size="25" font-weight="700">
+<tspan x="600.0" dy="0">裁取未来 F 帧 → 一个预测候选</tspan>
+</text>
+<text x="600.0" y="2661" text-anchor="middle" font-size="21">
+<tspan x="600.0" dy="0">更换初始噪声重复采样；评估使用50个候选</tspan>
+</text>
+<text x="70" y="2750" text-anchor="start" font-size="23" font-weight="700">
+<tspan x="70" dy="0">M=1 的位置由调用者提供；其余位置由模型补全</tspan>
+</text>
+<rect x="60" y="2770" width="340" height="95" rx="12" fill="#fff8ed" stroke="#dfbf94" stroke-width="2"/>
+<text x="230" y="2803" text-anchor="middle" font-size="23" font-weight="700">
+<tspan x="230" dy="0">普通预测</tspan>
+</text>
+<text x="230" y="2839" text-anchor="middle" font-size="20">
+<tspan x="230" dy="0">历史 1 │ 未来 0</tspan>
+</text>
+<rect x="430" y="2770" width="340" height="95" rx="12" fill="#fff8ed" stroke="#dfbf94" stroke-width="2"/>
+<text x="600" y="2803" text-anchor="middle" font-size="23" font-weight="700">
+<tspan x="600" dy="0">动作切换</tspan>
+</text>
+<text x="600" y="2839" text-anchor="middle" font-size="20">
+<tspan x="600" dy="0">历史 1 │ 中间 0 │ 目标 1</tspan>
+</text>
+<rect x="800" y="2770" width="340" height="95" rx="12" fill="#fff8ed" stroke="#dfbf94" stroke-width="2"/>
+<text x="970" y="2803" text-anchor="middle" font-size="23" font-weight="700">
+<tspan x="970" dy="0">身体局部控制</tspan>
+</text>
+<text x="970" y="2839" text-anchor="middle" font-size="20">
+<tspan x="970" dy="0">历史 1 │ 指定部位轨迹 1</tspan>
+</text>
+<rect x="25" y="2940" width="1150" height="235" rx="20" fill="#f8fafc" stroke="#cbd8e2" stroke-width="2"/>
+<text x="55" y="2983" text-anchor="start" font-size="28" font-weight="700">
+<tspan x="55" dy="0">读图边界｜可编辑教学图，不是模型运行结果</tspan>
+</text>
+<text x="55" y="3018" text-anchor="start" font-size="21" style="fill:#52687b">
+<tspan x="55" dy="0">蓝：运动/频谱数据　橙：观测与条件注入　绿：学习模块　虚线：训练参数复用</tspan>
+</text>
+<text x="60" y="3060" text-anchor="start" font-size="22">
+<tspan x="60" dy="0">• 截断 DCT 会再次投影合并结果，最终已知坐标并非逐点绝对锁定。</tspan>
+<tspan x="60" dy="33">• 目标动作 / 局部轨迹是提供的数值条件，没有文本编码器或语义规划器。</tspan>
+<tspan x="60" dy="33">• 训练监督可见真实未来；预测条件只读取历史及明确提供的额外目标。</tspan>
+</text>
+</svg>

@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="3260" viewBox="0 0 1120 3260" role="img" aria-labelledby="title desc">
+<title id="title">MotionWavelet 完整架构教学图</title>
+<desc id="desc">单层二维小波表示与离线噪声回归训练；推理时结合历史条件和无条件预测，时间注意力引导构造受扰输入并复用网络，扩散更新后进行逆变换与再变换，可选地混合目标动作，迭代后恢复未来关节位置。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#475569"/></marker><marker id="orangeArrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9Z" fill="#b7791f"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',Arial,sans-serif;fill:#18324a}.title{font-size:35px;font-weight:700}.subtitle{font-size:21px;fill:#53677b}.section{font-size:27px;font-weight:700}.nodeTitle{font-size:23px;font-weight:700}.body{font-size:21px}.small{font-size:19px;fill:#53677b}.label{font-size:20px;fill:#53677b}.wire{fill:none;stroke:#475569;stroke-width:2.6;marker-end:url(#arrow)}.optional{fill:none;stroke:#b7791f;stroke-width:2.5;stroke-dasharray:8 5;marker-end:url(#orangeArrow)}.reuse{fill:none;stroke:#579477;stroke-width:2.5;stroke-dasharray:7 6;marker-end:url(#arrow)}</style>
+<rect width="1120" height="3260" fill="#f7f9fc"/>
+
+<text x="48" y="61" class="title" text-anchor="start">MotionWavelet · 小波表示、条件预测与采样引导</text>
+<text x="48" y="100" class="subtitle" text-anchor="start">观察过去 H 帧 → 预测多种未来 F 帧；输入/输出均为 3D 关节位置</text>
+<rect x="50" y="128" width="24" height="24" rx="5" fill="#edf4ff" stroke="#88a9d1" stroke-width="2"/>
+<text x="85" y="148" class="small" text-anchor="start">固定变换</text>
+<rect x="235" y="128" width="24" height="24" rx="5" fill="#eaf6ef" stroke="#82b49b" stroke-width="2"/>
+<text x="270" y="148" class="small" text-anchor="start">可学习网络</text>
+<rect x="450" y="128" width="24" height="24" rx="5" fill="#f1eefe" stroke="#aaa0cf" stroke-width="2"/>
+<text x="485" y="148" class="small" text-anchor="start">系数表示</text>
+<rect x="650" y="128" width="24" height="24" rx="5" fill="#fff5e5" stroke="#d8af6c" stroke-width="2"/>
+<text x="685" y="148" class="small" text-anchor="start">可选引导 / 控制</text>
+<rect x="45" y="185" width="1020" height="510" rx="20" fill="#ffffff" stroke="#d7e1eb" stroke-width="2"/>
+<text x="70" y="228" class="section" text-anchor="start">A · 固定表示：单层二维 DWT</text>
+<text x="70" y="261" class="small" text-anchor="start">分别沿时间与展平后的关节坐标轴滤波；没有可学习编码器、离散码本或多级分解。</text>
+<rect x="70" y="300" width="250" height="115" rx="15" fill="#fff" stroke="#c0ccd7" stroke-width="2"/>
+<text x="195.0" y="335" class="nodeTitle" text-anchor="middle">完整动作 x</text>
+<text x="195.0" y="368" class="body" text-anchor="middle">(H + F) × 3J</text>
+<text x="195.0" y="399" class="body" text-anchor="middle">时间 × 关节坐标</text>
+<rect x="385" y="300" width="280" height="115" rx="15" fill="#edf4ff" stroke="#88a9d1" stroke-width="2"/>
+<text x="525.0" y="335" class="nodeTitle" text-anchor="middle">2D DWT · 一级</text>
+<text x="525.0" y="368" class="body" text-anchor="middle">低 / 高通滤波</text>
+<text x="525.0" y="399" class="body" text-anchor="middle">每轴 ↓2 下采样</text>
+<path d="M320 357 H385" class="wire"/>
+<path d="M665 357 H730" class="wire"/>
+<rect x="730" y="282" width="310" height="165" rx="15" fill="#f7f4ff" stroke="#aaa0cf" stroke-width="2"/>
+<text x="885" y="316" class="nodeTitle" text-anchor="middle">四个子带</text>
+<rect x="752" y="332" width="121" height="41" rx="7" fill="#ece7fc" stroke="#b5abd7" stroke-width="2"/>
+<text x="812" y="361" class="body" text-anchor="middle">LL</text>
+<rect x="895" y="332" width="121" height="41" rx="7" fill="#ece7fc" stroke="#b5abd7" stroke-width="2"/>
+<text x="955" y="361" class="body" text-anchor="middle">HL</text>
+<rect x="752" y="385" width="121" height="41" rx="7" fill="#ece7fc" stroke="#b5abd7" stroke-width="2"/>
+<text x="812" y="414" class="body" text-anchor="middle">LH</text>
+<rect x="895" y="385" width="121" height="41" rx="7" fill="#ece7fc" stroke="#b5abd7" stroke-width="2"/>
+<text x="955" y="414" class="body" text-anchor="middle">HH</text>
+<path d="M885 447 V488" class="wire"/>
+<rect x="730" y="488" width="310" height="105" rx="15" fill="#f1eefe" stroke="#aaa0cf" stroke-width="2"/>
+<text x="885.0" y="523" class="nodeTitle" text-anchor="middle">拼接为系数 y₀</text>
+<text x="885.0" y="556" class="body" text-anchor="middle">K × 4D；保留全部子带</text>
+<text x="70" y="489" class="body" text-anchor="start">实际配置：Bior2.8 + 边界补零</text>
+<text x="70" y="523" class="body" text-anchor="start">LL 保留低频趋势，其余子带保留局部细节。</text>
+<text x="70" y="557" class="body" text-anchor="start">轴向下采样不等于总系数数量减半。</text>
+<text x="70" y="646" class="small" text-anchor="start">逆变换 iDWT：系数 → 完整动作；固定变换的重建精度与未来预测误差是两回事。</text>
+<rect x="45" y="725" width="1020" height="435" rx="20" fill="#ffffff" stroke="#d7e1eb" stroke-width="2"/>
+<text x="70" y="768" class="section" text-anchor="start">B · 离线训练：在系数上做噪声回归</text>
+<text x="70" y="801" class="small" text-anchor="start">训练完整片段；历史作为条件，随机丢弃条件以学习同一网络的无条件预测。</text>
+<rect x="70" y="840" width="240" height="115" rx="15" fill="#f1eefe" stroke="#aaa0cf" stroke-width="2"/>
+<text x="190.0" y="875" class="nodeTitle" text-anchor="middle">训练目标 y₀</text>
+<text x="190.0" y="908" class="body" text-anchor="middle">完整 H + F 帧 → DWT</text>
+<rect x="400" y="840" width="270" height="115" rx="15" fill="#edf4ff" stroke="#88a9d1" stroke-width="2"/>
+<text x="535.0" y="875" class="nodeTitle" text-anchor="middle">前向加高斯噪声</text>
+<text x="535.0" y="908" class="body" text-anchor="middle">采样 t、ε</text>
+<text x="535.0" y="939" class="body" text-anchor="middle">得到 yₜ</text>
+<rect x="760" y="840" width="280" height="115" rx="15" fill="#eaf6ef" stroke="#82b49b" stroke-width="2"/>
+<text x="900.0" y="875" class="nodeTitle" text-anchor="middle">TransLinear εθ</text>
+<text x="900.0" y="908" class="body" text-anchor="middle">yₜ + t + 条件 c</text>
+<text x="900.0" y="939" class="body" text-anchor="middle">预测加入的噪声</text>
+<path d="M310 898 H400" class="wire"/>
+<path d="M670 898 H760" class="wire"/>
+<text x="337" y="880" class="label" text-anchor="middle">y₀</text>
+<text x="715" y="880" class="label" text-anchor="middle">yₜ</text>
+<rect x="70" y="1005" width="240" height="105" rx="15" fill="#fff" stroke="#c0ccd7" stroke-width="2"/>
+<text x="190.0" y="1040" class="nodeTitle" text-anchor="middle">已观察历史</text>
+<text x="190.0" y="1073" class="body" text-anchor="middle">H × 3J</text>
+<rect x="400" y="1005" width="270" height="105" rx="15" fill="#edf4ff" stroke="#88a9d1" stroke-width="2"/>
+<text x="535.0" y="1040" class="nodeTitle" text-anchor="middle">填充 → DWT</text>
+<text x="535.0" y="1073" class="body" text-anchor="middle">条件 c；随机丢弃</text>
+<rect x="760" y="1005" width="280" height="105" rx="15" fill="#fff" stroke="#c0ccd7" stroke-width="2"/>
+<text x="900.0" y="1040" class="nodeTitle" text-anchor="middle">噪声 MSE 监督</text>
+<text x="900.0" y="1073" class="body" text-anchor="middle">‖ε − εθ‖²</text>
+<path d="M310 1058 H400" class="wire"/>
+<path d="M670 1058 H710 V938 H760" class="wire"/>
+<path d="M900 955 V1005" class="wire"/>
+<path d="M535 840 V817 H1038 V1000 H997 V1005" class="wire"/>
+<text x="781" y="811" class="small" text-anchor="start">真实 ε（仅训练）</text>
+<rect x="45" y="1200" width="1020" height="1180" rx="20" fill="#ffffff" stroke="#d7e1eb" stroke-width="2"/>
+<text x="70" y="1243" class="section" text-anchor="start">C · 推理：一次去噪迭代</text>
+<text x="70" y="1276" class="small" text-anchor="start">由随机系数开始，重复更新 100 步；下图展开 Human3.6M 的 TABG 路径。</text>
+<rect x="70" y="1315" width="350" height="110" rx="15" fill="#edf4ff" stroke="#88a9d1" stroke-width="2"/>
+<text x="245.0" y="1350" class="nodeTitle" text-anchor="middle">观察历史 → 填充 → DWT</text>
+<text x="245.0" y="1383" class="body" text-anchor="middle">历史条件 c；采样时保留</text>
+<rect x="550" y="1315" width="440" height="110" rx="15" fill="#f1eefe" stroke="#aaa0cf" stroke-width="2"/>
+<text x="770.0" y="1350" class="nodeTitle" text-anchor="middle">当前小波系数 yₜ</text>
+<text x="770.0" y="1383" class="body" text-anchor="middle">初始 yT ~ N(0, I)；另输入步数 t</text>
+<rect x="70" y="1500" width="420" height="120" rx="15" fill="#eaf6ef" stroke="#82b49b" stroke-width="2"/>
+<text x="280.0" y="1535" class="nodeTitle" text-anchor="middle">共享 TransLinear：有条件</text>
+<text x="280.0" y="1568" class="body" text-anchor="middle">εc = εθ(yₜ, c, t)</text>
+<rect x="620" y="1500" width="420" height="120" rx="15" fill="#eaf6ef" stroke="#82b49b" stroke-width="2"/>
+<text x="830.0" y="1535" class="nodeTitle" text-anchor="middle">共享 TransLinear：无条件</text>
+<text x="830.0" y="1568" class="body" text-anchor="middle">εu = εθ(yₜ, t)；输出注意力 Aₜ</text>
+<path d="M245 1425 V1500" class="wire"/>
+<path d="M770 1425 V1462 H280 V1500" class="wire"/>
+<path d="M770 1462 H830 V1500" class="wire"/>
+<path d="M1052 901 H1056 V1475 H1030 V1500" class="reuse"/>
+<text x="997" y="1471" class="small" text-anchor="end">复用训练权重</text>
+<rect x="70" y="1695" width="255" height="108" rx="15" fill="#f1eefe" stroke="#aaa0cf" stroke-width="2"/>
+<text x="197.5" y="1730" class="nodeTitle" text-anchor="middle">保留条件预测</text>
+<text x="197.5" y="1763" class="body" text-anchor="middle">εc</text>
+<path d="M280 1620 V1650 H197 V1695" class="wire"/>
+<rect x="385" y="1675" width="655" height="407" rx="15" fill="#fffbf3" stroke="#dab778" stroke-width="2" stroke-dasharray="8 5"/>
+<text x="407" y="1710" class="nodeTitle" text-anchor="start">TABG · 时间注意力引导</text>
+<rect x="410" y="1740" width="278" height="94" rx="15" fill="#fff5e5" stroke="#d8af6c" stroke-width="2"/>
+<text x="549.0" y="1775" class="nodeTitle" text-anchor="middle">时间掩码 Mₜ</text>
+<text x="549.0" y="1808" class="body" text-anchor="middle">Aₜ → 阈值 + 时间邻域</text>
+<rect x="730" y="1740" width="285" height="94" rx="15" fill="#fff5e5" stroke="#d8af6c" stroke-width="2"/>
+<text x="872.5" y="1775" class="nodeTitle" text-anchor="middle">构造受扰版本</text>
+<text x="872.5" y="1808" class="body" text-anchor="middle">估计干净系数 + 噪声 σz</text>
+<path d="M830 1620 V1650 H708 V1787 H688" class="wire"/>
+<path d="M830 1650 H872 V1740" class="wire"/>
+<text x="690" y="1666" class="small" text-anchor="end">注意力 Aₜ</text>
+<text x="887" y="1666" class="small" text-anchor="start">εu</text>
+<rect x="410" y="1870" width="605" height="80" rx="15" fill="#fff5e5" stroke="#d8af6c" stroke-width="2"/>
+<text x="712.5" y="1905" class="nodeTitle" text-anchor="middle">重新加噪到 t；只替换 Mₜ 选中的位置</text>
+<text x="712.5" y="1938" class="body" text-anchor="middle">ŷₜ = (1 − Mₜ) ⊙ yₜ + Mₜ ⊙ ỹₜ</text>
+<path d="M549 1834 V1870" class="wire"/>
+<path d="M872 1834 V1870" class="wire"/>
+<rect x="410" y="1980" width="278" height="77" rx="15" fill="#eaf6ef" stroke="#82b49b" stroke-width="2"/>
+<text x="549.0" y="2015" class="nodeTitle" text-anchor="middle">再用共享 TransLinear</text>
+<text x="549.0" y="2048" class="body" text-anchor="middle">εpert = εθ(ŷₜ, t)</text>
+<rect x="730" y="1980" width="285" height="77" rx="15" fill="#fff5e5" stroke="#d8af6c" stroke-width="2"/>
+<text x="872.5" y="2015" class="nodeTitle" text-anchor="middle">修正无条件预测</text>
+<text x="872.5" y="2048" class="body" text-anchor="middle">εu + s (εpert − εu)</text>
+<path d="M549 1950 V1980" class="wire"/>
+<path d="M688 2019 H730" class="wire"/>
+<path d="M872 1650 H1027 V2019 H1015" class="wire"/>
+<rect x="330" y="2130" width="600" height="98" rx="15" fill="#edf4ff" stroke="#88a9d1" stroke-width="2"/>
+<text x="630.0" y="2165" class="nodeTitle" text-anchor="middle">结合历史条件与无条件噪声预测</text>
+<text x="630.0" y="2198" class="body" text-anchor="middle">CFG：组合 εc 与 εTABG（不用 TABG 时为 εu）</text>
+<path d="M197 1803 V2179 H330" class="wire"/>
+<path d="M872 2057 V2104 H715 V2130" class="wire"/>
+<rect x="330" y="2270" width="600" height="90" rx="15" fill="#edf4ff" stroke="#88a9d1" stroke-width="2"/>
+<text x="630.0" y="2305" class="nodeTitle" text-anchor="middle">按采样日程更新系数</text>
+<text x="630.0" y="2338" class="body" text-anchor="middle">得到下一噪声层级的临时系数</text>
+<path d="M630 2228 V2270" class="wire"/>
+<text x="70" y="2330" class="small" text-anchor="start">HumanEva-I：</text>
+<text x="70" y="2358" class="small" text-anchor="start">不启用 TABG / WMSG</text>
+<rect x="45" y="2410" width="1020" height="688" rx="20" fill="#ffffff" stroke="#d7e1eb" stroke-width="2"/>
+<text x="70" y="2453" class="section" text-anchor="start">D · 系数往返与可选坐标控制</text>
+<text x="70" y="2486" class="small" text-anchor="start">Human3.6M 的 WMSG：DWT(iDWT(y))；它整理系数一致性，不是物理动作约束求解器。</text>
+<rect x="70" y="2525" width="240" height="108" rx="15" fill="#f1eefe" stroke="#aaa0cf" stroke-width="2"/>
+<text x="190.0" y="2560" class="nodeTitle" text-anchor="middle">临时小波系数</text>
+<text x="190.0" y="2593" class="body" text-anchor="middle">本次扩散更新结果</text>
+<rect x="380" y="2525" width="290" height="108" rx="15" fill="#edf4ff" stroke="#88a9d1" stroke-width="2"/>
+<text x="525.0" y="2560" class="nodeTitle" text-anchor="middle">iDWT → 动作空间</text>
+<text x="525.0" y="2593" class="body" text-anchor="middle">合成位置序列 x′</text>
+<rect x="760" y="2525" width="280" height="108" rx="15" fill="#fff5e5" stroke="#d8af6c" stroke-width="2"/>
+<text x="900.0" y="2560" class="nodeTitle" text-anchor="middle">可选：时空掩码混合</text>
+<text x="900.0" y="2593" class="body" text-anchor="middle">x′c = (1−M)x′ + Mxgt</text>
+<path d="M630 2360 V2391 H30 V2579 H70" class="wire"/>
+<path d="M310 2579 H380" class="wire"/>
+<path d="M670 2579 H760" class="wire"/>
+<text x="699" y="2558" class="small" text-anchor="start">x′</text>
+<rect x="70" y="2710" width="570" height="130" rx="15" fill="#fff5e5" stroke="#d8af6c" stroke-width="2"/>
+<text x="355.0" y="2745" class="nodeTitle" text-anchor="middle">可选输入：目标动作 + 明确的时空掩码 M</text>
+<text x="355.0" y="2778" class="body" text-anchor="middle">目标动作 → DWT → 加到同噪声层级 → iDWT</text>
+<text x="355.0" y="2809" class="body" text-anchor="middle">选关节 = 指定坐标列；选时段 = 指定时间行</text>
+<path d="M640 2775 H710 V2609 H760" class="optional"/>
+<text x="676" y="2755" class="small" text-anchor="start">xgt、M</text>
+<rect x="760" y="2780" width="280" height="100" rx="15" fill="#edf4ff" stroke="#88a9d1" stroke-width="2"/>
+<text x="900.0" y="2815" class="nodeTitle" text-anchor="middle">DWT → 下一步系数</text>
+<text x="900.0" y="2848" class="body" text-anchor="middle">无控制时直接变换 x′</text>
+<path d="M900 2633 V2780" class="wire"/>
+<text x="916" y="2701" class="label" text-anchor="start">x′ 或 x′c</text>
+<path d="M1040 2830 H1087 V1370 H990" class="wire"/>
+<text x="1078" y="2440" class="small" text-anchor="end">再去噪</text>
+<text x="1078" y="2470" class="small" text-anchor="end">t ← t−1</text>
+<path d="M930 2315 H1087" class="wire"/>
+<text x="1050" y="2294" class="small" text-anchor="end">Eva 直接迭代</text>
+<rect x="70" y="2960" width="280" height="100" rx="15" fill="#edf4ff" stroke="#88a9d1" stroke-width="2"/>
+<text x="210.0" y="2995" class="nodeTitle" text-anchor="middle">采样结束：最终 iDWT</text>
+<text x="210.0" y="3028" class="body" text-anchor="middle">y₀ → H + F 帧位置</text>
+<rect x="450" y="2960" width="590" height="100" rx="15" fill="#fff" stroke="#c0ccd7" stroke-width="2"/>
+<text x="745.0" y="2995" class="nodeTitle" text-anchor="middle">读取未来 F 帧；多次采样得到多种未来</text>
+<text x="745.0" y="3028" class="body" text-anchor="middle">不同随机初值 → 不同延续；无文本 / 语音输入</text>
+<path d="M900 2880 V2920 H210 V2960" class="wire"/>
+<path d="M350 3010 H450" class="wire"/>
+<text x="730" y="2947" class="small" text-anchor="start">100步完成后</text>
+<path d="M1087 2830 V2920 H900" class="wire"/>
+<text x="50" y="3140" class="small" text-anchor="start">设置：Human3.6M 的 TABG 与控制掩码只用于前90步；HumanEva-I 不用 TABG/WMSG。</text>
+<text x="50" y="3176" class="small" text-anchor="start">约定：正文式7与算法1的 CFG 系数定义不同；这里展示模块关系，具体数值不能直接混用。</text>
+<text x="50" y="3212" class="small" text-anchor="start">依据：MotionWavelet v1 图1–2、算法1、式4–13、附录A；教学重绘，非作者原图 / 运行结果。</text>
+</svg>
