@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="3035" viewBox="0 0 1200 3035" role="img" aria-labelledby="title desc">
+<title id="title">MEO：从语言编辑程序到连续动作的完整架构</title>
+<desc id="desc">根据 SIGGRAPH 2024 Iterative Motion Editing with Natural Language 原文图2至5及公开实现绘制。语言模型不训练；程序读取源动作并生成关键帧，根轨迹回归先于身体扩散，时间扭曲可绕过空间补全；离线训练与在线编辑分开。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#405770"/></marker><marker id="purple" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#8b68a0"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',Arial,sans-serif;fill:#1e344a}.heading{font-size:26px;font-weight:700}.body{font-size:20px}.small{font-size:18px;fill:#50647a}.label{font-size:17px;fill:#405770}.paneltitle{font-size:24px;font-weight:700}.wire{stroke:#405770;stroke-width:2.5;fill:none;marker-end:url(#arrow)}.train{stroke:#8b68a0;stroke-width:2.5;fill:none;stroke-dasharray:9 7;marker-end:url(#purple)}</style>
+<rect width="1200" height="3035" fill="#f7f9fc"/>
+
+<text x="65" y="55" class="heading">MEO：自然语言 → 编辑算子 → 连续动作</text>
+<text x="65" y="91" class="small">SIGGRAPH 2024 · 教学示意，依据原文图2–5与公开实现；不代表本机运行结果</text>
+<path d="M70 120 H130" class="wire"/>
+<text x="143" y="126" class="label">数据 / 执行流</text>
+<path d="M380 120 H440" class="train"/>
+<text x="453" y="126" class="label">离线学得参数的复用</text>
+<text x="810" y="126" class="label">浅紫：离线训练；浅蓝：在线编辑</text>
+<rect x="55" y="155" width="1090" height="485" rx="20" fill="#edf4fb" stroke="#cad9e9" stroke-width="1.5"/>
+<text x="78" y="191" class="paneltitle">① 在线：把本轮意图编译成编辑程序</text>
+<text x="78" y="220" class="small">LLM 读取文字上下文和会话；真实动作由后续运行时查询。</text>
+<rect x="75" y="245" width="300" height="115" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="93" y="277" class="heading">源动作 Xₛ</text>
+<text x="93" y="309" class="body">根位置 + 关节姿态</text>
+<text x="93" y="338" class="body">已有动画或生成的动画</text>
+<rect x="425" y="245" width="340" height="115" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="443" y="277" class="heading">本轮文字输入</text>
+<text x="443" y="309" class="body">源描述 Ectx + 编辑指令 E</text>
+<text x="443" y="338" class="body">例如：右腿侧踢，再踢高些</text>
+<rect x="815" y="245" width="310" height="115" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="833" y="277" class="heading">会话与动作版本</text>
+<text x="833" y="309" class="body">此前指令、MEO 程序</text>
+<text x="833" y="338" class="body">已保存动作 / 可回退版本</text>
+<path d="M595 360 V400" class="wire"/>
+<path d="M970 360 V378 H780 V450 H765" class="wire"/>
+<rect x="425" y="400" width="340" height="105" rx="12" fill="#e4f3ee" stroke="#83b8aa" stroke-width="1.7"/>
+<text x="443" y="432" class="heading">预训练 GPT-4</text>
+<text x="443" y="464" class="body">API 文档 + 程序示例提示</text>
+<text x="443" y="493" class="body">不为本方法微调</text>
+<path d="M765 452 H815" class="wire"/>
+<rect x="815" y="400" width="310" height="105" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="833" y="432" class="heading">API / 参数检查</text>
+<text x="833" y="464" class="body">非法调用 → 错误反馈</text>
+<text x="833" y="493" class="body">检查通过 ≠ 语义正确</text>
+<path d="M970 505 V529 H595 V505" class="wire"/>
+<text x="705" y="551" class="label">出错时重新生成</text>
+<path d="M1125 452 H1135 V593 H1125" class="wire"/>
+<rect x="425" y="568" width="700" height="55" rx="12" fill="#e5effc" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="443" y="600" class="heading">MEO 程序：加载版本、查询时刻、修改关节、变速、保存</text>
+<rect x="55" y="670" width="1090" height="535" rx="20" fill="#edf4fb" stroke="#cad9e9" stroke-width="1.5"/>
+<text x="78" y="706" class="paneltitle">② 在线：让程序落到源动作的帧与关节</text>
+<text x="78" y="735" class="small">程序读取真实动作；用规则确定空间幅度和时间位置。</text>
+<path d="M225 360 V380 H65 V745 H225 V755" class="wire"/>
+<rect x="75" y="755" width="300" height="105" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="93" y="787" class="heading">载入选定动作版本</text>
+<text x="93" y="819" class="body">当前结果，或撤回到旧版</text>
+<text x="93" y="848" class="body">这里才读取真实3D序列</text>
+<path d="M595 623 V650 H785 V740 H595 V755" class="wire"/>
+<rect x="425" y="755" width="340" height="105" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="443" y="787" class="heading">解释空间编辑算子</text>
+<text x="443" y="819" class="body">关节 + 方向 + 时间查询</text>
+<text x="443" y="848" class="body">旋转 / 平移 / 相对目标</text>
+<path d="M975 623 V755" class="wire"/>
+<rect x="815" y="755" width="310" height="105" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="833" y="787" class="heading">速度算子支线</text>
+<text x="833" y="819" class="body">目标区间 + 快 / 慢 / 停</text>
+<text x="833" y="848" class="body">传递到④时间扭曲器</text>
+<path d="M75 808 H65 V878 H1138 V830 H1125" class="wire"/>
+<text x="865" y="905" class="label">载入的源动作</text>
+<path d="M595 860 V910" class="wire"/>
+<path d="M375 808 H398 V961 H425" class="wire"/>
+<rect x="425" y="910" width="340" height="110" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="443" y="942" class="heading">在源轨迹上选帧</text>
+<text x="443" y="974" class="body">显式帧号，或关节极值</text>
+<text x="443" y="1003" class="body">区分此刻姿态与起始动作</text>
+<path d="M765 963 H815" class="wire"/>
+<rect x="815" y="910" width="310" height="110" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="833" y="942" class="heading">运动学修改</text>
+<text x="833" y="974" class="body">旋转 → FK；位置 → IK等</text>
+<text x="833" y="1003" class="body">得到目标关键姿态</text>
+<path d="M970 1020 V1060" class="wire"/>
+<rect x="815" y="1060" width="310" height="110" rx="12" fill="#fff5e8" stroke="#d3ad73" stroke-width="1.7"/>
+<text x="833" y="1092" class="heading">编辑后的关键帧</text>
+<text x="833" y="1124" class="body">关节目标与具体帧索引</text>
+<text x="833" y="1153" class="body">尚未形成自然过渡</text>
+<path d="M225 860 V1060" class="wire"/>
+<rect x="75" y="1060" width="690" height="110" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="93" y="1092" class="heading">保留上下文与重要帧</text>
+<text x="93" y="1124" class="body">窗口外源动作 + 显著极值帧 + 先前编辑过的帧</text>
+<text x="93" y="1153" class="body">目标前后留下待补全窗口；不是重新生成任意完整动作</text>
+<rect x="55" y="1240" width="1090" height="925" rx="20" fill="#edf4fb" stroke="#cad9e9" stroke-width="1.5"/>
+<text x="78" y="1276" class="paneltitle">③ 在线：先补根轨迹，再补身体过渡</text>
+<text x="78" y="1305" class="small">条件 C 是稀疏目标与上下文；原文不把它宣称为最终动作的严格硬约束。</text>
+<path d="M420 1170 V1220 H1135 V1310 H420 V1330" class="wire"/>
+<path d="M970 1170 V1228 H1150 V1318 H1070 V1330" class="wire"/>
+<rect x="75" y="1330" width="1050" height="110" rx="12" fill="#fff5e8" stroke="#d3ad73" stroke-width="1.7"/>
+<text x="93" y="1362" class="heading">构造条件 C 与已知属性遮罩 M</text>
+<text x="93" y="1394" class="body">C = 保留的源上下文 + 编辑关键姿态；未知窗口置零</text>
+<text x="93" y="1423" class="body">M = 1 表示已知值；M = 0 表示待补全区域</text>
+<path d="M225 1440 V1490" class="wire"/>
+<rect x="75" y="1490" width="300" height="110" rx="12" fill="#e4f3ee" stroke="#83b8aa" stroke-width="1.7"/>
+<text x="93" y="1522" class="heading">根轨迹回归模型</text>
+<text x="93" y="1554" class="body">一次前向预测根运动</text>
+<text x="93" y="1583" class="body">参数来自下方 AMASS 训练</text>
+<path d="M375 1544 H425" class="wire"/>
+<rect x="425" y="1490" width="340" height="110" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="443" y="1522" class="heading">更新身体补全条件</text>
+<text x="443" y="1554" class="body">将预测根轨迹加入 C</text>
+<text x="443" y="1583" class="body">同时保留关键帧与源上下文</text>
+<path d="M970 1440 V1490" class="wire"/>
+<rect x="815" y="1490" width="310" height="110" rx="12" fill="#fff5e8" stroke="#d3ad73" stroke-width="1.7"/>
+<text x="833" y="1522" class="heading">可选：非根部编辑</text>
+<text x="833" y="1554" class="body">源动作 + 目标姿态</text>
+<text x="833" y="1583" class="body">插值得到 Xspline</text>
+<rect x="75" y="1650" width="1050" height="350" rx="16" fill="#ffffff" stroke="#83b8aa" stroke-width="2"/>
+<text x="95" y="1686" class="paneltitle">身体扩散补全 G：以下过程在每个去噪步 t 重复</text>
+<path d="M595 1600 V1626 H80 V1720 H245 V1740" class="wire"/>
+<rect x="95" y="1740" width="300" height="100" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="113" y="1772" class="heading">双路动作输入</text>
+<text x="113" y="1804" class="body">主路：已知值 + 未知区噪声</text>
+<text x="113" y="1833" class="body">条件路：C 单独嵌入</text>
+<path d="M395 1790 H445" class="wire"/>
+<rect x="445" y="1740" width="300" height="100" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="463" y="1772" class="heading">Transformer decoder</text>
+<text x="463" y="1804" class="body">融合两路线性嵌入</text>
+<text x="463" y="1833" class="body">加入扩散步 t 与位置编码</text>
+<path d="M745 1790 H795" class="wire"/>
+<rect x="795" y="1740" width="310" height="100" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="813" y="1772" class="heading">预测干净动作 X̂</text>
+<text x="813" y="1804" class="body">不是直接输出 API 参数</text>
+<text x="813" y="1833" class="body">用于下一反向扩散步</text>
+<path d="M970 1600 V1740" class="wire"/>
+<text x="985" y="1640" class="label">加噪后混合</text>
+<path d="M950 1840 V1880 H245 V1840" class="wire"/>
+<text x="422" y="1870" class="label">继续去噪；插值引导权重逐步减小</text>
+<text x="95" y="1940" class="body">源条件与生成先验共同决定过渡；不在推理时重新训练 G。</text>
+<text x="95" y="1974" class="small">每一步仍使用动作条件；插值提供引导，不代替扩散补全。</text>
+<path d="M595 2000 V2040" class="wire"/>
+<rect x="425" y="2040" width="340" height="90" rx="12" fill="#e4f3ee" stroke="#83b8aa" stroke-width="1.7"/>
+<text x="443" y="2072" class="heading">空间编辑结果</text>
+<text x="443" y="2104" class="body">关键姿态周围的连续过渡</text>
+<rect x="55" y="2195" width="1090" height="345" rx="20" fill="#edf4fb" stroke="#cad9e9" stroke-width="1.5"/>
+<text x="78" y="2231" class="paneltitle">④ 在线：变速、输出与迭代</text>
+<text x="78" y="2260" class="small">纯变速可跳过③；空间编辑结果也可继续变速。</text>
+<path d="M595 2130 V2290" class="wire"/>
+<path d="M1125 808 H1162 V2332 H765" class="wire"/>
+<text x="855" y="2270" class="label">速度算子 + 选定动作</text>
+<rect x="425" y="2290" width="340" height="90" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="443" y="2322" class="heading">可选：时间扭曲</text>
+<text x="443" y="2354" class="body">样条重映射采样时间</text>
+<path d="M595 2380 V2420" class="wire"/>
+<rect x="425" y="2420" width="340" height="90" rx="12" fill="#e4f3ee" stroke="#83b8aa" stroke-width="1.7"/>
+<text x="443" y="2452" class="heading">本轮编辑动作 Xₑ</text>
+<text x="443" y="2484" class="body">仍需检查目标、接触与质量</text>
+<path d="M765 2465 H815" class="wire"/>
+<rect x="815" y="2420" width="310" height="90" rx="12" fill="#ffffff" stroke="#9ab3cf" stroke-width="1.7"/>
+<text x="833" y="2452" class="heading">保存动作版本</text>
+<text x="833" y="2484" class="body">后续继续，或撤销 / 回退</text>
+<path d="M1125 2465 H1185 V300 H1125" class="wire"/>
+<text x="1175" y="2110" transform="rotate(-90 1175 2110)" class="label">下一轮指令结合会话历史，选择已有动作版本</text>
+<rect x="55" y="2575" width="1090" height="340" rx="20" fill="#f3edf8" stroke="#cdb8db" stroke-width="1.5"/>
+<text x="78" y="2611" class="paneltitle">离线学习：只训练运动补全模型</text>
+<text x="78" y="2640" class="small">与上面的在线编辑分开；LLM 和运动学规则不在此训练。</text>
+<rect x="75" y="2670" width="300" height="140" rx="12" fill="#ffffff" stroke="#b89bc9" stroke-width="1.7"/>
+<text x="93" y="2702" class="heading">AMASS 真实动作</text>
+<text x="93" y="2734" class="body">随机关键帧 + 局部遮罩</text>
+<text x="93" y="2763" class="body">已知上下文 / 目标关键姿态</text>
+<text x="93" y="2792" class="body">监督：完整真实动作 X</text>
+<path d="M375 2740 H425" class="wire"/>
+<rect x="425" y="2670" width="340" height="140" rx="12" fill="#ffffff" stroke="#b89bc9" stroke-width="1.7"/>
+<text x="443" y="2702" class="heading">根轨迹回归训练</text>
+<text x="443" y="2734" class="body">条件 → 根运动预测</text>
+<text x="443" y="2763" class="body">监督来自真实根轨迹</text>
+<text x="443" y="2792" class="body">输出：轨迹模型参数</text>
+<path d="M375 2800 H400 V2835 H785 V2740 H815" class="wire"/>
+<rect x="815" y="2670" width="310" height="140" rx="12" fill="#ffffff" stroke="#b89bc9" stroke-width="1.7"/>
+<text x="833" y="2702" class="heading">身体扩散训练</text>
+<text x="833" y="2734" class="body">加噪 / 遮罩 → 干净动作</text>
+<text x="833" y="2763" class="body">损失：E ‖X − G(·, C,t)‖²</text>
+<text x="833" y="2792" class="body">输出：身体模型参数</text>
+<path d="M595 2810 V2878 H23 V1545 H75" class="train"/>
+<path d="M970 2810 V2898 H40 V1820 H75" class="train"/>
+<text x="75" y="2958" class="heading">边界：程序合法 ≠ 语义选择正确 ≠ 最终动作完全满足几何或物理要求。</text>
+<text x="75" y="2996" class="small">依据 arXiv:2312.11538v2 §4 / 图2–5；实现静态核查 7443b319（未运行模型）。</text>
+</svg>

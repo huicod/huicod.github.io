@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="3060" viewBox="0 0 1200 3060" role="img" aria-labelledby="title desc">
+<title id="title">STMC 多轨时间线到动作的完整架构</title>
+<desc id="desc">用户提供文本区间与部位标签，预处理分配身体部位时间线、扩展窗口和构造无条件过渡。共享预训练去噪器在每步处理同一个全长噪声动作的多个裁片，按部位合成预测并扣除过渡预测，再执行全长后验采样。MDM-SMPL训练与生成表示另行标注。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#475569"/></marker><marker id="green" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#23806d"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',Arial,sans-serif;fill:#19334a}.edge{fill:none;stroke:#475569;stroke-width:3;stroke-linejoin:round;marker-end:url(#arrow)}.reuse{fill:none;stroke:#23806d;stroke-width:3;stroke-dasharray:8 6;marker-end:url(#green)}</style>
+<rect width="1200" height="3060" fill="#f9fbfd"/>
+<text x="600" y="55" font-size="34" font-weight="700" text-anchor="middle" style="fill:#19334a">STMC · 多轨文本、身体部位与扩散中的动作组合</text>
+<text x="600" y="99" font-size="22" font-weight="normal" text-anchor="middle" style="fill:#536b80">CVPRW 2024｜教学重绘：原文图3、附录图A.1与官方实现</text>
+<rect x="25" y="140" width="1150" height="665" rx="20" fill="#fff" stroke="#cfdae4" stroke-width="2"/>
+<text x="55" y="183" font-size="28" font-weight="700" text-anchor="start" style="fill:#19334a">A · 一次性预处理：把用户安排变成部位来源和过渡窗口</text>
+<text x="55" y="220" font-size="21" font-weight="normal" text-anchor="start" style="fill:#536b80">时间与文本由用户提供；部位由用户给定，论文也允许先用 GPT-3 标注。</text>
+<text x="60" y="277" font-size="22" font-weight="700" text-anchor="start" style="fill:#19334a">轨道1</text>
+<text x="60" y="335" font-size="22" font-weight="700" text-anchor="start" style="fill:#19334a">轨道2</text>
+<text x="220" y="245" font-size="19" font-weight="normal" text-anchor="middle" style="fill:#536b80">0s</text>
+<text x="410" y="245" font-size="19" font-weight="normal" text-anchor="middle" style="fill:#536b80">2s</text>
+<text x="600" y="245" font-size="19" font-weight="normal" text-anchor="middle" style="fill:#536b80">4s</text>
+<text x="790" y="245" font-size="19" font-weight="normal" text-anchor="middle" style="fill:#536b80">6s</text>
+<text x="980" y="245" font-size="19" font-weight="normal" text-anchor="middle" style="fill:#536b80">8s</text>
+<text x="1075" y="245" font-size="19" font-weight="normal" text-anchor="middle" style="fill:#536b80">9s</text>
+<rect x="220" y="255" width="570" height="42" rx="5" fill="#d4edff" stroke="#91b2c9" stroke-width="2"/>
+<text x="505" y="284" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">绕圈走 · legs · 0–6秒</text>
+<rect x="790" y="255" width="285" height="42" rx="5" fill="#dcefdc" stroke="#9fbf9d" stroke-width="2"/>
+<text x="932" y="284" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">坐下 · 6–9秒</text>
+<rect x="410" y="314" width="570" height="42" rx="5" fill="#ffe4ca" stroke="#d4ae85" stroke-width="2"/>
+<text x="695" y="343" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">抬右手 · right arm · 2–8秒</text>
+<text x="60" y="395" font-size="20" font-weight="normal" text-anchor="start" style="fill:#536b80">示例时间仅用于解释；主方法不从一句话中自动决定这些秒数。</text>
+<rect x="60" y="430" width="480" height="175" rx="14" fill="#fff5e7" stroke="#d6ad73" stroke-width="2"/>
+<text x="300.0" y="465" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">按活跃文本切分与分配</text>
+<text x="300.0" y="501" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">优先选腿部文本作为基础动作</text>
+<text x="300.0" y="531" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">基础先覆盖全身，其他文本覆盖所标部位</text>
+<text x="300.0" y="561" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">最后合并来源相同的相邻小段</text>
+<path d="M540 517 H600" class="edge"/>
+<text x="842" y="430" font-size="23" font-weight="700" text-anchor="middle" style="fill:#19334a">五条身体部位时间线</text>
+<text x="660" y="469" font-size="19" font-weight="normal" text-anchor="end" style="fill:#19334a">腿部</text>
+<rect x="680" y="447" width="260" height="25" rx="3" fill="#d4edff" stroke="#adc3d2" stroke-width="2"/>
+<rect x="940" y="447" width="130" height="25" rx="3" fill="#dcefdc" stroke="#b3c9b0" stroke-width="2"/>
+<text x="660" y="503" font-size="19" font-weight="normal" text-anchor="end" style="fill:#19334a">躯干</text>
+<rect x="680" y="481" width="260" height="25" rx="3" fill="#d4edff" stroke="#adc3d2" stroke-width="2"/>
+<rect x="940" y="481" width="130" height="25" rx="3" fill="#dcefdc" stroke="#b3c9b0" stroke-width="2"/>
+<text x="660" y="537" font-size="19" font-weight="normal" text-anchor="end" style="fill:#19334a">头部</text>
+<rect x="680" y="515" width="260" height="25" rx="3" fill="#d4edff" stroke="#adc3d2" stroke-width="2"/>
+<rect x="940" y="515" width="130" height="25" rx="3" fill="#dcefdc" stroke="#b3c9b0" stroke-width="2"/>
+<text x="660" y="571" font-size="19" font-weight="normal" text-anchor="end" style="fill:#19334a">左臂</text>
+<rect x="680" y="549" width="260" height="25" rx="3" fill="#d4edff" stroke="#adc3d2" stroke-width="2"/>
+<rect x="940" y="549" width="130" height="25" rx="3" fill="#dcefdc" stroke="#b3c9b0" stroke-width="2"/>
+<text x="660" y="605" font-size="19" font-weight="normal" text-anchor="end" style="fill:#19334a">右臂</text>
+<rect x="680" y="583" width="260" height="25" rx="3" fill="#d4edff" stroke="#adc3d2" stroke-width="2"/>
+<rect x="940" y="583" width="130" height="25" rx="3" fill="#dcefdc" stroke="#b3c9b0" stroke-width="2"/>
+<rect x="767" y="583" width="260" height="25" rx="3" fill="#ffe4ca" stroke="#d4ae85" stroke-width="2"/>
+<path d="M840 618 V649" class="edge"/>
+<rect x="60" y="650" width="1080" height="110" rx="14" fill="#eef1fc" stroke="#acaed3" stroke-width="2"/>
+<text x="600.0" y="685" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">扩展文本/部位区间，并构造无条件过渡窗</text>
+<text x="600.0" y="721" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">两侧各扩展 l=0.25秒 → 总重叠0.5秒；保存裁片索引、部位索引和边界信息</text>
+<text x="60" y="788" font-size="19" font-weight="normal" text-anchor="start" style="fill:#536b80">兼容前提：交叠文本通常分配不同部位；不是通用的同部位冲突求解。</text>
+<rect x="25" y="840" width="1150" height="500" rx="20" fill="#fff" stroke="#cfdae4" stroke-width="2"/>
+<text x="55" y="883" font-size="28" font-weight="700" text-anchor="start" style="fill:#19334a">B · 生成先验：以作者 MDM-SMPL 的训练为例</text>
+<text x="55" y="920" font-size="21" font-weight="normal" text-anchor="start" style="fill:#536b80">STMC 本身不新增训练；推理也支持已有 MDM / MotionDiffuse 的生成先验。</text>
+<rect x="60" y="947" width="290" height="130" rx="14" fill="#edf4ff" stroke="#8cadcb" stroke-width="2"/>
+<text x="205.0" y="982" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">单文本训练数据</text>
+<text x="205.0" y="1018" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">动作 x₀ + 一条文本 C</text>
+<text x="205.0" y="1048" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">HumanML3D（仅 AMASS）</text>
+<rect x="420" y="947" width="310" height="130" rx="14" fill="#edf4ff" stroke="#8cadcb" stroke-width="2"/>
+<text x="575.0" y="982" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">训练输入构造</text>
+<text x="575.0" y="1018" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">动作加噪得到 xₜ</text>
+<text x="575.0" y="1048" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">预计算 CLIP 文本嵌入</text>
+<rect x="800" y="947" width="340" height="130" rx="14" fill="#eaf6ef" stroke="#83b49e" stroke-width="2"/>
+<text x="970.0" y="982" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">去噪器训练 Gθ</text>
+<text x="970.0" y="1018" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">预测干净动作 x̂₀</text>
+<text x="970.0" y="1048" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">监督 MSE：‖x̂₀−x₀‖²</text>
+<path d="M350 1012 H420" class="edge"/>
+<path d="M730 1012 H800" class="edge"/>
+<rect x="60" y="1134" width="640" height="155" rx="14" fill="#f3f8fb" stroke="#b5c6d3" stroke-width="2"/>
+<text x="380.0" y="1169" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">可选骨干 MDM-SMPL</text>
+<text x="380.0" y="1205" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">根运动 + 局部 SMPL 旋转 + 关节位置</text>
+<text x="380.0" y="1235" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">8层 Transformer；文本/t 分离；2个 register tokens</text>
+<text x="380.0" y="1265" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">训练10000 epochs，batch128；100步余弦日程</text>
+<rect x="800" y="1134" width="340" height="155" rx="14" fill="#eaf6ef" stroke="#83b49e" stroke-width="2"/>
+<text x="970.0" y="1169" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">推理时复用 θ</text>
+<text x="970.0" y="1205" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">固定已训练权重</text>
+<text x="970.0" y="1235" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">各文本窗共享同一模型</text>
+<text x="970.0" y="1265" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">空文本窗也用同一模型</text>
+<path d="M970 1077 V1134" class="edge"/>
+<path d="M1140 1210 H1188 V1900 H1140" class="reuse"/>
+<rect x="25" y="1375" width="1150" height="1165" rx="20" fill="#fff" stroke="#cfdae4" stroke-width="2"/>
+<text x="55" y="1418" font-size="28" font-weight="700" text-anchor="start" style="fill:#19334a">C · 每一步采样：从共享全长状态裁片，再合成全长预测</text>
+<text x="55" y="1455" font-size="21" font-weight="normal" text-anchor="start" style="fill:#536b80">扩散步 t 与动作帧索引不同；所有裁片来自同一个 xₜ，不是独立生成完成后才拼接。</text>
+<rect x="335" y="1480" width="540" height="115" rx="14" fill="#edf4ff" stroke="#8cadcb" stroke-width="2"/>
+<text x="605.0" y="1515" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">当前全长噪声动作 xₜ</text>
+<text x="605.0" y="1551" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">初始化：xT ∼ N(0,I)，长度覆盖整个时间线</text>
+<path d="M605 1595 V1630 H300 V1670" class="edge"/>
+<path d="M605 1630 H900 V1670" class="edge"/>
+<rect x="60" y="1670" width="480" height="130" rx="14" fill="#fff5e7" stroke="#d6ad73" stroke-width="2"/>
+<text x="300.0" y="1705" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">条件文本片段</text>
+<text x="300.0" y="1741" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">按 A 中的扩展区间裁出 xₜ</text>
+<text x="300.0" y="1771" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">每片配自己的 Cⱼ / 文本嵌入</text>
+<rect x="660" y="1670" width="480" height="130" rx="14" fill="#eef1fc" stroke="#acaed3" stroke-width="2"/>
+<text x="900.0" y="1705" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">无条件过渡片段</text>
+<text x="900.0" y="1741" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">按 A 中的交界窗口裁出同一个 xₜ</text>
+<text x="900.0" y="1771" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">文本条件为空；只用于过渡修正</text>
+<path d="M300 1800 V1845" class="edge"/>
+<path d="M900 1800 V1845" class="edge"/>
+<rect x="60" y="1845" width="480" height="140" rx="14" fill="#eaf6ef" stroke="#83b49e" stroke-width="2"/>
+<text x="300.0" y="1880" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">共享冻结去噪器 Gθ</text>
+<text x="300.0" y="1916" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">局部 xₜ + t + Cⱼ → x̂ⱼ</text>
+<text x="300.0" y="1946" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">每个局部预测仍包含全身动作</text>
+<text x="300.0" y="1976" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">可批处理；包含文本引导</text>
+<rect x="660" y="1845" width="480" height="140" rx="14" fill="#eaf6ef" stroke="#83b49e" stroke-width="2"/>
+<text x="900.0" y="1880" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">同一个 Gθ，空文本</text>
+<text x="900.0" y="1916" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">过渡 xₜ + t + 空条件</text>
+<text x="900.0" y="1946" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">→ 无条件过渡预测 x̂ᵤ</text>
+<text x="900.0" y="1976" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">只取发生来源切换的部位</text>
+<path d="M300 1985 V2030 H600 V2070" class="edge"/>
+<path d="M900 1985 V2030 H600" class="edge"/>
+<rect x="60" y="2070" width="1080" height="175" rx="14" fill="#fff5e7" stroke="#d6ad73" stroke-width="2"/>
+<text x="600.0" y="2105" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">按部位来源取特征，并在交界处组合</text>
+<text x="600.0" y="2141" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">非重叠：取对应文本预测的部位特征</text>
+<text x="600.0" y="2171" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">交叠：x̂合成 = x̂左条件 + x̂右条件 − x̂无条件过渡</text>
+<text x="600.0" y="2201" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">各片段放回正确时间位置 → 完整干净预测 x̂₀</text>
+<path d="M600 2245 V2290" class="edge"/>
+<rect x="310" y="2290" width="650" height="140" rx="14" fill="#edf4ff" stroke="#8cadcb" stroke-width="2"/>
+<text x="635.0" y="2325" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">统一执行全长反向采样</text>
+<text x="635.0" y="2361" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">xₜ₋₁ ∼ N(μₜ(xₜ, x̂₀), Σₜ)</text>
+<text x="635.0" y="2391" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">重复裁片、共享去噪、部位/时间组合</text>
+<text x="635.0" y="2421" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">后续模型看到已组合的全身状态</text>
+<path d="M960 2360 H1160 V1537 H875" class="edge"/>
+<text x="1144" y="2480" font-size="20" font-weight="normal" text-anchor="end" style="fill:#536b80">未结束：进入下一扩散步</text>
+<path d="M600 2430 V2490" class="edge"/>
+<text x="625" y="2490" font-size="20" font-weight="normal" text-anchor="start" style="fill:#536b80">全部步骤结束</text>
+<rect x="25" y="2580" width="1150" height="315" rx="20" fill="#fff" stroke="#cfdae4" stroke-width="2"/>
+<text x="55" y="2623" font-size="28" font-weight="700" text-anchor="start" style="fill:#19334a">D · 恢复动作表示与动画输出</text>
+<text x="55" y="2660" font-size="21" font-weight="normal" text-anchor="start" style="fill:#536b80">得到覆盖完整时间线的运动；动作语义起止、接触和物理可行性仍看最终动作。</text>
+<rect x="60" y="2690" width="300" height="125" rx="14" fill="#edf4ff" stroke="#8cadcb" stroke-width="2"/>
+<text x="210.0" y="2725" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">最终干净动作特征</text>
+<text x="210.0" y="2761" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">反归一化后的 x̂₀</text>
+<text x="210.0" y="2791" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">含整个多轨时间范围</text>
+<rect x="440" y="2690" width="340" height="125" rx="14" fill="#edf4ff" stroke="#8cadcb" stroke-width="2"/>
+<text x="610.0" y="2725" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">恢复根运动与关节</text>
+<text x="610.0" y="2761" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">MDM-SMPL：直接提取旋转</text>
+<text x="610.0" y="2791" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">及根路径，再经过 SMPL</text>
+<rect x="860" y="2690" width="280" height="125" rx="14" fill="#eaf6ef" stroke="#83b49e" stroke-width="2"/>
+<text x="1000.0" y="2725" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">三维动作 / 网格</text>
+<text x="1000.0" y="2761" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">顺序 + 并发动作</text>
+<text x="1000.0" y="2791" font-size="21" font-weight="normal" text-anchor="middle" style="fill:#19334a">可以渲染和继续编辑</text>
+<path d="M600 2490 V2555 H40 V2750 H60" class="edge"/>
+<path d="M360 2750 H440" class="edge"/>
+<path d="M780 2750 H860" class="edge"/>
+<text x="60" y="2861" font-size="20" font-weight="normal" text-anchor="start" style="fill:#536b80">若用原 MDM / MotionDiffuse 的关节输出，转为 SMPL 网格还需额外拟合。</text>
+<text x="55" y="2940" font-size="21" font-weight="normal" text-anchor="start" style="fill:#536b80">蓝：动作/固定处理　橙：用户条件与分配　绿：学习模型　虚线：复用训练权重</text>
+<text x="55" y="2980" font-size="21" font-weight="normal" text-anchor="start" style="fill:#536b80">输入时间明确 ≠ 动作事件严格准时；部位兼容组合 ≠ 任意冲突或接触条件可执行。</text>
+<text x="55" y="3020" font-size="19" font-weight="normal" text-anchor="start" style="fill:#536b80">依据：arXiv 2401.08559v2 §3、图3、附录B/D；nv-tlabs/stmc a8b2a1fc。非模型运行结果。</text>
+</svg>

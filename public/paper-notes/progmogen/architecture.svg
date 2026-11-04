@@ -1,0 +1,206 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2490" viewBox="0 0 1400 2490" role="img" aria-labelledby="title desc">
+<title id="title">ProgMoGen：误差程序与冻结动作扩散先验的完整架构</title>
+<desc id="desc">任务编程产生误差函数，文本条件与可优化初始噪声输入冻结的 MDM，通过完整 DDIM 链生成动作并恢复世界坐标，计算误差后反向传播更新初始噪声。标出外部预训练、内外循环、可选几何松弛和多初值搜索。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#49677b"/></marker><marker id="grad" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#b9506f"/></marker><marker id="opt" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#aa7928"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#183449}.title{font-size:36px;font-weight:700}.subtitle{font-size:22px;fill:#536978}.head{font-size:28px;font-weight:700}.body{font-size:24px}.small{font-size:21px}.label{font-size:21px;fill:#536978}.line{fill:none;stroke:#49677b;stroke-width:3;marker-end:url(#arrow)}.gradient{fill:none;stroke:#b9506f;stroke-width:4;marker-end:url(#grad)}.optional{fill:none;stroke:#aa7928;stroke-width:3;stroke-dasharray:9 6;marker-end:url(#opt)}</style>
+<rect width="1400" height="2490" fill="#f8fafc"/>
+<text x="50" y="59" class="title">
+<tspan x="50" dy="0">ProgMoGen：程序描述要求，噪声搜索动作</tspan>
+</text>
+<text x="50" y="96" class="subtitle">
+<tspan x="50" dy="0">CVPR 2024 · 教学重绘｜依据 v1 图2–3、式1、附录A–C与官方实现</tspan>
+</text>
+<rect x="40" y="130" width="1320" height="535" rx="24" fill="#eef4fb" stroke="#cfdfed"/>
+<text x="65" y="175" class="head">
+<tspan x="65" dy="0">① 任务准备：写评价动作的程序；不训练新生成器</tspan>
+</text>
+<rect x="70" y="205" width="610" height="150" rx="16" fill="#fff" stroke="#b5c9d8" stroke-width="2"/>
+<text x="92" y="244" class="head">
+<tspan x="92" dy="0">用户要求与参数 p</tspan>
+</text>
+<text x="92" y="283" class="body">
+<tspan x="92" dy="0">例：走路时抱着直径 0.4 米的球</tspan>
+<tspan x="92" dy="36">语义描述、关节/帧索引、几何与数值目标</tspan>
+</text>
+<rect x="730" y="205" width="600" height="150" rx="16" fill="#edf6ef" stroke="#9cbea7" stroke-width="2"/>
+<text x="752" y="244" class="head">
+<tspan x="752" dy="0">已有的离线预训练</tspan>
+</text>
+<text x="752" y="283" class="body">
+<tspan x="752" dy="0">HumanML3D → MDM 动作生成先验</tspan>
+<tspan x="752" dy="36">本任务直接加载权重 θ；θ 保持冻结</tspan>
+</text>
+<rect x="70" y="425" width="325" height="180" rx="16" fill="#fff" stroke="#b5c9d8" stroke-width="2"/>
+<text x="92" y="464" class="head">
+<tspan x="92" dy="0">动作语义 C（可选）</tspan>
+</text>
+<text x="92" y="503" class="body">
+<tspan x="92" dy="0">“一个人正在走路”</tspan>
+<tspan x="92" dy="36">文本作为生成条件</tspan>
+<tspan x="92" dy="36">不含全部精确约束</tspan>
+</text>
+<rect x="450" y="425" width="880" height="180" rx="16" fill="#fff" stroke="#b5c9d8" stroke-width="2"/>
+<text x="472" y="464" class="head">
+<tspan x="472" dy="0">人工编程 / 可选 LLM 辅助</tspan>
+</text>
+<text x="472" y="503" class="body">
+<tspan x="472" dy="0">任务分解 → 原子约束 + 数值逻辑 → 可微函数 F(x, p)</tspan>
+<tspan x="472" dy="36">F 接收动作，输出标量违反量；须检查程序是否表达正确</tspan>
+<tspan x="472" dy="36">例：手距误差 + 球中心与胸部的距离下界惩罚</tspan>
+</text>
+<path d="M210 355 V425" class="line"/>
+<path d="M540 355 V390 H850 V425" class="line"/>
+<rect x="40" y="705" width="1320" height="1200" rx="24" fill="#fff" stroke="#a6bed0" stroke-width="2"/>
+<text x="65" y="755" class="head">
+<tspan x="65" dy="0">② 推理时的噪声优化外循环：重复完整生成、求误差、更新 z</tspan>
+</text>
+<rect x="140" y="800" width="730" height="135" rx="16" fill="#fff0f5" stroke="#cc91a5" stroke-width="2"/>
+<text x="162" y="839" class="head">
+<tspan x="162" dy="0">初始噪声 z：本任务唯一的可优化输入</tspan>
+</text>
+<text x="162" y="878" class="body">
+<tspan x="162" dy="0">随机初始化；每轮使用更新后的 z</tspan>
+<tspan x="162" dy="36">模型参数 θ 不进入 Adam 的更新列表</tspan>
+</text>
+<rect x="970" y="800" width="330" height="135" rx="16" fill="#edf6ef" stroke="#9cbea7" stroke-width="2"/>
+<text x="992" y="839" class="head">
+<tspan x="992" dy="0">条件与冻结权重</tspan>
+</text>
+<text x="992" y="878" class="body">
+<tspan x="992" dy="0">接收上方 C 与 θ</tspan>
+<tspan x="992" dy="36">每一轮复用</tspan>
+</text>
+<path d="M232 605 V680 H1130 V800" class="line"/>
+<path d="M1030 355 H1380 V680 H1220 V800" class="line"/>
+<text x="1010" y="670" class="label">
+<tspan x="1010" dy="0">C 与 θ</tspan>
+</text>
+<rect x="140" y="1010" width="730" height="310" rx="18" fill="#eaf4f8" stroke="#85b1c6" stroke-width="2"/>
+<text x="162" y="1050" class="head">
+<tspan x="162" dy="0">内循环：冻结 MDM 的完整 DDIM 采样链</tspan>
+</text>
+<text x="162" y="1090" class="body">
+<tspan x="162" dy="0">100 步，η = 0；给定 z、C 后确定性生成</tspan>
+<tspan x="162" dy="36">x₁₀₀ = z → x₉₉ → … → x₁ → x₀</tspan>
+</text>
+<rect x="170" y="1170" width="665" height="120" rx="16" fill="#fff" stroke="#b5c9d8" stroke-width="2"/>
+<text x="192" y="1209" class="head">
+<tspan x="192" dy="0">Gθ(z, C)：同一生成器反复调用</tspan>
+</text>
+<text x="192" y="1248" class="small">
+<tspan x="192" dy="0">当前 z → 一段动作表示 x；每轮都跑完整链</tspan>
+</text>
+<path d="M505 935 V1010" class="line"/>
+<path d="M1135 935 V980 H800 V1010" class="line"/>
+<rect x="140" y="1400" width="730" height="125" rx="16" fill="#fff" stroke="#b5c9d8" stroke-width="2"/>
+<text x="162" y="1439" class="head">
+<tspan x="162" dy="0">可微坐标恢复 T</tspan>
+</text>
+<text x="162" y="1478" class="body">
+<tspan x="162" dy="0">反标准化、局部运动恢复 → 世界坐标关节</tspan>
+<tspan x="162" dy="36">实现：22 关节；约束按关节与帧索引读取</tspan>
+</text>
+<path d="M505 1320 V1400" class="line"/>
+<text x="525" y="1370" class="label">
+<tspan x="525" dy="0">动作表示 x</tspan>
+</text>
+<rect x="140" y="1605" width="730" height="180" rx="16" fill="#f2effb" stroke="#b7a4d2" stroke-width="2"/>
+<text x="162" y="1644" class="head">
+<tspan x="162" dy="0">执行误差程序 F(T(x), p)</tspan>
+</text>
+<text x="162" y="1683" class="body">
+<tspan x="162" dy="0">距离 / 范围 / 相对关系 / 差分 / 关键帧</tspan>
+<tspan x="162" dy="36">可按任务加入根运动保持等正则</tspan>
+<tspan x="162" dy="36">输出一个标量损失；另逐项评估实际违反量</tspan>
+</text>
+<path d="M505 1525 V1605" class="line"/>
+<text x="525" y="1575" class="label">
+<tspan x="525" dy="0">全局关节位置</tspan>
+</text>
+<path d="M900 605 H1340 V1695 H870" class="line"/>
+<text x="1070" y="1737" class="label">
+<tspan x="1070" dy="0">F 与参数 p</tspan>
+</text>
+<rect x="970" y="1100" width="330" height="245" rx="16" fill="#fff7e6" stroke="#d7ba7d" stroke-width="2"/>
+<text x="992" y="1139" class="head">
+<tspan x="992" dy="0">可选几何松弛</tspan>
+</text>
+<text x="992" y="1178" class="body">
+<tspan x="992" dy="0">特定任务周期更新</tspan>
+<tspan x="992" dy="36">放松后的目标 p′</tspan>
+<tspan x="992" dy="36">仅 GEO-1 / GEO-2</tspan>
+<tspan x="992" dy="36">和 HOI-1</tspan>
+<tspan x="992" dy="36">输出时再变回原目标</tspan>
+</text>
+<path d="M870 1460 H925 V1245 H970" class="optional"/>
+<path d="M970 1300 H915 V1650 H870" class="optional"/>
+<text x="970" y="1395" class="small">
+<tspan x="970" dy="0">当前动作 → p′</tspan>
+</text>
+<rect x="970" y="1450" width="330" height="190" rx="16" fill="#fff0f5" stroke="#cc91a5" stroke-width="2"/>
+<text x="992" y="1489" class="head">
+<tspan x="992" dy="0">Adam 更新 z</tspan>
+</text>
+<text x="992" y="1528" class="body">
+<tspan x="992" dy="0">穿过 F、T 与整条</tspan>
+<tspan x="992" dy="36">DDIM 链反向求导</tspan>
+<tspan x="992" dy="36">仅更新初始噪声</tspan>
+</text>
+<path d="M870 1760 H930 V1550 H970" class="gradient"/>
+<text x="985" y="1680" class="body">
+<tspan x="985" dy="0">∂F / ∂z</tspan>
+</text>
+<path d="M1135 1450 V1360 H925 V875 H870" class="gradient"/>
+<text x="970" y="1850" class="small">
+<tspan x="970" dy="0">外层通常约 100 次</tspan>
+</text>
+<text x="165" y="1840" class="small">
+<tspan x="165" dy="0">F 可计算 ≠ 程序语义正确 ≠ 解码动作满足全部要求</tspan>
+</text>
+<rect x="40" y="1950" width="1320" height="395" rx="24" fill="#eef6f0" stroke="#b2cdbb"/>
+<text x="65" y="2000" class="head">
+<tspan x="65" dy="0">③ 输出与独立检查</tspan>
+</text>
+<rect x="70" y="2040" width="600" height="240" rx="16" fill="#fff" stroke="#b5c9d8" stroke-width="2"/>
+<text x="92" y="2079" class="head">
+<tspan x="92" dy="0">最终生成动作</tspan>
+</text>
+<text x="92" y="2118" class="body">
+<tspan x="92" dy="0">返回噪声搜索得到的动作结果</tspan>
+<tspan x="92" dy="36">若用了几何松弛：变回原目标布局</tspan>
+<tspan x="92" dy="36">逐项测量约束残差、脚滑、加速度与语义</tspan>
+<tspan x="92" dy="36">不要求外部已有完整动作作为输入</tspan>
+</text>
+<rect x="730" y="2040" width="600" height="240" rx="16" fill="#fff7e6" stroke="#d7ba7d" stroke-width="2"/>
+<text x="752" y="2079" class="head">
+<tspan x="752" dy="0">可选：多个随机初值分别优化</tspan>
+</text>
+<text x="752" y="2118" class="body">
+<tspan x="752" dy="0">附录比较 1 次和 5 次完整搜索</tspan>
+<tspan x="752" dy="36">按约束误差选择结果；增加计算量</tspan>
+<tspan x="752" dy="36">约束误差改善不代表 FID / 多样性也改善</tspan>
+<tspan x="752" dy="36">可用首次生成结果作运动保持参照</tspan>
+</text>
+<path d="M140 1460 H100 V1925 H350 V2040" class="line"/>
+<text x="170" y="1890" class="small">
+<tspan x="170" dy="0">优化结束的动作</tspan>
+</text>
+<text x="750" y="2320" class="small">
+<tspan x="750" dy="0">多初值搜索是重复整套优化，不是增加 DDIM 步数</tspan>
+</text>
+<path d="M60 2400 H130" class="line"/>
+<text x="145" y="2407" class="small">
+<tspan x="145" dy="0">正向数据 / 条件</tspan>
+</text>
+<path d="M455 2400 H525" class="gradient"/>
+<text x="540" y="2407" class="small">
+<tspan x="540" dy="0">梯度与 z 的更新</tspan>
+</text>
+<path d="M880 2400 H950" class="optional"/>
+<text x="965" y="2407" class="small">
+<tspan x="965" dy="0">可选分支</tspan>
+</text>
+<text x="50" y="2453" class="small">
+<tspan x="50" dy="0">说明：示意图不代表模型实测结果；约束与自然度均须检查最终动作。当前解读未运行模型。</tspan>
+</text>
+</svg>
