@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2720" viewBox="0 0 1120 2720" role="img" aria-labelledby="title desc">
+<title id="title">FreqMo 完整架构教学示意</title>
+<desc id="desc">训练动作编码为潜序列后，通过由粗到细的小波残差量化获得共享码本的六组 token。冻结 tokenizer 后，以文本条件掩码预测学习生成。推理从全掩码开始十二轮补全，查同一码本，各层逆小波还原到相同长度，叠加末层残差，再由动作解码器输出连续运动。连续扩散变体单列在末尾。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#456b73"/></marker><marker id="trainArrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#a77b2f"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#203c48}.title{font-size:31px;font-weight:700}.section{font-size:25px;font-weight:700}.name{font-size:23px;font-weight:700}.body{font-size:21px}.small{font-size:20px;fill:#45677c}.panel{stroke:#ccd9d8;stroke-width:1.5}.node{stroke:#aac5c6;stroke-width:1.5}.flow{fill:none;stroke:#456b73;stroke-width:2.5;marker-end:url(#arrow)}.train{fill:none;stroke:#a77b2f;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#trainArrow)}</style>
+<rect width="1120" height="2720" rx="18" fill="#fafbf9"/>
+<text x="34" y="47" class="title" text-anchor="start">FreqMo · 先按尺度编码，再联合生成</text>
+<text x="34" y="81" class="small" text-anchor="start">教学重绘 · arXiv:2610.03012v1 · 依据图 2–3、算法 1–2、式 1–5</text>
+<path d="M40 111 H110" class="flow"/>
+<text x="123" y="118" class="small" text-anchor="start">数据 / 计算流</text>
+<path d="M340 111 H410" class="train"/>
+<text x="423" y="118" class="small" text-anchor="start">训练监督 / 复用</text>
+<text x="720" y="118" class="small" text-anchor="start">绿色：表示模块　黄色：量化与生成</text>
+<rect x="24" y="145" width="1072" height="855" rx="14" fill="#fff" class="panel"/>
+<text x="44" y="184" class="section" text-anchor="start">01 训练动作表示 · 小波作用于编码后的潜序列</text>
+<rect x="48" y="218" width="240" height="105" rx="14" fill="#edf3fa" class="node"/>
+<text x="64" y="251" class="name" text-anchor="start">真实动作 X</text>
+<text x="64" y="284" class="body" text-anchor="start">T 帧关节运动</text>
+<rect x="340" y="218" width="290" height="105" rx="14" fill="#e8f3ed" class="node"/>
+<text x="356" y="251" class="name" text-anchor="start">动作编码器 E_M</text>
+<text x="356" y="284" class="body" text-anchor="start">时间压缩 4 倍</text>
+<rect x="682" y="218" width="384" height="105" rx="14" fill="#e8f3ed" class="node"/>
+<text x="698" y="251" class="name" text-anchor="start">潜序列 h → 初始残差 R</text>
+<text x="698" y="284" class="body" text-anchor="start">从最粗尺度开始：l = L = 5</text>
+<path d="M288 271 H340" class="flow"/>
+<path d="M630 271 H682" class="flow"/>
+<path d="M874 323 V349 H34 V459 H48" class="flow"/>
+<text x="48" y="383" class="name" text-anchor="start">放大一轮 UFRQ：量化当前残差的低频近似，逐轮由粗到细</text>
+<rect x="48" y="403" width="280" height="113" rx="14" fill="#edf3fa" class="node"/>
+<text x="64" y="436" class="name" text-anchor="start">当前残差 R</text>
+<text x="64" y="469" class="body" text-anchor="start">尚未被前面层解释的部分</text>
+<text x="64" y="498" class="body" text-anchor="start">初始 R = h</text>
+<rect x="392" y="403" width="312" height="113" rx="14" fill="#e8f3ed" class="node"/>
+<text x="408" y="436" class="name" text-anchor="start">l 层 DWT</text>
+<text x="408" y="469" class="body" text-anchor="start">取低频近似 A_l</text>
+<text x="408" y="498" class="body" text-anchor="start">时间长度随尺度变化</text>
+<rect x="768" y="403" width="298" height="113" rx="14" fill="#fff2d7" class="node"/>
+<text x="784" y="436" class="name" text-anchor="start">共享码本 C · 最近邻</text>
+<text x="784" y="469" class="body" text-anchor="start">z_l = Quantize(A_l, C)</text>
+<text x="784" y="498" class="body" text-anchor="start">同一套 512 × 512 码本</text>
+<path d="M328 459 H392" class="flow"/>
+<path d="M704 459 H768" class="flow"/>
+<rect x="768" y="567" width="298" height="113" rx="14" fill="#e8f3ed" class="node"/>
+<text x="784" y="600" class="name" text-anchor="start">查码 + l 层 IDWT</text>
+<text x="784" y="633" class="body" text-anchor="start">S_l = IDWTˡ(C[z_l], 0)</text>
+<text x="784" y="662" class="body" text-anchor="start">细节置零；还原至 h 长度</text>
+<rect x="392" y="567" width="312" height="113" rx="14" fill="#fff2d7" class="node"/>
+<text x="408" y="600" class="name" text-anchor="start">减去本层贡献</text>
+<text x="408" y="633" class="body" text-anchor="start">R ← R − S_l</text>
+<text x="408" y="662" class="body" text-anchor="start">保存 z_l，进入更细一层</text>
+<rect x="48" y="567" width="280" height="113" rx="14" fill="#edf3fa" class="node"/>
+<text x="64" y="600" class="name" text-anchor="start">更新后的 R</text>
+<text x="64" y="633" class="body" text-anchor="start">l &gt; 1：l ← l − 1 并循环</text>
+<text x="64" y="662" class="body" text-anchor="start">l = 1：转入末层量化</text>
+<path d="M917 516 V567" class="flow"/>
+<path d="M768 623 H704" class="flow"/>
+<path d="M392 623 H328" class="flow"/>
+<path d="M188 567 V516" class="flow"/>
+<text x="48" y="716" class="small" text-anchor="start">末轮之后：对剩余完整长度残差直接量化，得到 z₀。</text>
+<rect x="48" y="744" width="280" height="112" rx="14" fill="#fff2d7" class="node"/>
+<text x="64" y="777" class="name" text-anchor="start">z₀ = Quantize(R, C)</text>
+<text x="64" y="810" class="body" text-anchor="start">仍复用同一码本</text>
+<text x="64" y="839" class="body" text-anchor="start">补充最终残差</text>
+<rect x="392" y="744" width="312" height="112" rx="14" fill="#edf3fa" class="node"/>
+<text x="408" y="777" class="name" text-anchor="start">目标 token 序列 z</text>
+<text x="408" y="810" class="body" text-anchor="start">[z₅, z₄, z₃, z₂, z₁, z₀]</text>
+<text x="408" y="839" class="body" text-anchor="start">粗 → 细：4/5/8/14/26/49</text>
+<rect x="768" y="744" width="298" height="112" rx="14" fill="#e8f3ed" class="node"/>
+<text x="784" y="777" class="name" text-anchor="start">重建潜序列 → D_M</text>
+<text x="784" y="810" class="body" text-anchor="start">各层 IDWT 后相加</text>
+<text x="784" y="839" class="body" text-anchor="start">解码动作 X̂</text>
+<path d="M188 680 V690 H34 V800 H48" class="flow"/>
+<path d="M328 800 H392" class="flow"/>
+<path d="M704 800 H768" class="flow"/>
+<rect x="48" y="899" width="1018" height="65" rx="14" fill="#fff9ec" class="node"/>
+<text x="67" y="940" class="body" text-anchor="start">表示损失：动作 L1 重建 + β × 各层 commitment；β = 0.25</text>
+<path d="M917 856 V899" class="train"/>
+<path d="M48 271 H10 V931 H48" class="train"/>
+<text x="48" y="981" class="small" text-anchor="start">无量化时 DWT 可逆；完整编码—量化—解码仍有重建误差。</text>
+<rect x="24" y="1030" width="1072" height="415" rx="14" fill="#fff" class="panel"/>
+<text x="44" y="1070" class="section" text-anchor="start">02 训练条件生成器 · tokenizer 冻结，目标来自上方编码</text>
+<rect x="48" y="1100" width="280" height="113" rx="14" fill="#edf3fa" class="node"/>
+<text x="64" y="1133" class="name" text-anchor="start">目标 z → 随机遮挡</text>
+<text x="64" y="1166" class="body" text-anchor="start">训练掩码比例 ρ = 0.3</text>
+<text x="64" y="1195" class="body" text-anchor="start">其余位置提供上下文</text>
+<rect x="392" y="1100" width="312" height="113" rx="14" fill="#e8f3ed" class="node"/>
+<text x="408" y="1133" class="name" text-anchor="start">时间位置 + 尺度嵌入</text>
+<text x="408" y="1166" class="body" text-anchor="start">归一化 τ = (k+0.5)/N_l</text>
+<text x="408" y="1195" class="body" text-anchor="start">对齐各层的相对时刻</text>
+<rect x="768" y="1100" width="298" height="113" rx="14" fill="#edf3fa" class="node"/>
+<text x="784" y="1133" class="name" text-anchor="start">文字 c → CLIP</text>
+<text x="784" y="1166" class="body" text-anchor="start">预训练文本编码</text>
+<text x="784" y="1195" class="body" text-anchor="start">作为交叉注意力条件</text>
+<path d="M548 856 V875 H1080 V1085 H188 V1100" class="train"/>
+<path d="M328 1156 H392" class="flow"/>
+<rect x="220" y="1260" width="660" height="102" rx="14" fill="#fff2d7" class="node"/>
+<text x="236" y="1293" class="name" text-anchor="start">掩码 Transformer · 所有尺度联合预测</text>
+<text x="236" y="1326" class="body" text-anchor="start">全序列 self-attention + 文字 cross-attention + 尺度偏置</text>
+<path d="M548 1213 V1260" class="flow"/>
+<path d="M917 1213 V1311 H880" class="flow"/>
+<text x="48" y="1413" class="body" text-anchor="start">监督：仅被遮住位置的交叉熵；8 层 / 6 头 / 隐藏维度 384。</text>
+<path d="M548 1362 V1383" class="train"/>
+<rect x="24" y="1475" width="1072" height="1000" rx="14" fill="#fff" class="panel"/>
+<text x="44" y="1515" class="section" text-anchor="start">03 推理主线 · 一套生成器，12 轮补全，再复用表示解码</text>
+<rect x="48" y="1550" width="440" height="110" rx="14" fill="#edf3fa" class="node"/>
+<text x="64" y="1583" class="name" text-anchor="start">用户文字描述 → CLIP</text>
+<text x="64" y="1616" class="body" text-anchor="start">例如：一个人走路时绊了一下</text>
+<rect x="600" y="1550" width="466" height="110" rx="14" fill="#edf3fa" class="node"/>
+<text x="616" y="1583" class="name" text-anchor="start">初始化所有尺度的 [MASK]</text>
+<text x="616" y="1616" class="body" text-anchor="start">序列长度决定各尺度位置数</text>
+<text x="616" y="1645" class="body" text-anchor="start">加时间编码与尺度嵌入</text>
+<rect x="220" y="1730" width="660" height="160" rx="14" fill="#fff2d7" class="node"/>
+<text x="236" y="1763" class="name" text-anchor="start">已训练的掩码 Transformer</text>
+<text x="236" y="1796" class="body" text-anchor="start">各尺度在同一轮联合预测</text>
+<text x="236" y="1825" class="body" text-anchor="start">尺度感知注意力偏置照顾较粗的键位置</text>
+<text x="236" y="1854" class="body" text-anchor="start">按置信度保留部分 token，其余继续补全</text>
+<path d="M268 1660 V1703 H400 V1730" class="flow"/>
+<path d="M833 1660 V1703 H700 V1730" class="flow"/>
+<path d="M880 1810 H1017 V1705 H893 V1754 H880" class="flow"/>
+<text x="918" y="1840" class="small" text-anchor="start">迭代 12 轮</text>
+<rect x="220" y="1940" width="660" height="100" rx="14" fill="#e8f3ed" class="node"/>
+<text x="236" y="1973" class="name" text-anchor="start">完成的六组 token → 共享码本 C 查表</text>
+<text x="236" y="2006" class="body" text-anchor="start">复用表示学习获得的码本；不再需要真实动作</text>
+<path d="M550 1890 V1940" class="flow"/>
+<rect x="48" y="2095" width="560" height="113" rx="14" fill="#e8f3ed" class="node"/>
+<text x="64" y="2128" class="name" text-anchor="start">z₅ … z₁：各自 IDWT 到 h 的长度</text>
+<text x="64" y="2161" class="body" text-anchor="start">对应深度 5 … 1，细节输入设为 0</text>
+<text x="64" y="2190" class="body" text-anchor="start">得到各层潜空间贡献 S₅ … S₁</text>
+<rect x="720" y="2095" width="346" height="113" rx="14" fill="#e8f3ed" class="node"/>
+<text x="736" y="2128" class="name" text-anchor="start">z₀：末层残差向量</text>
+<text x="736" y="2161" class="body" text-anchor="start">C[z₀] 已是完整长度</text>
+<text x="736" y="2190" class="body" text-anchor="start">无需再做小波上采样</text>
+<path d="M410 2040 V2066 H328 V2095" class="flow"/>
+<path d="M690 2040 V2066 H893 V2095" class="flow"/>
+<rect x="48" y="2280" width="390" height="111" rx="14" fill="#fff2d7" class="node"/>
+<text x="64" y="2313" class="name" text-anchor="start">同长度潜向量逐项相加</text>
+<text x="64" y="2346" class="body" text-anchor="start">ĥ = S₅ + … + S₁ + C[z₀]</text>
+<text x="64" y="2375" class="body" text-anchor="start">不是拼接动作片段</text>
+<rect x="501" y="2280" width="260" height="111" rx="14" fill="#e8f3ed" class="node"/>
+<text x="517" y="2313" class="name" text-anchor="start">动作解码器 D_M</text>
+<text x="517" y="2346" class="body" text-anchor="start">复用已学参数</text>
+<text x="517" y="2375" class="body" text-anchor="start">潜空间 → 连续运动</text>
+<rect x="824" y="2280" width="242" height="111" rx="14" fill="#edf3fa" class="node"/>
+<text x="840" y="2313" class="name" text-anchor="start">输出动作 X̂</text>
+<text x="840" y="2346" class="body" text-anchor="start">整体趋势 + 局部变化</text>
+<text x="840" y="2375" class="body" text-anchor="start">无硬接触保证</text>
+<path d="M328 2208 V2244 H243 V2280" class="flow"/>
+<path d="M893 2208 V2244 H380 V2280" class="flow"/>
+<path d="M438 2335 H501" class="flow"/>
+<path d="M761 2335 H824" class="flow"/>
+<text x="48" y="2440" class="small" text-anchor="start">“single-stage”指各尺度共享一套生成器；不等于只有一次前向计算。</text>
+<rect x="24" y="2505" width="1072" height="160" rx="14" fill="#fff" class="panel"/>
+<text x="44" y="2545" class="section" text-anchor="start">补充分支 · FreqMo-Diff（独立实验，不串接在上述推理链中）</text>
+<text x="48" y="2584" class="body" text-anchor="start">同类小波表示 → VAE / 连续扩散路线；替代 UFRQ 离散方案。</text>
+<text x="48" y="2624" class="small" text-anchor="start">原文对该变体仅简述，不将未披露的网络与损失细节补画为确定模块。</text>
+<text x="34" y="2700" class="small" text-anchor="start">图中长度示例对应原表 3；算法 z₅→z₀ 与原表 L0→L5 都表示从粗到细。</text>
+</svg>

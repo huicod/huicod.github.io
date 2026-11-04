@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="2880" viewBox="0 0 1120 2880" role="img" aria-labelledby="title desc">
+<title id="title">DiffusionPhase 完整架构教学示意</title><desc id="desc">真实运动经过主体片段筛选，编码为幅值、相移、偏置。预设频率合成周期主体信号，同一参数形成线性首尾信号，再由卷积解码器重建。随后冻结表示网络，以文本、起始姿态和扩散步条件预测干净参数。推理生成参数后，可以重复周期，或以前段末姿态条件重新采样下一段。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#456b73"/></marker><marker id="trainArrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#a77b2f"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#203c48}.title{font-size:31px;font-weight:700}.section{font-size:25px;font-weight:700}.name{font-size:23px;font-weight:700}.body{font-size:21px}.small{font-size:20px;fill:#45677c}.panel{stroke:#ccd9d8;stroke-width:1.5;fill:#fff}.node{stroke:#aac5c6;stroke-width:1.5}.flow{fill:none;stroke:#456b73;stroke-width:2.5;marker-end:url(#arrow)}.train{fill:none;stroke:#a77b2f;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#trainArrow)}</style>
+<rect width="1120" height="2880" rx="18" fill="#fafbf9"/>
+<text x="34" y="47" class="title" text-anchor="start">DiffusionPhase · 生成周期参数，再按时间合成动作</text>
+<text x="34" y="80" class="small" text-anchor="start">arXiv 2023 · 教学重绘，依据图 2、§3.1–3.4、式 1–7 与补充材料</text>
+<path d="M40 106 H104" class="flow"/>
+<text x="116" y="113" class="small" text-anchor="start">数据流 / 推理流程</text>
+<path d="M400 106 H464" class="train"/>
+<text x="476" y="113" class="small" text-anchor="start">仅训练时的监督</text>
+<text x="766" y="113" class="small" text-anchor="start">绿色：后续冻结 / 复用</text>
+<rect x="24" y="140" width="1072" height="840" rx="14" class="panel" fill="#fff"/>
+<text x="44" y="178" class="section" text-anchor="start">01 表示学习 · 先选主体段，再学习可连续求值的周期表示</text>
+<rect x="48" y="220" width="230" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="64" y="254" class="name" text-anchor="start">真实动作 J</text>
+<text x="64" y="286" class="body" text-anchor="start">包含开始与结束</text>
+<text x="64" y="315" class="body" text-anchor="start">逐帧动作特征 dᵢ</text>
+<rect x="320" y="220" width="400" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="336" y="254" class="name" text-anchor="start">主体区间搜索 tₛ、tₑ</text>
+<text x="336" y="286" class="body" text-anchor="start">偏好端点相似且区间足够长</text>
+<text x="336" y="315" class="body" text-anchor="start">保留前 W 组边界以增强数据</text>
+<rect x="762" y="220" width="298" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="778" y="254" class="name" text-anchor="start">主体段 + 首尾段</text>
+<text x="778" y="286" class="body" text-anchor="start">周期主体送入 E</text>
+<text x="778" y="315" class="body" text-anchor="start">保留边界供信号合成</text>
+<path d="M278 275 H320" class="flow"/>
+<path d="M720 275 H762" class="flow"/>
+<rect x="48" y="390" width="260" height="110" rx="14" class="node" fill="#e8f3ed"/>
+<text x="64" y="424" class="name" text-anchor="start">编码器 E（可训练）</text>
+<text x="64" y="456" class="body" text-anchor="start">输入卷积 + 4 层 MLP</text>
+<text x="64" y="485" class="body" text-anchor="start">编码主体动作</text>
+<rect x="360" y="390" width="300" height="110" rx="14" class="node" fill="#fff2d7"/>
+<text x="376" y="424" class="name" text-anchor="start">周期参数 X</text>
+<text x="376" y="456" class="body" text-anchor="start">幅值 aᵢ / 相移 pᵢ</text>
+<text x="376" y="485" class="body" text-anchor="start">偏置 oᵢ；共 M 组</text>
+<rect x="720" y="390" width="340" height="110" rx="14" class="node" fill="#fff2d7"/>
+<text x="736" y="424" class="name" text-anchor="start">预设频率 F + 时间 k</text>
+<text x="736" y="456" class="body" text-anchor="start">不是对原始关节直接 FFT</text>
+<text x="736" y="485" class="body" text-anchor="start">最高频率 30 ≠ 30 Hz</text>
+<path d="M900 330 V356 H178 V390" class="flow"/>
+<path d="M308 445 H360" class="flow"/>
+<rect x="48" y="580" width="480" height="128" rx="14" class="node" fill="#fff2d7"/>
+<text x="64" y="614" class="name" text-anchor="start">主体：正弦 + 余弦信号</text>
+<text x="64" y="646" class="body" text-anchor="start">aᵢ sin(2π(fᵢk + pᵢ)) + oᵢ</text>
+<text x="64" y="675" class="body" text-anchor="start">aᵢ cos(2π(fᵢk + pᵢ)) + oᵢ</text>
+<text x="64" y="704" class="body" text-anchor="start">tₛ → tₑ 对应 k：0 → 1</text>
+<rect x="580" y="580" width="480" height="128" rx="14" class="node" fill="#fff2d7"/>
+<text x="596" y="614" class="name" text-anchor="start">首尾：线性潜信号</text>
+<text x="596" y="646" class="body" text-anchor="start">起始段：0 → 周期边界信号</text>
+<text x="596" y="675" class="body" text-anchor="start">结束段：周期边界信号 → 0</text>
+<text x="596" y="704" class="body" text-anchor="start">同一组参数；不是关节线性插值</text>
+<path d="M510 500 V540 H288 V580" class="flow"/>
+<path d="M510 540 H820 V580" class="flow"/>
+<path d="M890 500 V554 H1040 V580" class="flow"/>
+<path d="M890 554 H450 V580" class="flow"/>
+<rect x="48" y="770" width="320" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="64" y="804" class="name" text-anchor="start">按时间拼接 S</text>
+<text x="64" y="836" class="body" text-anchor="start">起始 / 主体 / 结束</text>
+<text x="64" y="865" class="body" text-anchor="start">完整潜信号序列</text>
+<rect x="420" y="770" width="300" height="110" rx="14" class="node" fill="#e8f3ed"/>
+<text x="436" y="804" class="name" text-anchor="start">动作解码器 D</text>
+<text x="436" y="836" class="body" text-anchor="start">4 层 1D 卷积</text>
+<text x="436" y="865" class="body" text-anchor="start">学习信号 → 动作</text>
+<rect x="772" y="770" width="288" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="788" y="804" class="name" text-anchor="start">重建动作 Ĵ</text>
+<text x="788" y="836" class="body" text-anchor="start">与原始动作比较</text>
+<text x="788" y="865" class="body" text-anchor="start">输出连续姿态序列</text>
+<path d="M288 708 V740 H208 V770" class="flow"/>
+<path d="M820 708 V740 H208" class="flow"/>
+<path d="M368 825 H420" class="flow"/>
+<path d="M720 825 H772" class="flow"/>
+<rect x="48" y="914" width="1012" height="46" rx="14" class="node" fill="#fff9ec"/>
+<text x="66" y="945" class="body" text-anchor="start">重建监督：动作表示误差 + 前向运动学 FK 后的关节误差（式 4）</text>
+<path d="M916 880 V914" class="train"/>
+<path d="M48 275 H34 V937 H48" class="train"/>
+<rect x="24" y="1010" width="1072" height="640" rx="14" class="panel" fill="#fff"/>
+<text x="44" y="1048" class="section" text-anchor="start">02 生成学习 · 冻结 E、D，在参数空间训练条件扩散</text>
+<rect x="48" y="1090" width="300" height="110" rx="14" class="node" fill="#e8f3ed"/>
+<text x="64" y="1124" class="name" text-anchor="start">真实主体 → 冻结 E</text>
+<text x="64" y="1156" class="body" text-anchor="start">提供干净目标 X⁰</text>
+<text x="64" y="1185" class="body" text-anchor="start">起点姿态 j 来自 tₛ</text>
+<rect x="400" y="1090" width="300" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="416" y="1124" class="name" text-anchor="start">扩散前向加噪</text>
+<text x="416" y="1156" class="body" text-anchor="start">X⁰ + 高斯噪声 ε</text>
+<text x="416" y="1185" class="body" text-anchor="start">得到噪声等级 n 的 Xⁿ</text>
+<rect x="752" y="1090" width="308" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="768" y="1124" class="name" text-anchor="start">训练条件</text>
+<text x="768" y="1156" class="body" text-anchor="start">文本 c / 起始姿态 j</text>
+<text x="768" y="1185" class="body" text-anchor="start">随机遮蔽以学习 CFG</text>
+<path d="M348 1145 H400" class="flow"/>
+<rect x="300" y="1280" width="520" height="140" rx="14" class="node" fill="#edf3fa"/>
+<text x="316" y="1314" class="name" text-anchor="start">8 层去噪 Transformer（可训练）</text>
+<text x="316" y="1346" class="body" text-anchor="start">输入：Xⁿ + 条件嵌入 + 扩散步 n</text>
+<text x="316" y="1375" class="body" text-anchor="start">文本：冻结 CLIP ViT-B/32</text>
+<text x="316" y="1404" class="body" text-anchor="start">姿态：嵌入层；预测干净参数 X̂⁰</text>
+<path d="M550 1200 V1280" class="flow"/>
+<path d="M906 1200 V1238 H710 V1280" class="flow"/>
+<rect x="300" y="1480" width="520" height="110" rx="14" class="node" fill="#fff9ec"/>
+<text x="316" y="1514" class="name" text-anchor="start">参数监督 + 解码运动监督</text>
+<text x="316" y="1546" class="body" text-anchor="start">X̂⁰ 对齐 X⁰（式 7）</text>
+<text x="316" y="1575" class="body" text-anchor="start">X̂⁰ → 合成信号 → 冻结 D → 动作</text>
+<path d="M560 1420 V1480" class="train"/>
+<path d="M198 1200 V1535 H300" class="train"/>
+<text x="48" y="1624" class="small" text-anchor="start">冻结的解码器仍可传递生成损失；推理不需要真实动作或训练边界搜索。</text>
+<rect x="24" y="1680" width="1072" height="1110" rx="14" class="panel" fill="#fff"/>
+<text x="44" y="1718" class="section" text-anchor="start">03 推理 · 条件去噪 → 周期参数 → 连续信号 → 人体动作</text>
+<rect x="48" y="1765" width="300" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="64" y="1799" class="name" text-anchor="start">文本 c</text>
+<text x="64" y="1831" class="body" text-anchor="start">如：向前走并向右转</text>
+<text x="64" y="1860" class="body" text-anchor="start">冻结 CLIP 提供文本特征</text>
+<rect x="408" y="1765" width="300" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="424" y="1799" class="name" text-anchor="start">起始姿态 j（可选）</text>
+<text x="424" y="1831" class="body" text-anchor="start">首段可遮蔽 / 随机</text>
+<text x="424" y="1860" class="body" text-anchor="start">后段可用前段末姿态</text>
+<rect x="768" y="1765" width="292" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="784" y="1799" class="name" text-anchor="start">高斯噪声参数 Xᴺ</text>
+<text x="784" y="1831" class="body" text-anchor="start">固定规模参数组</text>
+<text x="784" y="1860" class="body" text-anchor="start">扩散步 N → 1</text>
+<rect x="230" y="1955" width="650" height="140" rx="14" class="node" fill="#e8f3ed"/>
+<text x="246" y="1989" class="name" text-anchor="start">迭代去噪：复用训练好的 Transformer</text>
+<text x="246" y="2021" class="body" text-anchor="start">每步预测干净参数，再更新当前带噪参数</text>
+<text x="246" y="2050" class="body" text-anchor="start">文本与姿态条件 + classifier-free guidance</text>
+<text x="246" y="2079" class="body" text-anchor="start">一次完整采样包含多步网络预测</text>
+<path d="M198 1875 V1915 H380 V1955" class="flow"/>
+<path d="M558 1875 V1955" class="flow"/>
+<path d="M914 1875 V2025 H880" class="flow"/>
+<path d="M880 2055 H1040 V2130 H850 V2095" class="flow"/>
+<text x="920" y="2159" class="small" text-anchor="start">继续去噪</text>
+<rect x="365" y="2170" width="380" height="110" rx="14" class="node" fill="#fff2d7"/>
+<text x="381" y="2204" class="name" text-anchor="start">最终周期参数 X̂⁰</text>
+<text x="381" y="2236" class="body" text-anchor="start">幅值 / 相移 / 偏置</text>
+<text x="381" y="2265" class="body" text-anchor="start">与帧数无关的参数规模</text>
+<path d="M555 2095 V2170" class="flow"/>
+<rect x="48" y="2350" width="320" height="110" rx="14" class="node" fill="#fff2d7"/>
+<text x="64" y="2384" class="name" text-anchor="start">合成时间信号 S</text>
+<text x="64" y="2416" class="body" text-anchor="start">预设频率 + 参数 + k</text>
+<text x="64" y="2445" class="body" text-anchor="start">周期主体 / 线性首尾</text>
+<rect x="420" y="2350" width="300" height="110" rx="14" class="node" fill="#e8f3ed"/>
+<text x="436" y="2384" class="name" text-anchor="start">复用冻结解码器 D</text>
+<text x="436" y="2416" class="body" text-anchor="start">1D 卷积解码</text>
+<text x="436" y="2445" class="body" text-anchor="start">连续潜信号 → 姿态</text>
+<rect x="772" y="2350" width="288" height="110" rx="14" class="node" fill="#edf3fa"/>
+<text x="788" y="2384" class="name" text-anchor="start">生成动作 Ĵ</text>
+<text x="788" y="2416" class="body" text-anchor="start">按目标时间采样</text>
+<text x="788" y="2445" class="body" text-anchor="start">输出连续姿态序列</text>
+<path d="M555 2280 V2318 H208 V2350" class="flow"/>
+<path d="M368 2405 H420" class="flow"/>
+<path d="M720 2405 H772" class="flow"/>
+<rect x="48" y="2560" width="480" height="140" rx="14" class="node" fill="#fff2d7"/>
+<text x="64" y="2594" class="name" text-anchor="start">延长 A · Repetition</text>
+<text x="64" y="2626" class="body" text-anchor="start">保持同一组 X̂⁰，继续推进 k</text>
+<text x="64" y="2655" class="body" text-anchor="start">只扩展周期主体，不反复复制首尾</text>
+<text x="64" y="2684" class="body" text-anchor="start">不再调用扩散；仍需信号计算与解码</text>
+<rect x="580" y="2560" width="480" height="140" rx="14" class="node" fill="#edf3fa"/>
+<text x="596" y="2594" class="name" text-anchor="start">延长 B · Generative / Transition</text>
+<text x="596" y="2626" class="body" text-anchor="start">取当前末姿态 → 下一段起始姿态 j</text>
+<text x="596" y="2655" class="body" text-anchor="start">文本可保持或更换 → 重新扩散采样</text>
+<text x="596" y="2684" class="body" text-anchor="start">得到新参数，再合成 / 解码下一段</text>
+<path d="M208 2460 V2560" class="flow"/>
+<path d="M916 2460 V2560" class="flow"/>
+<path d="M48 2630 H34 V2405 H48" class="flow"/>
+<path d="M1060 2630 H1080 V1738 H558 V1765" class="flow"/>
+<text x="48" y="2750" class="small" text-anchor="start">边界：姿态条件不保证严格接触 / 速度连续；相位通道不等于语义标签。</text>
+<text x="40" y="2830" class="small" text-anchor="start">频率与相位作用于学习到的潜信号；图中参数为机制示意，并非模型运行结果。</text>
+<text x="40" y="2862" class="small" text-anchor="start">来源：arXiv:2312.04036v1，主文图 2、式 1–7、§3 与补充 §2；整理于 2026-11-04。</text>
+</svg>
