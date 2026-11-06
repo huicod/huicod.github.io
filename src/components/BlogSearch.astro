@@ -1,0 +1,236 @@
+---
+const { total } = Astro.props;
+---
+
+<blog-search data-total={total}>
+  <form role="search" class="search-form" aria-label="搜索博客" data-astro-reload>
+    <label for="blog-query" class="font-semibold">搜索文章</label>
+    <div class="search-inputs">
+      <input id="blog-query" name="q" type="search" class="input input-bordered" placeholder="论文名、会议年份或关键词" aria-describedby="blog-search-help" autocomplete="off" maxlength="200" />
+      <button type="submit" class="btn btn-primary">搜索</button>
+      <button type="button" class="btn btn-ghost" data-clear hidden>清除</button>
+    </div>
+    <p id="blog-search-help" class="search-help">搜索全部 {total} 篇文章的标题、摘要和标签；多个关键词用空格分隔。</p>
+  </form>
+  <noscript><p class="search-help">启用 JavaScript 后可搜索文章；下方列表和页码链接仍可直接浏览。</p></noscript>
+  <section class="search-results" aria-label="搜索结果" hidden>
+    <p data-status role="status" aria-live="polite" class="search-status"></p>
+    <ul class="result-list" data-results></ul>
+    <nav aria-label="搜索结果分页" class="search-pagination" hidden>
+      <div class="search-page-links">
+        <a class="btn btn-ghost btn-sm" data-previous>← 上一页</a>
+        <span data-page-label></span>
+        <a class="btn btn-ghost btn-sm" data-next>下一页 →</a>
+      </div>
+      <form class="search-jump" data-astro-reload>
+        <label for="search-page-select">跳至</label>
+        <select id="search-page-select" class="select select-bordered select-sm" aria-label="选择搜索结果页数"></select>
+        <button class="btn btn-sm" type="submit">跳转</button>
+      </form>
+    </nav>
+  </section>
+</blog-search>
+
+<script>
+  type SearchPost = { title: string; description: string; tags: string[]; badge: string; url: string; date: string };
+  let indexPromise: Promise<SearchPost[]> | undefined;
+  function loadIndex() {
+    return indexPromise ??= fetch("/blog/search-index.json")
+      .then((response) => {
+        if (!response.ok) throw new Error("Search index unavailable");
+        return response.json() as Promise<SearchPost[]>;
+      }).catch((error) => { indexPromise = undefined; throw error; });
+  }
+  const normalize = (text: string) => text.normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+
+  class BlogSearch extends HTMLElement {
+    private cleanup?: AbortController;
+    private timer?: ReturnType<typeof setTimeout>;
+
+    connectedCallback() {
+      this.cleanup?.abort();
+      this.cleanup = new AbortController();
+      const { signal } = this.cleanup;
+      const input = this.querySelector<HTMLInputElement>("#blog-query")!;
+      const clear = this.querySelector<HTMLButtonElement>("[data-clear]")!;
+      const section = this.querySelector<HTMLElement>(".search-results")!;
+      const status = this.querySelector<HTMLElement>("[data-status]")!;
+      const results = this.querySelector<HTMLUListElement>("[data-results]")!;
+      const pagination = this.querySelector<HTMLElement>(".search-pagination")!;
+      const select = this.querySelector<HTMLSelectElement>("#search-page-select")!;
+      const listing = document.getElementById("blog-listing")!;
+      let request = 0;
+      let composing = false;
+
+      const queryUrl = (query: string, page: number) => {
+        const url = new URL(location.href);
+        url.hash = "";
+        url.searchParams.delete("page");
+        if (query) {
+          url.searchParams.set("q", query);
+          if (page > 1) url.searchParams.set("page", String(page));
+        } else url.searchParams.delete("q");
+        return url;
+      };
+      const syncUrl = (query: string, page: number) => {
+        history.replaceState(history.state, "", queryUrl(query, page));
+      };
+      const make = (tag: string, text: string, className = "") => {
+        const node = document.createElement(tag);
+        node.textContent = text;
+        node.className = className;
+        return node;
+      };
+      const render = async (rawQuery: string, requestedPage = 1) => {
+        const currentRequest = ++request;
+        const query = rawQuery.trim().slice(0, 200);
+        const terms = query.split(/\s+/).map(normalize).filter(Boolean);
+        clear.hidden = !rawQuery;
+        listing.hidden = terms.length > 0;
+        section.hidden = terms.length === 0;
+        pagination.hidden = true;
+        results.replaceChildren();
+        if (!terms.length) {
+          this.removeAttribute("aria-busy");
+          syncUrl("", 1);
+          return;
+        }
+        syncUrl(query, requestedPage);
+        this.setAttribute("aria-busy", "true");
+        status.textContent = "正在搜索全部文章…";
+        try {
+          const posts = await loadIndex();
+          if (signal.aborted || currentRequest !== request) return;
+          const matches = posts.map((post) => {
+            const title = normalize(post.title);
+            const tags = normalize(post.tags.join(" "));
+            const description = normalize(post.description);
+            const score = terms.reduce((sum, term) => sum + (title.includes(term) ? 4 : tags.includes(term) ? 2 : 1), 0);
+            return { post, score, matches: terms.every((term) => title.includes(term) || tags.includes(term) || description.includes(term)) };
+          }).filter((entry) => entry.matches).sort((a, b) => b.score - a.score);
+          const totalPages = Math.max(1, Math.ceil(matches.length / 10));
+          const page = Math.min(totalPages, Math.max(1, Math.floor(requestedPage) || 1));
+          syncUrl(query, page);
+          status.textContent = matches.length
+            ? `找到 ${matches.length} 篇文章 · 显示第 ${(page - 1) * 10 + 1}–${Math.min(page * 10, matches.length)} 篇`
+            : `没有找到与“${query}”匹配的文章。试试更短的论文名或减少关键词。`;
+          for (const { post } of matches.slice((page - 1) * 10, page * 10)) {
+            const item = make("li", "", "search-result");
+            const heading = document.createElement("h2");
+            const link = document.createElement("a");
+            link.href = post.url;
+            link.textContent = post.title;
+            heading.append(link);
+            item.append(heading, make("p", post.description, "result-description"));
+            const meta = make("div", "", "result-meta");
+            const date = document.createElement("time");
+            date.dateTime = post.date;
+            date.textContent = post.date;
+            meta.append(date);
+            if (post.badge) meta.append(make("span", post.badge, "badge badge-secondary badge-sm"));
+            item.append(meta);
+            const tags = make("div", "", "result-tags");
+            for (const tag of post.tags) {
+              const tagLink = document.createElement("a");
+              tagLink.href = "/blog/tag/" + encodeURIComponent(tag) + "/";
+              tagLink.className = "badge badge-outline";
+              tagLink.textContent = tag;
+              tags.append(tagLink);
+            }
+            item.append(tags);
+            results.append(item);
+          }
+          pagination.hidden = totalPages <= 1;
+          this.querySelector<HTMLElement>("[data-page-label]")!.textContent = `第 ${page} / ${totalPages} 页`;
+          for (const [selector, target] of [["[data-previous]", page - 1], ["[data-next]", page + 1]] as const) {
+            const link = this.querySelector<HTMLAnchorElement>(selector)!;
+            const disabled = target < 1 || target > totalPages;
+            link.setAttribute("aria-disabled", String(disabled));
+            link.tabIndex = disabled ? -1 : 0;
+            if (disabled) link.removeAttribute("href");
+            else link.href = queryUrl(query, target).href;
+            link.dataset.searchPage = String(target);
+          }
+          select.replaceChildren(...Array.from({ length: totalPages }, (_, i) => new Option(`第 ${i + 1} 页`, String(i + 1))));
+          select.value = String(page);
+        } catch {
+          if (!signal.aborted && currentRequest === request) status.textContent = "暂时无法加载搜索，请重新点击搜索，或清除关键词继续浏览列表。";
+        } finally {
+          if (!signal.aborted && currentRequest === request) this.removeAttribute("aria-busy");
+        }
+      };
+      input.addEventListener("input", (event) => {
+        clearTimeout(this.timer);
+        if (composing || (event as InputEvent).isComposing) return;
+        this.timer = setTimeout(() => render(input.value), 200);
+      }, { signal });
+      input.addEventListener("compositionstart", () => {
+        composing = true;
+        clearTimeout(this.timer);
+      }, { signal });
+      input.addEventListener("compositionend", () => {
+        composing = false;
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => render(input.value), 200);
+      }, { signal });
+      this.querySelector(".search-form")!.addEventListener("submit", (event) => {
+        event.preventDefault();
+        clearTimeout(this.timer);
+        render(input.value);
+      }, { signal });
+      clear.addEventListener("click", () => {
+        clearTimeout(this.timer);
+        input.value = "";
+        render("");
+        input.focus();
+      }, { signal });
+      this.querySelector(".search-jump")!.addEventListener("submit", (event) => {
+        event.preventDefault();
+        clearTimeout(this.timer);
+        render(input.value, Number(select.value));
+        this.scrollIntoView({ block: "start" });
+        input.focus({ preventScroll: true });
+      }, { signal });
+      pagination.addEventListener("click", (event) => {
+        const link = (event.target as Element).closest<HTMLAnchorElement>("[data-search-page]");
+        if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+        event.preventDefault();
+        if (link.getAttribute("aria-disabled") === "true") return;
+        clearTimeout(this.timer);
+        render(input.value, Number(link.dataset.searchPage));
+        this.scrollIntoView({ block: "start" });
+        input.focus({ preventScroll: true });
+      }, { signal });
+      const params = new URLSearchParams(location.search);
+      input.value = (params.get("q") ?? "").slice(0, 200);
+      render(input.value, Number(params.get("page")) || 1);
+    }
+    disconnectedCallback() {
+      this.cleanup?.abort();
+      clearTimeout(this.timer);
+    }
+  }
+  if (!customElements.get("blog-search")) customElements.define("blog-search", BlogSearch);
+</script>
+
+<style>
+  blog-search { display: block; margin-bottom: 1.5rem; scroll-margin-top: 1.5rem; }
+  [hidden] { display: none !important; }
+  .search-form { padding: 1.25rem; background: oklch(var(--b2)); border: 1px solid oklch(var(--bc) / .12); border-radius: 1rem; }
+  .search-inputs { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
+  .search-inputs input { flex: 1 1 18rem; min-width: 0; width: 100%; }
+  .search-help { margin-top: .65rem; font-size: .875rem; opacity: .7; line-height: 1.6; }
+  .search-status { margin: 1.5rem 0 .5rem; overflow-wrap: anywhere; }
+  .result-list { list-style: none; margin: 0; padding: 0; }
+  .result-list :global(.search-result) { padding: 1.5rem .5rem; border-bottom: 1px solid oklch(var(--bc) / .15); overflow-wrap: anywhere; }
+  .result-list :global(h2) { font-size: 1.25rem; font-weight: 700; line-height: 1.5; }
+  .result-list :global(h2 a:hover) { text-decoration: underline; text-underline-offset: .2em; }
+  .result-list :global(.result-description) { margin-top: .4rem; line-height: 1.7; }
+  .result-list :global(.result-meta) { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-top: .65rem; font-size: .8rem; }
+  .result-list :global(.result-tags) { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
+  .result-list :global(.badge) { height: auto; min-height: 1.25rem; max-width: 100%; padding-block: .15rem; }
+  .search-pagination { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; padding-top: 1.5rem; }
+  .search-page-links, .search-jump { display: flex; align-items: center; gap: .5rem; font-size: .875rem; }
+  [aria-disabled="true"] { opacity: .4; cursor: default; }
+  @media (max-width: 480px) { .search-form { padding: 1rem; } .search-pagination { justify-content: center; } }
+</style>
