@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1700" viewBox="0 0 1200 1700" role="img" aria-label="GestureDiffuCLIP · 节奏、转录语义与风格分路控制">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#536477"/></marker></defs>
+<style>text{font-family:Arial,"Microsoft YaHei",sans-serif;fill:#172b45}.title{font-size:30px;font-weight:700}.section{font-size:23px;font-weight:700}.node{font-size:21px;font-weight:700}.body{font-size:18px}.label{font-size:17px;fill:#536477}</style>
+<rect width="1200" height="1700" fill="#fff"/>
+<text x="36" y="46" class="title" text-anchor="start">GestureDiffuCLIP · 节奏、转录语义与风格分路控制</text>
+<text x="36" y="80" class="body" text-anchor="start">教学示意 · 依据作者版图2/3/6、§4–6与式13–19 · 预训练、训练监督与推理明确分区</text>
+<rect x="20" y="105" width="1160" height="225" rx="16" fill="#f6f8fb" stroke="#d5deea"/>
+<text x="40" y="140" class="section" text-anchor="start">A  表示准备：动作空间、转录语义空间、风格空间互不混同</text>
+<rect x="40" y="165" width="345" height="130" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="212.5" y="195" class="node" text-anchor="middle">动作 VQ-VAE</text>
+<text x="212.5" y="220" class="body" text-anchor="middle">运动 → 连续潜码 z → 量化ẑ</text>
+<text x="212.5" y="242" class="body" text-anchor="middle">重建运动；随后冻结</text>
+<text x="212.5" y="264" class="body" text-anchor="middle">下采样8倍，潜码512维</text>
+<rect x="430" y="165" width="345" height="130" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="602.5" y="195" class="node" text-anchor="middle">手势—转录联合编码</text>
+<text x="602.5" y="220" class="body" text-anchor="middle">T5文字／动作Transformer</text>
+<text x="602.5" y="242" class="body" text-anchor="middle">句级max pooling＋对比学习</text>
+<text x="602.5" y="264" class="body" text-anchor="middle">EMA软目标缓解歧义</text>
+<rect x="820" y="165" width="340" height="130" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="990.0" y="195" class="node" text-anchor="middle">CLIP 风格编码</text>
+<text x="990.0" y="220" class="body" text-anchor="middle">文字：CLIP；动作：MotionCLIP</text>
+<text x="990.0" y="242" class="body" text-anchor="middle">视频：图像CLIP＋时间Transformer</text>
+<text x="990.0" y="264" class="body" text-anchor="middle">渲染视频对齐动作教师</text>
+<rect x="20" y="350" width="1160" height="195" rx="16" fill="#f6f8fb" stroke="#d5deea"/>
+<text x="40" y="385" class="section" text-anchor="start">B  训练生成器：动作本身作风格参考，不要求每段都有风格标签</text>
+<rect x="40" y="405" width="345" height="100" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="212.5" y="435" class="node" text-anchor="middle">语音＋转录＋真值运动</text>
+<text x="212.5" y="460" class="body" text-anchor="middle">取包含目标的动作片段作P</text>
+<text x="212.5" y="482" class="body" text-anchor="middle">用固定VQ编码并加高斯噪声</text>
+<rect x="430" y="405" width="345" height="100" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="602.5" y="435" class="node" text-anchor="middle">训练因果扩散去噪器</text>
+<text x="602.5" y="460" class="body" text-anchor="middle">预测噪声；10%概率丢弃风格</text>
+<text x="602.5" y="482" class="body" text-anchor="middle">风格编码器与VQ组件冻结</text>
+<rect x="820" y="405" width="340" height="100" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="990.0" y="435" class="node" text-anchor="middle">噪声＋语义＋风格损失</text>
+<text x="990.0" y="460" class="body" text-anchor="middle">语义：生成动作 vs 真值动作</text>
+<text x="990.0" y="482" class="body" text-anchor="middle">风格：二者的MotionCLIP编码</text>
+<path d="M 385 455 L 430 455" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 775 455 L 820 455" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 40 230 L 27 230 L 27 455 L 40 455" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<path d="M 600 295 L 600 338 L 1172 338 L 1172 455 L 1160 455" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<path d="M 992 295 L 992 322 L 798 322 L 798 525 L 600 525 L 600 505" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<rect x="20" y="570" width="1160" height="870" rx="16" fill="#fbfcfe" stroke="#d5deea"/>
+<text x="40" y="605" class="section" text-anchor="start">C  推理：在连续动作潜码中去噪，再自回归前进</text>
+<rect x="40" y="635" width="300" height="85" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="190.0" y="665" class="node" text-anchor="middle">语音音频 A</text>
+<text x="190.0" y="690" class="body" text-anchor="middle">节奏、重音、音量</text>
+<rect x="450" y="635" width="300" height="85" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="600.0" y="665" class="node" text-anchor="middle">讲话转录 T</text>
+<text x="600.0" y="690" class="body" text-anchor="middle">实际说了什么</text>
+<rect x="860" y="635" width="300" height="85" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="1010.0" y="665" class="node" text-anchor="middle">独立风格提示 P</text>
+<text x="1010.0" y="690" class="body" text-anchor="middle">文字 ／ 动作 ／ 视频</text>
+<rect x="40" y="760" width="300" height="85" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="190.0" y="790" class="node" text-anchor="middle">声学特征</text>
+<text x="190.0" y="815" class="body" text-anchor="middle">onset＋幅度包络</text>
+<text x="190.0" y="837" class="body" text-anchor="middle">允许δₐ个未来特征位置</text>
+<rect x="450" y="760" width="300" height="85" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="600.0" y="790" class="node" text-anchor="middle">转录语义编码器</text>
+<text x="600.0" y="815" class="body" text-anchor="middle">词特征 Zₜ ＋ 显著性 s</text>
+<text x="600.0" y="837" class="body" text-anchor="middle">句级语义空间提供条件</text>
+<rect x="860" y="760" width="300" height="85" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="1010.0" y="790" class="node" text-anchor="middle">对应的CLIP风格编码器</text>
+<text x="1010.0" y="815" class="body" text-anchor="middle">风格向量 zₛ → MLP</text>
+<text x="1010.0" y="837" class="body" text-anchor="middle">生成AdaIN缩放／平移</text>
+<path d="M 190 720 L 190 760" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 600 720 L 600 760" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 1010 720 L 1010 760" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="40" y="945" width="245" height="105" rx="10" fill="#fff" stroke="#a9b8ca" stroke-width="1.5"/>
+<text x="162.5" y="975" class="node" text-anchor="middle">当前噪声 zₙ＋历史</text>
+<text x="162.5" y="1000" class="body" text-anchor="middle">已完成的历史潜码固定</text>
+<text x="162.5" y="1022" class="body" text-anchor="middle">附带扩散步 n</text>
+<rect x="335" y="945" width="255" height="105" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="462.5" y="975" class="node" text-anchor="middle">因果自注意力</text>
+<text x="462.5" y="1000" class="body" text-anchor="middle">拼接音频与动作特征</text>
+<text x="462.5" y="1022" class="body" text-anchor="middle">读取当前及过去状态</text>
+<rect x="640" y="945" width="245" height="105" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="762.5" y="975" class="node" text-anchor="middle">语义交叉注意力</text>
+<text x="762.5" y="1000" class="body" text-anchor="middle">词特征提供 K/V</text>
+<text x="762.5" y="1022" class="body" text-anchor="middle">显著性调节注意权重</text>
+<rect x="935" y="945" width="225" height="105" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="1047.5" y="975" class="node" text-anchor="middle">AdaIN 风格调制</text>
+<text x="1047.5" y="1000" class="body" text-anchor="middle">风格改变通道统计</text>
+<text x="1047.5" y="1022" class="body" text-anchor="middle">重复Transformer块</text>
+<path d="M 285 995 L 335 995" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 590 995 L 640 995" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 885 995 L 935 995" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 190 845 L 190 885 L 460 885 L 460 945" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="200" y="875" class="label" text-anchor="start">节奏特征</text>
+<path d="M 600 845 L 600 885 L 762 885 L 762 945" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="640" y="875" class="label" text-anchor="start">语义特征</text>
+<path d="M 1010 845 L 1010 945" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="1020" y="900" class="label" text-anchor="start">风格参数</text>
+<rect x="935" y="1100" width="225" height="90" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="1047.5" y="1130" class="node" text-anchor="middle">噪声预测 εθ</text>
+<text x="1047.5" y="1155" class="body" text-anchor="middle">风格CFG调节强度</text>
+<rect x="640" y="1100" width="245" height="90" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="762.5" y="1130" class="node" text-anchor="middle">DDPM 反向采样</text>
+<text x="762.5" y="1155" class="body" text-anchor="middle">当前潜码逐步去噪</text>
+<text x="762.5" y="1177" class="body" text-anchor="middle">默认1,000步</text>
+<rect x="335" y="1100" width="255" height="90" rx="10" fill="#fff" stroke="#a9b8ca" stroke-width="1.5"/>
+<text x="462.5" y="1130" class="node" text-anchor="middle">当前干净潜码 z₀</text>
+<text x="462.5" y="1155" class="body" text-anchor="middle">完成后加入历史</text>
+<text x="462.5" y="1177" class="body" text-anchor="middle">再生成下一潜在位置</text>
+<path d="M 1047 1050 L 1047 1100" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 935 1145 L 885 1145" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 640 1145 L 590 1145" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 762 1190 L 762 1225 L 55 1225 L 55 1050" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="120" y="1210" class="label" text-anchor="start">尚未去净：更新 zₙ 并继续当前去噪循环</text>
+<path d="M 335 1145 L 305 1145 L 305 925 L 163 925 L 163 945" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="70" y="911" class="label" text-anchor="start">完成：历史反馈</text>
+<rect x="335" y="1290" width="300" height="90" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="485.0" y="1320" class="node" text-anchor="middle">最近码本量化＋VQ解码</text>
+<text x="485.0" y="1345" class="body" text-anchor="middle">连续潜码 → 量化码 → 运动</text>
+<text x="485.0" y="1367" class="body" text-anchor="middle">复用已训练动作解码器</text>
+<rect x="805" y="1290" width="330" height="90" rx="10" fill="#fff" stroke="#a9b8ca" stroke-width="1.5"/>
+<text x="970.0" y="1320" class="node" text-anchor="middle">输出说话手势</text>
+<text x="970.0" y="1345" class="body" text-anchor="middle">身体位移＋关节6D旋转</text>
+<text x="970.0" y="1367" class="body" text-anchor="middle">风格、节奏与语义共同影响</text>
+<path d="M 462 1190 L 462 1290" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="475" y="1260" class="label" text-anchor="start">生成的潜码序列</text>
+<path d="M 635 1335 L 805 1335" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="45" y="1415" class="label" text-anchor="start">T是讲话内容；P是表演要求。风格丢弃分支仍保留A/T。因果结构不等于实时：原文单V100约1.5秒生成1秒动作。</text>
+<rect x="20" y="1460" width="1160" height="175" rx="16" fill="#fffaf2" stroke="#d5deea"/>
+<text x="40" y="1495" class="section" text-anchor="start">D  可选部位扩展：单独训练表示与新生成器，不是直接改默认全身潜码</text>
+<rect x="40" y="1518" width="345" height="85" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="212.5" y="1548" class="node" text-anchor="middle">分部位 VQ-VAE</text>
+<text x="212.5" y="1573" class="body" text-anchor="middle">堆叠各部位潜码；重训扩散器</text>
+<rect x="430" y="1518" width="345" height="85" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="602.5" y="1548" class="node" text-anchor="middle">每个部位提供风格提示</text>
+<text x="602.5" y="1573" class="body" text-anchor="middle">各提示分别预测一次全身噪声</text>
+<rect x="820" y="1518" width="340" height="85" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="990.0" y="1548" class="node" text-anchor="middle">按部位mask组合噪声</text>
+<text x="990.0" y="1573" class="body" text-anchor="middle">加跨预测平滑梯度，再采样</text>
+<path d="M 385 1560 L 430 1560" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 775 1560 L 820 1560" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="40" y="1670" class="label" text-anchor="start">身体部位组合与CLIP风格引导均为生成机制；未提供任意关节目标、物体接触或同部位冲突自动消解保证。</text>
+</svg>

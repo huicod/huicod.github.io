@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2640" viewBox="0 0 1200 2640" role="img" aria-labelledby="title desc"><title id="title">MotionStreamer · 连续因果表示与在线动作循环</title><desc id="desc">ICCV 2025｜教学重绘：正文图 2–3、§3 与补充 A–F</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#526477"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#19334a}.arrow{fill:none;stroke:#526477;stroke-width:3;stroke-linejoin:round;marker-end:url(#arrow)}.dashed{stroke-dasharray:8 6}</style>
+<rect width="1200" height="2640" fill="#f7fafc"/>
+<text x="600" y="54" font-size="32" font-weight="700" text-anchor="middle" style="fill:#19334a">MotionStreamer · 连续因果表示与在线动作循环</text>
+<text x="600" y="98" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">ICCV 2025｜教学重绘：正文图 2–3、§3 与补充 A–F</text>
+<rect x="24" y="140" width="1152" height="590" rx="18" fill="white" stroke="#cbd8e3" stroke-width="2"/>
+<text x="52" y="182" font-size="27" font-weight="700" text-anchor="start" style="fill:#19334a">A · 先训练压缩器：让动作能够随潜变量到达而解码</text>
+<text x="52" y="219" font-size="20" font-weight="400" text-anchor="start" style="fill:#526477">编码器与解码器均为因果卷积；连续高斯潜变量，没有离散码本。</text>
+<rect x="65" y="260" width="300" height="110" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="215.0" y="294" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">真实动作 x</text>
+<text x="215.0" y="329" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">272 维 / 帧，30 fps</text>
+<rect x="450" y="260" width="300" height="110" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="600.0" y="294" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">因果编码器 E</text>
+<text x="600.0" y="329" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">时间压缩 4 倍</text>
+<rect x="835" y="260" width="300" height="110" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="985.0" y="294" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">连续潜变量 z</text>
+<text x="985.0" y="329" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">高斯采样；每位置 16 维</text>
+<path d="M365 315 H450" class="arrow"/>
+<path d="M750 315 H835" class="arrow"/>
+<path d="M985 370 V430 H800 V475" class="arrow"/>
+<rect x="600" y="475" width="535" height="120" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="867.5" y="509" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">因果解码器 D</text>
+<text x="867.5" y="544" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">恢复 272 维动作；不等待未来潜变量</text>
+<text x="867.5" y="574" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">训练后复用于在线输出</text>
+<rect x="65" y="475" width="450" height="120" rx="12" fill="#f3f6f9" stroke="#a9bacb" stroke-width="2"/>
+<text x="290.0" y="509" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">重建＋KL＋根运动损失</text>
+<text x="290.0" y="544" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">根运动前 8 维额外加权</text>
+<text x="290.0" y="574" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">λ = 7；重建质量与生成质量共同权衡</text>
+<path d="M600 535 H515" class="arrow"/>
+<text x="557" y="517" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">重建运动</text>
+<text x="600" y="670" font-size="22" font-weight="400" text-anchor="middle" style="fill:#19334a">一枚潜变量对应 4 帧 ≈ 0.133 秒；该时间跨度不是模型计算延迟</text>
+<rect x="24" y="770" width="1152" height="580" rx="18" fill="white" stroke="#cbd8e3" stroke-width="2"/>
+<text x="52" y="812" font-size="27" font-weight="700" text-anchor="start" style="fill:#19334a">B · 再训练生成器：当前文字与历史 → 下一连续潜变量</text>
+<text x="52" y="849" font-size="20" font-weight="400" text-anchor="start" style="fill:#526477">独立 HumanML3D 样本使用空历史；BABEL 相邻片段提供切换与过渡监督。</text>
+<rect x="65" y="895" width="330" height="115" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="230.0" y="929" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">当前文字 Pᵢ</text>
+<text x="230.0" y="964" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">预训练 sentence-T5-XXL</text>
+<rect x="450" y="895" width="685" height="115" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="792.5" y="929" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">历史 Cᵢ ＋ 当前段真实潜变量 Zᵢ</text>
+<text x="792.5" y="964" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">由已训练 TAE 编码；末尾附加参考结束潜变量</text>
+<path d="M230 1010 V1050 H310 V1090" class="arrow"/>
+<path d="M792 1010 V1050 H310 V1090" class="arrow"/>
+<rect x="65" y="1090" width="490" height="145" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="310.0" y="1124" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">第一次前向预测</text>
+<text x="310.0" y="1159" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">因果 Transformer ＋ 扩散头</text>
+<text x="310.0" y="1189" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">逐渐以预测值替换部分真值历史</text>
+<text x="310.0" y="1219" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">替换比例按余弦曲线 0 → 1</text>
+<rect x="650" y="1090" width="485" height="145" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="892.5" y="1124" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">第二次前向训练</text>
+<text x="892.5" y="1159" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">读取真值 / 预测混合历史</text>
+<text x="892.5" y="1189" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">扩散噪声预测损失；此轮回传梯度</text>
+<text x="892.5" y="1219" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">监督目标仍是真实动作潜变量</text>
+<path d="M555 1160 H650" class="arrow"/>
+<text x="602" y="1142" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">混合输入</text>
+<text x="600" y="1290" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">Two-Forward 减轻暴露偏差；QK Norm 提高稳定性，均不保证无限长无漂移</text>
+<path d="M600 1350 V1410" class="arrow dashed"/>
+<text x="775" y="1391" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">已训练的生成网络与 TAE</text>
+<rect x="24" y="1410" width="1152" height="1180" rx="18" fill="white" stroke="#cbd8e3" stroke-width="2"/>
+<text x="52" y="1452" font-size="27" font-weight="700" text-anchor="start" style="fill:#19334a">C · 在线推理：产出、解码、反馈，并在新文字到来时续写</text>
+<text x="52" y="1489" font-size="20" font-weight="400" text-anchor="start" style="fill:#526477">每次只生成下一潜变量；保留已输出前缀，不重新生成整个长序列。</text>
+<rect x="65" y="1530" width="365" height="110" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="247.5" y="1564" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">当前文字特征 Tᵢ</text>
+<text x="247.5" y="1599" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">新指令到来时替换</text>
+<rect x="575" y="1530" width="560" height="110" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="855.0" y="1564" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">上一段历史＋当前段已生成潜变量</text>
+<text x="855.0" y="1599" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">可变长度上下文；不是无限历史记忆</text>
+<path d="M247 1640 V1680 H600 V1720" class="arrow"/>
+<path d="M855 1640 V1680 H600 V1720" class="arrow"/>
+<rect x="230" y="1720" width="740" height="120" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="600.0" y="1754" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">因果 Transformer</text>
+<text x="600.0" y="1789" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">文字与历史 → 当前上下文 cₖ</text>
+<text x="600.0" y="1819" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">12 层 / 12 头 / 768 维；因果掩码</text>
+<path d="M600 1840 V1890" class="arrow"/>
+<text x="705" y="1874" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">上下文条件</text>
+<rect x="230" y="1890" width="740" height="125" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="600.0" y="1924" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">扩散头：从高斯噪声采样下一 zₖ</text>
+<text x="600.0" y="1959" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">9 层 MLP，AdaLN 条件注入；50 步 DDPM</text>
+<text x="600.0" y="1989" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">输出是一枚连续向量，不是离散词表编号</text>
+<path d="M600 2015 V2055" class="arrow"/>
+<rect x="370" y="2055" width="550" height="110" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="645.0" y="2089" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">L2 距离是否低于停止阈值？</text>
+<text x="645.0" y="2124" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">先比较新 zₖ 与参考结束潜变量</text>
+<rect x="65" y="2055" width="255" height="110" rx="12" fill="#f3f6f9" stroke="#a9bacb" stroke-width="2"/>
+<text x="192.5" y="2089" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">参考结束向量</text>
+<text x="192.5" y="2124" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">全零不可能姿态</text>
+<text x="192.5" y="2154" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">经冻结 TAE 编码</text>
+<path d="M320 2110 H370" class="arrow"/>
+<path d="M645 2165 V2195 H310 V2240" class="arrow"/>
+<text x="365" y="2227" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">命中</text>
+<path d="M645 2195 H890 V2240" class="arrow"/>
+<text x="950" y="2227" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">未命中</text>
+<rect x="65" y="2240" width="490" height="150" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="310.0" y="2274" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">结束当前提示</text>
+<text x="310.0" y="2309" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">不把结束潜变量输出为人体姿态</text>
+<text x="310.0" y="2339" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">等待 / 接入下一条文字</text>
+<text x="310.0" y="2369" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">保留有效运动作为下一轮历史</text>
+<rect x="650" y="2240" width="485" height="150" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="892.5" y="2274" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">在线因果解码</text>
+<text x="892.5" y="2309" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">新 zₖ → 4 帧运动 → 角色输出</text>
+<text x="892.5" y="2339" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">追加新潜变量到当前历史</text>
+<text x="892.5" y="2369" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">再预测下一枚潜变量</text>
+<path d="M1135 2315 H1155 V1585 H1135" class="arrow"/>
+<text x="1100" y="1880" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">反馈</text>
+<path d="M65 2315 H45 V1585 H65" class="arrow"/>
+<text x="600" y="2460" font-size="22" font-weight="400" text-anchor="middle" style="fill:#19334a">停止标志不等于环境任务成功；前缀续写不等于固定前后两侧的局部编辑</text>
+<text x="600" y="2530" font-size="20" font-weight="400" text-anchor="middle" style="fill:#526477">实线：输入、生成与反馈　虚线：训练后模块复用</text>
+</svg>

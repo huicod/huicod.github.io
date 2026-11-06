@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2420" viewBox="0 0 1200 2420" role="img" aria-labelledby="title desc"><title id="title">ActionPlan · 从逐时刻语义计划到连续动作</title><desc id="desc">ECCV 2026｜教学重绘：原文图 3、§3 与附录 A–D</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#526477"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#19334a}.arrow{fill:none;stroke:#526477;stroke-width:3;stroke-linejoin:round;marker-end:url(#arrow)}.dashed{stroke-dasharray:8 6}</style>
+<rect width="1200" height="2420" fill="#f7fafc"/>
+<text x="600" y="54" font-size="32" font-weight="700" text-anchor="middle" style="fill:#19334a">ActionPlan · 从逐时刻语义计划到连续动作</text>
+<text x="600" y="98" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">ECCV 2026｜教学重绘：原文图 3、§3 与附录 A–D</text>
+<rect x="24" y="140" width="1152" height="900" rx="18" fill="white" stroke="#cbd8e3" stroke-width="2"/>
+<text x="52" y="182" font-size="27" font-weight="700" text-anchor="start" style="fill:#19334a">A · 训练：动作与语义的两个潜空间，联合学习一个生成器</text>
+<text x="52" y="219" font-size="20" font-weight="400" text-anchor="start" style="fill:#526477">真实逐帧标签只用于监督；没有标签的样本仍参与动作训练。</text>
+<rect x="65" y="255" width="485" height="100" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="307.5" y="289" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">真实身体动作</text>
+<text x="307.5" y="324" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">272 维 / 帧，30 fps</text>
+<rect x="650" y="255" width="485" height="100" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="892.5" y="289" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">BABEL 逐帧动作标签</text>
+<text x="892.5" y="324" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">仅部分训练动作具有细粒度标签</text>
+<path d="M307 355 V405" class="arrow"/>
+<text x="390" y="389" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">动作编码</text>
+<path d="M892 355 V405" class="arrow"/>
+<text x="975" y="389" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">文字编码</text>
+<rect x="65" y="405" width="485" height="130" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="307.5" y="439" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">因果 TAE · 预训练后冻结</text>
+<text x="307.5" y="474" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">编码 / 解码均为因果卷积</text>
+<text x="307.5" y="504" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">4 倍时间压缩 → 16 维动作潜变量</text>
+<rect x="650" y="405" width="485" height="130" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="892.5" y="439" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">CLIP ＋ MLP 自编码器</text>
+<text x="892.5" y="474" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">512 → 16 维；时间降采样 4 倍</text>
+<text x="892.5" y="504" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">重建 / 近邻保持 / 方差正则</text>
+<path d="M307 535 V585" class="arrow"/>
+<path d="M892 535 V585" class="arrow"/>
+<rect x="65" y="585" width="485" height="130" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="307.5" y="619" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">动作潜变量 xᵢ ＋ 独立噪声</text>
+<text x="307.5" y="654" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">各时间位置使用不同 tₓᵢ</text>
+<text x="307.5" y="684" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">历史、当前、未来可有不同进度</text>
+<rect x="650" y="585" width="485" height="130" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="892.5" y="619" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">语义潜变量 yᵢ ＋ 共享噪声</text>
+<text x="892.5" y="654" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">整条计划使用同一个 tᵧ</text>
+<text x="892.5" y="684" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">有标签才计算计划损失</text>
+<path d="M307 715 V750 H600 V785" class="arrow"/>
+<path d="M892 715 V750 H600 V785" class="arrow"/>
+<rect x="410" y="785" width="725" height="135" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="772.5" y="819" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">共享 Transformer 联合生成器</text>
+<text x="772.5" y="854" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">每位置拼接 [16 维动作，16 维计划]</text>
+<text x="772.5" y="884" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">预测两路流速度；动作损失＋掩码计划损失</text>
+<rect x="65" y="795" width="280" height="110" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="205.0" y="829" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">整段文字 c</text>
+<text x="205.0" y="864" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">CLIP 全局条件</text>
+<path d="M345 850 H410" class="arrow"/>
+<text x="600" y="978" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">16 层 / 16 头 / 1024 隐藏维；两路噪声时间与全局文字一起作为条件</text>
+<path d="M600 1040 V1105" class="arrow dashed"/>
+<text x="720" y="1080" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">训练后共享权重</text>
+<rect x="24" y="1105" width="1152" height="935" rx="18" fill="white" stroke="#cbd8e3" stroke-width="2"/>
+<text x="52" y="1147" font-size="27" font-weight="700" text-anchor="start" style="fill:#19334a">B · 推理：同一模型，两种潜变量激活顺序</text>
+<text x="52" y="1184" font-size="20" font-weight="400" text-anchor="start" style="fill:#526477">输入是整段文字、长度与两路噪声；此时没有真实逐帧标签。</text>
+<rect x="65" y="1230" width="1070" height="95" rx="12" fill="#f3f6f9" stroke="#a9bacb" stroke-width="2"/>
+<text x="600.0" y="1264" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">c → CLIP；采样动作噪声 x 与计划噪声 y</text>
+<text x="600.0" y="1299" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">共同使用上方已训练的联合去噪器</text>
+<path d="M600 1325 V1355 H310 V1390" class="arrow"/>
+<path d="M600 1355 H890 V1390" class="arrow"/>
+<rect x="65" y="1390" width="495" height="120" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="312.5" y="1424" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">离线①：先生成整条计划</text>
+<text x="312.5" y="1459" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">动作维保持噪声</text>
+<text x="312.5" y="1489" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">计划 y 去噪完成后固定</text>
+<rect x="640" y="1390" width="495" height="120" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="887.5" y="1424" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">流式①：计划与首批动作并行</text>
+<text x="887.5" y="1459" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">按时间顺序逐步激活动作潜变量</text>
+<text x="887.5" y="1489" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">首个潜变量完成即可解码</text>
+<path d="M312 1510 V1560" class="arrow"/>
+<path d="M887 1510 V1560" class="arrow"/>
+<rect x="65" y="1560" width="495" height="145" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="312.5" y="1594" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">离线②：随机顺序渐进去噪</text>
+<text x="312.5" y="1629" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">不同位置的去噪区间相互重叠</text>
+<text x="312.5" y="1659" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">默认隔 2 步激活一个新位置</text>
+<text x="312.5" y="1689" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">每个潜变量仍经历 25 步</text>
+<rect x="640" y="1560" width="495" height="145" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="887.5" y="1594" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">流式②：时间顺序渐进去噪</text>
+<text x="887.5" y="1629" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">固定已生成的语义计划</text>
+<text x="887.5" y="1659" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">新位置持续加入；完成一个输出一个</text>
+<text x="887.5" y="1689" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">利用历史运动与未来计划</text>
+<path d="M312 1705 V1750 H600 V1795" class="arrow"/>
+<path d="M887 1705 V1750 H600 V1795" class="arrow"/>
+<rect x="230" y="1795" width="740" height="120" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="600.0" y="1829" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">冻结因果 TAE 解码器</text>
+<text x="600.0" y="1864" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">16 维潜变量 → 4 帧 272 维运动</text>
+<text x="600.0" y="1894" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">逐步还原 SMPL 旋转与根运动</text>
+<text x="600" y="1970" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">可读支线：计划 y → MLP 解码 → CLIP 标签库 KNN；用于观察，不是关节控制器</text>
+<text x="600" y="2010" font-size="20" font-weight="400" text-anchor="middle" style="fill:#526477">实线：数据流　虚线：训练后复用　计划是连续语义特征，不是 LLM 可执行程序</text>
+<rect x="24" y="2080" width="1152" height="290" rx="18" fill="white" stroke="#cbd8e3" stroke-width="2"/>
+<text x="52" y="2122" font-size="27" font-weight="700" text-anchor="start" style="fill:#19334a">C · 编辑 / 补间：固定部分潜变量，生成剩余位置</text>
+<text x="52" y="2159" font-size="20" font-weight="400" text-anchor="start" style="fill:#526477">这条应用支路共享同一模型；固定潜变量不自动保证所有解码关节逐值不变。</text>
+<rect x="65" y="2200" width="300" height="115" rx="12" fill="#f3f6f9" stroke="#a9bacb" stroke-width="2"/>
+<text x="215.0" y="2234" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">已有动作 / 边界</text>
+<text x="215.0" y="2269" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">选择需保留的位置</text>
+<rect x="450" y="2200" width="300" height="115" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="600.0" y="2234" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">部分 tₓᵢ = 0</text>
+<text x="600.0" y="2269" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">其余位置＋新文本生成</text>
+<rect x="835" y="2200" width="300" height="115" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="985.0" y="2234" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">TAE 解码输出</text>
+<text x="985.0" y="2269" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">再检查边界与保留误差</text>
+<path d="M365 2255 H450" class="arrow"/>
+<path d="M750 2255 H835" class="arrow"/>
+</svg>
