@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1940" viewBox="0 0 1200 1940" role="img" aria-label="SiGnature · 让局部语义动作与个人全身风格共同生成">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#536477"/></marker></defs>
+<style>text{font-family:Arial,"Microsoft YaHei",sans-serif;fill:#172b45}.title{font-size:30px;font-weight:700}.section{font-size:23px;font-weight:700}.node{font-size:21px;font-weight:700}.body{font-size:18px}.label{font-size:17px;fill:#536477}</style>
+<rect width="1200" height="1940" fill="#fff"/>
+<text x="36" y="46" class="title" text-anchor="start">SiGnature · 让局部语义动作与个人全身风格共同生成</text>
+<text x="36" y="80" class="body" text-anchor="start">教学示意 · 依据原文图2、§3–4与附录A/E/F · 外部动作只在指定关节和时间干预</text>
+<rect x="20" y="110" width="1160" height="245" rx="16" fill="#f6f8fb" stroke="#d5deea"/>
+<text x="40" y="145" class="section" text-anchor="start">A  参数训练：先学运动先验，再为每位目标说话人分别微调</text>
+<rect x="40" y="175" width="240" height="100" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="160.0" y="205" class="node" text-anchor="middle">AMASS运动数据</text>
+<text x="160.0" y="230" class="body" text-anchor="middle">一般身体运动</text>
+<text x="160.0" y="252" class="body" text-anchor="middle">不含语音配对</text>
+<rect x="320" y="175" width="240" height="100" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="440.0" y="205" class="node" text-anchor="middle">显式运动扩散预训练</text>
+<text x="440.0" y="230" class="body" text-anchor="middle">直接预测干净旋转</text>
+<text x="440.0" y="252" class="body" text-anchor="middle">学习身体运动先验</text>
+<rect x="600" y="175" width="260" height="100" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="730.0" y="205" class="node" text-anchor="middle">BEAT2逐人微调</text>
+<text x="730.0" y="230" class="body" text-anchor="middle">语音＋转录＋动作配对</text>
+<text x="730.0" y="252" class="body" text-anchor="middle">每人约90分钟数据</text>
+<rect x="900" y="175" width="260" height="100" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="1030.0" y="205" class="node" text-anchor="middle">个性化模型参数 θᵢ</text>
+<text x="1030.0" y="230" class="body" text-anchor="middle">身份对应一个模型</text>
+<text x="1030.0" y="252" class="body" text-anchor="middle">推理时固定参数</text>
+<path d="M 280 225 L 320 225" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 560 225 L 600 225" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 860 225 L 900 225" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="40" y="315" class="body" text-anchor="start">监督：旋转重建 ＋ 100×旋转速度损失 ＋ 50×足部接触损失；CLIP文本编码器冻结。</text>
+<text x="40" y="341" class="label" text-anchor="start">“新动作注入无需训练”指JMI；目标身份仍需要微调。</text>
+<rect x="20" y="380" width="1160" height="375" rx="16" fill="#f6f8fb" stroke="#d5deea"/>
+<text x="40" y="415" class="section" text-anchor="start">B  语义动作准备与选时：独立于生成器训练，可增添新的兼容动作</text>
+<rect x="40" y="445" width="250" height="100" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="165.0" y="475" class="node" text-anchor="middle">SeG或外部动作</text>
+<text x="165.0" y="500" class="body" text-anchor="middle">源动作＋名称／描述</text>
+<text x="165.0" y="522" class="body" text-anchor="middle">示例与语境词典</text>
+<rect x="330" y="445" width="250" height="100" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="455.0" y="475" class="node" text-anchor="middle">统一为SMPL-X</text>
+<text x="455.0" y="500" class="body" text-anchor="middle">BVH重定向／30 fps</text>
+<text x="455.0" y="522" class="body" text-anchor="middle">已兼容格式可省去转换</text>
+<rect x="620" y="445" width="250" height="100" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="745.0" y="475" class="node" text-anchor="middle">找活跃关节</text>
+<text x="745.0" y="500" class="body" text-anchor="middle">运动方差阈值＋父关节</text>
+<text x="745.0" y="522" class="body" text-anchor="middle">边缘情形可人工掩码</text>
+<rect x="910" y="445" width="250" height="100" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="1035.0" y="475" class="node" text-anchor="middle">动作 G ＋掩码 M</text>
+<text x="1035.0" y="500" class="body" text-anchor="middle">连续关节旋转轨迹</text>
+<text x="1035.0" y="522" class="body" text-anchor="middle">无需动作码本压缩</text>
+<path d="M 290 495 L 330 495" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 580 495 L 620 495" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 870 495 L 910 495" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="40" y="600" width="250" height="90" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="165.0" y="630" class="node" text-anchor="middle">语音转录与词时间</text>
+<text x="165.0" y="655" class="body" text-anchor="middle">Whisper／词级对齐</text>
+<rect x="330" y="600" width="250" height="90" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="455.0" y="630" class="node" text-anchor="middle">词后语义动作标签</text>
+<text x="455.0" y="655" class="body" text-anchor="middle">GPT-4＋人工过滤</text>
+<text x="455.0" y="677" class="body" text-anchor="middle">也可直接人工指定</text>
+<rect x="620" y="600" width="250" height="90" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="745.0" y="630" class="node" text-anchor="middle">建立注入时间窗</text>
+<text x="745.0" y="655" class="body" text-anchor="middle">触发词中点±动作半长</text>
+<text x="745.0" y="677" class="body" text-anchor="middle">由源片段长度决定</text>
+<rect x="910" y="600" width="250" height="90" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="1035.0" y="630" class="node" text-anchor="middle">注入规格 I</text>
+<text x="1035.0" y="655" class="body" text-anchor="middle">G、M、起止时间</text>
+<text x="1035.0" y="677" class="body" text-anchor="middle">强度λ＝0.65，边界10帧</text>
+<path d="M 290 645 L 330 645" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 580 645 L 620 645" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 870 645 L 910 645" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 165 545 L 165 572 L 455 572 L 455 600" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="270" y="563" class="label" text-anchor="start">动作词典</text>
+<path d="M 1035 545 L 1035 600" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 1035 568 L 745 568 L 745 600" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="795" y="561" class="label" text-anchor="start">源动作长度</text>
+<text x="40" y="729" class="label" text-anchor="start">动作取自库或外部轨迹；LLM只选标签。时间窗不是精确stroke定位；重叠控制仅声明支持不冲突组合。</text>
+<rect x="20" y="785" width="1160" height="650" rx="16" fill="#fbfcfe" stroke="#d5deea"/>
+<text x="40" y="820" class="section" text-anchor="start">C  推理主干：语音／转录双路条件，直接在显式运动空间去噪</text>
+<rect x="40" y="850" width="300" height="80" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="190.0" y="880" class="node" text-anchor="middle">输入音频</text>
+<text x="190.0" y="905" class="body" text-anchor="middle">逐时刻韵律</text>
+<rect x="450" y="850" width="300" height="80" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="600.0" y="880" class="node" text-anchor="middle">同步转录</text>
+<text x="600.0" y="905" class="body" text-anchor="middle">词时间对齐＋整句话</text>
+<rect x="860" y="850" width="300" height="80" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="1010.0" y="880" class="node" text-anchor="middle">冻结CLIP文本编码器</text>
+<text x="1010.0" y="905" class="body" text-anchor="middle">整句语义向量 g</text>
+<path d="M 750 890 L 860 890" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="780" y="880" class="label" text-anchor="start">整句</text>
+<rect x="40" y="980" width="300" height="80" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="190.0" y="1010" class="node" text-anchor="middle">音频编码器</text>
+<text x="190.0" y="1035" class="body" text-anchor="middle">1D卷积 → 帧级特征</text>
+<rect x="450" y="980" width="300" height="80" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="600.0" y="1010" class="node" text-anchor="middle">逐帧词token编码器</text>
+<text x="600.0" y="1035" class="body" text-anchor="middle">当前词 → 线性嵌入</text>
+<rect x="860" y="980" width="300" height="90" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="1010.0" y="1010" class="node" text-anchor="middle">全局上下文token</text>
+<text x="1010.0" y="1035" class="body" text-anchor="middle">投影g＋扩散步嵌入</text>
+<text x="1010.0" y="1057" class="body" text-anchor="middle">沿时间维加入动作序列</text>
+<path d="M 190 930 L 190 980" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 600 930 L 600 980" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 1010 930 L 1010 980" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="250" y="1115" width="500" height="80" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="500.0" y="1145" class="node" text-anchor="middle">局部条件 c：拼接音频与词特征</text>
+<text x="500.0" y="1170" class="body" text-anchor="middle">用于FiLM，并再次与调制后特征拼接</text>
+<path d="M 190 1060 L 190 1155 L 250 1155" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 600 1060 L 600 1115" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="40" y="1250" width="220" height="105" rx="10" fill="#fff" stroke="#a9b8ca" stroke-width="1.5"/>
+<text x="150.0" y="1280" class="node" text-anchor="middle">当前噪声 xₜ</text>
+<text x="150.0" y="1305" class="body" text-anchor="middle">从高斯噪声初始化</text>
+<text x="150.0" y="1327" class="body" text-anchor="middle">196帧／窗口</text>
+<rect x="300" y="1250" width="270" height="105" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="435.0" y="1280" class="node" text-anchor="middle">动作嵌入与全局条件</text>
+<text x="435.0" y="1305" class="body" text-anchor="middle">显式旋转／根／接触</text>
+<text x="435.0" y="1327" class="body" text-anchor="middle">全局token提供上下文</text>
+<rect x="620" y="1250" width="250" height="105" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="745.0" y="1280" class="node" text-anchor="middle">FiLM＋条件拼接</text>
+<text x="745.0" y="1305" class="body" text-anchor="middle">h′＝h⊙(1＋Γ)＋B</text>
+<text x="745.0" y="1327" class="body" text-anchor="middle">再拼接局部条件 c</text>
+<rect x="920" y="1250" width="240" height="105" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="1040.0" y="1280" class="node" text-anchor="middle">运动Transformer</text>
+<text x="1040.0" y="1305" class="body" text-anchor="middle">预测干净动作 x̂₀</text>
+<text x="1040.0" y="1327" class="body" text-anchor="middle">每个窗口并行处理</text>
+<path d="M 260 1302 L 300 1302" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 570 1302 L 620 1302" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 870 1302 L 920 1302" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 500 1195 L 500 1220 L 745 1220 L 745 1250" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 1010 1070 L 1010 1100 L 800 1100 L 800 1205 L 435 1205 L 435 1250" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="850" y="1093" class="label" text-anchor="start">全局语义＋扩散步</text>
+<path d="M 1160 225 L 1172 225 L 1172 1302 L 1160 1302" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<text x="40" y="1401" class="label" text-anchor="start">复用A区训练后的整套主干和条件编码；没有VQ动作量化或神经动作解码器。</text>
+<rect x="20" y="1460" width="1160" height="405" rx="16" fill="#fffaf2" stroke="#d5deea"/>
+<text x="40" y="1495" class="section" text-anchor="start">D  每个采样步的JMI与窗口协调：修改干净预测，再继续扩散</text>
+<rect x="820" y="1525" width="340" height="115" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="990.0" y="1555" class="node" text-anchor="middle">可选 JMI：关节×时间混合</text>
+<text x="990.0" y="1580" class="body" text-anchor="middle">Φ＝λ(M⊗τ)，τ为梯形包络</text>
+<text x="990.0" y="1602" class="body" text-anchor="middle">x̂₀edit＝(1−Φ)x̂₀＋ΦG</text>
+<text x="990.0" y="1624" class="body" text-anchor="middle">无注入标签则直接沿用x̂₀</text>
+<rect x="430" y="1525" width="330" height="115" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="595.0" y="1555" class="node" text-anchor="middle">DDIM下一步更新</text>
+<text x="595.0" y="1580" class="body" text-anchor="middle">使用编辑后的干净预测</text>
+<text x="595.0" y="1602" class="body" text-anchor="middle">获得下一噪声状态 xₜ₋₁</text>
+<rect x="40" y="1525" width="330" height="115" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="205.0" y="1555" class="node" text-anchor="middle">邻接窗口握手</text>
+<text x="205.0" y="1580" class="body" text-anchor="middle">重叠30帧逐步线性融合</text>
+<text x="205.0" y="1602" class="body" text-anchor="middle">写回前窗尾部与后窗头部</text>
+<path d="M 1040 1355 L 1040 1525" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="890" y="1450" class="label" text-anchor="start">干净动作预测</text>
+<path d="M 1160 645 L 1188 645 L 1188 1582 L 1160 1582" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 820 1582 L 760 1582" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 430 1582 L 370 1582" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 40 1582 L 28 1582 L 28 1302 L 40 1302" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="48" y="1453" class="label" text-anchor="start">继续迭代</text>
+<rect x="40" y="1725" width="460" height="90" rx="10" fill="#fff" stroke="#a9b8ca" stroke-width="1.5"/>
+<text x="270.0" y="1755" class="node" text-anchor="middle">采样结束：完整显式动作序列</text>
+<text x="270.0" y="1780" class="body" text-anchor="middle">55关节6D旋转＋根运动＋接触标记</text>
+<rect x="650" y="1725" width="510" height="90" rx="10" fill="#fff" stroke="#a9b8ca" stroke-width="1.5"/>
+<text x="905.0" y="1755" class="node" text-anchor="middle">SMPL-X转换／渲染输出</text>
+<text x="905.0" y="1780" class="body" text-anchor="middle">个人姿态与语义手势共同呈现；不生成面部表情</text>
+<path d="M 205 1640 L 205 1725" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="220" y="1690" class="label" text-anchor="start">完成去噪</text>
+<path d="M 500 1770 L 650 1770" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="530" y="1755" class="label" text-anchor="start">动作参数</text>
+<text x="40" y="1846" class="label" text-anchor="start">默认λ小于1：选中关节被拉向目标；非选中通道仅在当前混合中不改写，后续生成仍可协调变化。</text>
+<text x="40" y="1908" class="label" text-anchor="start">表中FPS是整段并行吞吐；窗口生成仍有延迟。局部软注入不保证精确接触、同部位冲突消解或逐帧原样保持。</text>
+</svg>

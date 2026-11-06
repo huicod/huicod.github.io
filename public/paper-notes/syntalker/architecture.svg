@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="3450" viewBox="0 0 1200 3450" role="img" aria-labelledby="title desc">
+<title id="title">SynTalker：从两类数据到语音与动作提示协同生成</title>
+<desc id="desc">教学重绘。联合训练三个部位RVQ-VAE与独立TMR语义空间，冻结后以动作隐式语义条件训练共享全身扩散网络；推理用部位文字替换语义条件，各分支反复调用同一个全身网络，先按条件引导再掩码组合，迭代采样后经三个解码器输出动作。没有事后骨架拼接或硬约束保证。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#526477"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#19334a}.arrow{fill:none;stroke:#526477;stroke-width:3;stroke-linejoin:round;marker-end:url(#arrow)}.dash{stroke-dasharray:8 6}</style>
+<rect width="1200" height="3450" fill="#f7fafc"/>
+<text x="600" y="55" font-size="32" font-weight="700" text-anchor="middle" style="fill:#19334a">SynTalker · 语音手势与额外动作提示协同生成</text>
+<text x="600" y="98" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">ACM MM 2024｜原文图 2–3、式 3–5、附录 A；实现细节另行标明</text>
+<rect x="24" y="140" width="1152" height="650" rx="18" fill="white" stroke="#cbd8e3" stroke-width="2"/>
+<text x="52" y="182" font-size="27" font-weight="700" text-anchor="start" style="fill:#19334a">A · 两条预训练路线：可重建的运动表示 ≠ 动作语义表示</text>
+<text x="52" y="219" font-size="20" font-weight="400" text-anchor="start" style="fill:#526477">左侧覆盖两类动作的运动细节；右侧建立可由文字替代的语义条件。</text>
+<rect x="65" y="255" width="485" height="90" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="307.5" y="289" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">BEATX ＋ HumanML3D 动作</text>
+<text x="307.5" y="322" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">有无语音 / 字幕均可用于动作重建</text>
+<rect x="650" y="255" width="485" height="90" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="892.5" y="289" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">HumanML3D 文字—动作配对</text>
+<text x="892.5" y="322" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">此处需要对应的动作描述</text>
+<path d="M307 345 V390" class="arrow"/>
+<path d="M892 345 V390" class="arrow"/>
+<rect x="65" y="390" width="485" height="125" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="307.5" y="424" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">上身 / 手指 / 下身：三个 RVQ-VAE</text>
+<text x="307.5" y="457" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">卷积编码 → 6 层残差量化</text>
+<text x="307.5" y="487" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">时间压缩 4 倍；每部分 512 维</text>
+<rect x="650" y="390" width="485" height="125" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="892.5" y="424" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">TMR 式文字编码器 ＋ 动作编码器</text>
+<text x="892.5" y="457" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">对应文字与动作 → 256 维语义空间</text>
+<text x="892.5" y="487" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">对比学习拉近配对、区分不匹配样本</text>
+<path d="M307 515 V560" class="arrow"/>
+<path d="M892 515 V560" class="arrow"/>
+<rect x="65" y="560" width="485" height="110" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="307.5" y="594" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">三个部位解码器 → 重建动作</text>
+<text x="307.5" y="627" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">重建损失＋量化承诺项；EMA 码本更新</text>
+<rect x="650" y="560" width="485" height="110" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="892.5" y="594" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">辅助语义解码器 → 重建动作</text>
+<text x="892.5" y="627" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">重建＋KL＋潜向量相似度＋InfoNCE</text>
+<text x="307" y="717" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">训练后保留并冻结 RVQ 编码器 / 解码器</text>
+<text x="892" y="717" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">训练后冻结两种语义编码器</text>
+<text x="892" y="750" font-size="20" font-weight="400" text-anchor="middle" style="fill:#526477">辅助语义解码器不参与最终输出</text>
+<path d="M307 790 V860" class="arrow dash"/>
+<text x="405" y="832" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">冻结复用</text>
+<path d="M892 790 V860" class="arrow dash"/>
+<text x="985" y="832" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">冻结复用</text>
+<rect x="24" y="860" width="1152" height="790" rx="18" fill="white" stroke="#cbd8e3" stroke-width="2"/>
+<text x="52" y="902" font-size="27" font-weight="700" text-anchor="start" style="fill:#19334a">B · 扩散训练：真实动作同时提供目标 Z₀ 与隐式语义 P</text>
+<text x="52" y="939" font-size="20" font-weight="400" text-anchor="start" style="fill:#526477">此阶段训练共享去噪器与语音条件分支；隐式标签不是自动生成的动作句子。</text>
+<rect x="65" y="975" width="1070" height="85" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="600.0" y="1009" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">两类数据中的真实动作窗口</text>
+<text x="600.0" y="1042" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">HumanML3D 有字幕的样本也统一从动作提取语义条件</text>
+<path d="M600 1060 V1080 H307 V1110" class="arrow"/>
+<path d="M600 1080 H892 V1110" class="arrow"/>
+<rect x="65" y="1110" width="485" height="100" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="307.5" y="1144" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">冻结 RVQ 动作编码器</text>
+<text x="307.5" y="1177" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">真实全身潜变量 Z₀：三个 512 维部分</text>
+<rect x="650" y="1110" width="485" height="100" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="892.5" y="1144" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">冻结 TMR 动作编码器</text>
+<text x="892.5" y="1177" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">隐式语义 P：从当前真实窗口提取</text>
+<path d="M307 1210 V1230 H182 V1270" class="arrow"/>
+<path d="M892 1210 V1240 H457 V1270" class="arrow"/>
+<rect x="65" y="1270" width="235" height="130" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="182.5" y="1304" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">含噪动作 Zₜ</text>
+<text x="182.5" y="1337" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">由 Z₀ 加高斯噪声</text>
+<text x="182.5" y="1367" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">随机噪声级 t</text>
+<rect x="340" y="1270" width="235" height="130" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="457.5" y="1304" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">语义条件 P</text>
+<text x="457.5" y="1337" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">256 维隐式标签</text>
+<text x="457.5" y="1367" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">随机屏蔽条件</text>
+<rect x="615" y="1270" width="235" height="130" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="732.5" y="1304" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">音频＋转录 A</text>
+<text x="732.5" y="1337" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">编码、融合、降采样</text>
+<text x="732.5" y="1367" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">无语音时置零</text>
+<rect x="890" y="1270" width="245" height="130" rx="12" fill="#f3f6f9" stroke="#a9bacb" stroke-width="2"/>
+<text x="1012.5" y="1304" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">t ＋动作种子</text>
+<text x="1012.5" y="1337" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">扩散时刻嵌入</text>
+<text x="1012.5" y="1367" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">历史运动条件</text>
+<path d="M182 1400 V1460" class="arrow"/>
+<path d="M457 1400 V1460" class="arrow"/>
+<path d="M732 1400 V1460" class="arrow"/>
+<path d="M1012 1400 V1460" class="arrow"/>
+<rect x="65" y="1460" width="1070" height="110" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="600.0" y="1494" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">共享全身 Transformer 去噪器 Eθ → 预测干净潜变量 Ẑ₀</text>
+<text x="600.0" y="1527" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">8 层 / 隐藏维 512；Smooth L1(Ẑ₀, Z₀)；训练覆盖条件与无条件情形</text>
+<text x="600" y="1610" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">目标 Z₀ 仅用于训练监督；推理时无需真实目标动作或其隐式标签</text>
+<path d="M600 1650 V1715" class="arrow dash"/>
+<text x="825" y="1692" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">已训练网络与冻结编码 / 解码模块</text>
+<rect x="24" y="1715" width="1152" height="1655" rx="18" fill="white" stroke="#cbd8e3" stroke-width="2"/>
+<text x="52" y="1757" font-size="27" font-weight="700" text-anchor="start" style="fill:#19334a">C · 推理：同一状态、同一网络，分条件与分部位逐步组合</text>
+<text x="52" y="1794" font-size="20" font-weight="400" text-anchor="start" style="fill:#526477">各分支都预测全身；掩码只决定保留哪个部位的潜变量。</text>
+<rect x="65" y="1835" width="485" height="100" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="307.5" y="1869" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">讲话输入：音频 ＋对应转录</text>
+<text x="307.5" y="1902" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">语音节奏与正在说的内容</text>
+<rect x="650" y="1835" width="485" height="100" rx="12" fill="#fff1de" stroke="#d7ae71" stroke-width="2"/>
+<text x="892.5" y="1869" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">额外动作意图</text>
+<text x="892.5" y="1902" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">例如：坐下，同时抬起右手</text>
+<path d="M307 1935 V1980" class="arrow"/>
+<path d="M892 1935 V1980" class="arrow"/>
+<rect x="65" y="1980" width="485" height="140" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="307.5" y="2014" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">语音条件编码 → 时间特征 A</text>
+<text x="307.5" y="2047" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">音频编码＋转录词特征 → 融合</text>
+<text x="307.5" y="2077" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">与动作潜变量时间轴对齐</text>
+<rect x="650" y="1980" width="485" height="140" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="892.5" y="2014" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">部位子提示 → 冻结 TMR 文字编码</text>
+<text x="892.5" y="2047" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">手动分配；或附录的 T5X-Large 拆分</text>
+<text x="892.5" y="2077" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">每部分语义向量 Pₒ；无提示则取消该引导</text>
+<path d="M307 2120 V2170" class="arrow"/>
+<path d="M892 2120 V2170" class="arrow"/>
+<rect x="65" y="2170" width="1070" height="135" rx="12" fill="#f3f6f9" stroke="#a9bacb" stroke-width="2"/>
+<text x="600.0" y="2204" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">共同输入：全身当前状态 Zₜ、A、Pₒ、t 与动作种子</text>
+<text x="600.0" y="2237" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">首轮 Zₜ 从高斯噪声初始化；所有部位共享同一状态</text>
+<text x="600.0" y="2267" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">公开文本分支：128 帧窗口 → 32 × 1536 潜变量；前 4 个潜位置为种子</text>
+<path d="M600 2305 V2330 H230 V2370" class="arrow"/>
+<path d="M600 2330 V2370" class="arrow"/>
+<path d="M600 2330 H970 V2370" class="arrow"/>
+<rect x="65" y="2370" width="330" height="175" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="230.0" y="2404" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">上身条件分支</text>
+<text x="230.0" y="2437" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">同一 Eθ 读取全身 Zₜ</text>
+<text x="230.0" y="2467" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">U ＋ wₐ(S−U) ＋ wₚ(Tᵤ−U)</text>
+<text x="230.0" y="2497" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">保留上身通道 Mᵤ</text>
+<rect x="435" y="2370" width="330" height="175" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="600.0" y="2404" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">手指条件分支</text>
+<text x="600.0" y="2437" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">同一 Eθ 读取全身 Zₜ</text>
+<text x="600.0" y="2467" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">各自条件与引导权重</text>
+<text x="600.0" y="2497" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">保留手指通道 Mₕ</text>
+<rect x="805" y="2370" width="330" height="175" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="970.0" y="2404" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">下身条件分支</text>
+<text x="970.0" y="2437" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">同一 Eθ 读取全身 Zₜ</text>
+<text x="970.0" y="2467" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">各自条件与引导权重</text>
+<text x="970.0" y="2497" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">保留下身通道 Mₗ</text>
+<text x="600" y="3350" font-size="20" font-weight="400" text-anchor="middle" style="fill:#526477">U：无条件全身预测　S：仅语音预测　Tₒ：仅该部位文字条件下的全身预测</text>
+<path d="M230 2545 V2620 H600 V2670" class="arrow"/>
+<path d="M600 2545 V2670" class="arrow"/>
+<path d="M970 2545 V2620 H600 V2670" class="arrow"/>
+<rect x="65" y="2670" width="1070" height="115" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="600.0" y="2704" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">按掩码求和 → 同一个全身干净潜变量预测 Ẑ₀ᵐⁱˣ</text>
+<text x="600.0" y="2737" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">Mᵤ ⊙ Ẑ₀ᵘ ＋ Mₕ ⊙ Ẑ₀ʰ ＋ Mₗ ⊙ Ẑ₀ˡ；组合发生在每个去噪步骤</text>
+<path d="M600 2785 V2840" class="arrow"/>
+<rect x="65" y="2840" width="1070" height="110" rx="12" fill="#f0eafa" stroke="#b1a0cc" stroke-width="2"/>
+<text x="600.0" y="2874" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">扩散采样更新：Ẑ₀ᵐⁱˣ → 下一噪声级状态 Zₜ₋₁</text>
+<text x="600.0" y="2907" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">正文描述 DDPM；当前文本控制代码采用 DDIM</text>
+<path d="M1135 2895 H1152 V2237 H1135" class="arrow"/>
+<text x="1038" y="2824" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">t &gt; 0：再循环</text>
+<path d="M600 2950 V3010" class="arrow"/>
+<text x="690" y="2988" font-size="19" font-weight="400" text-anchor="middle" style="fill:#526477">去噪结束</text>
+<rect x="65" y="3010" width="1070" height="120" rx="12" fill="#e7f1ff" stroke="#86acd4" stroke-width="2"/>
+<text x="600.0" y="3044" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">分开三个潜变量通道 → 冻结 RVQ-VAE 解码器</text>
+<text x="600.0" y="3077" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">上身解码器＋手指解码器＋下身解码器 → 全身动作特征</text>
+<text x="600.0" y="3107" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">公开 h3d623 分支还需运动恢复 / 人体模型转换，再用于渲染</text>
+<path d="M600 3130 V3180" class="arrow"/>
+<rect x="65" y="3180" width="1070" height="125" rx="12" fill="#e6f5ee" stroke="#87bca2" stroke-width="2"/>
+<text x="600.0" y="3214" font-size="24" font-weight="700" text-anchor="middle" style="fill:#19334a">输出：同时包含讲话手势与额外动作意图的全身序列</text>
+<text x="600.0" y="3247" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">长语音：取本段末尾 4 个潜位置作为下一窗口种子，重复本流程</text>
+<text x="600.0" y="3277" font-size="21" font-weight="400" text-anchor="middle" style="fill:#19334a">约束边界：没有椅面 / 杯柄目标输入，不保证精确接触或解决同部位冲突</text>
+<text x="600" y="3405" font-size="20" font-weight="400" text-anchor="middle" style="fill:#526477">实线：表示与预测传递　虚线：训练后冻结 / 复用　所有推理分支共享网络权重</text>
+<text x="600" y="3440" font-size="20" font-weight="400" text-anchor="middle" style="fill:#526477">教学重绘，不是作者原图或本次运行结果；主张与代码版本以正文引用为准</text>
+</svg>
