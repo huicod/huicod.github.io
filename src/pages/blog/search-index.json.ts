@@ -12,6 +12,5 @@ export async function GET() {
     tags: post.data.tags ?? [],
     badge: post.data.badge ?? "",
     url: "/blog/" + createSlug(post.data.title, post.slug) + "/",
-    date: post.data.pubDate.toISOString().slice(0, 10),
   }))), { headers: { "Content-Type": "application/json; charset=utf-8" } });
 }

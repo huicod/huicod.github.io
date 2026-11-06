@@ -32,7 +32,7 @@ const { total } = Astro.props;
 </blog-search>
 
 <script>
-  type SearchPost = { title: string; description: string; tags: string[]; badge: string; url: string; date: string };
+  type SearchPost = { title: string; description: string; tags: string[]; badge: string; url: string };
   let indexPromise: Promise<SearchPost[]> | undefined;
   function loadIndex() {
     return indexPromise ??= fetch("/blog/search-index.json")
@@ -123,10 +123,6 @@ const { total } = Astro.props;
             heading.append(link);
             item.append(heading, make("p", post.description, "result-description"));
             const meta = make("div", "", "result-meta");
-            const date = document.createElement("time");
-            date.dateTime = post.date;
-            date.textContent = post.date;
-            meta.append(date);
             if (post.badge) meta.append(make("span", post.badge, "badge badge-secondary badge-sm"));
             item.append(meta);
             const tags = make("div", "", "result-tags");
