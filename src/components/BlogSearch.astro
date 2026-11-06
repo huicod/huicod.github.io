@@ -1,33 +1,25 @@
 ---
+import BlogPagination from "./BlogPagination.astro";
 const { total } = Astro.props;
 ---
 
 <blog-search data-total={total}>
   <form role="search" class="search-form" aria-label="搜索博客" data-astro-reload>
-    <label for="blog-query" class="font-semibold">搜索文章</label>
-    <div class="search-inputs">
-      <input id="blog-query" name="q" type="search" class="input input-bordered" placeholder="论文名、会议年份或关键词" aria-describedby="blog-search-help" autocomplete="off" maxlength="200" />
-      <button type="submit" class="btn btn-primary">搜索</button>
-      <button type="button" class="btn btn-ghost" data-clear hidden>清除</button>
-    </div>
-    <p id="blog-search-help" class="search-help">搜索全部 {total} 篇文章的标题、摘要和标签；多个关键词用空格分隔。</p>
+    <label for="blog-query" class="sr-only">搜索文章</label>
+    <input id="blog-query" name="q" type="search" placeholder="搜索文章…" aria-describedby="blog-search-help" autocomplete="off" maxlength="200" />
+    <button type="button" data-clear hidden aria-label="清除搜索" title="清除搜索">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+    </button>
+    <button type="submit" aria-label="搜索" title="搜索">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4 4" /></svg>
+    </button>
+    <p id="blog-search-help" class="sr-only">搜索全部 {total} 篇文章的标题、摘要和标签；多个关键词用空格分隔。</p>
   </form>
   <noscript><p class="search-help">启用 JavaScript 后可搜索文章；下方列表和页码链接仍可直接浏览。</p></noscript>
   <section class="search-results" aria-label="搜索结果" hidden>
     <p data-status role="status" aria-live="polite" class="search-status"></p>
     <ul class="result-list" data-results></ul>
-    <nav aria-label="搜索结果分页" class="search-pagination" hidden>
-      <div class="search-page-links">
-        <a class="btn btn-ghost btn-sm" data-previous>← 上一页</a>
-        <span data-page-label></span>
-        <a class="btn btn-ghost btn-sm" data-next>下一页 →</a>
-      </div>
-      <form class="search-jump" data-astro-reload>
-        <label for="search-page-select">跳至</label>
-        <select id="search-page-select" class="select select-bordered select-sm" aria-label="选择搜索结果页数"></select>
-        <button class="btn btn-sm" type="submit">跳转</button>
-      </form>
-    </nav>
+    <BlogPagination currentPage={1} totalPages={1} clientPagination />
   </section>
 </blog-search>
 
@@ -56,8 +48,8 @@ const { total } = Astro.props;
       const section = this.querySelector<HTMLElement>(".search-results")!;
       const status = this.querySelector<HTMLElement>("[data-status]")!;
       const results = this.querySelector<HTMLUListElement>("[data-results]")!;
-      const pagination = this.querySelector<HTMLElement>(".search-pagination")!;
-      const select = this.querySelector<HTMLSelectElement>("#search-page-select")!;
+      const pagination = this.querySelector<HTMLElement>("[data-pagination]")!;
+      const select = pagination.querySelector<HTMLSelectElement>("[data-page-select]")!;
       const listing = document.getElementById("blog-listing")!;
       let request = 0;
       let composing = false;
@@ -112,7 +104,7 @@ const { total } = Astro.props;
           const page = Math.min(totalPages, Math.max(1, Math.floor(requestedPage) || 1));
           syncUrl(query, page);
           status.textContent = matches.length
-            ? `找到 ${matches.length} 篇文章 · 显示第 ${(page - 1) * 10 + 1}–${Math.min(page * 10, matches.length)} 篇`
+            ? `找到 ${matches.length} 篇文章`
             : `没有找到与“${query}”匹配的文章。试试更短的论文名或减少关键词。`;
           for (const { post } of matches.slice((page - 1) * 10, page * 10)) {
             const item = make("li", "", "search-result");
@@ -137,7 +129,6 @@ const { total } = Astro.props;
             results.append(item);
           }
           pagination.hidden = totalPages <= 1;
-          this.querySelector<HTMLElement>("[data-page-label]")!.textContent = `第 ${page} / ${totalPages} 页`;
           for (const [selector, target] of [["[data-previous]", page - 1], ["[data-next]", page + 1]] as const) {
             const link = this.querySelector<HTMLAnchorElement>(selector)!;
             const disabled = target < 1 || target > totalPages;
@@ -147,7 +138,7 @@ const { total } = Astro.props;
             else link.href = queryUrl(query, target).href;
             link.dataset.searchPage = String(target);
           }
-          select.replaceChildren(...Array.from({ length: totalPages }, (_, i) => new Option(`第 ${i + 1} 页`, String(i + 1))));
+          select.replaceChildren(...Array.from({ length: totalPages }, (_, i) => new Option(`第 ${i + 1} / ${totalPages} 页`, String(i + 1))));
           select.value = String(page);
         } catch {
           if (!signal.aborted && currentRequest === request) status.textContent = "暂时无法加载搜索，请重新点击搜索，或清除关键词继续浏览列表。";
@@ -180,8 +171,7 @@ const { total } = Astro.props;
         render("");
         input.focus();
       }, { signal });
-      this.querySelector(".search-jump")!.addEventListener("submit", (event) => {
-        event.preventDefault();
+      select.addEventListener("change", () => {
         clearTimeout(this.timer);
         render(input.value, Number(select.value));
         this.scrollIntoView({ block: "start" });
@@ -212,11 +202,15 @@ const { total } = Astro.props;
 <style>
   blog-search { display: block; margin-bottom: 1.5rem; scroll-margin-top: 1.5rem; }
   [hidden] { display: none !important; }
-  .search-form { padding: 1.25rem; background: oklch(var(--b2)); border: 1px solid oklch(var(--bc) / .12); border-radius: 1rem; }
-  .search-inputs { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .6rem; }
-  .search-inputs input { flex: 1 1 18rem; min-width: 0; width: 100%; }
+  .search-form { display: flex; align-items: center; max-width: 26rem; border: 1px solid oklch(var(--bc) / .2); border-radius: .5rem; }
+  .search-form:focus-within { border-color: oklch(var(--bc) / .55); }
+  .search-form input { flex: 1; min-width: 0; width: 100%; height: 2.25rem; padding: 0 .75rem; font-size: .875rem; background: transparent; border: 0; outline: none; }
+  .search-form input::-webkit-search-cancel-button { -webkit-appearance: none; }
+  .search-form button { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; flex-shrink: 0; opacity: .65; border-radius: .4rem; }
+  .search-form button:hover { opacity: 1; background: oklch(var(--bc) / .05); }
+  .search-form button:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
   .search-help { margin-top: .65rem; font-size: .875rem; opacity: .7; line-height: 1.6; }
-  .search-status { margin: 1.5rem 0 .5rem; overflow-wrap: anywhere; }
+  .search-status { margin: 1.25rem 0 .5rem; font-size: .875rem; opacity: .7; overflow-wrap: anywhere; }
   .result-list { list-style: none; margin: 0; padding: 0; }
   .result-list :global(.search-result) { padding: 1.5rem .5rem; border-bottom: 1px solid oklch(var(--bc) / .15); overflow-wrap: anywhere; }
   .result-list :global(h2) { font-size: 1.25rem; font-weight: 700; line-height: 1.5; }
@@ -225,8 +219,4 @@ const { total } = Astro.props;
   .result-list :global(.result-meta) { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-top: .65rem; font-size: .8rem; }
   .result-list :global(.result-tags) { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
   .result-list :global(.badge) { height: auto; min-height: 1.25rem; max-width: 100%; padding-block: .15rem; }
-  .search-pagination { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; padding-top: 1.5rem; }
-  .search-page-links, .search-jump { display: flex; align-items: center; gap: .5rem; font-size: .875rem; }
-  [aria-disabled="true"] { opacity: .4; cursor: default; }
-  @media (max-width: 480px) { .search-form { padding: 1rem; } .search-pagination { justify-content: center; } }
 </style>

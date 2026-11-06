@@ -2,114 +2,87 @@
 interface Props {
   currentPage: number;
   totalPages: number;
-  total: number;
+  total?: number;
   pageSize?: number;
   basePath?: string;
+  clientPagination?: boolean;
 }
 
-const { currentPage, totalPages, total, pageSize = 10, basePath = "/blog/" } = Astro.props;
+const { currentPage, totalPages, basePath = "/blog/", clientPagination = false } = Astro.props;
 const lastPage = Math.max(1, totalPages);
 const current = Math.min(Math.max(1, currentPage), lastPage);
 const base = basePath.endsWith("/") ? basePath : basePath + "/";
 const pageUrl = (number: number) => number === 1 ? base : `${base}${number}/`;
-const nearbyPages = [...new Set([1, current - 1, current, current + 1, lastPage])]
-  .filter((number) => number >= 1 && number <= lastPage)
-  .sort((a, b) => a - b);
-const visiblePages: (number | null)[] = [];
-nearbyPages.forEach((number, index) => {
-  const previous = nearbyPages[index - 1];
-  if (previous && number - previous === 2) visiblePages.push(previous + 1);
-  else if (previous && number - previous > 2) visiblePages.push(null);
-  visiblePages.push(number);
-});
-const start = total ? (current - 1) * pageSize + 1 : 0;
-const end = Math.min(current * pageSize, total);
 ---
 
-<section class="blog-pagination" aria-label="博客分页">
-  <div class="pagination-summary">
-    <p>共 {total} 篇 · 第 {current} / {lastPage} 页</p>
-    <p class="pagination-range">本页 {start}–{end} 篇</p>
-  </div>
-  <nav class="pagination-links" aria-label="文章列表页码">
-    {current > 1 ? (
-      <a class="btn btn-sm btn-ghost page-step" href={pageUrl(current - 1)} rel="prev">← 上一页</a>
-    ) : (
-      <span class="btn btn-sm btn-ghost page-step unavailable" aria-disabled="true">← 上一页</span>
-    )}
-    <ol class="page-numbers">
-      {visiblePages.map((number) => (
-        <li>
-          {number === null ? (
-            <span class="page-gap" aria-hidden="true">…</span>
-          ) : (
-            <a
-              class:list={["btn btn-sm page-number", number === current ? "btn-primary" : "btn-ghost"]}
-              href={pageUrl(number)}
-              aria-label={`第 ${number} 页`}
-              aria-current={number === current ? "page" : undefined}
-            >{number}</a>
-          )}
-        </li>
-      ))}
-    </ol>
-    {current < lastPage ? (
-      <a class="btn btn-sm btn-ghost page-step" href={pageUrl(current + 1)} rel="next">下一页 →</a>
-    ) : (
-      <span class="btn btn-sm btn-ghost page-step unavailable" aria-disabled="true">下一页 →</span>
-    )}
-  </nav>
-  <blog-page-jump>
-    <form class="page-jump" data-astro-reload hidden>
-      <label>
-        跳转至
-        <select class="select select-bordered select-sm" name="page" aria-label="选择页数">
-          {Array.from({ length: lastPage }, (_, index) => index + 1).map((number) => (
-            <option value={pageUrl(number)} selected={number === current}>第 {number} 页</option>
-          ))}
-        </select>
-      </label>
-      <button type="submit" class="btn btn-sm btn-outline">跳转</button>
-    </form>
-  </blog-page-jump>
-</section>
+<blog-pagination
+  class="blog-pagination"
+  role="navigation"
+  aria-label="文章分页"
+  data-pagination
+  data-client-pagination={clientPagination ? "" : undefined}
+  hidden={clientPagination || lastPage <= 1}
+>
+  <a
+    class="page-step"
+    data-previous
+    href={current > 1 ? pageUrl(current - 1) : undefined}
+    rel="prev"
+    aria-disabled={current === 1 ? "true" : "false"}
+    tabindex={current === 1 ? -1 : 0}
+  >← 上一页</a>
+  <select class="page-select" data-page-select aria-label="选择页数" hidden>
+    {Array.from({ length: lastPage }, (_, index) => index + 1).map((number) => (
+      <option value={clientPagination ? String(number) : pageUrl(number)} selected={number === current}>
+        第 {number} / {lastPage} 页
+      </option>
+    ))}
+  </select>
+  <noscript><span>第 {current} / {lastPage} 页</span></noscript>
+  <a
+    class="page-step"
+    data-next
+    href={current < lastPage ? pageUrl(current + 1) : undefined}
+    rel="next"
+    aria-disabled={current === lastPage ? "true" : "false"}
+    tabindex={current === lastPage ? -1 : 0}
+  >下一页 →</a>
+</blog-pagination>
 
 <script>
-  class BlogPageJump extends HTMLElement {
+  class BlogPagination extends HTMLElement {
     constructor() {
       super();
-      this.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const select = this.querySelector<HTMLSelectElement>("select");
-        if (select?.value) window.location.assign(select.value);
+      this.addEventListener("change", (event) => {
+        if (this.hasAttribute("data-client-pagination")) return;
+        const select = event.target;
+        if (select instanceof HTMLSelectElement && select.matches("[data-page-select]") && select.value) {
+          window.location.assign(select.value);
+        }
       });
     }
 
     connectedCallback() {
-      this.querySelector("form")?.removeAttribute("hidden");
+      this.querySelector("[data-page-select]")?.removeAttribute("hidden");
     }
   }
 
-  if (!customElements.get("blog-page-jump")) customElements.define("blog-page-jump", BlogPageJump);
+  if (!customElements.get("blog-pagination")) customElements.define("blog-pagination", BlogPagination);
 </script>
 
 <style>
-  .blog-pagination { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid oklch(var(--bc) / 0.15); }
-  .pagination-summary { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .25rem .75rem; margin-bottom: 1rem; font-size: .875rem; }
-  .pagination-range { opacity: .6; }
-  .pagination-links { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem; }
-  .page-step { justify-self: start; white-space: nowrap; }
+  .blog-pagination { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem; margin-top: 2rem; padding-block: .5rem; font-size: .875rem; }
+  [hidden] { display: none !important; }
+  .page-step { justify-self: start; display: inline-flex; align-items: center; min-height: 2.25rem; padding: .25rem; white-space: nowrap; border-radius: .25rem; }
   .page-step:last-child { justify-self: end; }
-  .page-numbers { display: flex; align-items: center; justify-content: center; gap: .25rem; list-style: none; padding: 0; margin: 0; }
-  .page-number { min-width: 2rem; padding-inline: .5rem; }
-  .page-gap { display: inline-block; min-width: 1rem; text-align: center; opacity: .6; }
-  .unavailable { opacity: .35; cursor: default; pointer-events: none; }
-  .page-jump { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem; margin-top: 1.1rem; font-size: .875rem; }
-  .page-jump[hidden] { display: none; }
-  .page-jump label { display: flex; align-items: center; gap: .5rem; }
-  .page-jump select { min-width: 6.75rem; }
-  @media (max-width: 640px) {
-    .pagination-links { grid-template-columns: 1fr 1fr; row-gap: .75rem; }
-    .page-numbers { grid-column: 1 / -1; grid-row: 2; }
+  .page-step:hover { text-decoration: underline; text-underline-offset: .2em; }
+  .page-step[aria-disabled="true"] { opacity: .35; cursor: default; pointer-events: none; }
+  .page-select { width: 7.5rem; max-width: 100%; min-height: 2.25rem; padding: .25rem .5rem; background: transparent; color: inherit; border: 1px solid oklch(var(--bc) / .18); border-radius: .4rem; font: inherit; cursor: pointer; }
+  .page-select option { background: oklch(var(--b1)); color: oklch(var(--bc)); }
+  .page-step:focus-visible, .page-select:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+  noscript { justify-self: center; white-space: nowrap; }
+  @media (max-width: 360px) {
+    .blog-pagination { gap: .25rem; font-size: .8125rem; }
+    .page-select { width: 7rem; padding-inline: .25rem; }
   }
 </style>
