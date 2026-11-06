@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2280" viewBox="0 0 1200 2280" role="img" aria-label="MIC完整架构：预训练先验、初始化、双路约束控制、调权与分配、去噪循环与最终检查">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#536477"/></marker></defs>
+<style>text{font-family:Arial,"Microsoft YaHei",sans-serif;fill:#172b45}.title{font-size:30px;font-weight:700}.section{font-size:23px;font-weight:700}.node{font-size:21px;font-weight:700}.body{font-size:19px}.label{font-size:17px;fill:#536477}</style>
+<rect width="1200" height="2280" fill="#fff"/>
+<text x="36" y="46" class="title" text-anchor="start">MIC · 让可微目标与黑盒判据共同控制动作扩散</text>
+<text x="36" y="80" class="body" text-anchor="start">教学示意 · 主文图2 / 式2–13，补充算法1 · 所有新控制在推理时计算，不更新模型权重</text>
+<rect x="20" y="110" width="1160" height="230" rx="16" fill="#f6f8fb" stroke="#d5deea"/>
+<text x="40" y="145" class="section" text-anchor="start">A  已训练的能力：MIC复用先验与控制器，不新增模型训练</text>
+<rect x="40" y="175" width="240" height="100" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="160.0" y="205" class="node" text-anchor="middle">HumanML3D配对数据</text>
+<text x="160.0" y="232" class="body" text-anchor="middle">文本与人体运动</text>
+<text x="160.0" y="256" class="body" text-anchor="middle">原MDM的训练监督</text>
+<rect x="320" y="175" width="260" height="100" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="450.0" y="205" class="node" text-anchor="middle">已预训练MDM</text>
+<text x="450.0" y="232" class="body" text-anchor="middle">文本条件动作去噪器</text>
+<text x="450.0" y="256" class="body" text-anchor="middle">学习自然运动分布</text>
+<rect x="620" y="175" width="230" height="100" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="735.0" y="205" class="node" text-anchor="middle">冻结参数 θ</text>
+<text x="735.0" y="232" class="body" text-anchor="middle">文本编码与动作主干</text>
+<text x="735.0" y="256" class="body" text-anchor="middle">MIC只改变采样</text>
+<rect x="900" y="175" width="260" height="100" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="1030.0" y="205" class="node" text-anchor="middle">预训练人体跟踪器</text>
+<text x="1030.0" y="232" class="body" text-anchor="middle">供仿真判据／验收复用</text>
+<text x="1030.0" y="256" class="body" text-anchor="middle">不属于MIC新训策略</text>
+<path d="M 280 225 L 320 225" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 580 225 L 620 225" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="40" y="314" class="label" text-anchor="start">训练数据不在推理时重新读入；无需新增动作tokenizer、码本或神经解码器。</text>
+<rect x="20" y="370" width="1160" height="270" rx="16" fill="#f6f8fb" stroke="#d5deea"/>
+<text x="40" y="405" class="section" text-anchor="start">B  用户输入与初始化：约束规格、评价器和作用域均需外部提供</text>
+<rect x="40" y="435" width="300" height="85" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="190.0" y="465" class="node" text-anchor="middle">文本提示 c</text>
+<text x="190.0" y="492" class="body" text-anchor="middle">例如：人物向前行走</text>
+<rect x="40" y="550" width="300" height="65" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="190.0" y="580" class="node" text-anchor="middle">冻结文本编码器</text>
+<path d="M 190 520 L 190 550" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="400" y="435" width="390" height="180" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="595.0" y="465" class="node" text-anchor="middle">K个显式约束规格</text>
+<text x="595.0" y="492" class="body" text-anchor="middle">目标 dₖ ＋ 评价函数 vₖ</text>
+<text x="595.0" y="516" class="body" text-anchor="middle">类型：连续可微／判据式</text>
+<text x="595.0" y="540" class="body" text-anchor="middle">范围：关节×帧掩码 Mₖ</text>
+<text x="595.0" y="564" class="body" text-anchor="middle">阈值／场景几何由用户定义</text>
+<rect x="850" y="435" width="310" height="85" rx="10" fill="#fff" stroke="#a9b8ca" stroke-width="1.5"/>
+<text x="1005.0" y="465" class="node" text-anchor="middle">初始高斯噪声</text>
+<text x="1005.0" y="492" class="body" text-anchor="middle">沿用MDM运动表示</text>
+<rect x="850" y="550" width="310" height="65" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="1005.0" y="580" class="node" text-anchor="middle">优化 warm start</text>
+<text x="1005.0" y="607" class="body" text-anchor="middle">沿用既有优化初始化</text>
+<path d="M 1005 520 L 1005 550" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="20" y="675" width="1160" height="805" rx="16" fill="#fbfcfe" stroke="#d5deea"/>
+<text x="40" y="710" class="section" text-anchor="start">C  展开一个去噪步：共享同一动作状态，分别构造每个约束的方向</text>
+<rect x="40" y="755" width="220" height="105" rx="10" fill="#fff" stroke="#a9b8ca" stroke-width="1.5"/>
+<text x="150.0" y="785" class="node" text-anchor="middle">当前噪声状态 zₜ</text>
+<text x="150.0" y="812" class="body" text-anchor="middle">整段运动中间状态</text>
+<text x="150.0" y="836" class="body" text-anchor="middle">不是物理关节力矩</text>
+<rect x="320" y="755" width="300" height="105" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="470.0" y="785" class="node" text-anchor="middle">冻结MDM去噪器</text>
+<text x="470.0" y="812" class="body" text-anchor="middle">输入状态＋文本＋步数</text>
+<text x="470.0" y="836" class="body" text-anchor="middle">预测干净运动／score</text>
+<rect x="680" y="755" width="480" height="105" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="920.0" y="785" class="node" text-anchor="middle">干净运动估计 ẑT</text>
+<text x="920.0" y="812" class="body" text-anchor="middle">Tweedie估计 → 恢复关节轨迹</text>
+<text x="920.0" y="836" class="body" text-anchor="middle">用于当前位置／足滑／规则评价</text>
+<path d="M 260 807 L 320 807" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 620 807 L 680 807" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 190 615 L 190 655 L 1170 655 L 1170 738 L 470 738 L 470 755" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="390" y="649" class="label" text-anchor="start">文本条件</text>
+<path d="M 1005 615 L 1005 668 L 1150 668 L 1150 750 L 150 750 L 150 755" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 735 275 L 735 354 L 1188 354 L 1188 724 L 550 724 L 550 755" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<text x="40" y="916" class="section" text-anchor="start">C1  可微连续目标：通过冻结网络回传</text>
+<text x="660" y="916" class="section" text-anchor="start">C2  判据式目标：只需前向评价</text>
+<rect x="40" y="955" width="500" height="95" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="290.0" y="985" class="node" text-anchor="middle">计算连续误差 vₖ(ẑT)</text>
+<text x="290.0" y="1012" class="body" text-anchor="middle">例如：头高／手部目标／时间平滑</text>
+<rect x="40" y="1090" width="500" height="105" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="290.0" y="1120" class="node" text-anchor="middle">输入梯度 ∇z vₖ</text>
+<text x="290.0" y="1147" class="body" text-anchor="middle">经干净估计与冻结MDM反传</text>
+<text x="290.0" y="1171" class="body" text-anchor="middle">参数不更新，仍需反向计算</text>
+<rect x="40" y="1235" width="500" height="80" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="290.0" y="1265" class="node" text-anchor="middle">连续控制方向 uₖ</text>
+<text x="290.0" y="1292" class="body" text-anchor="middle">减小误差的步级引导</text>
+<path d="M 290 1050 L 290 1090" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 290 1195 L 290 1235" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 920 860 L 920 884 L 575 884 L 575 936 L 290 936 L 290 955" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="660" y="955" width="500" height="95" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="910.0" y="985" class="node" text-anchor="middle">共享 M＝16 个噪声候选</text>
+<text x="910.0" y="1012" class="body" text-anchor="middle">q高斯提议 → 候选下一步状态 ηᵐ</text>
+<rect x="660" y="1090" width="500" height="105" rx="10" fill="#eaf3ff" stroke="#82a8d6" stroke-width="1.5"/>
+<text x="910.0" y="1120" class="node" text-anchor="middle">候选干净运动 ẑTᵐ</text>
+<text x="910.0" y="1147" class="body" text-anchor="middle">复用冻结MDM＋Tweedie估计</text>
+<text x="910.0" y="1171" class="body" text-anchor="middle">每个候选恢复可评价的运动</text>
+<rect x="660" y="1235" width="500" height="95" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="910.0" y="1265" class="node" text-anchor="middle">规则／黑盒模拟判据 Eₖ</text>
+<text x="910.0" y="1292" class="body" text-anchor="middle">碰撞／足滑／任务成功／可跟踪性</text>
+<rect x="660" y="1370" width="500" height="80" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="910.0" y="1400" class="node" text-anchor="middle">判据控制方向 uₖ</text>
+<text x="910.0" y="1427" class="body" text-anchor="middle">得分×重要性修正 → 加权噪声</text>
+<path d="M 910 1050 L 910 1090" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 910 1195 L 910 1235" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 910 1330 L 910 1370" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 150 860 L 150 882 L 600 882 L 600 938 L 910 938 L 910 955" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 1160 1410 L 1170 1410 L 1170 1002 L 1160 1002" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<text x="1050" y="1073" class="label" text-anchor="middle">20%精英更新q</text>
+<path d="M 595 615 L 595 665 L 8 665 L 8 1002 L 40 1002" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<path d="M 595 615 L 595 665 L 1195 665 L 1195 1282 L 1160 1282" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<text x="40" y="1420" class="label" text-anchor="start">C2可接入仿真反馈；并非只在最后检查。</text>
+<text x="40" y="1450" class="label" text-anchor="start">候选共享；各约束分别计算自己的得分与方向。</text>
+<rect x="20" y="1510" width="1160" height="400" rx="16" fill="#fffaf2" stroke="#d5deea"/>
+<text x="40" y="1545" class="section" text-anchor="start">D  约束协调：反馈决定多强，作用域决定改哪里</text>
+<rect x="40" y="1575" width="500" height="115" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="290.0" y="1605" class="node" text-anchor="middle">反馈调权 Wₖ</text>
+<text x="290.0" y="1632" class="body" text-anchor="middle">干净预测的违规量 → EMA归一化</text>
+<text x="290.0" y="1656" class="body" text-anchor="middle">W ← clip(W＋γc, 0, Wmax)</text>
+<text x="290.0" y="1680" class="body" text-anchor="middle">持续违规累加；满足后保持</text>
+<rect x="660" y="1575" width="500" height="115" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="910.0" y="1605" class="node" text-anchor="middle">关节—时间控制分配</text>
+<text x="910.0" y="1632" class="body" text-anchor="middle">输入：uₖ、Wₖ、外部掩码 Mₖ</text>
+<text x="910.0" y="1656" class="body" text-anchor="middle">按Wₖ²加权的正则最小二乘</text>
+<text x="910.0" y="1680" class="body" text-anchor="middle">重叠通道求折中，λ限制幅度</text>
+<path d="M 540 1632 L 660 1632" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="570" y="1622" class="label" text-anchor="start">权重</text>
+<path d="M 540 1275 L 610 1275 L 610 1500 L 630 1500 L 630 1605 L 660 1605" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="535" y="1490" class="label" text-anchor="start">连续方向</text>
+<path d="M 910 1450 L 910 1575" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="925" y="1547" class="label" text-anchor="start">判据方向</text>
+<path d="M 920 860 L 920 874 L 16 874 L 16 1632 L 40 1632" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<path d="M 1195 1282 L 1195 1660 L 1160 1660" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<rect x="660" y="1760" width="500" height="100" rx="10" fill="#eaf6ef" stroke="#8ab99a" stroke-width="1.5"/>
+<text x="910.0" y="1790" class="node" text-anchor="middle">注入控制，完成下一采样步</text>
+<text x="910.0" y="1817" class="body" text-anchor="middle">先验去噪＋合成控制 u → zₜ₊₁</text>
+<text x="910.0" y="1841" class="body" text-anchor="middle">所有控制范围外额外引导为0</text>
+<rect x="40" y="1760" width="500" height="100" rx="10" fill="#fff" stroke="#a9b8ca" stroke-width="1.5"/>
+<text x="290.0" y="1790" class="node" text-anchor="middle">循环直至整段采样完成</text>
+<text x="290.0" y="1817" class="body" text-anchor="middle">每步重新预测、评价、调权与分配</text>
+<text x="290.0" y="1841" class="body" text-anchor="middle">默认每步只做一次内部协调</text>
+<path d="M 910 1690 L 910 1760" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 660 1810 L 540 1810" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 40 1810 L 27 1810 L 27 807 L 40 807" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 5"/>
+<text x="40" y="1890" class="label" text-anchor="start">合成控制只改变当前采样步；不保证未选关节逐帧不变，也不保证互斥条件同时满足。</text>
+<rect x="20" y="1940" width="1160" height="250" rx="16" fill="#f6f8fb" stroke="#d5deea"/>
+<text x="40" y="1975" class="section" text-anchor="start">E  生成结果与独立验收：动作轨迹不是物理执行成功证书</text>
+<rect x="40" y="2005" width="330" height="105" rx="10" fill="#fff" stroke="#a9b8ca" stroke-width="1.5"/>
+<text x="205.0" y="2035" class="node" text-anchor="middle">完成去噪：运动序列</text>
+<text x="205.0" y="2062" class="body" text-anchor="middle">沿原模型表示恢复关节轨迹</text>
+<text x="205.0" y="2086" class="body" text-anchor="middle">文本语义＋控制后的整段动作</text>
+<rect x="430" y="2005" width="330" height="105" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="595.0" y="2035" class="node" text-anchor="middle">任务验收与质量评测</text>
+<text x="595.0" y="2062" class="body" text-anchor="middle">控制误差／失败比例</text>
+<text x="595.0" y="2086" class="body" text-anchor="middle">足滑／最大关节加速度</text>
+<rect x="820" y="2005" width="340" height="105" rx="10" fill="#fff2df" stroke="#d1ab70" stroke-width="1.5"/>
+<text x="990.0" y="2035" class="node" text-anchor="middle">MuJoCo跟踪检验／展示</text>
+<text x="990.0" y="2062" class="body" text-anchor="middle">复用预训练人体控制器</text>
+<text x="990.0" y="2086" class="body" text-anchor="middle">可跟踪且完成目标才算Pass</text>
+<path d="M 40 1840 L 32 1840 L 32 2057 L 40 2057" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 370 2057 L 430 2057" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 370 2084 L 395 2084 L 395 2140 L 990 2140 L 990 2110" fill="none" stroke="#536477" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="40" y="2170" class="label" text-anchor="start">分支说明：仿真既可作为C2可选评价器，也用于最终检验；具体任务与评价预算须分别核对。</text>
+<text x="40" y="2230" class="body" text-anchor="start">蓝：复用冻结模型　绿：无需训练的计算　橙：外部规格／评价　虚线：参数复用／反馈</text>
+<text x="40" y="2262" class="label" text-anchor="start">目标是偏向低违规动作的软后验；有限采样与近似控制不构成逐样本硬约束保证。</text>
+</svg>
