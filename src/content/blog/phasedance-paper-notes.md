@@ -12,13 +12,15 @@ tags: ["PhaseDance", "Music-to-Dance", "Motion-Phase", "Laban", "Paper-Notes"]
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
-**全文更新：2026-11-07。** 本文已依据作者公开的32页论文重写，涵盖正文、附录A–K、原表与架构细节。[作者原文][paper] · [项目演示][project]
+**全文更新：2026-11-07。** 本文已依据作者公开的32页论文重写，涵盖正文、附录A–K、原表与架构细节。[HTML 全文阅读版（可用翻译插件）][html-reader] · [作者原文 PDF][paper] · [项目演示][project]
 
 <details class="paper-meta"><summary>论文信息与阅读范围 · NeurIPS 2026</summary>
 
 论文：*PhaseDance: Capturing Rhythm and Expressivity in Dance Modeling*。作者：**Meongeun Kim、Taehui Lee、Soomin Park、Sung-Hee Lee**，KAIST。正式会议为**NeurIPS 2026**，官方海报条目153947；已核对会议记录与作者项目，不以PDF模板页眉代替录用证据。[会议条目][poster] · [项目页][project]
 
 本次阅读版本为作者项目提供的 **neurips_2026.pdf，共32页**，含附录A–K及检查清单；文中公式、图表与页码均按此版本。研究方向：舞蹈生成与理解、周期相位、Laban Movement Analysis、离散动作token、多任务自回归模型。
+
+**全文阅读：** [打开 HTML 阅读版][html-reader]。本站从原 PDF 提取英文正文并重排，支持浏览器翻译插件；公式与复杂图表保留原图，附章节目录和原页定位。此阅读版并非作者官方 HTML，技术细节以原 PDF 为准。
 
 截至2026-11-07，项目页的Code和arXiv入口仍为 **Coming soon**；未核实公开可运行代码／权重，本次未执行训练或模型推理。DT训练数据因产业伙伴所有权不能公开再分发，主结果在公开AIST++上评测。[项目页][project] · [附录E、检查清单§5][paper]
 
@@ -292,6 +294,7 @@ FID<sub>k/g</sub>分别在动力学／几何特征上衡量分布距离，越低
 </div>
 
 [paper]: https://meongeun.github.io/phasedance/assets/paper/neurips_2026.pdf
+[html-reader]: /paper-notes/phasedance/fulltext/
 [project]: https://meongeun.github.io/phasedance/
 [poster]: https://neurips.cc/virtual/2026/poster/153947
 [intro]: https://meongeun.github.io/phasedance/assets/paper/neurips_2026.pdf#page=1
