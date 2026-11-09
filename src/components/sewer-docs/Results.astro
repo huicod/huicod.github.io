@@ -3,6 +3,8 @@ import FiveClassDetection from "./FiveClassDetection.astro";
 const repo = "https://github.com/huicod/sewer-agent/blob/dev/agent-v1";
 ---
 
+<p class="guide-links"><a href="/projects/sewer-agent/reports/2026-11-09/REPORT.pdf">查看完整报告（PDF，15 页）</a> · 2026-11-09</p>
+
 <h2 id="latest">视觉语言模型（VLM）补检找回了哪些缺陷？</h2>
 <p>60 张验证图中有 12 张标注了腐蚀。其中，YOLO 识别出 7 张；加入 VLM 首轮补检后识别出 <strong>9 张</strong>，另有 1 张多报。腐蚀的分类 F1 从 <strong>73.68% 升到 81.82%</strong>。同一批图中，堵塞多报了 8 张，所以各类别合计的精确率下降。</p>
 <p>第二次请求让 VLM 重新审视首轮提出的新框。按目标检测计，误报框从 60 个减至 52 个，同时少了 1 个命中；按图像分类计，整图类别全部正确的图片从 39 张增至 41 张，YOLO 基线为 48 张。<a href="#score60">查看 60 图两项任务及五类明细</a>。</p>
