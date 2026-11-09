@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="2320" viewBox="0 0 1500 2320" role="img" aria-labelledby="title desc">
+<title id="title">PASPA：过去压成状态，当前块用双向注意力</title>
+<desc id="desc">依据论文图4及算法1重绘。语音和表情条件驱动双分支连续运动生成；每个块只读历史状态，完整块生成后再预填充更新；训练使用多块监督与块因果历史。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#526982"/></marker><marker id="green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#368678"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans SC',Arial,sans-serif;fill:#223950} .title{font-size:31px;font-weight:700} .head{font-size:25px;font-weight:700} .label{font-size:21px;font-weight:700} .body{font-size:19px} .small{font-size:18px} .edge{fill:none;stroke:#526982;stroke-width:2.6;marker-end:url(#arrow)} .train{fill:none;stroke:#368678;stroke-width:2.6;stroke-dasharray:9 6;marker-end:url(#green)}</style>
+<rect width="1500" height="2320" fill="#fff"/>
+<text x="40" y="49" class="title"><tspan x="40" dy="0">PASPA | 过去保留固定状态，当前动作块细致生成</tspan></text>
+<text x="40" y="84" class="small"><tspan x="40" dy="0">教学重绘 · 依据 NeurIPS 2026 论文图 4、式 1–9、算法 1 与附录 E · 非作者原图或本机运行结果</tspan></text>
+<rect x="28" y="110" width="1444" height="350" rx="18" fill="#f8fafc" stroke="#cbd9e7" stroke-width="1.8"/>
+<text x="52" y="149" class="head"><tspan x="52" dy="0">A · 条件准备：音频驱动表情，再共同驱动身体动作</tspan></text>
+<rect x="55" y="179" width="260" height="100" rx="12" fill="#fff2da" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="74" y="211" class="label"><tspan x="74" dy="0">当前语音块 aⁿ</tspan></text>
+<text x="74" y="242" class="body"><tspan x="74" dy="0">16 kHz 音频 / 对齐当前块</tspan><tspan x="74" dy="29">历史语音用于前序状态</tspan></text>
+<rect x="365" y="179" width="300" height="100" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="384" y="211" class="label"><tspan x="384" dy="0">冻结 WavLM</tspan></text>
+<text x="384" y="242" class="body"><tspan x="384" dy="0">提取声学特征</tspan><tspan x="384" dy="29">论文预提取音频特征</tspan></text>
+<rect x="735" y="179" width="345" height="100" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="754" y="211" class="label"><tspan x="754" dy="0">冻结 audio-to-expression</tspan></text>
+<text x="754" y="242" class="body"><tspan x="754" dy="0">BEAT2 复用 GlobalDiff 表情模型</tspan><tspan x="754" dy="29">输入音频特征 + speaker ID</tspan></text>
+<rect x="1140" y="179" width="300" height="100" rx="12" fill="#edf8ef" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="1159" y="211" class="label"><tspan x="1159" dy="0">当前表情 eⁿ</tspan></text>
+<text x="1159" y="242" class="body"><tspan x="1159" dy="0">100 维 FLAME 系数</tspan><tspan x="1159" dy="29">同时作为面部输出</tspan></text>
+<path d="M315 229H365" class="edge"/>
+<path d="M665 229H735" class="edge"/>
+<path d="M1080 229H1140" class="edge"/>
+<rect x="55" y="325" width="260" height="95" rx="12" fill="#fff2da" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="74" y="357" class="label"><tspan x="74" dy="0">人物身份 ID</tspan></text>
+<text x="74" y="388" class="body"><tspan x="74" dy="0">one-hot → embedding</tspan></text>
+<rect x="365" y="325" width="715" height="95" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="384" y="357" class="label"><tspan x="384" dy="0">生成条件 cⁿ = 音频特征 + 预测表情</tspan></text>
+<text x="384" y="388" class="body"><tspan x="384" dy="0">ID 与扩散时间 t 另用于 AdaRMSNorm 调制；不读取未来动作</tspan></text>
+<path d="M185 325V301H900V279" class="edge"/>
+<path d="M515 279V325" class="edge"/>
+<path d="M1290 279V372H1080" class="edge"/>
+<rect x="28" y="490" width="1444" height="720" rx="18" fill="#f8fafc" stroke="#cbd9e7" stroke-width="1.8"/>
+<text x="52" y="529" class="head"><tspan x="52" dy="0">B · 推理一个动作块：历史只读，块内迭代，完成后再写回</tspan></text>
+<rect x="55" y="566" width="295" height="110" rx="12" fill="#fff2da" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="74" y="598" class="label"><tspan x="74" dy="0">当前带噪块 xⁿₜ</tspan></text>
+<text x="74" y="629" class="body"><tspan x="74" dy="0">64 帧 × 333 维</tspan><tspan x="74" dy="29">每块从高斯噪声初始化</tspan></text>
+<rect x="425" y="566" width="475" height="110" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="444" y="598" class="label"><tspan x="444" dy="0">躯干 + 平移分支</tspan></text>
+<text x="444" y="629" class="body"><tspan x="444" dy="0">部位噪声 + 完整噪声 + cⁿ → embedding</tspan><tspan x="444" dy="29">6 层 PASPA → 干净躯干 / 平移预测</tspan></text>
+<rect x="425" y="737" width="475" height="110" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="444" y="769" class="label"><tspan x="444" dy="0">手部分支</tspan></text>
+<text x="444" y="800" class="body"><tspan x="444" dy="0">部位噪声 + 完整噪声 + cⁿ → embedding</tspan><tspan x="444" dy="29">6 层 PASPA → 干净手部预测</tspan></text>
+<rect x="1030" y="650" width="385" height="110" rx="12" fill="#edf8ef" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="1049" y="682" class="label"><tspan x="1049" dy="0">合并完整干净动作 x̂ⁿ₀</tspan></text>
+<text x="1049" y="713" class="body"><tspan x="1049" dy="0">两分支共同组成 333 维动作</tspan><tspan x="1049" dy="29">这一预测供采样更新使用</tspan></text>
+<path d="M350 620H425" class="edge"/>
+<path d="M379 620V792H425" class="edge"/>
+<path d="M900 620H965V687H1030" class="edge"/>
+<path d="M900 792H965V725H1030" class="edge"/>
+<path d="M722 420V550H674V566" class="edge"/>
+<path d="M722 550H932V704H674V737" class="edge"/>
+<rect x="55" y="737" width="295" height="165" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="74" y="769" class="label"><tspan x="74" dy="0">块起始历史状态 S⁰[n]</tspan></text>
+<text x="74" y="800" class="body"><tspan x="74" dy="0">由已完成的干净历史压缩</tspan><tspan x="74" dy="29">当前块全部 query 只读它</tspan><tspan x="74" dy="29">去噪迭代中不更新状态</tspan><tspan x="74" dy="29">初始：8 帧 seed 或零状态</tspan></text>
+<path d="M350 790H392V650H425" class="edge"/>
+<path d="M392 790H425" class="edge"/>
+<text x="58" y="927" class="small"><tspan x="58" dy="0">状态大小不随历史长度增长</tspan><tspan x="58" dy="29">并非保存全部过去动作 token</tspan></text>
+<rect x="1030" y="810" width="385" height="145" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="1049" y="842" class="label"><tspan x="1049" dy="0">Hybrid CFG + 采样更新</tspan></text>
+<text x="1049" y="873" class="body"><tspan x="1049" dy="0">无条件 / 仅 c / 仅历史 / 完整</tspan><tspan x="1049" dy="29">四路预测组合 → 更新 xⁿₜ</tspan><tspan x="1049" dy="29">每块 10 步；同一 S⁰[n] 只读</tspan></text>
+<path d="M1220 760V810" class="edge"/>
+<path d="M1415 880H1445V541H200V566" class="edge"/>
+<text x="1065" y="1000" class="small"><tspan x="1065" dy="0">完成当前块，才进入下方写回</tspan></text>
+<rect x="1030" y="1035" width="385" height="110" rx="12" fill="#edf8ef" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="1049" y="1067" class="label"><tspan x="1049" dy="0">输出当前干净动作块 x̂ⁿ₀</tspan></text>
+<text x="1049" y="1098" class="body"><tspan x="1049" dy="0">64 帧连续运动，接入长序列</tspan><tspan x="1049" dy="29">同时输出对应表情 eⁿ</tspan></text>
+<rect x="565" y="1035" width="380" height="110" rx="12" fill="#e5f5ef" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="584" y="1067" class="label"><tspan x="584" dy="0">Prefill：用完整干净块更新</tspan></text>
+<text x="584" y="1098" class="body"><tspan x="584" dy="0">历史编码器 → BGDN 状态更新</tspan><tspan x="584" dy="29">跳过去噪子层；每块完成后一次</tspan></text>
+<rect x="55" y="1035" width="420" height="110" rx="12" fill="#e5f5ef" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="74" y="1067" class="label"><tspan x="74" dy="0">下一块起始状态 S⁰[n+1]</tspan></text>
+<text x="74" y="1098" class="body"><tspan x="74" dy="0">继承当前块的最终历史状态</tspan><tspan x="74" dy="29">供后续块只读；固定容量缓存</tspan></text>
+<path d="M1220 955V1035" class="edge"/>
+<path d="M1030 1090H945" class="edge"/>
+<path d="M565 1090H475" class="edge"/>
+<path d="M55 1085H40V815H55" class="edge"/>
+<text x="58" y="1182" class="small"><tspan x="58" dy="0">块间因果 ≠ 逐帧因果：当前 64 帧内使用双向信息；30 FPS 下单块约 2.13 秒，不等于首帧延迟。</tspan></text>
+<rect x="28" y="1240" width="1444" height="325" rx="18" fill="#f8fafc" stroke="#cbd9e7" stroke-width="1.8"/>
+<text x="52" y="1279" class="head"><tspan x="52" dy="0">C · PASPA 层内部：先从历史状态取信息，再处理当前块的细节</tspan></text>
+<rect x="55" y="1320" width="280" height="140" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="74" y="1352" class="label"><tspan x="74" dy="0">BGDN：过去作为状态</tspan></text>
+<text x="74" y="1383" class="body"><tspan x="74" dy="0">query 来自当前噪声</tspan><tspan x="74" dy="29">只读取块起始 S⁰[n]</tspan><tspan x="74" dy="29">clean history 提供 K/V</tspan></text>
+<rect x="395" y="1320" width="340" height="140" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="414" y="1352" class="label"><tspan x="414" dy="0">BMHSA：当前作为注意力</tspan></text>
+<text x="414" y="1383" class="body"><tspan x="414" dy="0">仅 64 帧块内双向 self-attn</tspan><tspan x="414" dy="29">跨块 attention 被禁止</tspan><tspan x="414" dy="29">RoPE 保留位置关系</tspan></text>
+<rect x="795" y="1320" width="240" height="140" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="814" y="1352" class="label"><tspan x="814" dy="0">FFN 与残差</tspan></text>
+<text x="814" y="1383" class="body"><tspan x="814" dy="0">继续变换块内特征</tspan><tspan x="814" dy="29">两分支各堆叠 6 层</tspan></text>
+<rect x="1095" y="1320" width="320" height="140" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="1114" y="1352" class="label"><tspan x="1114" dy="0">AdaRMSNorm 调制</tspan></text>
+<text x="1114" y="1383" class="body"><tspan x="1114" dy="0">t 的 Fourier embedding</tspan><tspan x="1114" dy="29">与 speaker ID 共同调制</tspan></text>
+<path d="M335 1380H395" class="edge"/>
+<path d="M735 1380H795" class="edge"/>
+<path d="M1095 1380H1070V1480H195V1460" class="edge"/>
+<text x="55" y="1525" class="small"><tspan x="55" dy="0">BGDN 的门控与 delta-rule 汇总历史；冻结“读取时点”避免当前块真值从历史支路泄漏。</tspan></text>
+<rect x="28" y="1595" width="1444" height="595" rx="18" fill="#f8fafc" stroke="#cbd9e7" stroke-width="1.8"/>
+<text x="52" y="1634" class="head"><tspan x="52" dy="0">D · 训练：多块并行监督；真值历史只进入后续块</tspan></text>
+<rect x="55" y="1670" width="360" height="130" rx="12" fill="#fff2da" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="74" y="1702" class="label"><tspan x="74" dy="0">配对语音 / 真实动作</tspan></text>
+<text x="74" y="1733" class="body"><tspan x="74" dy="0">256 帧 = 4 个 64 帧块</tspan><tspan x="74" dy="29">训练用真实干净历史</tspan><tspan x="74" dy="29">teacher forcing</tspan></text>
+<rect x="480" y="1670" width="430" height="130" rx="12" fill="#edf4fc" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="499" y="1702" class="label"><tspan x="499" dy="0">不同噪声水平的当前块</tspan></text>
+<text x="499" y="1733" class="body"><tspan x="499" dy="0">xⁿₜ = (1 − tⁿ)xⁿ₀ + tⁿzⁿ</tspan><tspan x="499" dy="29">t¹ ≤ t² ≤ t³ ≤ t⁴</tspan><tspan x="499" dy="29">logit-normal 噪声时间采样</tspan></text>
+<rect x="1015" y="1670" width="400" height="130" rx="12" fill="#e5f5ef" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="1034" y="1702" class="label"><tspan x="1034" dy="0">共享生成器并行预测</tspan></text>
+<text x="1034" y="1733" class="body"><tspan x="1034" dy="0">每块读取严格更早的真值历史</tspan><tspan x="1034" dy="29">BGDN + BMHSA → x̂₀¹…x̂₀⁴</tspan><tspan x="1034" dy="29">同时监督所有块</tspan></text>
+<path d="M415 1730H480" class="train"/>
+<path d="M910 1730H1015" class="train"/>
+<path d="M235 1800V1840H1215V1800" class="train"/>
+<text x="455" y="1868" class="small"><tspan x="455" dy="0">干净历史编码 → 块因果 BGDN 状态；不向本块暴露本块真值</tspan></text>
+<rect x="55" y="1910" width="425" height="174" rx="12" fill="#e5f5ef" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="74" y="1942" class="label"><tspan x="74" dy="0">动作与结构损失</tspan></text>
+<text x="74" y="1973" class="body"><tspan x="74" dy="0">rot6d / 平移重建</tspan><tspan x="74" dy="29">FK 关节位置 + 骨架结构约束</tspan><tspan x="74" dy="29">噪声相关自适应权重</tspan><tspan x="74" dy="29">FK 项对权重预测器 stop-gradient</tspan></text>
+<rect x="535" y="1910" width="405" height="174" rx="12" fill="#e5f5ef" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="554" y="1942" class="label"><tspan x="554" dy="0">块边界连续性损失</tspan></text>
+<text x="554" y="1973" class="body"><tspan x="554" dy="0">跨块过渡窗比较旋转 / 位移</tspan><tspan x="554" dy="29">匹配速度与加速度</tspan><tspan x="554" dy="29">边界项不参加噪声自适应加权</tspan></text>
+<rect x="995" y="1910" width="420" height="174" rx="12" fill="#e5f5ef" stroke="#b4c8dc" stroke-width="1.8"/>
+<text x="1014" y="1942" class="label"><tspan x="1014" dy="0">为 Hybrid CFG 训练条件缺失</tspan></text>
+<text x="1014" y="1973" class="body"><tspan x="1014" dy="0">音频 / 表情条件随机丢弃</tspan><tspan x="1014" dy="29">历史状态可保留、置空或插值</tspan><tspan x="1014" dy="29">推理四路预测组合</tspan><tspan x="1014" dy="29">增强仅在中噪区间 0.1–0.6</tspan></text>
+<path d="M1215 1800V1888H265V1910" class="train"/>
+<path d="M737 1888V1910" class="train"/>
+<path d="M1415 1980H1440V1740H1415" class="train"/>
+<text x="55" y="2110" class="small"><tspan x="55" dy="0">训练的 teacher forcing 历史 ≠ 推理的生成历史；训练损失只提供软约束，未部署物理接触或语义事件求解器。</tspan></text>
+<text x="55" y="2153" class="small"><tspan x="55" dy="0">冻结：WavLM 与表情网络；SHOW 表情分支另训。任务训练：PASPA、历史编码、时间权重及投影。</tspan></text>
+<text x="40" y="2240" class="small"><tspan x="40" dy="0">读图：A 准备条件 → B 完成一块并写回 → C 展开内部运算 → D 查看训练。实线：生成/条件；虚线：仅训练。</tspan></text>
+<text x="40" y="2280" class="small"><tspan x="40" dy="0">来源：arXiv:2610.32373v1（38 页），图 4、算法 1、§3 与附录 E；依正文采用 WavLM 名称。</tspan></text>
+</svg>

@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 2420" role="img" aria-labelledby="title desc">
+<title id="title">DIDiffGes：先生成局部动作，再生成根运动；身体与手部各自接受分布监督</title>
+<desc id="desc">中文教学架构图。语音、风格、种子动作和时间步形成条件。每个去噪步中局部 Transformer 先预测干净局部动作，根 Transformer 在其条件下预测根运动，合并后通过后验采样迭代。训练时真实和生成的同时间步状态分成身体和手部，分别接受判别器与辅助前向扩散约束；另对干净动作进行重建与足部损失监督。判别器不参与推理。</desc>
+<defs>
+ <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#52677c"/></marker>
+ <marker id="blue" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#4a7ca4"/></marker>
+ <marker id="green" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#3c836b"/></marker>
+</defs>
+<style>
+text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1f344c}
+.title{font-size:31px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:22px;font-weight:700}.body{font-size:20px}.note{font-size:18px}
+.panel{fill:#f8fafc;stroke:#c9d5e2;stroke-width:1.5}.box{stroke:#a8bacd;stroke-width:1.5}
+.arrow{fill:none;stroke:#52677c;stroke-width:2.4;stroke-linejoin:round;marker-end:url(#arrow)}
+.cond{stroke:#4a7ca4;marker-end:url(#blue)}.train{stroke:#3c836b;stroke-dasharray:8 6;marker-end:url(#green)}
+</style><rect width="1440" height="2420" fill="white"/>
+<text x="40" y="52" class="title">DIDiffGes｜用少步扩散生成语音驱动的连续全身动作</text>
+<text x="40" y="84" class="note">教学重绘 · 依据 AAAI 2025 论文图 2、方法部分与式 3–9；并非作者原图或运行结果</text>
+<rect x="30" y="110" width="1380" height="330" rx="18" class="panel"/>
+<text x="54" y="148" class="section">A · 条件编码：把语音、风格与前段动作送入同一去噪过程</text>
+<rect x="60" y="170" width="300" height="110" rx="12" class="box" fill="#fff1d8"/>
+<text x="78" y="202" class="head">语音波形</text>
+<text x="78" y="232" class="body">WavLM 提取音频特征</text>
+<text x="78" y="260" class="body">线性映射 → f_audio</text>
+<rect x="400" y="170" width="300" height="110" rx="12" class="box" fill="#fff1d8"/>
+<text x="418" y="202" class="head">风格代码 s</text>
+<text x="418" y="232" class="body">one-hot 风格标签</text>
+<text x="418" y="260" class="body">线性映射</text>
+<rect x="740" y="170" width="300" height="110" rx="12" class="box" fill="#fff1d8"/>
+<text x="758" y="202" class="head">种子动作 x_seed</text>
+<text x="758" y="232" class="body">已有的前段动作序列</text>
+<text x="758" y="260" class="body">线性映射</text>
+<rect x="1080" y="170" width="300" height="110" rx="12" class="box" fill="#fff1d8"/>
+<text x="1098" y="202" class="head">扩散时间步 t</text>
+<text x="1098" y="232" class="body">时间步编码</text>
+<text x="1098" y="260" class="body">指示当前噪声层级</text>
+<path d="M210 280 V315 H720 V350" class="arrow cond"/>
+<path d="M550 280 V315 H720 V350" class="arrow cond"/>
+<path d="M890 280 V315 H720 V350" class="arrow cond"/>
+<path d="M1230 280 V315 H720 V350" class="arrow cond"/>
+<rect x="470" y="350" width="500" height="65" rx="12" class="box" fill="#eaf2fb"/>
+<text x="488" y="382" class="body">条件信号 c：音频＋风格＋种子＋时间</text>
+<rect x="30" y="470" width="1380" height="990" rx="18" class="panel"/>
+<text x="54" y="508" class="section">B · 每个去噪步：先局部、后根部，再对完整动作做后验采样</text>
+<text x="62" y="545" class="note">初始化为高斯噪声 x_T；下图展示任意一步 t → t−1</text>
+<rect x="80" y="580" width="280" height="100" rx="12" class="box" fill="#fff1d8"/>
+<text x="98" y="612" class="head">当前全身噪声 x_t</text>
+<text x="98" y="642" class="body">连续动作表示</text>
+<text x="98" y="670" class="body">分成局部 L 与根 R</text>
+<rect x="520" y="580" width="350" height="75" rx="12" class="box" fill="#eaf2fb"/>
+<text x="538" y="612" class="head">局部噪声 x_t^L</text>
+<text x="538" y="642" class="body">关节的局部运动表示</text>
+<path d="M360 630 H450 V618 H520" class="arrow "/>
+<circle cx="450" cy="630" r="4" fill="#52677c"/>
+<path d="M450 630 V875 H220 V910" class="arrow "/>
+<text x="95" y="853" class="note">按运动表示拆分 L 与 R</text>
+<rect x="520" y="700" width="350" height="100" rx="12" class="box" fill="#eaf2fb"/>
+<text x="538" y="732" class="head">① 局部生成器 G_L</text>
+<text x="538" y="762" class="body">Transformer 去噪器</text>
+<text x="538" y="790" class="body">先恢复局部关节运动</text>
+<path d="M695 655 V700" class="arrow "/>
+<rect x="520" y="840" width="350" height="75" rx="12" class="box" fill="#edf7f0"/>
+<text x="538" y="872" class="head">干净局部动作 x̂_0^L</text>
+<text x="538" y="902" class="body">送给根生成器，也用于合并</text>
+<path d="M695 800 V840" class="arrow "/>
+<rect x="80" y="910" width="280" height="85" rx="12" class="box" fill="#fff1d8"/>
+<text x="98" y="942" class="head">根噪声 x_t^R</text>
+<text x="98" y="972" class="body">全局根运动分量</text>
+<rect x="520" y="965" width="350" height="100" rx="12" class="box" fill="#eaf2fb"/>
+<text x="538" y="997" class="head">② 根生成器 G_R</text>
+<text x="538" y="1027" class="body">Transformer 去噪器</text>
+<text x="538" y="1055" class="body">结合局部预测恢复根运动</text>
+<path d="M360 952 H440 V1015 H520" class="arrow "/>
+<path d="M695 915 V965" class="arrow "/>
+<text x="715" y="947" class="note">局部运动条件</text>
+<rect x="520" y="1105" width="350" height="75" rx="12" class="box" fill="#edf7f0"/>
+<text x="538" y="1137" class="head">干净根运动 x̂_0^R</text>
+<text x="538" y="1167" class="body">在每个去噪步内生成</text>
+<path d="M695 1065 V1105" class="arrow "/>
+<rect x="1060" y="580" width="290" height="70" rx="12" class="box" fill="#eaf2fb"/>
+<text x="1078" y="612" class="head">共享条件 c</text>
+<path d="M970 382 H1205 V580" class="arrow cond"/>
+<path d="M1060 615 H945 V750 H870" class="arrow cond"/>
+<path d="M945 750 V1015 H870" class="arrow cond"/>
+<circle cx="945" cy="750" r="4" fill="#4a7ca4"/>
+<text x="965" y="792" class="note">相同的音频／风格／</text>
+<text x="965" y="817" class="note">种子与时间条件</text>
+<rect x="1060" y="965" width="290" height="100" rx="12" class="box" fill="#edf7f0"/>
+<text x="1078" y="997" class="head">③ 合并完整预测 x̂_0</text>
+<text x="1078" y="1027" class="body">局部 x̂_0^L ＋根 x̂_0^R</text>
+<text x="1078" y="1055" class="body">保留完整连续动作</text>
+<path d="M870 878 H995 V995 H1060" class="arrow "/>
+<path d="M870 1143 H1005 V1035 H1060" class="arrow "/>
+<rect x="1060" y="1150" width="290" height="135" rx="12" class="box" fill="#eaf2fb"/>
+<text x="1078" y="1182" class="head">④ 后验采样</text>
+<text x="1078" y="1212" class="body">q(x_{t−1} | x_t, x̂_0)</text>
+<text x="1078" y="1240" class="body">得到下一步状态 x̂_{t−1}</text>
+<text x="1078" y="1268" class="body">t &gt; 1 时继续下一轮</text>
+<path d="M1205 1065 V1150" class="arrow "/>
+<path d="M80 630 H55 V1210 H1060" class="arrow "/>
+<text x="75" y="1190" class="note">当前状态 x_t 也参与后验采样</text>
+<path d="M1350 1210 H1385 V558 H220 V580" class="arrow "/>
+<rect x="1060" y="1340" width="290" height="80" rx="12" class="box" fill="#edf7f0"/>
+<text x="1078" y="1372" class="head">输出连续全身动作</text>
+<text x="1078" y="1402" class="body">最终一步 t = 1</text>
+<path d="M1205 1285 V1340" class="arrow "/>
+<text x="62" y="1325" class="head">少步迭代：主结果表标为 10 步；</text>
+<text x="62" y="1360" class="body">实现设置段给出的默认值为 20 步。</text>
+<text x="62" y="1404" class="note">推理运行生成器与采样；不运行判别器，也不经过 VQ 码本或动作解码器。</text>
+<rect x="30" y="1490" width="1380" height="785" rx="18" class="panel"/>
+<text x="54" y="1528" class="section">C · 训练监督：分别对身体和手部的同时间步状态建模</text>
+<text x="62" y="1561" class="note">训练中调用上方同一套生成与后验采样流程；以下判别器和损失只在训练时使用。</text>
+<rect x="60" y="1590" width="295" height="110" rx="12" class="box" fill="#fff1d8"/>
+<text x="78" y="1622" class="head">真实动作 x_0</text>
+<text x="78" y="1652" class="body">前向扩散产生 x_t</text>
+<text x="78" y="1680" class="body">以及真实状态 x_{t−1}</text>
+<rect x="60" y="1755" width="295" height="110" rx="12" class="box" fill="#edf7f0"/>
+<text x="78" y="1787" class="head">生成状态 x̂_{t−1}</text>
+<text x="78" y="1817" class="body">由 G_L → G_R → 合并</text>
+<text x="78" y="1845" class="body">再经后验采样得到</text>
+<rect x="425" y="1590" width="310" height="110" rx="12" class="box" fill="#fff1d8"/>
+<text x="443" y="1622" class="head">真实状态按部位拆分</text>
+<text x="443" y="1652" class="body">身体：x^B_{t−1}</text>
+<text x="443" y="1680" class="body">手部：x^H_{t−1}</text>
+<rect x="425" y="1755" width="310" height="110" rx="12" class="box" fill="#edf7f0"/>
+<text x="443" y="1787" class="head">生成状态按部位拆分</text>
+<text x="443" y="1817" class="body">身体：x̂^B_{t−1}</text>
+<text x="443" y="1845" class="body">手部：x̂^H_{t−1}</text>
+<path d="M355 1645 H425" class="arrow train"/>
+<path d="M355 1810 H425" class="arrow train"/>
+<rect x="910" y="1590" width="460" height="125" rx="12" class="box" fill="#eaf6ef"/>
+<text x="928" y="1622" class="head">身体监督：D_B ＋ AFD_B</text>
+<text x="928" y="1652" class="body">判别器比较真实与生成的身体状态</text>
+<text x="928" y="1680" class="body">AFD 约束同一 t−1 的逐点差异</text>
+<text x="928" y="1708" class="body">判别器接收条件 c 与时间步 t</text>
+<rect x="910" y="1755" width="460" height="125" rx="12" class="box" fill="#eaf6ef"/>
+<text x="928" y="1787" class="head">手部监督：D_H ＋ AFD_H</text>
+<text x="928" y="1817" class="body">判别器比较真实与生成的手部状态</text>
+<text x="928" y="1845" class="body">AFD 约束同一 t−1 的逐点差异</text>
+<text x="928" y="1873" class="body">判别器接收条件 c 与时间步 t</text>
+<path d="M735 1625 H910" class="arrow train"/>
+<path d="M735 1785 H800 V1675 H910" class="arrow train"/>
+<path d="M735 1675 H845 V1800 H910" class="arrow train"/>
+<path d="M735 1830 H910" class="arrow train"/>
+<text x="753" y="1606" class="note">真实 B</text>
+<text x="765" y="1763" class="note">生成 B</text>
+<text x="752" y="1875" class="note">生成 H</text>
+<text x="845" y="1728" class="note">真实 H</text>
+<rect x="60" y="1930" width="1310" height="105" rx="12" class="box" fill="#eaf6ef"/>
+<text x="78" y="1962" class="head">辅助前向扩散约束 AFD：分别作用于身体 B 与手部 H</text>
+<text x="78" y="1992" class="body">L_AFD = (1 − β_t) / β_t · ‖x̂_{t−1} − x_{t−1}‖²  （式 8）</text>
+<text x="78" y="2020" class="body">比较的是同一噪声层级的状态；并非只比较最终干净姿态。</text>
+<rect x="60" y="2070" width="490" height="105" rx="12" class="box" fill="#edf7f0"/>
+<text x="78" y="2102" class="head">干净动作对：预测 x̂_0 与真实 x_0</text>
+<text x="78" y="2132" class="body">跳过噪声状态，直接监督动作重建</text>
+<text x="78" y="2160" class="body">并约束着地时足部的运动</text>
+<rect x="660" y="2070" width="710" height="105" rx="12" class="box" fill="#eaf6ef"/>
+<text x="678" y="2102" class="head">重建与足部损失（式 4）</text>
+<text x="678" y="2132" class="body">Huber 重建损失 L_simple ＋足部损失 L_foot</text>
+<text x="678" y="2160" class="body">与两部分的对抗监督、AFD 加权组成训练目标</text>
+<path d="M550 2122 H660" class="arrow train"/>
+<text x="62" y="2220" class="body">“局部／根”是生成顺序；“身体／手部”是分布监督的拆分，两者并非四个独立生成器。</text>
+<text x="62" y="2253" class="note">足滑与漂移通过模型和损失缓解；图中没有物理仿真或硬接触约束。</text>
+<path d="M55 2322 H125" class="arrow "/>
+<text x="145" y="2328" class="note">实线：生成、采样与状态流</text>
+<path d="M535 2322 H605" class="arrow cond"/>
+<text x="625" y="2328" class="note">蓝线：条件输入</text>
+<path d="M935 2322 H1005" class="arrow train"/>
+<text x="1025" y="2328" class="note">虚线：仅训练监督</text>
+<text x="40" y="2373" class="note">阅读顺序：先看 A 的条件汇合，再沿 B 的局部 → 根 → 合并 → 后验走完一步，最后看 C 如何训练。</text>
+<text x="40" y="2402" class="note">来源：DIDiffGes，AAAI 2025 / arXiv:2503.17059v1，图 2 与方法部分。公式使用文本化记号便于编辑。</text>
+</svg>
