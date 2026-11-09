@@ -2,6 +2,7 @@
 title: "[AAAI2026] MotivDance：先用文字选出关键姿态，再把它放到音乐节拍里"
 description: "详解PoseScript的12候选姿态、音乐—动作对比适配与节拍内定位，再追踪时空掩码如何驱动扩散补间；区分文本姿态展示、根轨迹关键帧实验与纯音乐生成成绩。"
 pubDate: "2026-11-08T10:08:00+08:00"
+updatedDate: "2026-11-09"
 badge: "Paper"
 tags: ["MotivDance", "Music-to-Dance", "Text-Control", "Motion-Inbetweening", "Diffusion", "Paper-Notes"]
 ---
@@ -11,6 +12,8 @@ tags: ["MotivDance", "Music-to-Dance", "Text-Control", "Motion-Inbetweening", "D
 <div class="paper-reading" lang="zh-CN">
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
+
+**全文阅读：[英文全文 HTML（可用翻译插件）](/paper-notes/motivdance/fulltext/)** · [原文 PDF](/paper-notes/motivdance/fulltext/source.pdf)。由所提供的9页正式PDF转换，保留图表、公式原图及原文页码，已核查双栏阅读顺序和图注。
 
 <details class="paper-meta"><summary>论文信息与阅读范围 · AAAI 2026</summary>
 
