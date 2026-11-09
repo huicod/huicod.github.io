@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 2310" role="img" aria-labelledby="title desc">
+<title id="title">DanceMosaic：从文字动作先验到可编辑舞蹈</title>
+<desc id="desc">训练共享RVQ和文字动作先验，再分别训练音乐塔与姿态塔；推理中三塔读取相同masked motion tokens，条件经逐层注入与logits guidance参与迭代采样；可选ITTO固定模型、优化输入token嵌入，最终解码连续舞蹈。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0 0L8 4L0 8" fill="#53677e"/></marker><marker id="red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="#bb6551"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1f344c}.title{font-size:31px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:22px;font-weight:700}.body{font-size:19px}.note{font-size:17px}.arrow{fill:none;stroke:#53677e;stroke-width:2.3;marker-end:url(#arrow)}.dash{stroke-dasharray:7 6}.red{stroke:#bb6551;marker-end:url(#red)}.panel{fill:#f8fafc;stroke:#c9d5e2;stroke-width:1.5}.box{stroke:#a8bacd;stroke-width:1.5}</style>
+<rect width="1400" height="2310" fill="white"/>
+<text x="40" y="48" class="title">DanceMosaic｜先学习动作先验，再用音乐与姿态引导舞蹈</text>
+<text x="40" y="80" class="note">教学示意 · 依据 arXiv:2504.04634v3 的图2–3、§3.1–3.5与式1–7</text>
+<rect x="30" y="110" width="1340" height="355" rx="17" class="panel"/>
+<text x="52" y="146" class="section">A · 分阶段训练：共享动作表示，分别学习条件分支</text>
+<rect x="60" y="170" width="380" height="175" rx="11" class="box" fill="#eaf6ef"/>
+<text x="77" y="202" class="head">① 训练共享 RVQ 编解码器</text>
+<text x="77" y="233" class="body">HumanML3D＋FineDance 的动作</text>
+<text x="77" y="261" class="body">编码 → 多级残差量化 → 重建</text>
+<text x="77" y="289" class="body">重建损失＋码本／承诺损失</text>
+<text x="77" y="317" class="body">得到共同的动作token空间</text>
+<rect x="510" y="170" width="380" height="175" rx="11" class="box" fill="#eaf6ef"/>
+<text x="527" y="202" class="head">② 预训练 T2M 主干</text>
+<text x="527" y="233" class="body">HumanML3D 文字—动作配对</text>
+<text x="527" y="261" class="body">CLIP文字＋掩码动作tokens</text>
+<text x="527" y="289" class="body">预测被遮住的离散token</text>
+<text x="527" y="317" class="body">使用交叉熵 CE</text>
+<rect x="960" y="170" width="380" height="175" rx="11" class="box" fill="#eaf6ef"/>
+<text x="977" y="202" class="head">③ 分别训练音乐塔、姿态塔</text>
+<text x="977" y="233" class="body">FineDance；T2M保持冻结</text>
+<text x="977" y="261" class="body">MT：音乐＋舞种；CE＋运动学</text>
+<text x="977" y="289" class="body">PT：姿态＋舞种；CE＋有效点D</text>
+<text x="977" y="317" class="body">PT这一步不接收音乐</text>
+<path d="M440 255H510" class="arrow"/>
+<path d="M890 255H960" class="arrow"/>
+<text x="62" y="384" class="note">同步掩码：训练时T2M与当前条件塔看到相同的masked motion tokens。</text>
+<text x="62" y="418" class="note">运动学／姿态损失：Gumbel-Softmax采样 → 冻结解码器 → 连续动作误差；这属于训练监督。</text>
+<path d="M700 465V515" class="arrow dash"/>
+<text x="730" y="496" class="note">完成训练后，按下图复用参数</text>
+<rect x="30" y="515" width="1340" height="1070" rx="17" class="panel"/>
+<text x="52" y="551" class="section">B · 推理主线：三路条件控制同一组动作token；所有网络权重固定</text>
+<rect x="60" y="580" width="1280" height="75" rx="11" class="box" fill="#fff1d8"/>
+<text x="77" y="612" class="head">当前动作token序列 Z_M</text>
+<text x="77" y="643" class="body">首次生成：全[MASK]；编辑：保留已知时间上下文，遮住待补片段</text>
+<rect x="60" y="715" width="380" height="90" rx="11" class="box" fill="#fff1d8"/>
+<text x="77" y="747" class="head">音乐 A</text>
+<text x="77" y="778" class="body">节奏、音色等音频信息</text>
+<rect x="510" y="715" width="380" height="90" rx="11" class="box" fill="#fff1d8"/>
+<text x="527" y="747" class="head">文字 T</text>
+<text x="527" y="778" class="body">舞种或动作描述，例如“跳跃”</text>
+<rect x="960" y="715" width="380" height="90" rx="11" class="box" fill="#fff1d8"/>
+<text x="977" y="747" class="head">稀疏姿态 P 与有效位置 I</text>
+<text x="977" y="778" class="body">指定帧／关节的三维位置</text>
+<rect x="60" y="845" width="380" height="115" rx="11" class="box" fill="#eaf2ff"/>
+<text x="77" y="877" class="head">音乐特征编码</text>
+<text x="77" y="908" class="body">冻结 Jukebox → 已训练音乐编码器</text>
+<text x="77" y="936" class="body">得到与动作token时间对齐的条件</text>
+<rect x="510" y="845" width="380" height="115" rx="11" class="box" fill="#eaf2ff"/>
+<text x="527" y="877" class="head">文字特征编码</text>
+<text x="527" y="908" class="body">冻结 CLIP → 文字token</text>
+<text x="527" y="936" class="body">作为T2M输入序列的一部分</text>
+<rect x="960" y="845" width="380" height="115" rx="11" class="box" fill="#eaf2ff"/>
+<text x="977" y="877" class="head">姿态特征编码</text>
+<text x="977" y="908" class="body">已训练姿态编码器</text>
+<text x="977" y="936" class="body">未指定关节填零；I用于误差计算</text>
+<path d="M250 805V845" class="arrow"/>
+<path d="M700 805V845" class="arrow"/>
+<path d="M1150 805V845" class="arrow"/>
+<path d="M250 960V1005" class="arrow"/>
+<path d="M700 960V1005" class="arrow"/>
+<path d="M1150 960V1005" class="arrow"/>
+<circle cx="250" cy="1020" r="15" fill="#fff" stroke="#53677e" stroke-width="2"/>
+<text x="250" y="1027" class="head" text-anchor="middle">+</text>
+<circle cx="700" cy="1020" r="15" fill="#fff" stroke="#53677e" stroke-width="2"/>
+<text x="700" y="1027" class="head" text-anchor="middle">⊕</text>
+<circle cx="1150" cy="1020" r="15" fill="#fff" stroke="#53677e" stroke-width="2"/>
+<text x="1150" y="1027" class="head" text-anchor="middle">+</text>
+<path d="M250 1035V1070" class="arrow"/>
+<path d="M700 1035V1070" class="arrow"/>
+<path d="M1150 1035V1070" class="arrow"/>
+<path d="M80 655V675H45V1020H235" class="arrow"/>
+<path d="M700 655V680H475V1020H685" class="arrow"/>
+<path d="M1320 655V670H1355V1020H1165" class="arrow"/>
+<text x="66" y="1047" class="note">逐token相加</text>
+<text x="520" y="1047" class="note">文字与动作token拼接</text>
+<text x="1190" y="1047" class="note">逐token相加</text>
+<rect x="60" y="1070" width="380" height="150" rx="11" class="box" fill="#eaf2ff"/>
+<text x="77" y="1102" class="head">Music Tower（MT）</text>
+<text x="77" y="1133" class="body">读取相同动作掩码与音乐条件</text>
+<text x="77" y="1161" class="body">各层提取音乐引导特征</text>
+<text x="77" y="1189" class="body">训练后冻结；不单独输出舞蹈</text>
+<rect x="510" y="1070" width="380" height="150" rx="11" class="box" fill="#eaf2ff"/>
+<text x="527" y="1102" class="head">Text-to-Motion（T2M）</text>
+<text x="527" y="1133" class="body">复用已学会的动作先验</text>
+<text x="527" y="1161" class="body">每层接收两侧条件特征</text>
+<text x="527" y="1189" class="body">共享主干产生动作token隐状态</text>
+<rect x="960" y="1070" width="380" height="150" rx="11" class="box" fill="#eaf2ff"/>
+<text x="977" y="1102" class="head">Pose Tower（PT）</text>
+<text x="977" y="1133" class="body">读取相同动作掩码与姿态条件</text>
+<text x="977" y="1161" class="body">各层提取空间约束特征</text>
+<text x="977" y="1189" class="body">训练后冻结；不单独输出舞蹈</text>
+<path d="M440 1120H510" class="arrow"/>
+<path d="M960 1120H890" class="arrow"/>
+<text x="475" y="1100" class="head" text-anchor="middle">φ</text>
+<text x="925" y="1100" class="head" text-anchor="middle">φ</text>
+<text x="75" y="1255" class="note">φ：逐层线性注入，训练初始为零；并非将三塔输出的三段动作直接拼接。</text>
+<path d="M700 1220V1300" class="arrow"/>
+<rect x="440" y="1300" width="520" height="100" rx="11" class="box" fill="#eaf2ff"/>
+<text x="457" y="1332" class="head">Token Classifier＋多模态 logits guidance</text>
+<text x="457" y="1363" class="body">按权重组合无条件／有条件logits</text>
+<text x="457" y="1391" class="body">Softmax得到每个位置的离散token概率</text>
+<path d="M700 1400V1445" class="arrow"/>
+<rect x="440" y="1445" width="520" height="95" rx="11" class="box" fill="#fff1d8"/>
+<text x="457" y="1477" class="head">并行采样 → 保留高置信结果</text>
+<text x="457" y="1508" class="body">低置信位置重设[MASK]；逐轮降低掩码比例</text>
+<path d="M440 1492H15V618H60" class="arrow"/>
+<text x="62" y="1558" class="note">采样完成后得到离散动作tokens，再按需编辑／解码。</text>
+<rect x="30" y="1630" width="1340" height="425" rx="17" class="panel"/>
+<text x="52" y="1666" class="section">C · 可选 ITTO：有姿态要求时，再细化输入token嵌入</text>
+<path d="M700 1540V1605H45V1690H250V1710" class="arrow"/>
+<text x="365" y="1600" class="note">有姿态条件：进入推理时优化</text>
+<rect x="60" y="1710" width="380" height="135" rx="11" class="box" fill="#fff1d8"/>
+<text x="77" y="1742" class="head">可优化的输入token嵌入 Z</text>
+<text x="77" y="1773" class="body">初始化自已生成的动作tokens</text>
+<text x="77" y="1801" class="body">只更新连续嵌入</text>
+<text x="77" y="1829" class="body">固定模型权重与码本</text>
+<rect x="510" y="1710" width="380" height="135" rx="11" class="box" fill="#eaf2ff"/>
+<text x="527" y="1742" class="head">冻结模型＋分类器＋解码器</text>
+<text x="527" y="1773" class="body">输入嵌入影响logits与采样</text>
+<text x="527" y="1801" class="body">动作token经RVQ解码器</text>
+<text x="527" y="1829" class="body">得到连续动作与关节位置</text>
+<rect x="960" y="1710" width="380" height="135" rx="11" class="box" fill="#fff3ed"/>
+<text x="977" y="1742" class="head">只比较被指定的有效关节</text>
+<text x="977" y="1773" class="body">D(P, P̂)：平均平方位置误差</text>
+<text x="977" y="1801" class="body">用I筛选约束帧／关节</text>
+<text x="977" y="1829" class="body">不把自由关节误当作零目标</text>
+<path d="M440 1780H510" class="arrow"/>
+<path d="M890 1780H960" class="arrow"/>
+<path d="M1150 1845V1905H250V1845" class="arrow dash red"/>
+<text x="700" y="1940" class="note" text-anchor="middle">沿可微计算路径反传：Z ← Z − η∇D；不是对离散码本编号求导</text>
+<text x="62" y="1990" class="note">P、I沿用B中的姿态输入；误差变小并不构成零误差、精确接触或物理可行性的保证。</text>
+<path d="M700 1845V1875H1350V2085H700V2125" class="arrow"/>
+<text x="935" y="2074" class="note">完成优化后采样</text>
+<path d="M960 1492H1385V2105H700V2125" class="arrow"/>
+<text x="1090" y="1599" class="note">无需姿态细化：直接解码</text>
+<rect x="510" y="2125" width="380" height="115" rx="11" class="box" fill="#eaf2ff"/>
+<text x="527" y="2157" class="head">最终动作token → RVQ解码器</text>
+<text x="527" y="2188" class="body">恢复连续舞蹈运动</text>
+<text x="527" y="2216" class="body">条件改变采样，解码器产出动作</text>
+<rect x="960" y="2125" width="380" height="115" rx="11" class="box" fill="#eaf6ef"/>
+<text x="977" y="2157" class="head">输出与验证</text>
+<text x="977" y="2188" class="body">舞蹈质量／节拍／脚滑</text>
+<text x="977" y="2216" class="body">姿态编辑误差需分别检查</text>
+<path d="M890 2180H960" class="arrow"/>
+<text x="40" y="2280" class="note">蓝：复用网络；绿：训练或最终输出；橙：输入／token状态；虚线：训练复用或优化反馈。图为重绘，未运行模型。</text>
+</svg>
