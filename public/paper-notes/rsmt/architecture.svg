@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1840" viewBox="0 0 1500 1840" role="img" aria-labelledby="title desc"><title id="title">RSMT：相位动作流形与风格采样器</title><desc id="desc">先从动作数据学习相位并训练局部动作流形，再训练带时间与目标条件的风格采样器。推理时参考动作、当前状态和目标进入采样器，输出相位、潜变量和髋部状态；冻结的混合专家解码器生成姿态增量，更新动作并自回归反馈。</desc><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#47779c"/></marker><marker id="purple" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#9272a8"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',Arial,sans-serif;fill:#23394c}.title{font-size:38px;font-weight:700}.paneltitle{font-size:27px;font-weight:700}.head{font-size:25px;font-weight:700}.body{font-size:23px}.small{font-size:21px;fill:#566c7d}.edge{fill:none;stroke:#47779c;stroke-width:3;marker-end:url(#arrow)}.train{fill:none;stroke:#9272a8;stroke-width:3;stroke-dasharray:9 6;marker-end:url(#purple)}</style><rect width="1500" height="1840" fill="white"/>
+<text x="55" y="60" class="title">
+<tspan x="55" dy="0">RSMT｜先学自然动作，再按风格与目标选择下一步</tspan>
+</text>
+<text x="57" y="103" class="small">
+<tspan x="57" dy="0">SIGGRAPH 2023 · 依据正文图2–3、式3–9与补充材料§1重绘</tspan>
+</text>
+<rect x="35" y="135" width="1430" height="435" rx="17" fill="#fbfcfe" stroke="#ccd7e1" stroke-width="2"/>
+<text x="65" y="180" class="paneltitle">
+<tspan x="65" dy="0">A  离线准备：相位表示与动作流形分开学习</tspan>
+</text>
+<rect x="65" y="215" width="350" height="130" rx="17" fill="#fff4e2" stroke="#d7af74" stroke-width="2"/>
+<text x="87" y="255" class="head">
+<tspan x="87" dy="0">动作训练数据</tspan>
+</text>
+<text x="87" y="294" class="body">
+<tspan x="87" dy="0">原动作序列与相邻姿态</tspan>
+<tspan x="87" dy="34">无逐帧语义事件标签</tspan>
+</text>
+<rect x="485" y="215" width="430" height="130" rx="17" fill="#f2edf8" stroke="#ae93c1" stroke-width="2"/>
+<text x="507" y="255" class="head">
+<tspan x="507" dy="0">周期自编码器（PAE）</tspan>
+</text>
+<text x="507" y="294" class="body">
+<tspan x="507" dy="0">从局部运动学习周期表示</tspan>
+<tspan x="507" dy="34">得到幅度 A 与相位偏移 S</tspan>
+</text>
+<rect x="985" y="215" width="450" height="130" rx="17" fill="#f2edf8" stroke="#ae93c1" stroke-width="2"/>
+<text x="1007" y="255" class="head">
+<tspan x="1007" dy="0">相位向量 p</tspan>
+</text>
+<text x="1007" y="294" class="body">
+<tspan x="1007" dy="0">p = (A sin 2πS, A cos 2πS)</tspan>
+<tspan x="1007" dy="34">供动作流形训练及初始状态</tspan>
+</text>
+<path d="M415 280 H485" class="train"/>
+<path d="M915 280 H985" class="train"/>
+<rect x="65" y="395" width="350" height="130" rx="17" fill="#fff4e2" stroke="#d7af74" stroke-width="2"/>
+<text x="87" y="435" class="head">
+<tspan x="87" dy="0">相邻姿态 sₜ、sₜ₊₁</tspan>
+</text>
+<text x="87" y="474" class="body">
+<tspan x="87" dy="0">编码均值／对数方差</tspan>
+<tspan x="87" dy="34">重参数化得到32维 z</tspan>
+</text>
+<rect x="485" y="395" width="430" height="130" rx="17" fill="#f2edf8" stroke="#ae93c1" stroke-width="2"/>
+<text x="507" y="435" class="head">
+<tspan x="507" dy="0">条件变分动作流形</tspan>
+</text>
+<text x="507" y="474" class="body">
+<tspan x="507" dy="0">p + z 门控 → 8个专家混合</tspan>
+<tspan x="507" dy="34">输入当前姿态与下一髋部状态</tspan>
+</text>
+<rect x="985" y="395" width="450" height="130" rx="17" fill="#f2edf8" stroke="#ae93c1" stroke-width="2"/>
+<text x="1007" y="435" class="head">
+<tspan x="1007" dy="0">局部姿态增量 Δs</tspan>
+</text>
+<text x="1007" y="474" class="body">
+<tspan x="1007" dy="0">重建 + KL + 脚滑损失训练</tspan>
+<tspan x="1007" dy="34">采样器阶段复用并冻结解码器</tspan>
+</text>
+<path d="M415 460 H485" class="train"/>
+<path d="M915 460 H985" class="train"/>
+<path d="M1210 345 V370 H700 V395" class="train"/>
+<rect x="35" y="605" width="1430" height="885" rx="17" fill="#fbfcfe" stroke="#ccd7e1" stroke-width="2"/>
+<text x="65" y="650" class="paneltitle">
+<tspan x="65" dy="0">B  生成：目标与时间约束下的逐帧风格采样</tspan>
+</text>
+<rect x="65" y="685" width="420" height="135" rx="17" fill="#fff4e2" stroke="#d7af74" stroke-width="2"/>
+<text x="87" y="725" class="head">
+<tspan x="87" dy="0">目标风格参考 Mₛ</tspan>
+</text>
+<text x="87" y="764" class="body">
+<tspan x="87" dy="0">120帧参考动作</tspan>
+<tspan x="87" dy="34">保留参考动作的时间结构</tspan>
+</text>
+<rect x="540" y="685" width="420" height="135" rx="17" fill="#fff4e2" stroke="#d7af74" stroke-width="2"/>
+<text x="562" y="725" class="head">
+<tspan x="562" dy="0">目标关键帧 + 剩余时间</tspan>
+</text>
+<text x="562" y="764" class="body">
+<tspan x="562" dy="0">目标状态与相对当前偏移</tspan>
+<tspan x="562" dy="34">时间嵌入；临近目标降低噪声</tspan>
+</text>
+<rect x="1015" y="685" width="420" height="135" rx="17" fill="#fff4e2" stroke="#d7af74" stroke-width="2"/>
+<text x="1037" y="725" class="head">
+<tspan x="1037" dy="0">当前状态 + 初始相位</tspan>
+</text>
+<text x="1037" y="764" class="body">
+<tspan x="1037" dy="0">当前姿态、速度与相位 pₜ</tspan>
+<tspan x="1037" dy="34">默认初始相位须预先取得</tspan>
+</text>
+<rect x="65" y="900" width="350" height="180" rx="17" fill="#edf5fc" stroke="#86abc9" stroke-width="2"/>
+<text x="87" y="940" class="head">
+<tspan x="87" dy="0">风格编码器</tspan>
+</text>
+<text x="87" y="979" class="body">
+<tspan x="87" dy="0">4层卷积 → 时间特征 k</tspan>
+<tspan x="87" dy="34">池化 k → FiLM缩放／偏移</tspan>
+<tspan x="87" dy="34">未池化 k → 时间注意力</tspan>
+</text>
+<rect x="485" y="900" width="480" height="180" rx="17" fill="#edf5fc" stroke="#86abc9" stroke-width="2"/>
+<text x="507" y="940" class="head">
+<tspan x="507" dy="0">风格动作采样器</tspan>
+</text>
+<text x="507" y="979" class="body">
+<tspan x="507" dy="0">状态／目标／偏移分别编码</tspan>
+<tspan x="507" dy="34">FiLM + Attention 融合风格</tspan>
+<tspan x="507" dy="34">LSTM维护时序状态</tspan>
+</text>
+<rect x="1035" y="900" width="400" height="180" rx="17" fill="#edf5fc" stroke="#86abc9" stroke-width="2"/>
+<text x="1057" y="940" class="head">
+<tspan x="1057" dy="0">预测下一隐状态 hₜ₊₁</tspan>
+</text>
+<text x="1057" y="979" class="body">
+<tspan x="1057" dy="0">潜变量 z + 髋部速度／朝向</tspan>
+<tspan x="1057" dy="34">直接相位 + A、F外推相位</tspan>
+<tspan x="1057" dy="34">等权融合两路相位预测</tspan>
+</text>
+<path d="M275 820 V900" class="edge"/>
+<path d="M750 820 V900" class="edge"/>
+<path d="M1225 820 V855 H900 V900" class="edge"/>
+<path d="M415 990 H485" class="edge"/>
+<path d="M965 990 H1035" class="edge"/>
+<rect x="1035" y="1180" width="400" height="170" rx="17" fill="#f2edf8" stroke="#ae93c1" stroke-width="2"/>
+<text x="1057" y="1220" class="head">
+<tspan x="1057" dy="0">冻结的动作流形解码器</tspan>
+</text>
+<text x="1057" y="1259" class="body">
+<tspan x="1057" dy="0">相位 + z → 混合8个专家</tspan>
+<tspan x="1057" dy="34">结合缓存的当前姿态与髋部</tspan>
+<tspan x="1057" dy="34">输出连续姿态增量 Δs</tspan>
+</text>
+<rect x="485" y="1180" width="480" height="170" rx="17" fill="#edf8f1" stroke="#89b6a0" stroke-width="2"/>
+<text x="507" y="1220" class="head">
+<tspan x="507" dy="0">更新姿态并输出下一帧</tspan>
+</text>
+<text x="507" y="1259" class="body">
+<tspan x="507" dy="0">sₜ₊₁ = sₜ + Δsₜ₊₁</tspan>
+<tspan x="507" dy="34">反馈姿态、速度与新相位</tspan>
+<tspan x="507" dy="34">减小剩余时间，继续生成</tspan>
+</text>
+<path d="M1235 1080 V1180" class="edge"/>
+<path d="M1035 1265 H965" class="edge"/>
+<path d="M725 1350 V1410 H1445 V750 H1435" class="edge"/>
+<text x="65" y="1185" class="head">
+<tspan x="65" dy="0">采样器训练目标：</tspan>
+</text>
+<text x="65" y="1230" class="body">
+<tspan x="65" dy="0">动作重建 + 末帧匹配</tspan>
+<tspan x="65" dy="34">+ 脚滑 + 相位预测损失</tspan>
+<tspan x="65" dy="34">梯度更新采样器；</tspan>
+<tspan x="65" dy="34">动作流形解码器保持冻结</tspan>
+</text>
+<text x="760" y="1400" class="small">
+<tspan x="760" dy="0">自回归反馈：新状态成为下一步的当前状态</tspan>
+</text>
+<text x="65" y="1458" class="small">
+<tspan x="65" dy="0">原文允许两阶段使用不同风格子集；相位模型与流形的预训练成本仍需计算。</tspan>
+</text>
+<rect x="35" y="1525" width="1430" height="245" rx="17" fill="#fbfcfe" stroke="#ccd7e1" stroke-width="2"/>
+<text x="65" y="1570" class="paneltitle">
+<tspan x="65" dy="0">C  输入与输出边界</tspan>
+</text>
+<text x="70" y="1605" class="body">
+<tspan x="70" dy="0">• 用户提供关键帧、时长与风格参考；相位是学习到的时序表示，不是动作命令。</tspan>
+<tspan x="70" dy="38">• 默认需要初始相位；任意姿态的启动可另训历史动作→初始相位预测器。</tspan>
+<tspan x="70" dy="38">• 末帧和脚滑均是软约束，原表误差不为零；风格与时间冲突时可能弱化风格。</tspan>
+<tspan x="70" dy="38">• 这是连续姿态生成，没有语义token查表，也没有物理接触求解器。</tspan>
+</text>
+<text x="55" y="1820" class="small">
+<tspan x="55" dy="0">教学重绘 · 蓝：生成运算；橙：输入；绿：输出；紫：预训练／冻结模块；紫色虚线：训练数据流。</tspan>
+</text>
+</svg>

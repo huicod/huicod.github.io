@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1510" viewBox="0 0 1440 1510" role="img" aria-labelledby="title desc">
+<title id="title">DanceCrafter：从编舞标注到文本条件的连续动作生成</title>
+<desc id="desc">上层是数据与语法标注，中层是连续表示和条件流匹配训练，下层是文本和体形条件下的五十步推理以及可选视频级联。所有节点链接原文章节。语法以自然语言进入文本编码器，不是显式时间表或硬约束程序。</desc>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#50627a"/></marker><marker id="purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#8065a8"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#19334b}.title{font-size:30px;font-weight:700}.head{font-size:24px;font-weight:700}.label{font-size:21px}.small{font-size:19px}.caption{font-size:18px;fill:#4f6578}.flow{fill:none;stroke:#50627a;stroke-width:2.3;marker-end:url(#arr)}.supervision{fill:none;stroke:#8065a8;stroke-width:2.3;stroke-dasharray:7 5;marker-end:url(#purple)}a:hover rect{stroke:#175f9a;stroke-width:3}</style>
+<rect width="1440" height="1510" fill="#ffffff"/>
+<text x="40" y="46" class="title">DanceCrafter：编舞语言 → 连续 MHR 动作 → 可选视频</text>
+<text x="40" y="77" class="caption">教学重绘 · 依据正文 §3–4、图4、附录 A–D · 点击节点可查原文；点击网页配图可查看大图</text>
+<rect x="25" y="100" width="1390" height="302" rx="18" fill="#f2f7fc" stroke="#d8e2ea"/>
+<text x="47" y="136" class="head"><tspan x="47" dy="0">A　离线数据构建：语法指导标注，输出仍是自然语言</tspan></text>
+<a href="https://arxiv.org/html/2604.18648v2#S3.SS1" target="_blank"><rect x="55" y="161" width="410" height="111" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="72" y="192" class="head"><tspan x="72" dy="0">动作来源与重建</tspan></text>
+<text x="72" y="223" class="small"><tspan x="72" dy="0">36 h 视频 → SAM3D-body → MHR</tspan><tspan x="72" dy="26">5 h 光学动捕 → 重定向 → MHR</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#S3.SS2" target="_blank"><rect x="520" y="161" width="410" height="111" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="537" y="192" class="head"><tspan x="537" dy="0">编舞语法 + Gemini 标注</tspan></text>
+<text x="537" y="223" class="small"><tspan x="537" dy="0">身体／空间／朝向／力度与速度</tspan><tspan x="537" dy="26">专家样例、抽检、低质量批次重标</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#S3" target="_blank"><rect x="985" y="161" width="390" height="111" rx="13" fill="#e4effc" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="1002" y="192" class="head"><tspan x="1002" dy="0">DanceFlow 文本－动作对</tspan></text>
+<text x="1002" y="223" class="small"><tspan x="1002" dy="0">41 h、超过 20K 动作片段</tspan><tspan x="1002" dy="26">6.34M 词；平均 248 词描述</tspan></text>
+</a>
+<path d="M465 205H520" class="flow"/>
+<text x="473" y="193" class="caption"><tspan x="473" dy="0">片段</tspan></text>
+<path d="M930 205H985" class="flow"/>
+<text x="938" y="193" class="caption"><tspan x="938" dy="0">文本</tspan></text>
+<path d="M260 272V315H1180V272" class="flow"/>
+<text x="580" y="305" class="caption"><tspan x="580" dy="0">统一 MHR 动作序列</tspan></text>
+<text x="55" y="356" class="small"><tspan x="55" dy="0">最小描述单位：静态姿态／动态衔接；动态段写重心→部位→路径→动态质量。</tspan></text>
+<text x="55" y="383" class="small"><tspan x="55" dy="0">左右按相机视角；八点舞台方向；顺序词和速度词进入正文，不附逐事件时间戳。</tspan></text>
+<rect x="25" y="425" width="1390" height="558" rx="18" fill="#f7f4fc" stroke="#d8e2ea"/>
+<text x="47" y="461" class="head"><tspan x="47" dy="0">B　训练：保持旋转连续性，学习从噪声回到动作的速度场</tspan></text>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS1" target="_blank"><rect x="55" y="484" width="410" height="123" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="72" y="515" class="head"><tspan x="72" dy="0">真值表示与混合归一化</tspan></text>
+<text x="72" y="546" class="small"><tspan x="72" dy="0">正文 MHR 136D → 连续 260D</tspan><tspan x="72" dy="26">多自由度旋转 6D；单自由度 sin/cos</tspan><tspan x="72" dy="26">旋转统一尺度；根部通道逐维标准化</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS2" target="_blank"><rect x="520" y="484" width="400" height="123" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="537" y="515" class="head"><tspan x="537" dy="0">采样噪声与流时间 t</tspan></text>
+<text x="537" y="546" class="small"><tspan x="537" dy="0">x₁ ∼ N(0,I)，t ∼ U(0,1)</tspan><tspan x="537" dy="26">xₜ = (1−t) x̄₀ + t x₁</tspan><tspan x="537" dy="26">监督目标：x₁ − x̄₀</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS2" target="_blank"><rect x="970" y="484" width="405" height="123" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="987" y="515" class="head"><tspan x="987" dy="0">全局条件</tspan></text>
+<text x="987" y="546" class="small"><tspan x="987" dy="0">68D 体形 s + 流时间 t</tspan><tspan x="987" dy="26">投影相加 → AdaLN-Zero</tspan><tspan x="987" dy="26">t 是流匹配时间，不是舞蹈秒数</tspan></text>
+</a>
+<path d="M465 544H520" class="flow"/>
+<text x="478" y="532" class="caption"><tspan x="478" dy="0">x̄₀</tspan></text>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS2" target="_blank"><rect x="55" y="659" width="410" height="119" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="72" y="690" class="head"><tspan x="72" dy="0">细粒度编舞文本</tspan></text>
+<text x="72" y="721" class="small"><tspan x="72" dy="0">冻结 UMT5-XXL</tspan><tspan x="72" dy="26">输出 token 级文本特征 y</tspan><tspan x="72" dy="26">不另设语法解析器或程序执行器</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS2" target="_blank"><rect x="520" y="652" width="855" height="157" rx="13" fill="#e9e0f6" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="537" y="683" class="head"><tspan x="537" dy="0">可训练 DiT：12 层，隐藏宽度 1024</tspan></text>
+<text x="537" y="714" class="small"><tspan x="537" dy="0">帧间 self-attention：RoPE + QK-Norm</tspan><tspan x="537" dy="26">文本 cross-attention：各帧软关注不同词片段</tspan><tspan x="537" dy="26">FFN + AdaLN-Zero：身份／流时间调制 → 速度 vθ</tspan></text>
+</a>
+<path d="M720 607V652" class="flow"/>
+<text x="733" y="638" class="caption"><tspan x="733" dy="0">xₜ</tspan></text>
+<path d="M1170 607V652" class="flow"/>
+<text x="1182" y="638" class="caption"><tspan x="1182" dy="0">s，t</tspan></text>
+<path d="M465 716H520" class="flow"/>
+<text x="484" y="704" class="caption"><tspan x="484" dy="0">y</tspan></text>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS3" target="_blank"><rect x="520" y="867" width="855" height="90" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="537" y="898" class="head"><tspan x="537" dy="0">训练目标与几何监督</tspan></text>
+<text x="537" y="929" class="small"><tspan x="537" dy="0">分组速度 MSE + 干净动作重建 + 速度／加速度差分 + 逆变换后 FK 损失</tspan></text>
+</a>
+<path d="M945 809V867" class="supervision"/>
+<text x="966" y="844" class="caption"><tspan x="966" dy="0">vθ；x̂₀ = xₜ − t·vθ</tspan></text>
+<path d="M255 607V628H490V912H520" class="supervision"/>
+<text x="375" y="848" class="caption"><tspan x="375" dy="0">真值监督</tspan></text>
+<rect x="25" y="1007" width="1390" height="350" rx="18" fill="#eff9f7" stroke="#d8e2ea"/>
+<text x="47" y="1043" class="head"><tspan x="47" dy="0">C　推理：同一文本条件反复引导采样，再映回原生动作空间</tspan></text>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS2" target="_blank"><rect x="55" y="1064" width="390" height="84" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="72" y="1095" class="head"><tspan x="72" dy="0">用户输入：编舞描述</tspan></text>
+<text x="72" y="1126" class="small"><tspan x="72" dy="0">冻结 UMT5 → 逐词特征 y</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS3" target="_blank"><rect x="500" y="1064" width="390" height="84" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="517" y="1095" class="head"><tspan x="517" dy="0">噪声与序列长度</tspan></text>
+<text x="517" y="1126" class="small"><tspan x="517" dy="0">T × 260 高斯噪声；68D 体形 s</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#A2" target="_blank"><rect x="950" y="1064" width="425" height="84" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="967" y="1095" class="head"><tspan x="967" dy="0">视频外观输入（可选）</tspan></text>
+<text x="967" y="1126" class="small"><tspan x="967" dy="0">参考人物图像，只送给视频模型</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS3" target="_blank"><rect x="55" y="1200" width="305" height="108" rx="13" fill="#dbf1e9" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="72" y="1231" class="head"><tspan x="72" dy="0">DiT + Euler 积分</tspan></text>
+<text x="72" y="1262" class="small"><tspan x="72" dy="0">50 步，t：1 → 0</tspan><tspan x="72" dy="26">CFG 引导后的连续动作</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS1" target="_blank"><rect x="405" y="1200" width="305" height="108" rx="13" fill="#dbf1e9" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="422" y="1231" class="head"><tspan x="422" dy="0">反归一化／逆变换</tspan></text>
+<text x="422" y="1262" class="small"><tspan x="422" dy="0">260D → MHR pose</tspan><tspan x="422" dy="26">原生旋转与根部参数</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#S4.SS3" target="_blank"><rect x="755" y="1200" width="270" height="108" rx="13" fill="#dbf1e9" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="772" y="1231" class="head"><tspan x="772" dy="0">3D 动作输出</tspan></text>
+<text x="772" y="1262" class="small"><tspan x="772" dy="0">MHR 人体／骨架序列</tspan><tspan x="772" dy="26">可渲染的舞蹈</tspan></text>
+</a>
+<a href="https://arxiv.org/html/2604.18648v2#A2" target="_blank"><rect x="1070" y="1200" width="305" height="108" rx="13" fill="#fff" stroke="#b4c5d3" stroke-width="1.5"/>
+<text x="1087" y="1231" class="head"><tspan x="1087" dy="0">可选 Wan-Animate</tspan></text>
+<text x="1087" y="1262" class="small"><tspan x="1087" dy="0">骨架 + 参考图像</tspan><tspan x="1087" dy="26">生成带服装外观的视频</tspan></text>
+</a>
+<path d="M250 1148V1200" class="flow"/>
+<text x="263" y="1182" class="caption"><tspan x="263" dy="0">y</tspan></text>
+<path d="M695 1148V1177H335V1200" class="flow"/>
+<text x="460" y="1170" class="caption"><tspan x="460" dy="0">噪声、s、采样 t</tspan></text>
+<path d="M1162 1148V1200" class="flow"/>
+<text x="1173" y="1182" class="caption"><tspan x="1173" dy="0">外观</tspan></text>
+<path d="M360 1250H405" class="flow"/>
+<path d="M710 1250H755" class="flow"/>
+<path d="M1025 1250H1070" class="flow"/>
+<text x="55" y="1340" class="small"><tspan x="55" dy="0">训练参数复用到采样；训练真值、Gemini 标注器、专家复核不参与生成推理。</tspan></text>
+<rect x="25" y="1378" width="1390" height="105" rx="16" fill="#fff6e8" stroke="#e8cda8"/>
+<text x="47" y="1410" class="label"><tspan x="47" dy="0">控制边界：文本与动作软对齐；未提供逐事件时间、精确坐标或接触约束的运行时求解器。</tspan></text>
+<text x="47" y="1443" class="small"><tspan x="47" dy="0">纯文本条件，无音乐输入或冲突优先级机制；FK 与接触损失属于训练正则，不能当作物理执行保证。</tspan></text>
+<text x="47" y="1471" class="caption"><tspan x="47" dy="0">图按正文维度绘制；作者图4的 133D 与正文 136D 不一致，需公开实现核对。</tspan></text>
+</svg>
