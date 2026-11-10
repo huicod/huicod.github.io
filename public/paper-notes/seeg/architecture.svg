@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1580" viewBox="0 0 1440 1580" role="img" aria-labelledby="title desc"><title id="title">SEEG | 双分支学习节拍与语义，冻结分类器补充监督</title><desc id="desc">教学重绘 · CVPR 2022，正文图 3–4 / 式 1–4，补充材料图 1</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#536b83"/></marker><marker id="train" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9476a9"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans SC',Arial,sans-serif;fill:#23394c}.title{font-size:32px;font-weight:700}.heading{font-size:25px;font-weight:700}.label{font-size:23px;font-weight:700}.body{font-size:21px}.small{font-size:19px}.edge{fill:none;stroke:#536b83;stroke-width:2.8;marker-end:url(#arrow)}.train{fill:none;stroke:#9476a9;stroke-width:2.8;stroke-dasharray:9 6;marker-end:url(#train)}</style><rect width="1440" height="1580" fill="#fff"/>
+<text x="35" y="48" class="title"><tspan x="35" dy="0">SEEG | 双分支学习节拍与语义，冻结分类器补充监督</tspan></text>
+<text x="35" y="83" class="small"><tspan x="35" dy="0">教学重绘 · CVPR 2022，正文图 3–4 / 式 1–4，补充材料图 1</tspan></text>
+<rect x="25" y="110" width="1390" height="270" rx="18" fill="#f8fafc" stroke="#cbd7e2" stroke-width="1.8"/>
+<text x="48" y="150" class="heading"><tspan x="48" dy="0">A · 先训练语义分类器：小型 gallery 只在这里使用</tspan></text>
+<rect x="60" y="182" width="390" height="145" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="77" y="216" class="label"><tspan x="77" dy="0">五类手势提示库</tspan></text>
+<text x="77" y="250" class="body"><tspan x="77" dy="0">列举 / 强调 / 指示 / 正向 / 负向</tspan><tspan x="77" dy="31">每类 25 个词 + 5 段手势</tspan><tspan x="77" dy="31">动作增强：裁剪、缩放、CutMix</tspan></text>
+<rect x="530" y="182" width="380" height="145" rx="13" fill="#f4edf8" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="547" y="216" class="label"><tspan x="547" dy="0">Semantic Prompter P</tspan></text>
+<text x="547" y="250" class="body"><tspan x="547" dy="0">输入手势 → FC + 四层 GRU</tspan><tspan x="547" dy="31">预测五类标签；独立训练</tspan><tspan x="547" dy="31">不是 LLM，也不是在线检索器</tspan></text>
+<rect x="1000" y="182" width="380" height="145" rx="13" fill="#e8f4ed" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="1017" y="216" class="label"><tspan x="1017" dy="0">训练完成后冻结 P</tspan></text>
+<text x="1017" y="250" class="body"><tspan x="1017" dy="0">参数固定，仍可传回动作梯度</tspan><tspan x="1017" dy="31">用于下方的语义表示比较</tspan><tspan x="1017" dy="31">推理生成时移除</tspan></text>
+<path d="M450 254H530" class="train"/>
+<path d="M910 254H1000" class="train"/>
+<rect x="25" y="415" width="1390" height="520" rx="18" fill="#f8fafc" stroke="#cbd7e2" stroke-width="1.8"/>
+<text x="48" y="455" class="heading"><tspan x="48" dy="0">B · 生成主线：DEM 双编码器 → SEM 动作解码器 → 上身动作</tspan></text>
+<rect x="60" y="500" width="290" height="130" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="77" y="534" class="label"><tspan x="77" dy="0">语义相关输入</tspan></text>
+<text x="77" y="568" class="body"><tspan x="77" dy="0">完整音频 + 转录词向量</tspan><tspan x="77" dy="31">说话者身份 ID</tspan></text>
+<rect x="430" y="500" width="300" height="130" rx="13" fill="#edf4fb" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="447" y="534" class="label"><tspan x="447" dy="0">语义编码器 Eₛ</tspan></text>
+<text x="447" y="568" class="body"><tspan x="447" dy="0">模态投影与融合</tspan><tspan x="447" dy="31">四层 GRU → 时序特征 zₛ</tspan></text>
+<rect x="60" y="725" width="290" height="130" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="77" y="759" class="label"><tspan x="77" dy="0">节拍相关输入</tspan></text>
+<text x="77" y="793" class="body"><tspan x="77" dy="0">同一音频 → 二值音量</tspan><tspan x="77" dy="31">+ 起音强度；再加入 ID</tspan></text>
+<rect x="430" y="725" width="300" height="130" rx="13" fill="#edf4fb" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="447" y="759" class="label"><tspan x="447" dy="0">节拍编码器 E_b</tspan></text>
+<text x="447" y="793" class="body"><tspan x="447" dy="0">模态投影与融合</tspan><tspan x="447" dy="31">四层 GRU → 时序特征 z_b</tspan></text>
+<rect x="815" y="612" width="250" height="150" rx="13" fill="#edf4fb" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="832" y="646" class="label"><tspan x="832" dy="0">动作解码器 D</tspan></text>
+<text x="832" y="680" class="body"><tspan x="832" dy="0">拼接 zₛ 与 z_b</tspan><tspan x="832" dy="31">全连接逐帧解码</tspan><tspan x="832" dy="31">融合两路特征</tspan></text>
+<rect x="1120" y="612" width="260" height="150" rx="13" fill="#e8f4ed" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="1137" y="646" class="label"><tspan x="1137" dy="0">生成动作 ŷ</tspan></text>
+<text x="1137" y="680" class="body"><tspan x="1137" dy="0">连续上身关节序列</tspan><tspan x="1137" dy="31">不查表拼接手势</tspan><tspan x="1137" dy="31">不进行物理求解</tspan></text>
+<path d="M350 565H430" class="edge"/>
+<path d="M350 790H430" class="edge"/>
+<path d="M205 630V725" class="edge"/>
+<text x="220" y="685" class="small"><tspan x="220" dy="0">仅音频提取</tspan></text>
+<path d="M730 565H770V650H815" class="edge"/>
+<path d="M730 790H770V725H815" class="edge"/>
+<path d="M1065 687H1120" class="edge"/>
+<text x="60" y="904" class="small"><tspan x="60" dy="0">Eₛ 仍读取完整音频；输入分工不意味着两个隐变量已被证明完全独立。</tspan></text>
+<rect x="25" y="975" width="1390" height="440" rx="18" fill="#f8fafc" stroke="#cbd7e2" stroke-width="1.8"/>
+<text x="48" y="1015" class="heading"><tspan x="48" dy="0">C · 生成器训练：真实动作和预测动作通过同一个冻结 P</tspan></text>
+<rect x="60" y="1100" width="350" height="140" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="77" y="1134" class="label"><tspan x="77" dy="0">配对真实动作 y</tspan></text>
+<text x="77" y="1168" class="body"><tspan x="77" dy="0">视频中提取的上身动作</tspan><tspan x="77" dy="31">提供重建 / 对抗参照</tspan><tspan x="77" dy="31">也进入同一个 P</tspan></text>
+<rect x="530" y="1100" width="380" height="140" rx="13" fill="#f4edf8" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="547" y="1134" class="label"><tspan x="547" dy="0">冻结的 P：分别编码</tspan></text>
+<text x="547" y="1168" class="body"><tspan x="547" dy="0">P(ŷ) 与 P(y)</tspan><tspan x="547" dy="31">比较动作的语义表示</tspan><tspan x="547" dy="31">不直接逐词监督动作时刻</tspan></text>
+<rect x="1000" y="1100" width="380" height="140" rx="13" fill="#f4edf8" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="1017" y="1134" class="label"><tspan x="1017" dy="0">语义对齐损失</tspan></text>
+<text x="1017" y="1168" class="body"><tspan x="1017" dy="0">L_align = SmoothL1</tspan><tspan x="1017" dy="31">                 (P(ŷ), P(y))</tspan><tspan x="1017" dy="31">梯度回传生成器，P 不更新</tspan></text>
+<path d="M410 1170H530" class="train"/>
+<path d="M1250 762V1025H720V1100" class="train"/>
+<text x="1090" y="1008" class="small"><tspan x="1090" dy="0">预测动作 ŷ</tspan></text>
+<path d="M1380 254H1400V1060H865V1100" class="train"/>
+<text x="1160" y="1050" class="small"><tspan x="1160" dy="0">冻结复用 P</tspan></text>
+<path d="M910 1170H1000" class="train"/>
+<rect x="530" y="1285" width="850" height="92" rx="13" fill="#f4edf8" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="547" y="1319" class="label"><tspan x="547" dy="0">生成器总目标</tspan></text>
+<text x="547" y="1353" class="body"><tspan x="547" dy="0">动作回归 + 身份 KL 正则 + 对抗目标 + 语义对齐项</tspan></text>
+<path d="M1190 1240V1285" class="train"/>
+<path d="M235 1240V1330H530" class="train"/>
+<text x="35" y="1465" class="small"><tspan x="35" dy="0">实线：生成数据流；紫色虚线：训练 / 监督。橙色：输入；蓝色：生成模块；绿色：结果；紫色：语义监督。</tspan></text>
+<text x="35" y="1502" class="small"><tspan x="35" dy="0">推理需要音频、转录和身份；不需要真实动作、gallery 或 P。五类语义接近不保证具体事件 / 指向目标完成。</tspan></text>
+<text x="35" y="1539" class="small"><tspan x="35" dy="0">读图：先看 B 的两路输入怎样产生动作，再看 A → C 如何在训练中改变生成器。本文未运行模型。</tspan></text>
+</svg>

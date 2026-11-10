@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1820" viewBox="0 0 1440 1820" role="img" aria-labelledby="title desc"><title id="title">LivelySpeaker | 文本先生成语义初稿，语音扩散再补节奏</title><desc id="desc">教学重绘 · ICCV 2023，正文图 3 / 式 1–5；SAG 与 RAG 独立训练，推理时组合</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#536b83"/></marker><marker id="train" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#9476a9"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans SC',Arial,sans-serif;fill:#23394c}.title{font-size:32px;font-weight:700}.heading{font-size:25px;font-weight:700}.label{font-size:23px;font-weight:700}.body{font-size:21px}.small{font-size:19px}.edge{fill:none;stroke:#536b83;stroke-width:2.8;marker-end:url(#arrow)}.train{fill:none;stroke:#9476a9;stroke-width:2.8;stroke-dasharray:9 6;marker-end:url(#train)}</style><rect width="1440" height="1820" fill="#fff"/>
+<text x="35" y="48" class="title"><tspan x="35" dy="0">LivelySpeaker | 文本先生成语义初稿，语音扩散再补节奏</tspan></text>
+<text x="35" y="83" class="small"><tspan x="35" dy="0">教学重绘 · ICCV 2023，正文图 3 / 式 1–5；SAG 与 RAG 独立训练，推理时组合</tspan></text>
+<rect x="25" y="110" width="1390" height="385" rx="18" fill="#f8fafc" stroke="#cbd7e2" stroke-width="1.8"/>
+<text x="48" y="150" class="heading"><tspan x="48" dy="0">A · 独立训练 SAG：动作自编码 + 整段 CLIP 语义对齐</tspan></text>
+<rect x="60" y="190" width="265" height="125" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="77" y="224" class="label"><tspan x="77" dy="0">真实动作窗口</tspan></text>
+<text x="77" y="258" class="body"><tspan x="77" dy="0">固定长度关节序列</tspan><tspan x="77" dy="31">输入动作编码器</tspan></text>
+<rect x="385" y="190" width="280" height="125" rx="13" fill="#edf4fb" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="402" y="224" class="label"><tspan x="402" dy="0">Transformer E</tspan></text>
+<text x="402" y="258" class="body"><tspan x="402" dy="0">3 层编码器</tspan><tspan x="402" dy="31">输出 512 维动作潜变量</tspan></text>
+<rect x="725" y="190" width="285" height="125" rx="13" fill="#edf4fb" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="742" y="224" class="label"><tspan x="742" dy="0">Transformer D</tspan></text>
+<text x="742" y="258" class="body"><tspan x="742" dy="0">3 层动作解码器</tspan><tspan x="742" dy="31">重建连续动作窗口</tspan></text>
+<rect x="1070" y="190" width="310" height="125" rx="13" fill="#f4edf8" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="1087" y="224" class="label"><tspan x="1087" dy="0">重建目标</tspan></text>
+<text x="1087" y="258" class="body"><tspan x="1087" dy="0">MSE(重建动作, 真值)</tspan><tspan x="1087" dy="31">训练 E 与 D</tspan></text>
+<path d="M325 252H385" class="train"/>
+<path d="M665 252H725" class="train"/>
+<path d="M1010 252H1070" class="train"/>
+<rect x="60" y="358" width="390" height="100" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="77" y="392" class="label"><tspan x="77" dy="0">对应整段转录 → 冻结 CLIP</tspan></text>
+<text x="77" y="426" class="body"><tspan x="77" dy="0">ViT-B/32，512 维文本向量</tspan></text>
+<rect x="530" y="358" width="850" height="100" rx="13" fill="#f4edf8" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="547" y="392" class="label"><tspan x="547" dy="0">余弦对齐目标：动作潜变量 ↔ CLIP 文本向量</tspan></text>
+<text x="547" y="426" class="body"><tspan x="547" dy="0">λ = 1；推理时直接用文本向量替代动作潜变量</tspan></text>
+<path d="M450 408H530" class="train"/>
+<path d="M525 315V335H800V358" class="train"/>
+<rect x="25" y="530" width="1390" height="435" rx="18" fill="#f8fafc" stroke="#cbd7e2" stroke-width="1.8"/>
+<text x="48" y="570" class="heading"><tspan x="48" dy="0">B · 独立训练 RAG：给真值动作加噪，再学习预测干净动作</tspan></text>
+<rect x="60" y="610" width="300" height="130" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="77" y="644" class="label"><tspan x="77" dy="0">真实动作 x₀ + 随机噪声</tspan></text>
+<text x="77" y="678" class="body"><tspan x="77" dy="0">1000 步训练噪声时间表</tspan><tspan x="77" dy="31">随机时刻 t 得到带噪 xₜ</tspan></text>
+<rect x="440" y="610" width="480" height="130" rx="13" fill="#edf4fb" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="457" y="644" class="label"><tspan x="457" dy="0">音频条件 MLP 去噪器 G</tspan></text>
+<text x="457" y="678" class="body"><tspan x="457" dy="0">动作与音频融合；时间 / 空间 MLP</tspan><tspan x="457" dy="31">时间步嵌入 t；预测干净动作 x̂₀</tspan></text>
+<rect x="1000" y="610" width="380" height="130" rx="13" fill="#f4edf8" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="1017" y="644" class="label"><tspan x="1017" dy="0">RAG 训练目标</tspan></text>
+<text x="1017" y="678" class="body"><tspan x="1017" dy="0">Huber 姿势 + 速度损失</tspan><tspan x="1017" dy="31">身份风格分布的 KL 正则</tspan></text>
+<rect x="60" y="800" width="300" height="120" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="77" y="834" class="label"><tspan x="77" dy="0">语音波形 → 1D 卷积</tspan></text>
+<text x="77" y="868" class="body"><tspan x="77" dy="0">四个卷积块</tspan><tspan x="77" dy="31">逐时刻 256 维声学特征</tspan></text>
+<rect x="440" y="800" width="480" height="120" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="457" y="834" class="label"><tspan x="457" dy="0">说话者身份 / 其他数据集条件</tspan></text>
+<text x="457" y="868" class="body"><tspan x="457" dy="0">ID → 重参数化风格表示</tspan><tspan x="457" dy="31">BEAT 实验还使用情绪条件</tspan></text>
+<rect x="1000" y="800" width="380" height="120" rx="13" fill="#e8f4ed" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="1017" y="834" class="label"><tspan x="1017" dy="0">模型与步骤边界</tspan></text>
+<text x="1017" y="868" class="body"><tspan x="1017" dy="0">音频条件，不读取文字语义</tspan><tspan x="1017" dy="31">训练完后用于下方动作编辑</tspan></text>
+<path d="M360 675H440" class="train"/>
+<path d="M920 675H1000" class="train"/>
+<path d="M210 800V775H600V740" class="train"/>
+<path d="M680 800V740" class="train"/>
+<rect x="25" y="1000" width="1390" height="620" rx="18" fill="#f8fafc" stroke="#cbd7e2" stroke-width="1.8"/>
+<text x="48" y="1040" class="heading"><tspan x="48" dy="0">C · 推理：SAG 初稿 → 加噪 K 步 → RAG 去噪；无需另训配对编辑器</tspan></text>
+<rect x="60" y="1080" width="290" height="130" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="77" y="1114" class="label"><tspan x="77" dy="0">转录 + 可选附加文字</tspan></text>
+<text x="77" y="1148" class="body"><tspan x="77" dy="0">如 from left to right</tspan><tspan x="77" dy="31">附加 with high both hands</tspan></text>
+<rect x="430" y="1080" width="300" height="130" rx="13" fill="#edf4fb" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="447" y="1114" class="label"><tspan x="447" dy="0">冻结 CLIP → SAG D</tspan></text>
+<text x="447" y="1148" class="body"><tspan x="447" dy="0">绕过动作编码器 E</tspan><tspan x="447" dy="31">得到语义动作初稿 x_SAG</tspan></text>
+<rect x="810" y="1080" width="270" height="130" rx="13" fill="#edf4fb" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="827" y="1114" class="label"><tspan x="827" dy="0">有限加噪</tspan></text>
+<text x="827" y="1148" class="body"><tspan x="827" dy="0">初稿 + 高斯噪声</tspan><tspan x="827" dy="31">加到中间等级 K</tspan></text>
+<rect x="1160" y="1080" width="220" height="130" rx="13" fill="#edf4fb" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="1177" y="1114" class="label"><tspan x="1177" dy="0">带噪初稿 x_K</tspan></text>
+<text x="1177" y="1148" class="body"><tspan x="1177" dy="0">保留部分原语义</tspan><tspan x="1177" dy="31">作为编辑起点</tspan></text>
+<path d="M350 1145H430" class="edge"/>
+<path d="M730 1145H810" class="edge"/>
+<path d="M1080 1145H1160" class="edge"/>
+<rect x="60" y="1310" width="290" height="145" rx="13" fill="#fff2dc" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="77" y="1344" class="label"><tspan x="77" dy="0">语音 + 身份</tspan></text>
+<text x="77" y="1378" class="body"><tspan x="77" dy="0">复用已训练音频编码器</tspan><tspan x="77" dy="31">历史 4 帧辅助片段衔接</tspan><tspan x="77" dy="31">w 调整音频引导强度</tspan></text>
+<rect x="430" y="1310" width="650" height="145" rx="13" fill="#edf4fb" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="447" y="1344" class="label"><tspan x="447" dy="0">RAG：从 x_K 开始条件 DDIM 去噪</tspan></text>
+<text x="447" y="1378" class="body"><tspan x="447" dy="0">典型完整设置：100 步时间表中的 K = 20</tspan><tspan x="447" dy="31">跳过从纯噪声开始的前段采样</tspan><tspan x="447" dy="31">小 K 更保留初稿，大 K 更可能覆盖原语义</tspan></text>
+<rect x="1160" y="1310" width="220" height="145" rx="13" fill="#e8f4ed" stroke="#b8cadb" stroke-width="1.8"/>
+<text x="1177" y="1344" class="label"><tspan x="1177" dy="0">输出手势</tspan></text>
+<text x="1177" y="1378" class="body"><tspan x="1177" dy="0">连续关节序列</tspan><tspan x="1177" dy="31">语义 + 节奏</tspan><tspan x="1177" dy="31">逐窗口拼接</tspan></text>
+<path d="M350 1380H430" class="edge"/>
+<path d="M1270 1210V1260H755V1310" class="edge"/>
+<path d="M1080 1380H1160" class="edge"/>
+<path d="M1270 1455V1520H210V1455" class="edge"/>
+<text x="370" y="1548" class="small"><tspan x="370" dy="0">当前末 4 帧 → 下一窗口；34 帧 / 15 fps ≈ 2.27 秒片段</tspan></text>
+<path d="M867 315V338H1400V1240H580V1210" class="train"/>
+<path d="M900 740V770H1425V1280H1040V1310" class="train"/>
+<text x="35" y="1670" class="small"><tspan x="35" dy="0">实线：组合推理；紫色虚线：训练与模块复用。两个生成器分别训练，组合时不需要新的同步 / 不同步动作配对。</tspan></text>
+<text x="35" y="1710" class="small"><tspan x="35" dy="0">K：改变初稿的程度；w：音频条件引导强度。两者都是软取舍，不能保证指定语义、位置或时刻严格不变。</tspan></text>
+<text x="35" y="1750" class="small"><tspan x="35" dy="0">“零样本组合”不等于无需训练：SAG、RAG 和复用的 CLIP 均已有学习过程；本文未运行模型。</tspan></text>
+<text x="35" y="1790" class="small"><tspan x="35" dy="0">读图：先看 C 的完整输入到输出，再用 A / B 理解模块从哪里来；RAG 指 Rhythm-Aware Generator。</tspan></text>
+</svg>

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="2050" viewBox="0 0 1480 2050" role="img" aria-labelledby="title desc">
+<title id="title">ELMA | 连续动作 + 情节式描述 → 跨段回指基准</title><desc id="desc">教学重绘 · arXiv:2610.13549v3，图 4 / §4–6 / 附录 D · 数据与评测贡献，复用既有生成器</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#506a80"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9468a4"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans SC',Arial,sans-serif;fill:#20374b} .title{font-size:32px;font-weight:700} .heading{font-size:26px;font-weight:700} .label{font-size:23px;font-weight:700} .body{font-size:21px} .small{font-size:19px} .edge{fill:none;stroke:#506a80;stroke-width:2.5;marker-end:url(#a)} .train{fill:none;stroke:#9468a4;stroke-width:2.5;stroke-dasharray:9 6;marker-end:url(#b)}</style><rect width="1480" height="2050" fill="#fff"/>
+<text x="40" y="46" class="title"><tspan x="40" dy="0">ELMA | 连续动作 + 情节式描述 → 跨段回指基准</tspan></text>
+<text x="40" y="83" class="small"><tspan x="40" dy="0">教学重绘 · arXiv:2610.13549v3，图 4 / §4–6 / 附录 D · 数据与评测贡献，复用既有生成器</tspan></text>
+<rect x="28" y="110" width="1424" height="300" rx="18" fill="#f8fafc" stroke="#cbd8e6" stroke-width="1.7"/>
+<text x="52" y="150" class="heading"><tspan x="52" dy="0">A · 源视频筛选：保留同一人物的连续 30 秒情节</tspan></text>
+<rect x="55" y="185" width="370" height="150" rx="12" fill="#fff2da" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="73" y="219" class="label"><tspan x="73" dy="0">公开动作视频</tspan></text>
+<text x="73" y="252" class="body"><tspan x="73" dy="0">动作词检索 → 场景分割</tspan><tspan x="73" dy="30">连续场景 ≥ 30 秒</tspan><tspan x="73" dy="30">排除剪辑打断的时间上下文</tspan></text>
+<rect x="495" y="185" width="430" height="150" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="513" y="219" class="label"><tspan x="513" dy="0">人物跟踪 / 可见性与运动筛选</tspan></text>
+<text x="513" y="252" class="body"><tspan x="513" dy="0">YOLO-Pose + ByteTrack 粗筛</tspan><tspan x="513" dy="30">SAM 2 掩码传播、稳定裁剪</tspan><tspan x="513" dy="30">关键点可信度 / 运动量 / VLM 检查</tspan></text>
+<rect x="995" y="185" width="430" height="150" rx="12" fill="#e8f5ef" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="1013" y="219" class="label"><tspan x="1013" dy="0">连续 30 秒人物片段</tspan></text>
+<text x="1013" y="252" class="body"><tspan x="1013" dy="0">作为下面两路的共同源</tspan><tspan x="1013" dy="30">6 段 × 5 秒保留先后关系</tspan><tspan x="1013" dy="30">不是六段无关动作的拼接</tspan></text>
+<path d="M425 260H495" class="edge"/>
+<path d="M925 260H995" class="edge"/>
+<text x="55" y="377" class="small"><tspan x="55" dy="0">视频用于离线构建数据。推理生成动作时，不执行视频跟踪、网格恢复或 VLM 描述流程。</tspan></text>
+<rect x="28" y="440" width="695" height="500" rx="18" fill="#f8fafc" stroke="#cbd8e6" stroke-width="1.7"/>
+<text x="52" y="480" class="heading"><tspan x="52" dy="0">B1 · 动作支线：恢复与过滤</tspan></text>
+<rect x="753" y="440" width="699" height="500" rx="18" fill="#f8fafc" stroke="#cbd8e6" stroke-width="1.7"/>
+<text x="777" y="480" class="heading"><tspan x="777" dy="0">B2 · 文本支线：情节与回指</tspan></text>
+<rect x="65" y="520" width="620" height="120" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="83" y="554" class="label"><tspan x="83" dy="0">GVHMR：世界坐标人体网格恢复</tspan></text>
+<text x="83" y="587" class="body"><tspan x="83" dy="0">从视频估计 SMPL-X 动作参数</tspan><tspan x="83" dy="30">单目估计得到监督动作，并非直接动捕真值</tspan></text>
+<rect x="65" y="700" width="620" height="170" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="83" y="734" class="label"><tspan x="83" dy="0">PoseFiltering + MotionFiltering+</tspan></text>
+<text x="83" y="767" class="body"><tspan x="83" dy="0">VPoser 姿态重建误差 → 排除异常姿态</tspan><tspan x="83" dy="30">旋转变化 / jerk → 排除不稳定时间动态</tspan><tspan x="83" dy="30">过滤近静止失败；AMASS 提供参考分布</tspan><tspan x="83" dy="30">得到连续动作监督，不是生成中的约束求解</tspan></text>
+<rect x="790" y="520" width="625" height="120" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="808" y="554" class="label"><tspan x="808" dy="0">Gemini 2.5 Pro：描述与情节改写</tspan></text>
+<text x="808" y="587" class="body"><tspan x="808" dy="0">先各写 5 秒独立描述，再结合之前已改写描述</tspan><tspan x="808" dy="30">为当前句保留对象、姿态和持续状态的前文</tspan></text>
+<rect x="790" y="700" width="625" height="170" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="808" y="734" class="label"><tspan x="808" dy="0">GPT-4o：回指判断 + 来源段标注</tspan></text>
+<text x="808" y="767" class="body"><tspan x="808" dy="0">当前句 + 前文 → 是否更具体、依赖哪些段</tspan><tspan x="808" dy="30">重复 3 次；判断与来源段均一致才接受</tspan><tspan x="808" dy="30">输出目标段标签 / depends_on_segment_ids</tspan><tspan x="808" dy="30">属于注释元数据，不直接输出动作计划</tspan></text>
+<path d="M1425 260H1465V423H40V500H375V520" class="edge"/>
+<path d="M1465 423H765V500H1100V520" class="edge"/>
+<path d="M375 640V700" class="edge"/>
+<path d="M1100 640V700" class="edge"/>
+<text x="65" y="917" class="small"><tspan x="65" dy="0">动作有连续性，恢复误差仍可能存在。</tspan></text>
+<text x="790" y="917" class="small"><tspan x="790" dy="0">文字有依赖关系，自动标注仍会出错。</tspan></text>
+<rect x="355" y="990" width="770" height="135" rx="12" fill="#e8f5ef" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="373" y="1024" class="label"><tspan x="373" dy="0">ELMA：13.2k 条 / 110 小时，训练 10.2k / 测试 3k</tspan></text>
+<text x="373" y="1057" class="body"><tspan x="373" dy="0">每条 = 连续动作 + 六段描述 + 依赖目标与来源段</tspan><tspan x="373" dy="30">生成 / 评测使用 HumanML3D 263 维；源数据含 SMPL-X</tspan><tspan x="373" dy="30">ELMABench 从测试集中取 1k 条，聚焦有回指的目标段</tspan></text>
+<path d="M685 785H705V970H620V990" class="edge"/>
+<path d="M1415 785H1435V970H860V990" class="edge"/>
+<rect x="28" y="1160" width="1424" height="505" rx="18" fill="#f8fafc" stroke="#cbd8e6" stroke-width="1.7"/>
+<text x="52" y="1200" class="heading"><tspan x="52" dy="0">C · 基线训练与推理：文本条件适配，连续动作仍由既有模型生成</tspan></text>
+<rect x="55" y="1250" width="330" height="150" rx="12" fill="#fff2da" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="73" y="1284" class="label"><tspan x="73" dy="0">六段指令 + 六段时长</tspan></text>
+<text x="73" y="1317" class="body"><tspan x="73" dy="0">T2M：每段独立描述</tspan><tspan x="73" dy="30">A2M：后段可依赖先前状态</tspan><tspan x="73" dy="30">本协议总长 30 秒</tspan></text>
+<rect x="455" y="1250" width="430" height="150" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="473" y="1284" class="label"><tspan x="473" dy="0">CLIP 文本编码 / 历史嵌入加权</tspan></text>
+<text x="473" y="1317" class="body"><tspan x="473" dy="0">A2M：当前 + 所有此前段嵌入</tspan><tspan x="473" dy="30">T2M：只使用当前段条件</tspan><tspan x="473" dy="30">没有显式状态图或约束求解器</tspan></text>
+<rect x="955" y="1250" width="470" height="150" rx="12" fill="#e8f5ef" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="973" y="1284" class="label"><tspan x="973" dy="0">DoubleTake / FlowMDM / UniMotion</tspan></text>
+<text x="973" y="1317" class="body"><tspan x="973" dy="0">从各自 HumanML3D 预训练权重初始化</tspan><tspan x="973" dy="30">在 ELMA 按对应条件再微调 50k 步</tspan><tspan x="973" dy="30">推理产物：一段连续 30 秒动作</tspan></text>
+<path d="M385 1325H455" class="edge"/>
+<path d="M885 1325H955" class="edge"/>
+<path d="M1125 1057H1465V1220H1190V1250" class="train"/>
+<text x="940" y="1240" class="small"><tspan x="940" dy="0">训练集提供配对监督</tspan></text>
+<rect x="55" y="1475" width="1370" height="145" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="73" y="1509" class="label"><tspan x="73" dy="0">不是新的生成骨干：比较条件格式与训练设置</tspan></text>
+<text x="73" y="1542" class="body"><tspan x="73" dy="0">① T2M 训练 → T2M 推理   ② T2M 训练 → A2M 推理   ③ A2M 训练 → A2M 推理</tspan><tspan x="73" dy="30">历史文本向量使模型有机会利用前文，但不会强制保留“左手举起”“持物位置”等状态。</tspan><tspan x="73" dy="30">论文完整序列协议与公开默认目标段模式必须区分；详细结果见正文表格。</tspan></text>
+<rect x="28" y="1700" width="1424" height="245" rx="18" fill="#f8fafc" stroke="#cbd8e6" stroke-width="1.7"/>
+<text x="52" y="1740" class="heading"><tspan x="52" dy="0">D · 评测：依赖标签选择目标段，指标在目标段上聚合</tspan></text>
+<rect x="55" y="1775" width="340" height="120" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="73" y="1809" class="label"><tspan x="73" dy="0">生成 / 真值完整序列</tspan></text>
+<text x="73" y="1842" class="body"><tspan x="73" dy="0">按依赖元数据切出目标段</tspan><tspan x="73" dy="30">其他段不计入汇总指标</tspan></text>
+<rect x="465" y="1775" width="440" height="120" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="483" y="1809" class="label"><tspan x="483" dy="0">ELMA 训练集适配的评估器</tspan></text>
+<text x="483" y="1842" class="body"><tspan x="483" dy="0">动作与文本 → 特征空间</tspan><tspan x="483" dy="30">重复 10 次，报告 95% 置信区间</tspan></text>
+<rect x="975" y="1775" width="450" height="120" rx="12" fill="#e8f5ef" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="993" y="1809" class="label"><tspan x="993" dy="0">FID / R-P@3 / Diversity / Matching</tspan></text>
+<text x="993" y="1842" class="body"><tspan x="993" dy="0">衡量分布、检索与特征匹配</tspan><tspan x="993" dy="30">不是逐约束成功率或接触保持率</tspan></text>
+<path d="M1425 1325H1465V1755H225V1775" class="edge"/>
+<path d="M395 1835H465" class="edge"/>
+<path d="M905 1835H975" class="edge"/>
+<path d="M355 1057H18V1835H55" class="train"/>
+<text x="40" y="1983" class="small"><tspan x="40" dy="0">实线：数据 / 推理；虚线：训练监督或评测目标选择。原视频不在推理输入中，回指标签不充当物理求解器。</tspan></text>
+<text x="40" y="2023" class="small"><tspan x="40" dy="0">本图按论文 30 秒协议绘制；公开默认脚本只生成目标 100 帧，完整 600 帧须选 anaphora_fullgen。</tspan></text>
+</svg>

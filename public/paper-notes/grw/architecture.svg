@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="1920" viewBox="0 0 1480 1920" role="img" aria-labelledby="title desc">
+<title id="title">GRW | 识别是否有语义、表达哪个词，以及动作何时发生</title><desc id="desc">教学重绘 · arXiv:2605.31589v2，图 6 / §4 / §6 / 附录 C · 视觉理解，不生成动作</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#506a80"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9468a4"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans SC',Arial,sans-serif;fill:#20374b} .title{font-size:32px;font-weight:700} .heading{font-size:26px;font-weight:700} .label{font-size:23px;font-weight:700} .body{font-size:21px} .small{font-size:19px} .edge{fill:none;stroke:#506a80;stroke-width:2.5;marker-end:url(#a)} .train{fill:none;stroke:#9468a4;stroke-width:2.5;stroke-dasharray:9 6;marker-end:url(#b)}</style><rect width="1480" height="1920" fill="#fff"/>
+<text x="40" y="46" class="title"><tspan x="40" dy="0">GRW | 识别是否有语义、表达哪个词，以及动作何时发生</tspan></text>
+<text x="40" y="83" class="small"><tspan x="40" dy="0">教学重绘 · arXiv:2605.31589v2，图 6 / §4 / §6 / 附录 C · 视觉理解，不生成动作</tspan></text>
+<rect x="28" y="110" width="1424" height="300" rx="18" fill="#f8fafc" stroke="#cbd8e6" stroke-width="1.7"/>
+<text x="52" y="150" class="heading"><tspan x="52" dy="0">A · 离线数据构建：发音时间提供候选，人工确认语义和边界</tspan></text>
+<rect x="55" y="187" width="310" height="145" rx="12" fill="#fff2da" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="73" y="221" class="label"><tspan x="73" dy="0">真实讲话视频 + 词时间戳</tspan></text>
+<text x="73" y="254" class="body"><tspan x="73" dy="0">MultiVSR 英语子集</tspan><tspan x="73" dy="30">4 秒候选窗 → 关键点筛选</tspan><tspan x="73" dy="30">近似平衡采样后交给人工</tspan></text>
+<rect x="420" y="187" width="340" height="145" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="438" y="221" class="label"><tspan x="438" dy="0">两轮人工标注与质量控制</tspan></text>
+<text x="438" y="254" class="body"><tspan x="438" dy="0">① 是否清楚描绘目标词</tspan><tspan x="438" dy="30">② 正例的动作起止时间</tspan><tspan x="438" dy="30">多数投票 + 多人边界一致性</tspan></text>
+<rect x="815" y="187" width="610" height="145" rx="12" fill="#e8f5ef" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="833" y="221" class="label"><tspan x="833" dy="0">GRW 人工数据：139,503 段 / 155 词</tspan></text>
+<text x="833" y="254" class="body"><tspan x="833" dy="0">17,340 个可靠定位正例 + 122,163 个负例</tspan><tspan x="833" dy="30">二分类训练：正负样本都使用</tspan><tspan x="833" dy="30">联合词识别 / 定位训练：只使用语义正例</tspan></text>
+<path d="M365 260H420" class="train"/>
+<path d="M760 260H815" class="train"/>
+<text x="55" y="378" class="small"><tspan x="55" dy="0">语音 / 目标词用于采集和标签；下面的视觉识别器不输入该词作为答案。人工标签不属于推理输入。</tspan></text>
+<rect x="28" y="440" width="1424" height="265" rx="18" fill="#f8fafc" stroke="#cbd8e6" stroke-width="1.7"/>
+<text x="52" y="480" class="heading"><tspan x="52" dy="0">B · 两种模型共用的冻结视觉先验：SHuBERT</tspan></text>
+<rect x="55" y="518" width="285" height="125" rx="12" fill="#fff2da" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="73" y="552" class="label"><tspan x="73" dy="0">视频帧 / 稳定人物裁剪</tspan></text>
+<text x="73" y="585" class="body"><tspan x="73" dy="0">短窗 100 帧或长窗 250 帧</tspan><tspan x="73" dy="30">25 fps；RGB 与身体关键点</tspan></text>
+<rect x="395" y="518" width="330" height="125" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="413" y="552" class="label"><tspan x="413" dy="0">手部 DINO-v2 + 身体信息</tspan></text>
+<text x="413" y="585" class="body"><tspan x="413" dy="0">左右手各 384 维 / 帧</tspan><tspan x="413" dy="30">身体关键点 14 维；不用面部</tspan></text>
+<rect x="780" y="518" width="330" height="125" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="798" y="552" class="label"><tspan x="798" dy="0">冻结 SHuBERT Transformer</tspan></text>
+<text x="798" y="585" class="body"><tspan x="798" dy="0">12 层手语预训练表示</tspan><tspan x="798" dy="30">逐帧捕捉手形与运动</tspan></text>
+<rect x="1165" y="518" width="260" height="125" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="1183" y="552" class="label"><tspan x="1183" dy="0">可学习的层聚合</tspan></text>
+<text x="1183" y="585" class="body"><tspan x="1183" dy="0">时间平均 → 层 softmax</tspan><tspan x="1183" dy="30">12 层加权 → T×768</tspan></text>
+<path d="M340 580H395" class="edge"/>
+<path d="M725 580H780" class="edge"/>
+<path d="M1110 580H1165" class="edge"/>
+<text x="55" y="684" class="small"><tspan x="55" dy="0">下游两套模型分别使用聚合特征；长窗二分类和短窗联合识别是互补任务，不是共享同一任务头。</tspan></text>
+<rect x="28" y="735" width="695" height="700" rx="18" fill="#f8fafc" stroke="#cbd8e6" stroke-width="1.7"/>
+<text x="52" y="775" class="heading"><tspan x="52" dy="0">C1 · 语义存在性：长上下文 → 短窗判断</tspan></text>
+<rect x="753" y="735" width="699" height="700" rx="18" fill="#f8fafc" stroke="#cbd8e6" stroke-width="1.7"/>
+<text x="777" y="775" class="heading"><tspan x="777" dy="0">C2 · 已含手势的短窗：词识别 + 定位</tspan></text>
+<rect x="65" y="820" width="620" height="125" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="83" y="854" class="label"><tspan x="83" dy="0">投影 512 维 → 3 层上下文编码器</tspan></text>
+<text x="83" y="887" class="body"><tspan x="83" dy="0">输入 250 帧；RoPE 表达相对运动时间</tspan><tspan x="83" dy="30">输出整段 memory M；覆盖约 10 秒</tspan></text>
+<rect x="65" y="1005" width="300" height="95" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="83" y="1039" class="label"><tspan x="83" dy="0">截取目标 query</tspan></text>
+<text x="83" y="1072" class="body"><tspan x="83" dy="0">取目标 100 帧特征</tspan></text>
+<rect x="65" y="1155" width="620" height="130" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="83" y="1189" class="label"><tspan x="83" dy="0">3 层 Transformer decoder</tspan></text>
+<text x="83" y="1222" class="body"><tspan x="83" dy="0">目标 query 交叉读取完整上下文 memory</tspan><tspan x="83" dy="30">通过周围运动参照识别目标手势</tspan></text>
+<rect x="65" y="1330" width="620" height="80" rx="12" fill="#e8f5ef" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="83" y="1364" class="label"><tspan x="83" dy="0">时间均值池化 → MLP + sigmoid</tspan></text>
+<text x="83" y="1397" class="body"><tspan x="83" dy="0">输出语义概率 p_sem</tspan></text>
+<path d="M1425 580H1465V720H40V800H375V820" class="edge"/>
+<text x="450" y="805" class="small"><tspan x="450" dy="0">长窗特征</tspan></text>
+<path d="M375 945V970H215V1005" class="edge"/>
+<path d="M215 1100V1155" class="edge"/>
+<path d="M685 885H705V1220H685" class="edge"/>
+<text x="405" y="1060" class="small"><tspan x="405" dy="0">整段 memory M</tspan><tspan x="405" dy="30">作为 cross-attention 参照</tspan></text>
+<path d="M375 1285V1330" class="edge"/>
+<rect x="790" y="820" width="625" height="125" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="808" y="854" class="label"><tspan x="808" dy="0">投影 → 6 层 Transformer encoder</tspan></text>
+<text x="808" y="887" class="body"><tspan x="808" dy="0">输入 100 帧短窗；时序特征 f_enc</tspan><tspan x="808" dy="30">同一时序表示分别送入两路预测</tspan></text>
+<rect x="790" y="1005" width="280" height="125" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="808" y="1039" class="label"><tspan x="808" dy="0">定位头 MLP + sigmoid</tspan></text>
+<text x="808" y="1072" class="body"><tspan x="808" dy="0">输出每帧概率 p_loc</tspan><tspan x="808" dy="30">逐帧判断是否处于手势</tspan></text>
+<rect x="1135" y="1095" width="280" height="125" rx="12" fill="#edf4fc" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="1153" y="1129" class="label"><tspan x="1153" dy="0">概率加权时序池化</tspan></text>
+<text x="1153" y="1162" class="body"><tspan x="1153" dy="0">以 p_loc 加权 f_enc</tspan><tspan x="1153" dy="30">得到全局视觉表示</tspan></text>
+<rect x="790" y="1285" width="280" height="125" rx="12" fill="#e8f5ef" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="808" y="1319" class="label"><tspan x="808" dy="0">时间定位输出</tspan></text>
+<text x="808" y="1352" class="body"><tspan x="808" dy="0">每帧手势概率 / 边界</tspan><tspan x="808" dy="30">用于时间定位评测</tspan></text>
+<rect x="1135" y="1285" width="280" height="125" rx="12" fill="#e8f5ef" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="1153" y="1319" class="label"><tspan x="1153" dy="0">词分类 MLP + softmax</tspan></text>
+<text x="1153" y="1352" class="body"><tspan x="1153" dy="0">输出 155 类词概率</tspan><tspan x="1153" dy="30">不是开放词汇描述</tspan></text>
+<path d="M1465 720H765V800H1100V820" class="edge"/>
+<text x="1165" y="805" class="small"><tspan x="1165" dy="0">短窗特征</tspan></text>
+<path d="M930 945V1005" class="edge"/>
+<path d="M1275 945V1095" class="edge"/>
+<text x="1290" y="1008" class="small"><tspan x="1290" dy="0">f_enc</tspan></text>
+<path d="M1070 1075H1100V1157H1135" class="edge"/>
+<text x="1090" y="1045" class="small"><tspan x="1090" dy="0">p_loc</tspan></text>
+<path d="M930 1130V1285" class="edge"/>
+<path d="M1275 1220V1285" class="edge"/>
+<rect x="28" y="1470" width="1424" height="305" rx="18" fill="#f8fafc" stroke="#cbd8e6" stroke-width="1.7"/>
+<text x="52" y="1510" class="heading"><tspan x="52" dy="0">D · 联合模型的训练：高置信度弱标注预训练 → 人工正例微调</tspan></text>
+<rect x="55" y="1550" width="370" height="145" rx="12" fill="#f3edf7" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="73" y="1584" class="label"><tspan x="73" dy="0">训练好的二分类器挖掘候选</tspan></text>
+<text x="73" y="1617" class="body"><tspan x="73" dy="0">p_sem ≥ 0.9 → 67,214 段</tspan><tspan x="73" dy="30">词标签来自原转录</tspan><tspan x="73" dy="30">边界 = 发音边界 + 词特定偏移</tspan></text>
+<rect x="495" y="1550" width="400" height="145" rx="12" fill="#f3edf7" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="513" y="1584" class="label"><tspan x="513" dy="0">联合识别 / 定位模型预训练</tspan></text>
+<text x="513" y="1617" class="body"><tspan x="513" dy="0">同一短窗模型（C2）</tspan><tspan x="513" dy="30">词类别交叉熵 + 逐帧 BCE</tspan><tspan x="513" dy="30">近似边界只提供弱监督</tspan></text>
+<rect x="965" y="1550" width="460" height="145" rx="12" fill="#f3edf7" stroke="#b7c9dc" stroke-width="1.7"/>
+<text x="983" y="1584" class="label"><tspan x="983" dy="0">人工干净正例微调 C2</tspan></text>
+<text x="983" y="1617" class="body"><tspan x="983" dy="0">15,340 个训练正例 / 人工边界</tspan><tspan x="983" dy="30">同一联合目标；骨干保持冻结</tspan><tspan x="983" dy="30">人工测试集用于最终评估</tspan></text>
+<path d="M425 1622H495" class="train"/>
+<path d="M895 1622H965" class="train"/>
+<path d="M65 1370H18V1622H55" class="train"/>
+<text x="55" y="1745" class="small"><tspan x="55" dy="0">C1 单独使用人工正负标签训练；D 的伪标签依赖已监督训练的 C1 和人工边界统计，整体流程不是无标签学习。</tspan></text>
+<text x="40" y="1824" class="small"><tspan x="40" dy="0">实线：视觉输入与预测；虚线：数据构建 / 训练。橙色：输入；蓝色：模型；绿色：数据或输出；紫色：训练。</tspan></text>
+<text x="40" y="1864" class="small"><tspan x="40" dy="0">边界与词概率是识别结果，不提供动作生成、目标对象命中或接触保证。本文未运行权重或独立复现实验。</tspan></text>
+</svg>

@@ -18,6 +18,8 @@ tags: ["rag-gesture", "论文解读", "共语手势", "检索增强", "潜空间
 **作者：** M. Hamza Mughal、Rishabh Dabral、Merel C. J. Scholman、Vera Demberg、Christian Theobalt。  
 **出处与版本：** CVPR 2025，会议录 pp. 16578–16588。本次以 [CVF 正式全文](https://openaccess.thecvf.com/content/CVPR2025/papers/Mughal_Retrieving_Semantics_from_the_Deep_an_RAG_Solution_for_Gesture_CVPR_2025_paper.pdf)及 4 页官方补充文档为准；[arXiv 2412.06786](https://arxiv.org/abs/2412.06786) 首版提交于 2024-12-09，v3 为 2025-04-04。  
 **入口：** [正式会议录](https://openaccess.thecvf.com/content/CVPR2025/html/Mughal_Retrieving_Semantics_from_the_Deep_an_RAG_Solution_for_Gesture_CVPR_2025_paper.html) · [补充材料 ZIP](https://openaccess.thecvf.com/content/CVPR2025/supplemental/Mughal_Retrieving_Semantics_from_CVPR_2025_supplemental.zip) · [项目页](https://vcai.mpi-inf.mpg.de/projects/RAG-Gesture/) · [官方代码](https://github.com/m-hamza-mughal/RAG-Gesture)。  
+**全文阅读：** [arXiv HTML（v3，含补充内容，可用浏览器翻译）](https://arxiv.org/html/2412.06786v3)。2026-11-10 核查可访问；本篇解读的表号与数据仍以以上 CVF 正式版本为准。
+
 **领域与关键词：** 共语手势、语义检索、篇章关系、分部位 VAE、潜空间扩散、DDIM 反演、推理时引导。阅读及公开资源核查日期：2026-10-26。
 
 </details>

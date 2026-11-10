@@ -20,6 +20,8 @@ tags: ["GestureDiffuCLIP", "Co-Speech-Gesture", "Motion-Style", "CLIP", "Latent-
 
 官方项目页提供论文与演示；本次从作者项目页及作者论文列表核查，未找到对应的官方训练代码、完整预训练权重入口。项目页的GitHub源文件是网页代码，不等于手势生成模型源码。本文不声称运行或复现了作者系统。
 
+**全文阅读：** [arXiv HTML（v4，含附录，可用浏览器翻译）](https://arxiv.org/html/2303.14613v4)。与本篇阅读的作者版相同，2026-11-10 核查可访问。
+
 </details>
 
 <span id="reading-1" class="reading-anchor"></span>

@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="2140" viewBox="0 0 1500 2140" role="img" aria-label="SemGes · 把话语语义连接到身体与手部码本">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#516477"/></marker></defs>
+<rect width="1500" height="2140" fill="#ffffff"/>
+<style>text{font-family:Arial,"Microsoft YaHei",sans-serif;fill:#183044}.title{font-size:36px;font-weight:700}.sub{font-size:21px;fill:#53677b}.label{font-size:25px;font-weight:700}.body{font-size:22px}.small{font-size:20px;fill:#53677b}.panel{fill:#f8fafc;stroke:#d7e0e8;stroke-width:2}.edge{fill:none;stroke:#516477;stroke-width:3;marker-end:url(#a)}.dash{stroke-dasharray:9 7}</style>
+<text x="40" y="55" class="title">SemGes · 把话语语义连接到身体与手部码本</text>
+<text x="40" y="94" class="sub">教学示意｜双 VQ-VAE 动作先验 → 语音 / 转录 / 身份融合 → 双码本量化解码</text>
+<rect x="30" y="125" width="1440" height="340" rx="20" class="panel"/>
+<text x="55" y="167" class="label">A · 第一阶段：分别学习身体与手部动作先验</text>
+<rect x="65" y="210" width="320" height="160" rx="13" fill="#fff3dd" stroke="#a9bdce" stroke-width="2"/>
+<text x="83" y="244" class="label">真实动作 Gᵇ / Gʰ</text>
+<text x="83" y="279" class="body">按身体与手部分开</text>
+<text x="83" y="309" class="body">连续 Rot6D 运动序列</text>
+<text x="83" y="339" class="body">训练期间可见</text>
+<rect x="470" y="200" width="450" height="110" rx="13" fill="#eaf2fb" stroke="#a9bdce" stroke-width="2"/>
+<text x="488" y="234" class="label">身体 VQ-VAE</text>
+<text x="488" y="269" class="body">编码 Eᵇ → 量化 Qᵇ → 解码 Dᵇ</text>
+<rect x="470" y="335" width="450" height="110" rx="13" fill="#eaf2fb" stroke="#a9bdce" stroke-width="2"/>
+<text x="488" y="369" class="label">手部 VQ-VAE</text>
+<text x="488" y="404" class="body">编码 Eʰ → 量化 Qʰ → 解码 Dʰ</text>
+<rect x="1005" y="245" width="410" height="160" rx="13" fill="#f1eaf8" stroke="#a9bdce" stroke-width="2"/>
+<text x="1023" y="279" class="label">阶段一学习目标</text>
+<text x="1023" y="314" class="body">动作 / 速度 / 加速度重建</text>
+<text x="1023" y="344" class="body">码本与 commitment 目标</text>
+<text x="1023" y="374" class="body">产物：两个动作码本及解码器</text>
+<path d="M385 260H470" class="edge"/>
+<path d="M420 260V390H470" class="edge"/>
+<path d="M920 255H965V290H1005" class="edge"/>
+<path d="M920 390H1005" class="edge"/>
+<rect x="30" y="500" width="1440" height="785" rx="20" class="panel"/>
+<text x="55" y="542" class="label">B · 第二阶段推理：真实动作与语义标签不进入主线</text>
+<rect x="65" y="585" width="355" height="120" rx="13" fill="#fff3dd" stroke="#a9bdce" stroke-width="2"/>
+<text x="83" y="619" class="label">说话音频</text>
+<text x="83" y="654" class="body">冻结 HuBERT</text>
+<text x="83" y="684" class="body">输出语音特征 Zᵃ</text>
+<rect x="65" y="755" width="355" height="110" rx="13" fill="#fff3dd" stroke="#a9bdce" stroke-width="2"/>
+<text x="83" y="789" class="label">说话者身份</text>
+<text x="83" y="824" class="body">可学习身份嵌入 Zⁱ</text>
+<text x="83" y="854" class="body">提供人物风格条件</text>
+<rect x="65" y="915" width="355" height="150" rx="13" fill="#fff3dd" stroke="#a9bdce" stroke-width="2"/>
+<text x="83" y="949" class="label">对齐的语音转录</text>
+<text x="83" y="984" class="body">FastText 词嵌入</text>
+<text x="83" y="1014" class="body">可训练 TCN 语义编码器</text>
+<text x="83" y="1044" class="body">输出动作对齐文本 Zˢ</text>
+<rect x="520" y="650" width="400" height="150" rx="13" fill="#eaf2fb" stroke="#a9bdce" stroke-width="2"/>
+<text x="538" y="684" class="label">拼接音频 + 身份</text>
+<text x="538" y="719" class="body">Zʳ = [Zᵃ, Zⁱ]</text>
+<text x="538" y="749" class="body">自注意力 → query</text>
+<text x="538" y="779" class="body">保留片段内时序信息</text>
+<rect x="1015" y="650" width="400" height="150" rx="13" fill="#eaf2fb" stroke="#a9bdce" stroke-width="2"/>
+<text x="1033" y="684" class="label">跨模态 Transformer</text>
+<text x="1033" y="719" class="body">query：音频 / 身份</text>
+<text x="1033" y="749" class="body">key/value：文本语义 Zˢ</text>
+<text x="1033" y="779" class="body">8 层注意力 / MLP → Zᶠ</text>
+<rect x="520" y="950" width="400" height="140" rx="13" fill="#e5f4e9" stroke="#a9bdce" stroke-width="2"/>
+<text x="538" y="984" class="label">身体量化与解码</text>
+<text x="538" y="1019" class="body">Qᵇ(Zᶠ) → Dᵇ</text>
+<text x="538" y="1049" class="body">复用第一阶段身体码本</text>
+<text x="538" y="1079" class="body">输出身体动作 Ĝᵇ</text>
+<rect x="1015" y="950" width="400" height="140" rx="13" fill="#e5f4e9" stroke="#a9bdce" stroke-width="2"/>
+<text x="1033" y="984" class="label">手部量化与解码</text>
+<text x="1033" y="1019" class="body">Qʰ(Zᶠ) → Dʰ</text>
+<text x="1033" y="1049" class="body">复用第一阶段手码本</text>
+<text x="1033" y="1079" class="body">输出手部动作 Ĝʰ</text>
+<path d="M420 645H465V690H520" class="edge"/>
+<path d="M420 810H465V755H520" class="edge"/>
+<path d="M920 725H1015" class="edge"/>
+<path d="M420 995H465V885H1190V800" class="edge"/>
+<text x="780" y="873" class="small">转录提供 K / V</text>
+<path d="M1325 800V950" class="edge"/>
+<path d="M1325 835H730V950" class="edge"/>
+<text x="780" y="823" class="small">同一融合表示 Zᶠ 分别量化</text>
+<rect x="520" y="1150" width="895" height="100" rx="13" fill="#e5f4e9" stroke="#a9bdce" stroke-width="2"/>
+<text x="538" y="1184" class="label">合并部位动作 + 长序列衔接</text>
+<text x="538" y="1219" class="body">两路输出拼接；后段前 4 帧承接前段末 4 帧，再生成剩余帧</text>
+<path d="M720 1090V1150" class="edge"/>
+<path d="M1220 1090V1150" class="edge"/>
+<text x="65" y="1235" class="small">训练样本为 34 帧；</text>
+<text x="65" y="1265" class="small">长序列没有显式语义计划器。</text>
+<rect x="30" y="1320" width="1440" height="590" rx="20" class="panel"/>
+<text x="55" y="1362" class="label">C · 第二阶段训练：三个目标在不同位置约束</text>
+<rect x="65" y="1405" width="360" height="150" rx="13" fill="#fff3dd" stroke="#a9bdce" stroke-width="2"/>
+<text x="83" y="1439" class="label">真实动作 + 语义标注</text>
+<text x="83" y="1474" class="body">冻结动作编码器 Eᵇ / Eʰ</text>
+<text x="83" y="1504" class="body">得到 Zᵇ / Zʰ 及量化目标</text>
+<text x="83" y="1534" class="body">标签提供相关性权重 λ</text>
+<rect x="525" y="1405" width="420" height="150" rx="13" fill="#f1eaf8" stroke="#a9bdce" stroke-width="2"/>
+<text x="543" y="1439" class="label">1. 语义一致性</text>
+<text x="543" y="1474" class="body">Zˢ ↔ Zᵇ 与 Zˢ ↔ Zʰ</text>
+<text x="543" y="1504" class="body">两项正配对余弦距离</text>
+<text x="543" y="1534" class="body">使转录进入动作相关表示</text>
+<rect x="995" y="1405" width="420" height="150" rx="13" fill="#f1eaf8" stroke="#a9bdce" stroke-width="2"/>
+<text x="1013" y="1439" class="label">2. 量化一致性</text>
+<text x="1013" y="1474" class="body">Qᵇ(Zᶠ) ↔ Qᵇ(Zᵇ)</text>
+<text x="1013" y="1504" class="body">Qʰ(Zᶠ) ↔ Qʰ(Zʰ)</text>
+<text x="1013" y="1534" class="body">平方误差匹配两部位码向量</text>
+<rect x="525" y="1645" width="890" height="145" rx="13" fill="#f1eaf8" stroke="#a9bdce" stroke-width="2"/>
+<text x="543" y="1679" class="label">3. 语义相关性：λ × Huber(G − Ĝ)</text>
+<text x="543" y="1714" class="body">对稀少语义手势帧提高重建权重，阈值 α = 0.01</text>
+<text x="543" y="1744" class="body">BEAT 有标签：使用该项；TED-Expressive 无标签：省去该项</text>
+<text x="543" y="1774" class="body">总目标为三项之和；这些软损失不是动作事件或空间约束验证</text>
+<path d="M425 1475H525" class="edge dash"/>
+<path d="M425 1525H470V1595H1200V1555" class="edge dash"/>
+<path d="M300 1555V1715H525" class="edge dash"/>
+<path d="M65 990H45V1305H965V1385H735V1405" class="edge dash"/>
+<text x="500" y="1300" class="small">文本 Zˢ</text>
+<path d="M1415 1020H1450V1480H1415" class="edge dash"/>
+<text x="1310" y="1380" class="small">融合量化结果</text>
+<path d="M1415 1205H1460V1725H1415" class="edge dash"/>
+<text x="65" y="1855" class="small">推理只走 B；A 提供先验，C 提供学习信号。文本是转录，不是独立的可执行动作指令。</text>
+<text x="40" y="1980" class="small">实线：模块数据流；虚线：仅训练的目标 / 监督。蓝：编码与融合；绿：动作码及输出；紫：目标。</text>
+<text x="40" y="2025" class="small">来源：ICCV 2025 正文图 2–4、式 3–11、算法 1；补充材料 §2。本文未运行模型。</text>
+<text x="40" y="2070" class="small">注意：低 FGD 与语义加权关节召回不等于逐事件语义正确，也不保证物体接触或长期状态保持。</text>
+</svg>

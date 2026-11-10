@@ -18,6 +18,8 @@ tags: ["gesturehydra", "Co-Speech-Gesture", "Paper-Notes"]
 
 入口：[CVF 正式主文](https://openaccess.thecvf.com/content/ICCV2025/papers/Yang_GestureHYDRA_Semantic_Co-speech_Gesture_Synthesis_via_Hybrid_Modality_Diffusion_Transformer_ICCV_2025_paper.pdf) · [正式补充](https://openaccess.thecvf.com/content/ICCV2025/supplemental/Yang_GestureHYDRA_Semantic_Co-speech_ICCV_2025_supplemental.pdf) · [作者项目](https://mumuwei.github.io/GestureHYDRA/) · [arXiv](https://arxiv.org/abs/2507.22731)。领域：共语手势生成、语义关键帧控制、动作检索与补全。阅读版本：正式主文 11 页、独立补充 3 页；另核 arXiv v2（2025-12-30），本文图表号与技术说明以正式版为准。更新核查日期：2026-10-24。本次没有运行模型。
 
+**全文阅读：** [arXiv HTML（v2，含附录，可用浏览器翻译）](https://arxiv.org/html/2507.22731v2)。2026-11-10 核查可访问；该作者版晚于正式会议版，解读中的图表编号仍按上列 CVF 正式主文与补充材料。
+
 </details>
 
 <span id="reading-1" class="reading-anchor"></span>
