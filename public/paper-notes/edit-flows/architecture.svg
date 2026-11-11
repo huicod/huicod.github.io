@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1770" viewBox="0 0 1440 1770" role="img" aria-labelledby="title desc">
+<title id="title">Edit Flows：辅助对齐训练与变长编辑生成</title><desc id="desc">训练中构造带空白的对齐过程，网络仅接收去空白序列，预测三类编辑速率；推理迭代执行编辑，可选反向纠正，生成变长文本或代码。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9" fill="#52657a"/></marker><marker id="purple" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0L9 4.5L0 9" fill="#8256ad"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1d3045}.head{font-size:30px;font-weight:700}.sub{font-size:19px;fill:#5a6b7d}.stage{font-size:23px;font-weight:700}.node-title{font-size:22px;font-weight:700}.body{font-size:19px}.label{font-size:17px;fill:#536577}.foot{font-size:19px;fill:#586a7c}a:hover rect{stroke-width:3}</style>
+<rect width="1440" height="1770" fill="#ffffff" rx="20"/>
+<text x="45" y="48" class="head">Edit Flows：把序列长度也纳入生成过程</text>
+<text x="45" y="78" class="sub">教学示意 · 依据正式论文 §3、图1–3、附录C/E · 节点可点击 · t是生成时间</text>
+<rect x="30" y="105" width="1380" height="440" rx="18" fill="#f7fbf8" stroke="#d3dce6"/>
+<text x="55" y="140" class="stage">A 训练辅助空间：提供监督，不是推理输入</text>
+<a href="https://arxiv.org/html/2506.09018v3#S3.SS2" target="_blank"><rect x="65" y="170" width="350" height="120" rx="13" fill="#edf8f0" stroke="#77aa88" stroke-width="1.8"/>
+<text x="83" y="202" class="node-title">源序列 x₀ ＋ 目标 x₁</text>
+<text x="83" y="235" class="body">空序列／随机 token → 数据</text>
+<text x="83" y="262" class="body">训练目标：文本、代码、描述</text>
+</a>
+<a href="https://arxiv.org/html/2506.09018v3#S3.SS2" target="_blank"><rect x="500" y="170" width="400" height="120" rx="13" fill="#edf8f0" stroke="#77aa88" stroke-width="1.8"/>
+<text x="518" y="202" class="node-title">构造辅助对齐 z₀、z₁</text>
+<text x="518" y="235" class="body">ε→词：插入；词→ε：删除</text>
+<text x="518" y="262" class="body">词a→词b：替换；ε只供训练</text>
+</a>
+<a href="https://arxiv.org/html/2506.09018v3#S3.SS2" target="_blank"><rect x="985" y="170" width="355" height="120" rx="13" fill="#edf8f0" stroke="#77aa88" stroke-width="1.8"/>
+<text x="1003" y="202" class="node-title">采样辅助中间状态 zₜ</text>
+<text x="1003" y="235" class="body">基础路径：按 κ(t) 混合端点</text>
+<text x="1003" y="262" class="body">主实验 κ(t)=t³</text>
+</a>
+<path d="M415 230H500" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="437" y="215" class="label">对齐</text>
+<path d="M900 230H985" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="919" y="215" class="label">时间 t</text>
+<a href="https://arxiv.org/html/2506.09018v3#A3.SS1" target="_blank"><rect x="65" y="345" width="350" height="145" rx="13" fill="#edf8f0" stroke="#77aa88" stroke-width="1.8"/>
+<text x="83" y="377" class="node-title">可选：局部传播路径</text>
+<text x="83" y="410" class="body">辅助 m、M 从多个起点生长</text>
+<text x="83" y="437" class="body">已出现的位置促进邻居出现</text>
+<text x="83" y="464" class="body">同一理论导出训练监督</text>
+</a>
+<path d="M240 345V315H950V270H985" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="570" y="310" class="label">改变训练路径</text>
+<a href="https://arxiv.org/html/2506.09018v3#A2.SS1" target="_blank"><rect x="500" y="355" width="400" height="135" rx="13" fill="#f5effb" stroke="#a585c6" stroke-width="1.8"/>
+<text x="518" y="387" class="node-title">编辑速率损失（式23）</text>
+<text x="518" y="420" class="body">Σ候选速率 − Σ目标编辑 log率</text>
+<text x="518" y="447" class="body">目标编辑由 zₜ 与 z₁ 提供</text>
+<text x="518" y="474" class="body">反向率可另按反向路径学习</text>
+</a>
+<path d="M700 290V355" fill="none" stroke="#8256ad" stroke-width="2.5" marker-end="url(#purple)" stroke-dasharray="7 6"/>
+<text x="720" y="329" class="label">剩余编辑与权重</text>
+<a href="https://arxiv.org/html/2506.09018v3#S3.SS2" target="_blank"><rect x="985" y="355" width="355" height="110" rx="13" fill="#edf8f0" stroke="#77aa88" stroke-width="1.8"/>
+<text x="1003" y="387" class="node-title">移除全部 ε → xₜ</text>
+<text x="1003" y="420" class="body">得到真正的变长 token 序列</text>
+<text x="1003" y="447" class="body">不向网络暴露对齐或空白</text>
+</a>
+<path d="M1160 290V355" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="1180" y="330" class="label">去空白</text>
+<rect x="30" y="580" width="1380" height="535" rx="18" fill="#fffcf7" stroke="#d3dce6"/>
+<text x="55" y="615" class="stage">B 可训练速率网络：预测做什么、在哪里做、以多大速率做</text>
+<a href="https://arxiv.org/html/2506.09018v3#A5" target="_blank"><rect x="65" y="650" width="370" height="150" rx="13" fill="#eef6ff" stroke="#78a5ce" stroke-width="1.8"/>
+<text x="83" y="682" class="node-title">条件 c（按任务选择）</text>
+<text x="83" y="715" class="body">文本／代码：已给定前缀</text>
+<text x="83" y="742" class="body">图像：冻结 CLIP → 可训练 MLP</text>
+<text x="83" y="769" class="body">图像嵌入作为序列提示</text>
+</a>
+<a href="https://arxiv.org/html/2506.09018v3#S5" target="_blank"><rect x="535" y="650" width="370" height="120" rx="13" fill="#eef6ff" stroke="#78a5ce" stroke-width="1.8"/>
+<text x="553" y="682" class="node-title">真实当前序列 xₜ ＋ t</text>
+<text x="553" y="715" class="body">可变长度 token 与条件标记</text>
+<text x="553" y="742" class="body">训练和推理共用输入接口</text>
+</a>
+<path d="M1160 465V560H720V650" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="745" y="550" class="label">仅真实 token 进入网络</text>
+<a href="https://arxiv.org/html/2506.09018v3#S5" target="_blank"><rect x="535" y="850" width="370" height="150" rx="13" fill="#fff3e4" stroke="#d99c54" stroke-width="1.8"/>
+<text x="553" y="882" class="node-title">双向 Transformer（训练）</text>
+<text x="553" y="915" class="body">Llama架构；280M／1.3B</text>
+<text x="553" y="942" class="body">全自注意力，含时间 token</text>
+<text x="553" y="969" class="body">输出三类编辑头</text>
+</a>
+<path d="M720 770V850" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="738" y="812" class="label">序列表示</text>
+<path d="M435 730H470V925H535" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="475" y="835" class="label">条件</text>
+<a href="https://arxiv.org/html/2506.09018v3#S3.SS1" target="_blank"><rect x="990" y="640" width="350" height="115" rx="13" fill="#fff3e4" stroke="#d99c54" stroke-width="1.8"/>
+<text x="1008" y="672" class="node-title">插入头：λins ＋ Qins</text>
+<text x="1008" y="705" class="body">在当前位置右侧插入</text>
+<text x="1008" y="732" class="body">速率 × 新 token 分布</text>
+</a>
+<a href="https://arxiv.org/html/2506.09018v3#S3.SS1" target="_blank"><rect x="990" y="800" width="350" height="105" rx="13" fill="#fff3e4" stroke="#d99c54" stroke-width="1.8"/>
+<text x="1008" y="832" class="node-title">删除头：λdel</text>
+<text x="1008" y="865" class="body">删除当前位置的 token</text>
+<text x="1008" y="892" class="body">不需要新 token 分布</text>
+</a>
+<a href="https://arxiv.org/html/2506.09018v3#S3.SS1" target="_blank"><rect x="990" y="950" width="350" height="115" rx="13" fill="#fff3e4" stroke="#d99c54" stroke-width="1.8"/>
+<text x="1008" y="982" class="node-title">替换头：λsub ＋ Qsub</text>
+<text x="1008" y="1015" class="body">当前位置换成另一 token</text>
+<text x="1008" y="1042" class="body">速率 × 新 token 分布</text>
+</a>
+<path d="M905 925H950V697H990" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M950 925V852H990" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M950 925V1007H990" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M1340 1007H1380V505H700V490" fill="none" stroke="#8256ad" stroke-width="2.5" marker-end="url(#purple)" stroke-dasharray="7 6"/>
+<text x="800" y="530" class="label">监督三类编辑速率</text>
+<path d="M1340 852H1380" fill="none" stroke="#8256ad" stroke-width="2.5" marker-end="url(#purple)" stroke-dasharray="7 6"/>
+<path d="M1340 697H1380" fill="none" stroke="#8256ad" stroke-width="2.5" marker-end="url(#purple)" stroke-dasharray="7 6"/>
+<text x="65" y="1040" class="foot">训练不需要显式预测 z、m、M；定理3.1允许边缘化辅助过程。</text>
+<text x="65" y="1075" class="foot">条件不是动作指令接口：本文没有语音编码器、动作解码器或物理控制器。</text>
+<rect x="30" y="1150" width="1380" height="470" rx="18" fill="#f7f9fc" stroke="#d3dce6"/>
+<text x="55" y="1185" class="stage">C 推理：在真实序列上迭代编辑，到 t=1 输出</text>
+<a href="https://arxiv.org/html/2506.09018v3#S3.SS3" target="_blank"><rect x="65" y="1220" width="340" height="130" rx="13" fill="#f6f8fb" stroke="#a0afbf" stroke-width="1.8"/>
+<text x="83" y="1252" class="node-title">初始化与任务条件</text>
+<text x="83" y="1285" class="body">默认 x₀=∅（保留 BOS）</text>
+<text x="83" y="1312" class="body">或随机初态／已有序列</text>
+<text x="83" y="1339" class="body">不需要目标长度与辅助对齐</text>
+</a>
+<a href="https://arxiv.org/html/2506.09018v3#A3" target="_blank"><rect x="490" y="1220" width="370" height="130" rx="13" fill="#fff3e4" stroke="#d99c54" stroke-width="1.8"/>
+<text x="508" y="1252" class="node-title">复用已训练速率网络</text>
+<text x="508" y="1285" class="body">读取当前完整序列和时间</text>
+<text x="508" y="1312" class="body">可选CFG、温度、top-p/k</text>
+<text x="508" y="1339" class="body">预测本步候选编辑</text>
+</a>
+<a href="https://arxiv.org/html/2506.09018v3#A3" target="_blank"><rect x="965" y="1220" width="390" height="130" rx="13" fill="#f6f8fb" stroke="#a0afbf" stroke-width="1.8"/>
+<text x="983" y="1252" class="node-title">CTMC 一阶近似采样</text>
+<text x="983" y="1285" class="body">小步概率约为 hλ，抽样 token</text>
+<text x="983" y="1312" class="body">同位置删除／替换互斥</text>
+<text x="983" y="1339" class="body">多位置编辑可并行执行</text>
+</a>
+<path d="M405 1285H490" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="422" y="1268" class="label">xₜ,c,t</text>
+<path d="M860 1285H965" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="885" y="1268" class="label">λ、Q</text>
+<a href="https://arxiv.org/html/2506.09018v3#A3" target="_blank"><rect x="65" y="1440" width="365" height="140" rx="13" fill="#f5effb" stroke="#a585c6" stroke-width="1.8"/>
+<text x="83" y="1472" class="node-title">可选：反向纠正</text>
+<text x="83" y="1505" class="body">额外前进再退回，净时间前进</text>
+<text x="83" y="1532" class="body">默认空序列模型：前向插入</text>
+<text x="83" y="1559" class="body">反向过程可删掉已有内容</text>
+</a>
+<a href="https://arxiv.org/html/2506.09018v3#S3.SS3" target="_blank"><rect x="520" y="1440" width="340" height="140" rx="13" fill="#f6f8fb" stroke="#a0afbf" stroke-width="1.8"/>
+<text x="538" y="1472" class="node-title">更新真实序列与时间</text>
+<text x="538" y="1505" class="body">编辑后长度可增加或减少</text>
+<text x="538" y="1532" class="body">t＜1 时继续预测下一步</text>
+</a>
+<a href="https://arxiv.org/html/2506.09018v3#S5" target="_blank"><rect x="965" y="1440" width="390" height="140" rx="13" fill="#f6f8fb" stroke="#a0afbf" stroke-width="1.8"/>
+<text x="983" y="1472" class="node-title">t=1：变长 token 序列</text>
+<text x="983" y="1505" class="body">普通 tokenizer 解码</text>
+<text x="983" y="1532" class="body">输出文本／代码／图像描述</text>
+<text x="983" y="1559" class="body">不保证正确性或最少编辑</text>
+</a>
+<path d="M1160 1350V1390H690V1440" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="840" y="1382" class="label">执行编辑</text>
+<path d="M690 1440V1410H460V1285H490" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="466" y="1400" class="label">迭代</text>
+<path d="M430 1502H520" fill="none" stroke="#8256ad" stroke-width="2.5" marker-end="url(#purple)" stroke-dasharray="7 6"/>
+<text x="438" y="1487" class="label">可选纠正</text>
+<path d="M860 1502H965" fill="none" stroke="#52657a" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="892" y="1487" class="label">终点</text>
+<path d="M520 1535H470V1592H240V1580" fill="none" stroke="#8256ad" stroke-width="2.5" marker-end="url(#purple)" stroke-dasharray="7 6"/>
+<rect x="30" y="1650" width="1380" height="90" rx="15" fill="#fff8ed" stroke="#e0c7a0"/>
+<text x="55" y="1683" class="foot">读图边界：完整框架支持三类编辑；默认主实验从空序列前向插入，不能混成同一种配置。</text>
+<text x="55" y="1716" class="foot">非自回归 ≠ 一步完成：代码表5为5000／10000步；人体动作迁移只是启发，不是作者验证结果。</text>
+</svg>
