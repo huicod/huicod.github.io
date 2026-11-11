@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2080" viewBox="0 0 1600 2080" role="img" aria-labelledby="title desc"><title id="title">MotionHiFlow完整架构教学示意</title><desc id="desc">文字条件驱动三个时间尺度的流匹配，尺度之间去噪上采样重加噪，最后VAE解码；训练包含拓扑VAE和分层速度监督。</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10" fill="#456175"/></marker></defs><style>text{font-family:"Microsoft YaHei",sans-serif;fill:#193246}.title{font-size:36px;font-weight:700}.head{font-size:27px;font-weight:700}.body{font-size:23px}.small{font-size:21px}.box{stroke:#a5b8c5;stroke-width:2}.edge{fill:none;stroke:#456175;stroke-width:3;marker-end:url(#arrow)}.dash{stroke-dasharray:9 7}</style><rect width="1600" height="2080" fill="#fff"/>
+<text x="50" y="60" class="title" text-anchor="start">MotionHiFlow · 一致噪声下的粗到细动作生成</text>
+<text x="50" y="100" class="small" text-anchor="start">教学重绘｜主文图2–3、式8–11、算法1｜连续动作潜变量，不是动作事件计划</text>
+<rect x="30" y="135" width="1540" height="1310" rx="24" fill="#f6f9fc" stroke="#d6e2eb"/>
+<text x="55" y="180" class="head" text-anchor="start">推理：同一TMDiT在三个时间尺度上预测速度</text>
+<rect class="box" x="55" y="220" width="470" height="155" rx="15" fill="#edf4fa"/>
+<text x="75" y="258" class="head" text-anchor="start">文字描述 → CLIP</text>
+<text x="75" y="296" class="body" text-anchor="start">词级特征：参与文字／动作注意力</text>
+<text x="75" y="327" class="body" text-anchor="start">句级特征：与时间、尺度共同调制</text>
+<text x="75" y="358" class="body" text-anchor="start">各阶段始终接收文字条件</text>
+<rect class="box" x="565" y="220" width="470" height="155" rx="15" fill="#fff1db"/>
+<text x="585" y="258" class="head" text-anchor="start">完整尺度初始噪声 ε</text>
+<text x="585" y="296" class="body" text-anchor="start">按所需长度采样一次</text>
+<text x="585" y="327" class="body" text-anchor="start">保留各尺度重采样版本 εₖ</text>
+<text x="585" y="358" class="body" text-anchor="start">换尺度时不另抽独立噪声</text>
+<rect class="box" x="1075" y="220" width="470" height="155" rx="15" fill="#edf4fa"/>
+<text x="1095" y="258" class="head" text-anchor="start">TMDiT内部（共享主干）</text>
+<text x="1095" y="296" class="body" text-anchor="start">前3块模态独立；后6块参数共享</text>
+<text x="1095" y="327" class="body" text-anchor="start">Joint RoPE：时间 + 参考骨架</text>
+<text x="1095" y="358" class="body" text-anchor="start">网络隐藏宽384；输出动作速度</text>
+<rect class="box" x="405" y="445" width="790" height="130" rx="15" fill="#e6effb"/>
+<text x="425" y="483" class="head" text-anchor="start">阶段1：r = 1/3，较粗时间尺度</text>
+<text x="425" y="521" class="body" text-anchor="start">初始低尺度噪声 → 多步流积分</text>
+<text x="425" y="552" class="body" text-anchor="start">较少时间位置上建立总体动作结构</text>
+<path class="edge" d="M800 375 V445"/>
+<path class="edge" d="M290 375 V410 H405 V510"/>
+<rect class="box" x="405" y="640" width="790" height="115" rx="15" fill="#fff1db"/>
+<text x="425" y="678" class="head" text-anchor="start">跨尺度过渡：去噪 → 上采样 → 重加噪</text>
+<text x="425" y="716" class="body" text-anchor="start">先估计干净信号，再与新尺度的同源噪声混合</text>
+<path class="edge" d="M800 575 V640"/>
+<rect class="box" x="405" y="820" width="790" height="120" rx="15" fill="#e6effb"/>
+<text x="425" y="858" class="head" text-anchor="start">阶段2：r = 2/3，中间时间尺度</text>
+<text x="425" y="896" class="body" text-anchor="start">沿同一文字条件继续预测速度并积分</text>
+<text x="425" y="927" class="body" text-anchor="start">增加时间采样位置，细化动作变化</text>
+<path class="edge" d="M800 755 V820"/>
+<rect class="box" x="405" y="1005" width="790" height="100" rx="15" fill="#fff1db"/>
+<text x="425" y="1043" class="head" text-anchor="start">跨尺度过渡：重复相同三步操作</text>
+<text x="425" y="1081" class="body" text-anchor="start">同源噪声 ε₃ + 上采样后的干净信号</text>
+<path class="edge" d="M800 940 V1005"/>
+<rect class="box" x="405" y="1170" width="790" height="130" rx="15" fill="#e6effb"/>
+<text x="425" y="1208" class="head" text-anchor="start">阶段3：r = 1，完整潜变量时间尺度</text>
+<text x="425" y="1246" class="body" text-anchor="start">多步流积分 → 最终干净潜变量</text>
+<text x="425" y="1277" class="body" text-anchor="start">每潜在关节16维；6个身体分组</text>
+<path class="edge" d="M800 1105 V1170"/>
+<rect class="box" x="405" y="1340" width="790" height="70" rx="15" fill="#e8f4ef"/>
+<text x="425" y="1378" class="head" text-anchor="start">冻结VAE解码器 → 连续骨架动作</text>
+<path class="edge" d="M800 1300 V1340"/>
+<path class="edge" d="M105 375 V880 H405"/>
+<text x="130" y="770" class="small" text-anchor="start">文字条件</text>
+<text x="130" y="802" class="small" text-anchor="start">送往每个尺度</text>
+<path class="edge" d="M105 880 V1228 H405"/>
+<path class="edge" d="M1310 375 V510 H1195"/>
+<path class="edge" d="M1310 510 V880 H1195"/>
+<path class="edge" d="M1310 880 V1228 H1195"/>
+<text x="1330" y="640" class="small" text-anchor="start">同一网络</text>
+<text x="1330" y="672" class="small" text-anchor="start">每级多步积分</text>
+<text x="55" y="1375" class="small" text-anchor="start">纸面尺度配置</text>
+<text x="55" y="1404" class="small" text-anchor="start">1/3 → 2/3 → 1</text>
+<rect x="30" y="1480" width="1540" height="540" rx="24" fill="#f0f7f2" stroke="#c6dece"/>
+<text x="55" y="1525" class="head" text-anchor="start">训练阶段A：学习可跨时间尺度解码的VAE</text>
+<rect class="box" x="55" y="1555" width="470" height="130" rx="15" fill="#e6f2e8"/>
+<text x="75" y="1593" class="head" text-anchor="start">真实动作 → GCN + TCN</text>
+<text x="75" y="1631" class="body" text-anchor="start">时间缩至L/4；骨架聚合为6组</text>
+<text x="75" y="1662" class="body" text-anchor="start">连续潜变量，不是VQ离散编码</text>
+<rect class="box" x="565" y="1555" width="470" height="130" rx="15" fill="#e6f2e8"/>
+<text x="585" y="1593" class="head" text-anchor="start">VAE解码与重采样增强</text>
+<text x="585" y="1631" class="body" text-anchor="start">重建 + KL正则</text>
+<text x="585" y="1662" class="body" text-anchor="start">低尺度潜变量也要重建相应动作</text>
+<rect class="box" x="1075" y="1555" width="470" height="130" rx="15" fill="#e6f2e8"/>
+<text x="1095" y="1593" class="head" text-anchor="start">得到动作VAE</text>
+<text x="1095" y="1631" class="body" text-anchor="start">完成后冻结编码器／解码器</text>
+<text x="1095" y="1662" class="body" text-anchor="start">解码器供上方推理使用</text>
+<path class="edge dash" d="M525 1620 H565"/>
+<path class="edge dash" d="M1035 1620 H1075"/>
+<text x="55" y="1740" class="head" text-anchor="start">训练阶段B：冻结VAE，学习各阶段端点之间的速度</text>
+<rect class="box" x="55" y="1770" width="470" height="165" rx="15" fill="#e6f2e8"/>
+<text x="75" y="1808" class="head" text-anchor="start">真实动作经VAE编码</text>
+<text x="75" y="1846" class="body" text-anchor="start">构造各尺度干净潜变量</text>
+<text x="75" y="1877" class="body" text-anchor="start">与同一初始噪声的各尺度混合</text>
+<rect class="box" x="565" y="1770" width="470" height="165" rx="15" fill="#e6f2e8"/>
+<text x="585" y="1808" class="head" text-anchor="start">构造阶段起点／终点</text>
+<text x="585" y="1846" class="body" text-anchor="start">起点含前级上采样信号</text>
+<text x="585" y="1877" class="body" text-anchor="start">终点含当前尺度信号</text>
+<text x="585" y="1908" class="body" text-anchor="start">采样中间状态，监督端点差</text>
+<rect class="box" x="1075" y="1770" width="470" height="165" rx="15" fill="#e6f2e8"/>
+<text x="1095" y="1808" class="head" text-anchor="start">训练共享TMDiT</text>
+<text x="1095" y="1846" class="body" text-anchor="start">输入文字、时间和尺度</text>
+<text x="1095" y="1877" class="body" text-anchor="start">预测速度，优化流匹配损失</text>
+<text x="1095" y="1908" class="body" text-anchor="start">10%文字丢弃支持CFG</text>
+<path class="edge dash" d="M525 1840 H565"/>
+<path class="edge dash" d="M1035 1840 H1075"/>
+<path class="edge dash" d="M1150 1555 V1470 H1245 V1375 H1195"/>
+<path class="edge dash" d="M1545 1840 H1555 V297 H1545"/>
+<text x="55" y="1970" class="body" text-anchor="start">实线：推理；虚线：训练监督。尺度表示时间采样密度，不是可读事件层次。</text>
+</svg>

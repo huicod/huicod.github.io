@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1560" viewBox="0 0 1440 1560" role="img" aria-label="GestureLSM｜分部位表示 × 时空注意力 × 少步捷径">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#526778"/></marker><marker id="purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8968ad"/></marker></defs>
+<style>text{font-family:Microsoft YaHei,Arial,sans-serif;fill:#203b4c;font-size:20px}.title{font-size:31px;font-weight:700}.heading{font-size:24px;font-weight:700}.small{font-size:18px}.label{font-size:18px;fill:#526778}.bold{font-weight:700}a:hover rect{stroke:#416b92;stroke-width:3}</style>
+<rect width="1440" height="1560" fill="#fff"/>
+<text x="40" y="52" class="title">GestureLSM｜分部位表示 × 时空注意力 × 少步捷径</text>
+<rect x="20" y="82" width="1400" height="314" rx="20" fill="#f0f8f4" stroke="#d3dfe6"/>
+<text x="42" y="121" class="heading">A · 动作表示预训练｜此阶段训练编码器、RVQ 与解码器</text>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS1" target="_blank"><rect x="50" y="148" width="310" height="123" rx="13" fill="#fff" stroke="#a9beca"/>
+<text x="68" y="180" class="bold">真实动作序列</text>
+<text x="68" y="212" class="small">上肢 / 手部 / 下肢</text>
+<text x="68" y="241" class="small">配对动作提供重建监督</text>
+</a>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS1" target="_blank"><rect x="420" y="148" width="470" height="123" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="438" y="180" class="bold">三个部位的独立 RVQ 编码器</text>
+<text x="438" y="212" class="small">卷积编码 → 多级残差量化</text>
+<text x="438" y="241" class="small">每部位保留自己的潜表示</text>
+</a>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS1" target="_blank"><rect x="950" y="148" width="420" height="123" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="968" y="180" class="bold">三个动作解码器</text>
+<text x="968" y="212" class="small">量化码向量 → 连续动作</text>
+<text x="968" y="241" class="small">重建目标约束表示质量</text>
+</a>
+<polyline points="360,208 420,208" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="890,208 950,208" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS1" target="_blank"><rect x="420" y="302" width="680" height="67" rx="13" fill="#fff" stroke="#a9beca"/>
+<text x="438" y="334" class="bold">阶段 B 复用：固定的动作潜空间与解码器</text>
+</a>
+<polyline points="655,271 655,302" fill="none" stroke="#8968ad" stroke-width="2.5" stroke-dasharray="7 5"  marker-end="url(#purple)"/>
+<rect x="20" y="418" width="1400" height="748" rx="20" fill="#f6f8fc" stroke="#d3dfe6"/>
+<text x="42" y="457" class="heading">B · 条件捷径训练｜讲话条件、动作潜变量、流时间与步长</text>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS2" target="_blank"><rect x="50" y="486" width="380" height="115" rx="13" fill="#e3eef9" stroke="#a9beca"/>
+<text x="68" y="518" class="bold">讲话音频</text>
+<text x="68" y="550" class="small">onset / amplitude → CNN</text>
+<text x="68" y="579" class="small">提供节奏和声学变化</text>
+</a>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS2" target="_blank"><rect x="50" y="639" width="380" height="115" rx="13" fill="#e3eef9" stroke="#a9beca"/>
+<text x="68" y="671" class="bold">对齐讲话转录</text>
+<text x="68" y="703" class="small">BERT → 词语语义特征</text>
+<text x="68" y="732" class="small">不是独立动作指令</text>
+</a>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS2" target="_blank"><rect x="500" y="552" width="400" height="148" rx="13" fill="#e3eef9" stroke="#a9beca"/>
+<text x="518" y="584" class="bold">条件融合与动作交叉注意力</text>
+<text x="518" y="616" class="small">拼接音频与文本特征</text>
+<text x="518" y="645" class="small">动作作 Q；讲话条件作 K / V</text>
+<text x="518" y="674" class="small">三层 cross-attention</text>
+</a>
+<polyline points="430,543 466,543 466,601 500,601" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="430,695 466,695 466,655 500,655" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS3" target="_blank"><rect x="975" y="486" width="395" height="190" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="993" y="518" class="bold">构造训练动作状态</text>
+<text x="993" y="550" class="small">真实动作 → 固定编码器 → x₁</text>
+<text x="993" y="579" class="small">噪声 x₀ ∼ N(0, I)</text>
+<text x="993" y="608" class="small">xₜ = (1−t)x₀ + tx₁</text>
+<text x="993" y="637" class="small">保持时间轴 × 部位轴</text>
+</a>
+<polyline points="975,610 900,610" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS3" target="_blank"><rect x="50" y="839" width="380" height="133" rx="13" fill="#e3eef9" stroke="#a9beca"/>
+<text x="68" y="871" class="bold">生成进度条件</text>
+<text x="68" y="903" class="small">t ∼ Beta(2, 1.2)，偏向数据端</text>
+<text x="68" y="932" class="small">d：所需更新步长</text>
+<text x="68" y="961" class="small">t 与 d 都不是语音时间戳</text>
+</a>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS2" target="_blank"><rect x="500" y="760" width="870" height="217" rx="13" fill="#fff0dd" stroke="#a9beca"/>
+<text x="518" y="792" class="bold">可训练捷径网络 s(xₜ, 讲话条件, t, d)</text>
+<text x="518" y="824" class="small">① 空间位置编码 + 空间注意力：同一时刻跨部位交流</text>
+<text x="518" y="853" class="small">② 时间位置编码 + 时间注意力：同一部位跨帧交流</text>
+<text x="518" y="882" class="small">③ 前馈网络；8 个时空块；输出各部位潜空间移动方向</text>
+<text x="518" y="911" class="small">主身体模型：上肢 / 手部 / 下肢；+Face 是另列的扩展</text>
+</a>
+<polyline points="700,700 700,760" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="1172,676 1172,760" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="430,905 500,905" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS3" target="_blank"><rect x="155" y="1030" width="520" height="102" rx="13" fill="#f2e9f8" stroke="#a9beca"/>
+<text x="173" y="1062" class="bold">基础流监督</text>
+<text x="173" y="1094" class="small">目标方向 x₁ − x₀，学习噪声 → 动作</text>
+</a>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS3" target="_blank"><rect x="765" y="1030" width="605" height="102" rx="13" fill="#f2e9f8" stroke="#a9beca"/>
+<text x="783" y="1062" class="bold">长短步自一致性监督</text>
+<text x="783" y="1094" class="small">一个 2d 步 ≈ 两个 d 步；训练可变步长</text>
+</a>
+<polyline points="720,977 720,1003 415,1003 415,1030" fill="none" stroke="#8968ad" stroke-width="2.5" stroke-dasharray="7 5"  marker-end="url(#purple)"/>
+<polyline points="1070,977 1070,1030" fill="none" stroke="#8968ad" stroke-width="2.5" stroke-dasharray="7 5"  marker-end="url(#purple)"/>
+<rect x="20" y="1188" width="1400" height="345" rx="20" fill="#fffaf1" stroke="#d3dfe6"/>
+<text x="42" y="1227" class="heading">C · 推理｜复用已训练生成器与固定动作解码器</text>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS3" target="_blank"><rect x="50" y="1258" width="270" height="122" rx="13" fill="#e3eef9" stroke="#a9beca"/>
+<text x="68" y="1290" class="bold">讲话条件 + 潜噪声</text>
+<text x="68" y="1322" class="small">音频与对应转录</text>
+<text x="68" y="1351" class="small">长序列可用窗口 seed</text>
+</a>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS3" target="_blank"><rect x="370" y="1258" width="300" height="122" rx="13" fill="#fff0dd" stroke="#a9beca"/>
+<text x="388" y="1290" class="bold">默认 8 步更新</text>
+<text x="388" y="1322" class="small">t：0 → 1</text>
+<text x="388" y="1351" class="small">按步长反复调用捷径网络</text>
+</a>
+<a href="https://arxiv.org/html/2501.18898v3#S3.SS1" target="_blank"><rect x="720" y="1258" width="300" height="122" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="738" y="1290" class="bold">固定 RVQ 解码器</text>
+<text x="738" y="1322" class="small">三路潜向量 → 动作</text>
+<text x="738" y="1351" class="small">保持部位与时间对应</text>
+</a>
+<a href="https://arxiv.org/html/2501.18898v3#S4" target="_blank"><rect x="1070" y="1258" width="300" height="122" rx="13" fill="#fff" stroke="#a9beca"/>
+<text x="1088" y="1290" class="bold">连续身体动作</text>
+<text x="1088" y="1322" class="small">+Face：可选表情扩展</text>
+<text x="1088" y="1351" class="small">不是目标 / 接触约束求解</text>
+</a>
+<polyline points="320,1318 370,1318" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="670,1318 720,1318" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="1020,1318 1070,1318" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<text x="50" y="1430" class="small">边界：8 步不等于单步结果；窗口吞吐不等于严格因果对话延迟。</text>
+<text x="50" y="1470" class="small">依据 ICCV 正式论文图 3–5 重绘；实线为信息流，紫色虚线为训练监督／复用关系。</text>
+</svg>

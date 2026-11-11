@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1780" viewBox="0 0 1440 1780" role="img" aria-label="TalkFlow｜先学结构化动作空间，再学三路条件流">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#526778"/></marker><marker id="purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8968ad"/></marker></defs>
+<style>text{font-family:Microsoft YaHei,Arial,sans-serif;fill:#203b4c;font-size:20px}.title{font-size:31px;font-weight:700}.heading{font-size:24px;font-weight:700}.small{font-size:18px}.label{font-size:18px;fill:#526778}.bold{font-weight:700}a:hover rect{stroke:#416b92;stroke-width:3}</style>
+<rect width="1440" height="1780" fill="#fff"/>
+<text x="40" y="52" class="title">TalkFlow｜先学结构化动作空间，再学三路条件流</text>
+<rect x="20" y="82" width="1400" height="510" rx="20" fill="#f0f8f4" stroke="#d3dfe6"/>
+<text x="42" y="121" class="heading">A · 阶段 I：结构化动作自编码器｜训练，随后整体冻结</text>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS2" target="_blank"><rect x="50" y="148" width="320" height="128" rx="13" fill="#fff" stroke="#a9beca"/>
+<text x="68" y="180" class="bold">训练动作：SMPL-X</text>
+<text x="68" y="212" class="small">55 × 6 维姿态旋转</text>
+<text x="68" y="241" class="small">100 维面部表情</text>
+<text x="68" y="270" class="small">240 帧 / 8 秒片段</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS3" target="_blank"><rect x="430" y="148" width="415" height="128" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="448" y="180" class="bold">先保留完整空间结构</text>
+<text x="448" y="212" class="small">完整身体图 → Chebyshev GCN</text>
+<text x="448" y="241" class="small">表情 → 独立逐帧 MLP</text>
+<text x="448" y="270" class="small">先姿态 / 表情两路交互</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS3" target="_blank"><rect x="905" y="148" width="465" height="128" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="923" y="180" class="bold">再分成三路时间编码</text>
+<text x="923" y="212" class="small">上肢含手：60 × 512</text>
+<text x="923" y="241" class="small">下肢：60 × 128；表情：60 × 512</text>
+<text x="923" y="270" class="small">时间压缩 4 倍；连续潜变量</text>
+</a>
+<polyline points="370,212 430,212" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="845,212 905,212" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS3" target="_blank"><rect x="50" y="335" width="620" height="134" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="68" y="367" class="bold">潜层交互：上肢 ↔ 下肢；上肢 ↔ 表情</text>
+<text x="68" y="399" class="small">FiLM 调制 + 门控残差；保留每路身份</text>
+<text x="68" y="428" class="small">不直接连接下肢 ↔ 表情</text>
+<text x="68" y="457" class="small">解码后还有姿态 / 表情交互</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS3" target="_blank"><rect x="735" y="335" width="635" height="134" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="753" y="367" class="bold">三路时间解码 → 合并姿态 → 输出解码</text>
+<text x="753" y="399" class="small">恢复完整身体旋转与面部表情</text>
+<text x="753" y="428" class="small">训练：重建 + 速度一致性 + 加速度一致性</text>
+<text x="753" y="457" class="small">生成阶段使用冻结解码器</text>
+</a>
+<polyline points="1138,276 1138,305 360,305 360,335" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="670,404 735,404" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="430" y="505" width="815" height="61" rx="13" fill="#fff" stroke="#a9beca"/>
+<text x="448" y="537" class="bold">阶段 II 获得目标 Z₁ = {Zᵘ, Zˡ, Zᵉ} 与冻结解码器</text>
+</a>
+<polyline points="1050,469 1050,505" fill="none" stroke="#8968ad" stroke-width="2.5" stroke-dasharray="7 5"  marker-end="url(#purple)"/>
+<rect x="20" y="614" width="1400" height="725" rx="20" fill="#f6f8fc" stroke="#d3dfe6"/>
+<text x="42" y="653" class="heading">B · 阶段 II：语音条件流匹配｜条件编码器与三流骨干可训练</text>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS2" target="_blank"><rect x="50" y="680" width="410" height="132" rx="13" fill="#e3eef9" stroke="#a9beca"/>
+<text x="68" y="712" class="bold">离线语音特征</text>
+<text x="68" y="744" class="small">音频：HuBERT + Librosa</text>
+<text x="68" y="773" class="small">对齐转录：FastText + SBERT</text>
+<text x="68" y="802" class="small">文字是讲话内容，不是动作脚本</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="520" y="680" width="420" height="132" rx="13" fill="#e3eef9" stroke="#a9beca"/>
+<text x="538" y="712" class="bold">分支条件编码器</text>
+<text x="538" y="744" class="small">不同音频 / 文本投影和门控</text>
+<text x="538" y="773" class="small">语义调制 + 时间下采样</text>
+<text x="538" y="802" class="small">Cᵘ / Cˡ / Cᵉ 对齐潜时间轴</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="1000" y="680" width="370" height="132" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="1018" y="712" class="bold">训练噪声与目标</text>
+<text x="1018" y="744" class="small">三路独立标准高斯 Z₀</text>
+<text x="1018" y="773" class="small">τ ∼ Uniform(0,1)</text>
+<text x="1018" y="802" class="small">Zτ = (1−τ)Z₀ + τZ₁</text>
+</a>
+<polyline points="460,741 520,741" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="110" y="874" width="365" height="164" rx="13" fill="#fff0dd" stroke="#a9beca"/>
+<text x="128" y="906" class="bold">上肢流分支</text>
+<text x="128" y="938" class="small">带噪 Zᵘ + τ</text>
+<text x="128" y="967" class="small">自身时序 + 交叉注意力 Cᵘ</text>
+<text x="128" y="996" class="small">预测速度 Vᵘ</text>
+<text x="128" y="1025" class="small">包含双手与上身</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="540" y="874" width="365" height="164" rx="13" fill="#e3eef9" stroke="#a9beca"/>
+<text x="558" y="906" class="bold">下肢流分支</text>
+<text x="558" y="938" class="small">带噪 Zˡ + τ</text>
+<text x="558" y="967" class="small">自身时序 + 交叉注意力 Cˡ</text>
+<text x="558" y="996" class="small">预测速度 Vˡ</text>
+<text x="558" y="1025" class="small">与上肢交换信息</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="970" y="874" width="365" height="164" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="988" y="906" class="bold">表情流分支</text>
+<text x="988" y="938" class="small">带噪 Zᵉ + τ</text>
+<text x="988" y="967" class="small">自身时序 + 交叉注意力 Cᵉ</text>
+<text x="988" y="996" class="small">预测速度 Vᵉ</text>
+<text x="988" y="1025" class="small">与上肢交换信息</text>
+</a>
+<polyline points="730,812 730,840 292,840 292,874" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="730,840 722,874" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="730,840 1152,840 1152,874" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="1185,812 1388,812 1388,1052 1250,1052 1250,1038" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="1250,1052 820,1052 820,1038" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="820,1052 390,1052 390,1038" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="475,953 540,953" fill="none" stroke="#526778" stroke-width="2.5"  marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<polyline points="300,1038 300,1094 1152,1094 1152,1038" fill="none" stroke="#526778" stroke-width="2.5"  marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="50" y="1130" width="580" height="153" rx="13" fill="#f2e9f8" stroke="#a9beca"/>
+<text x="68" y="1162" class="bold">先训练：流匹配速度损失</text>
+<text x="68" y="1194" class="small">各流学习 Vτ ≈ Z₁ − Z₀</text>
+<text x="68" y="1223" class="small">对三路误差加权求和</text>
+<text x="68" y="1252" class="small">流时间 τ 是生成进度，不是讲话时间</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="690" y="1130" width="680" height="153" rx="13" fill="#f2e9f8" stroke="#a9beca"/>
+<text x="708" y="1162" class="bold">再微调：ODE 展开后的动作重建</text>
+<text x="708" y="1194" class="small">从噪声积分 → 冻结解码器 → 姿态 / 表情</text>
+<text x="708" y="1223" class="small">用真实动作监督最终解码结果</text>
+<text x="708" y="1252" class="small">梯度仍穿过冻结解码器，更新生成器</text>
+</a>
+<polyline points="220,1038 220,1130" fill="none" stroke="#8968ad" stroke-width="2.5" stroke-dasharray="7 5"  marker-end="url(#purple)"/>
+<polyline points="780,1038 780,1105 1030,1105 1030,1130" fill="none" stroke="#8968ad" stroke-width="2.5" stroke-dasharray="7 5"  marker-end="url(#purple)"/>
+<text x="50" y="1317" class="small">论文跨流交互：FiLM 门控；仅上肢 ↔ 下肢、上肢 ↔ 表情，不直接连接下肢与表情。</text>
+<rect x="20" y="1360" width="1400" height="392" rx="20" fill="#fffaf1" stroke="#d3dfe6"/>
+<text x="42" y="1399" class="heading">C · 论文推理路径｜固定条件，积分 50 步，再解码</text>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="50" y="1430" width="300" height="118" rx="13" fill="#e3eef9" stroke="#a9beca"/>
+<text x="68" y="1462" class="bold">语音特征 + 三路噪声</text>
+<text x="68" y="1494" class="small">8 秒窗口；所需特征预提取</text>
+<text x="68" y="1523" class="small">不同噪声允许不同生成结果</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="400" y="1430" width="300" height="118" rx="13" fill="#fff0dd" stroke="#a9beca"/>
+<text x="418" y="1462" class="bold">三流速度场 + Euler</text>
+<text x="418" y="1494" class="small">τ：0 → 1；50 次模型调用</text>
+<text x="418" y="1523" class="small">同时生成三路连续潜序列</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="750" y="1430" width="280" height="118" rx="13" fill="#e0f1e8" stroke="#a9beca"/>
+<text x="768" y="1462" class="bold">冻结动作解码器</text>
+<text x="768" y="1494" class="small">生成姿态旋转与表情</text>
+<text x="768" y="1523" class="small">没有预测全局平移</text>
+</a>
+<a href="https://arxiv.org/html/2610.40972v1#S3.SS4" target="_blank"><rect x="1080" y="1430" width="290" height="118" rx="13" fill="#fff" stroke="#a9beca"/>
+<text x="1098" y="1462" class="bold">长序列衔接</text>
+<text x="1098" y="1494" class="small">论文：原始帧重叠 8 帧</text>
+<text x="1098" y="1523" class="small">重叠区线性混合 + 平滑</text>
+</a>
+<polyline points="350,1490 400,1490" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="700,1490 750,1490" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<polyline points="1030,1490 1080,1490" fill="none" stroke="#526778" stroke-width="2.5"   marker-end="url(#arrow)"/>
+<text x="50" y="1600" class="small">边界：6 ms/帧是在预提取语音特征后测得；8 秒窗并未证明严格因果的低延迟交互。</text>
+<text x="50" y="1644" class="small">版本：此图按论文重绘；公开代码的骨干交互、默认步数、噪声和长序列拼接与文稿有差异。</text>
+<text x="50" y="1690" class="small">实线为数据流；紫色虚线为训练监督／复用。点击模块可阅读原文章节。</text>
+</svg>

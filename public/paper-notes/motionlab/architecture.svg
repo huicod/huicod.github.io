@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1800" viewBox="0 0 1600 1800" role="img" aria-labelledby="title desc"><title id="title">MotionLab完整架构教学示意</title><desc id="desc">源动作及多模态条件输入共享MotionFlow Transformer，目标动作从高斯噪声通过速度场积分生成；下方为课程学习和流速度监督。</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10" fill="#456175"/></marker></defs><style>text{font-family:"Microsoft YaHei",sans-serif;fill:#193246}.title{font-size:36px;font-weight:700}.head{font-size:27px;font-weight:700}.body{font-size:23px}.small{font-size:21px}.box{stroke:#a5b8c5;stroke-width:2}.edge{fill:none;stroke:#456175;stroke-width:3;marker-end:url(#arrow)}.dash{stroke-dasharray:9 7}</style><rect width="1600" height="1800" fill="#fff"/>
+<text x="50" y="60" class="title" text-anchor="start">MotionLab · 一套动作接口，六类生成与编辑任务</text>
+<text x="50" y="100" class="small" text-anchor="start">教学重绘｜主文图2、§5；补充§1–2、§6–8｜连续特征 token，不是离散动作码</text>
+<rect x="30" y="135" width="1540" height="1080" rx="24" fill="#f6f9fc" stroke="#d6e2eb"/>
+<text x="55" y="180" class="head" text-anchor="start">推理：源动作是条件，目标状态从噪声开始</text>
+<rect class="box" x="55" y="215" width="350" height="160" rx="15" fill="#edf4fa"/>
+<text x="75" y="253" class="head" text-anchor="start">源动作（可选）</text>
+<text x="75" y="291" class="body" text-anchor="start">编辑／风格迁移：保留内容</text>
+<text x="75" y="322" class="body" text-anchor="start">生成：该输入为空</text>
+<text x="75" y="353" class="body" text-anchor="start">22关节 × 每帧263维</text>
+<rect class="box" x="435" y="215" width="350" height="160" rx="15" fill="#edf4fa"/>
+<text x="455" y="253" class="head" text-anchor="start">文字／坐标条件</text>
+<text x="455" y="291" class="body" text-anchor="start">CLIP文字特征 77×768</text>
+<text x="455" y="322" class="body" text-anchor="start">轨迹或关键帧坐标 N×J×3</text>
+<text x="455" y="353" class="body" text-anchor="start">按当前任务选择输入</text>
+<rect class="box" x="815" y="215" width="350" height="160" rx="15" fill="#edf4fa"/>
+<text x="835" y="253" class="head" text-anchor="start">参考风格（可选）</text>
+<text x="835" y="291" class="body" text-anchor="start">参考动作 → 风格编码</text>
+<text x="835" y="322" class="body" text-anchor="start">得到 1×512 风格特征</text>
+<text x="835" y="353" class="body" text-anchor="start">与源动作的内容角色分开</text>
+<rect class="box" x="1195" y="215" width="350" height="160" rx="15" fill="#edf4fa"/>
+<text x="1215" y="253" class="head" text-anchor="start">任务指令 + 时间</text>
+<text x="1215" y="291" class="body" text-anchor="start">预设指令 → CLIP特征</text>
+<text x="1215" y="322" class="body" text-anchor="start">说明重建／生成／编辑</text>
+<text x="1215" y="353" class="body" text-anchor="start">指令和时间用于调制</text>
+<rect class="box" x="55" y="450" width="350" height="145" rx="15" fill="#fff1db"/>
+<text x="75" y="488" class="head" text-anchor="start">高斯噪声目标 x₁</text>
+<text x="75" y="526" class="body" text-anchor="start">按目标长度采样 ε</text>
+<text x="75" y="557" class="body" text-anchor="start">形状为 N目标 × 263</text>
+<rect class="box" x="455" y="450" width="1090" height="145" rx="15" fill="#e6effb"/>
+<text x="475" y="488" class="head" text-anchor="start">各模态独立路径 → 联合注意力</text>
+<text x="475" y="526" class="body" text-anchor="start">独立投影、adaLN／调制、FFN；拼接QKV进行交互，再拆回各路径</text>
+<text x="475" y="557" class="body" text-anchor="start">源动作／目标状态／轨迹使用对齐的一维时间RoPE</text>
+<path class="edge" d="M230 375 V408 H510 V450"/>
+<path class="edge" d="M610 375 V450"/>
+<path class="edge" d="M990 375 V450"/>
+<path class="edge" d="M1370 375 V450"/>
+<path class="edge" d="M405 520 H455"/>
+<rect class="box" x="455" y="660" width="1090" height="150" rx="15" fill="#dceafa"/>
+<text x="475" y="698" class="head" text-anchor="start">共享 MotionFlow Transformer（MFT）</text>
+<text x="475" y="736" class="body" text-anchor="start">联合使用源内容、条件、任务指令与当前目标状态</text>
+<text x="475" y="767" class="body" text-anchor="start">输出速度 vθ：只更新待生成的目标动作状态</text>
+<path class="edge" d="M1000 595 V660"/>
+<rect class="box" x="455" y="875" width="1090" height="130" rx="15" fill="#fff1db"/>
+<text x="475" y="913" class="head" text-anchor="start">CFG组合速度 + Euler积分</text>
+<text x="475" y="951" class="body" text-anchor="start">生成：条件引导；编辑：源动作引导 + 修改条件增量</text>
+<text x="475" y="982" class="body" text-anchor="start">目标状态 x ← x − Δt · v；常用50步，从 t=1 到 t=0</text>
+<path class="edge" d="M1000 810 V875"/>
+<path class="edge" d="M455 940 H420 V630 H1000 V660"/>
+<text x="50" y="800" class="small" text-anchor="start">尚未结束：更新xₜ</text>
+<text x="50" y="833" class="small" text-anchor="start">进入下一个时间步</text>
+<rect class="box" x="455" y="1070" width="1090" height="100" rx="15" fill="#e8f4ef"/>
+<text x="475" y="1108" class="head" text-anchor="start">连续动作输出 → 骨架恢复／渲染</text>
+<text x="475" y="1146" class="body" text-anchor="start">直接动作特征路径；默认未启用VAE；非物理约束求解器</text>
+<path class="edge" d="M1000 1005 V1070"/>
+<rect x="30" y="1250" width="1540" height="490" rx="24" fill="#f0f7f2" stroke="#c6dece"/>
+<text x="55" y="1295" class="head" text-anchor="start">训练：真实目标用于监督；推理不输入真实目标</text>
+<rect class="box" x="55" y="1330" width="470" height="175" rx="15" fill="#e6f2e8"/>
+<text x="75" y="1368" class="head" text-anchor="start">课程组织数据</text>
+<text x="75" y="1406" class="body" text-anchor="start">预训练：遮挡重建／轨迹／补间</text>
+<text x="75" y="1437" class="body" text-anchor="start">微调：逐步加入文字、风格和编辑</text>
+<text x="75" y="1468" class="body" text-anchor="start">旧任务重放，减少遗忘</text>
+<rect class="box" x="565" y="1330" width="470" height="175" rx="15" fill="#e6f2e8"/>
+<text x="585" y="1368" class="head" text-anchor="start">真实目标 M目标 + 噪声 ε</text>
+<text x="585" y="1406" class="body" text-anchor="start">xₜ = (1−t)M目标 + tε</text>
+<text x="585" y="1437" class="body" text-anchor="start">监督速度 v* = ε − M目标</text>
+<text x="585" y="1468" class="body" text-anchor="start">源动作／条件／指令仍走各自路径</text>
+<rect class="box" x="1075" y="1330" width="470" height="175" rx="15" fill="#e6f2e8"/>
+<text x="1095" y="1368" class="head" text-anchor="start">训练同一个 MFT</text>
+<text x="1095" y="1406" class="body" text-anchor="start">预测 vθ，最小化速度误差</text>
+<text x="1095" y="1437" class="body" text-anchor="start">训练条件丢弃，支持CFG</text>
+<text x="1095" y="1468" class="body" text-anchor="start">共享参数用于上方推理</text>
+<path class="edge dash" d="M525 1415 H565"/>
+<path class="edge dash" d="M1035 1415 H1075"/>
+<path class="edge dash" d="M1310 1330 V1240 H1555 V735 H1545"/>
+<text x="55" y="1570" class="body" text-anchor="start">边界：对齐RoPE与CFG是可学习／软引导机制，不保证指定点误差为零。</text>
+<text x="55" y="1615" class="body" text-anchor="start">真实训练：HumanML3D + 重定向MotionFix；4×RTX 4090D，作者报告4天。</text>
+<text x="55" y="1660" class="body" text-anchor="start">实线：推理数据流；虚线：监督或训练参数关系。本文未运行模型。</text>
+</svg>

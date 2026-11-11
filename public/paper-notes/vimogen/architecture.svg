@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1860" viewBox="0 0 1500 1860"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10" fill="#47637b"/></marker><marker id="train" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10" fill="#8762aa"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans SC",sans-serif;fill:#18344e}.t{font-size:27px;font-weight:700}.b{font-size:23px}.s{font-size:21px}</style><rect width="1500" height="1860" fill="#fff"/>
+<text x="40" y="42" class="t">ViMoGen｜参考可靠时用动作，不可靠时回到文字</text>
+<text x="40" y="73" class="s">依据原文图1–2与§2–4；video tokens来自人体恢复，双分支按样本互斥。</text>
+<rect x="35" y="100" width="1430" height="275" rx="17" fill="#f5f8fc" stroke="#d7e1ec"/>
+<text x="55" y="136" class="t">A  数据与训练：228K多来源监督 + 扰动参考</text>
+<rect x="70" y="165" width="370" height="160" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="87" y="200" class="t">高质量动捕</text>
+<text x="87" y="233" class="b">171,542条文本—动作</text>
+<text x="87" y="262" class="b">20fps / SMPL-X统一</text>
+<text x="87" y="291" class="b">精确人体运动先验</text>
+<rect x="545" y="165" width="410" height="160" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="562" y="200" class="t">真实 / 合成视频动作</text>
+<text x="562" y="233" class="b">41,971 + 14,723条</text>
+<text x="562" y="262" class="b">人体恢复 + 筛选 + 自动描述</text>
+<text x="562" y="291" class="b">只监督局部姿态</text>
+<rect x="1060" y="165" width="365" height="160" rx="11" fill="#f2ecfa" stroke="#b5a0d1" stroke-width="1.5"/>
+<text x="1077" y="200" class="t">训练双分支 DiT</text>
+<text x="1077" y="233" class="b">真实动作 + 条件 + 噪声</text>
+<text x="1077" y="262" class="b">扰动GT模拟M2M参考</text>
+<text x="1077" y="291" class="b">遮蔽参考全局平移</text>
+<polyline points="440,245 495,245 495,345 1240,345 1240,325" fill="none" stroke="#8762aa" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#train)"/>
+<polyline points="955,245 1060,245" fill="none" stroke="#8762aa" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#train)"/>
+<rect x="35" y="410" width="1430" height="945" rx="17" fill="#f5f8fc" stroke="#d7e1ec"/>
+<text x="55" y="446" class="t">B  完整版推理：实例级选择 → 连续动作流匹配</text>
+<rect x="70" y="485" width="350" height="110" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="87" y="520" class="t">用户文本</text>
+<text x="87" y="553" class="b">描述目标动作</text>
+<rect x="540" y="485" width="390" height="135" rx="11" fill="#edf5ff" stroke="#96b9d8" stroke-width="1.5"/>
+<text x="557" y="520" class="t">预生成视频 → 人体恢复</text>
+<text x="557" y="553" class="b">Wan视频 + CameraHMR等</text>
+<text x="557" y="582" class="b">得到连续参考动作</text>
+<text x="557" y="611" class="b">不是直接读取视频latent</text>
+<rect x="1055" y="485" width="370" height="135" rx="11" fill="#f2ecfa" stroke="#b5a0d1" stroke-width="1.5"/>
+<text x="1072" y="520" class="t">质量检查 / 门控</text>
+<text x="1072" y="553" class="b">VLM匹配检查</text>
+<text x="1072" y="582" class="b">当前代码另检查抖动</text>
+<text x="1072" y="611" class="b">按样本二选一</text>
+<polyline points="420,540 540,540" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="930,550 1055,550" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<rect x="70" y="695" width="350" height="135" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="87" y="730" class="t">预训练文本编码</text>
+<text x="87" y="763" class="b">得到语言特征</text>
+<text x="87" y="792" class="b">T5等语义表示</text>
+<polyline points="245,595 245,695" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<rect x="540" y="715" width="390" height="160" rx="11" fill="#edf5ff" stroke="#96b9d8" stroke-width="1.5"/>
+<text x="557" y="750" class="t">T2M条件分支</text>
+<text x="557" y="783" class="b">参考不可靠：读取文本</text>
+<text x="557" y="812" class="b">cross-attention</text>
+<text x="557" y="841" class="b">依靠动捕与语言先验</text>
+<rect x="1055" y="715" width="370" height="160" rx="11" fill="#edf5ff" stroke="#96b9d8" stroke-width="1.5"/>
+<text x="1072" y="750" class="t">M2M条件分支</text>
+<text x="1072" y="783" class="b">参考可靠：读取动作</text>
+<text x="1072" y="812" class="b">cross-attention</text>
+<text x="1072" y="841" class="b">修整视频恢复的局部运动</text>
+<polyline points="420,760 540,760" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="1240,620 1240,715" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<text x="1260" y="678" class="s">可靠</text>
+<polyline points="1055,580 990,580 990,665 735,665 735,715" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<text x="775" y="650" class="s">不可靠</text>
+<rect x="70" y="980" width="350" height="140" rx="11" fill="#fff" stroke="#b4c5d5" stroke-width="1.5"/>
+<text x="87" y="1015" class="t">当前带噪动作</text>
+<text x="87" y="1048" class="b">高斯噪声初始化</text>
+<text x="87" y="1077" class="b">276维连续身体表示</text>
+<text x="87" y="1106" class="b">生成t ≠ 动作帧时间</text>
+<rect x="540" y="980" width="885" height="155" rx="11" fill="#edf5ff" stroke="#96b9d8" stroke-width="1.5"/>
+<text x="557" y="1015" class="t">共享 DiT 主干：self-attention + FFN</text>
+<text x="557" y="1048" class="b">约66%参数共享；每次仅激活一个条件分支</text>
+<text x="557" y="1077" class="b">预测速度 → 积分更新动作 → 下一采样步</text>
+<text x="557" y="1106" class="b">视频参考准备有开销；不是在线无视频推理</text>
+<polyline points="735,875 735,980" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="1240,875 1240,980" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="420,1045 540,1045" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="1425,1060 1445,1060 1445,940 990,940 990,980" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<text x="1290" y="925" class="s">迭代</text>
+<rect x="540" y="1210" width="885" height="95" rx="11" fill="#eaf7f0" stroke="#97c6b0" stroke-width="1.5"/>
+<text x="557" y="1245" class="t">完整动作输出 → MBench九维评估</text>
+<text x="557" y="1278" class="b">文字一致 / 泛化 / 抖动与接触 / 姿态质量分别测</text>
+<polyline points="990,1135 990,1210" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<rect x="35" y="1390" width="1430" height="360" rx="17" fill="#faf7fd" stroke="#d7e1ec"/>
+<text x="55" y="1426" class="t">C  ViMoGen-light：通过教师生成数据迁移知识</text>
+<rect x="70" y="1465" width="370" height="165" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="87" y="1500" class="t">离线长尾提示 + 教师</text>
+<text x="87" y="1533" class="b">完整版生成合成动作</text>
+<text x="87" y="1562" class="b">筛选整理为学生监督</text>
+<text x="87" y="1591" class="b">仍继承视频模型知识</text>
+<rect x="545" y="1465" width="410" height="165" rx="11" fill="#f2ecfa" stroke="#b5a0d1" stroke-width="1.5"/>
+<text x="562" y="1500" class="t">训练仅T2M的学生</text>
+<text x="562" y="1533" class="b">标准Flow Matching目标</text>
+<text x="562" y="1562" class="b">不依赖逐步教师速度配对</text>
+<text x="562" y="1591" class="b">不是一阶/少步采样蒸馏</text>
+<rect x="1060" y="1465" width="365" height="165" rx="11" fill="#eaf7f0" stroke="#97c6b0" stroke-width="1.5"/>
+<text x="1077" y="1500" class="t">light推理</text>
+<text x="1077" y="1533" class="b">只需文本 + 动作噪声</text>
+<text x="1077" y="1562" class="b">省去视频 / 人体恢复链</text>
+<text x="1077" y="1591" class="b">泛化与完整版有差距</text>
+<polyline points="440,1540 545,1540" fill="none" stroke="#8762aa" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#train)"/>
+<polyline points="955,1540 1060,1540" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<text x="70" y="1705" class="s">light指运行依赖减少；不能仅凭名称推断参数量、一次前向或硬空间控制能力。</text>
+<text x="40" y="1830" class="s">教学重绘｜实线：推理/数据；紫色虚线：训练监督或参数；非运行结果。</text></svg>

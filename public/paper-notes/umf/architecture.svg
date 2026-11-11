@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2250" viewBox="0 0 1600 2250" role="img" aria-labelledby="title desc"><title id="title">UMF完整架构教学示意</title><desc id="desc">文本条件驱动P-Flow产生首人动作，S-Flow从已有上下文逐人生成反应，统一VAE解码。训练包括坐标统一、VAE和两种独立流模型。</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10" fill="#456175"/></marker></defs><style>text{font-family:"Microsoft YaHei",sans-serif;fill:#193246}.title{font-size:36px;font-weight:700}.head{font-size:27px;font-weight:700}.body{font-size:23px}.small{font-size:21px}.box{stroke:#a5b8c5;stroke-width:2}.edge{fill:none;stroke:#456175;stroke-width:3;marker-end:url(#arrow)}.dash{stroke-dasharray:9 7}</style><rect width="1600" height="2250" fill="#fff"/>
+<text x="50" y="60" class="title" text-anchor="start">UMF · 先生成一人，再逐人追加动作反应</text>
+<text x="50" y="100" class="small" text-anchor="start">教学重绘｜主文图2、算法1、式12–17，附录A/C｜人物循环 ≠ 时间上的流式播放</text>
+<rect x="30" y="135" width="1540" height="1385" rx="24" fill="#f6f9fc" stroke="#d6e2eb"/>
+<text x="55" y="180" class="head" text-anchor="start">推理：P-Flow调用一次，S-Flow复用 N−1 次</text>
+<rect class="box" x="55" y="220" width="470" height="150" rx="15" fill="#edf4fa"/>
+<text x="75" y="258" class="head" text-anchor="start">文字描述 → 冻结CLIP</text>
+<text x="75" y="296" class="body" text-anchor="start">句级文字特征 768维</text>
+<text x="75" y="327" class="body" text-anchor="start">同时条件化首人和反应生成</text>
+<text x="75" y="358" class="body" text-anchor="start">不是LLM动作计划</text>
+<rect class="box" x="565" y="220" width="470" height="150" rx="15" fill="#fff1db"/>
+<text x="585" y="258" class="head" text-anchor="start">初始高斯噪声</text>
+<text x="585" y="296" class="body" text-anchor="start">从低分辨率潜变量开始</text>
+<text x="585" y="327" class="body" text-anchor="start">首人不是从现成人物动作复制</text>
+<rect class="box" x="1075" y="220" width="470" height="150" rx="15" fill="#edf4fa"/>
+<text x="1095" y="258" class="head" text-anchor="start">用户／调用端设置</text>
+<text x="1095" y="296" class="body" text-anchor="start">目标人数 N 与动作长度</text>
+<text x="1095" y="327" class="body" text-anchor="start">N决定人物循环次数</text>
+<text x="1095" y="358" class="body" text-anchor="start">不会自动保证任意规模有效</text>
+<rect class="box" x="380" y="435" width="840" height="145" rx="15" fill="#fff1db"/>
+<text x="400" y="473" class="head" text-anchor="start">P-Flow：首人动作先验</text>
+<text x="400" y="511" class="body" text-anchor="start">低分辨率45步 → 上采样／校正噪声 → 完整尺度5步</text>
+<text x="400" y="542" class="body" text-anchor="start">论文两级时间金字塔；同一P-Flow处理两个分辨率</text>
+<text x="400" y="573" class="body" text-anchor="start">输出第一人的连续潜变量 Z₁</text>
+<path class="edge" d="M800 370 V435"/>
+<path class="edge" d="M290 370 V410 H380 V505"/>
+<rect class="box" x="380" y="640" width="840" height="95" rx="15" fill="#e6effb"/>
+<text x="400" y="678" class="head" text-anchor="start">初始化已生成集合 Z = {Z₁}</text>
+<text x="400" y="716" class="body" text-anchor="start">N=1可直接解码；N&gt;1进入后续人物循环</text>
+<path class="edge" d="M800 580 V640"/>
+<rect class="box" x="380" y="805" width="840" height="165" rx="15" fill="#edf4fa"/>
+<text x="400" y="843" class="head" text-anchor="start">上下文适配器 → Cᵢ</text>
+<text x="400" y="881" class="body" text-anchor="start">Transformer读取已有 Z₁…Zᵢ₋₁</text>
+<text x="400" y="912" class="body" text-anchor="start">多个人沿人物维度平均池化，得到单人形状上下文</text>
+<text x="400" y="943" class="body" text-anchor="start">调整上下文表示；不回写早先人物的完整动作</text>
+<path class="edge" d="M800 735 V805"/>
+<rect class="box" x="380" y="1005" width="840" height="120" rx="15" fill="#dceafa"/>
+<text x="400" y="1043" class="head" text-anchor="start">S-Flow：从上下文生成下一人反应</text>
+<text x="400" y="1081" class="body" text-anchor="start">算法主线：Cᵢ → 多步流积分 → 新人物 Zᵢ</text>
+<text x="400" y="1112" class="body" text-anchor="start">论文每人10步；参数与P-Flow分开</text>
+<path class="edge" d="M800 970 V1005"/>
+<path class="edge" d="M125 370 V1065 H380"/>
+<text x="235" y="980" class="small" text-anchor="start">同一文字条件</text>
+<rect class="box" x="380" y="1195" width="840" height="115" rx="15" fill="#e6effb"/>
+<text x="400" y="1233" class="head" text-anchor="start">追加 Zᵢ 到已生成动作集合</text>
+<text x="400" y="1271" class="body" text-anchor="start">尚未达到N：更新上下文，继续生成下一个人</text>
+<text x="400" y="1302" class="body" text-anchor="start">已生成人物保持原有输出，不做全体联合回写</text>
+<path class="edge" d="M800 1125 V1195"/>
+<path class="edge" d="M1220 1252 H1280 V870 H1220"/>
+<text x="1310" y="1120" class="small" text-anchor="start">人物循环</text>
+<text x="1310" y="1152" class="small" text-anchor="start">i = 2…N</text>
+<rect class="box" x="380" y="1390" width="840" height="85" rx="15" fill="#e8f4ef"/>
+<text x="400" y="1428" class="head" text-anchor="start">共享VAE解码器 → N人的连续骨架动作</text>
+<text x="400" y="1466" class="body" text-anchor="start">同一世界坐标表示；每人22关节、262维特征</text>
+<path class="edge" d="M800 1310 V1390"/>
+<text x="820" y="1354" class="small" text-anchor="start">人数齐全</text>
+<path class="edge" d="M380 687 H200 V1430 H380"/>
+<text x="215" y="1300" class="small" text-anchor="start">N=1</text>
+<path class="edge" d="M1310 370 V410 H1500 V1252 H1280"/>
+<rect x="30" y="1560" width="1540" height="625" rx="24" fill="#f0f7f2" stroke="#c6dece"/>
+<text x="55" y="1605" class="head" text-anchor="start">训练1：异构数据 → 统一单人连续VAE</text>
+<rect class="box" x="55" y="1640" width="470" height="150" rx="15" fill="#e6f2e8"/>
+<text x="75" y="1678" class="head" text-anchor="start">HumanML3D + InterHuman</text>
+<text x="75" y="1716" class="body" text-anchor="start">规范化特征 → 世界坐标表示</text>
+<text x="75" y="1747" class="body" text-anchor="start">双人样本拆成每人的序列</text>
+<text x="75" y="1778" class="body" text-anchor="start">统一22关节、每人262维</text>
+<rect class="box" x="565" y="1640" width="470" height="150" rx="15" fill="#e6f2e8"/>
+<text x="585" y="1678" class="head" text-anchor="start">VAE + latent adapter</text>
+<text x="585" y="1716" class="body" text-anchor="start">重建／KL／骨长／脚接触损失</text>
+<text x="585" y="1747" class="body" text-anchor="start">较大内部特征 → 紧凑潜变量</text>
+<text x="585" y="1778" class="body" text-anchor="start">最终配置16个token × 64维</text>
+<rect class="box" x="1075" y="1640" width="470" height="150" rx="15" fill="#e6f2e8"/>
+<text x="1095" y="1678" class="head" text-anchor="start">冻结VAE，供生成阶段使用</text>
+<text x="1095" y="1716" class="body" text-anchor="start">编码器提供训练目标潜变量</text>
+<text x="1095" y="1747" class="body" text-anchor="start">解码器恢复最终人物动作</text>
+<path class="edge dash" d="M525 1710 H565"/>
+<path class="edge dash" d="M1035 1710 H1075"/>
+<path class="edge dash" d="M1150 1640 V1540 H1260 V1430 H1220"/>
+<text x="55" y="1840" class="head" text-anchor="start">训练2：P-Flow速度监督</text>
+<text x="815" y="1840" class="head" text-anchor="start">训练3：S-Flow联合两条路径</text>
+<rect class="box" x="55" y="1870" width="710" height="170" rx="15" fill="#e6f2e8"/>
+<text x="75" y="1908" class="head" text-anchor="start">噪声与真实单人潜变量构造各级端点</text>
+<text x="75" y="1946" class="body" text-anchor="start">低尺度与完整尺度：学习端点之间的速度</text>
+<text x="75" y="1977" class="body" text-anchor="start">结合单人与双人拆出的动作先验</text>
+<text x="75" y="2008" class="body" text-anchor="start">生成阶段只调用一次，但内含多步积分</text>
+<rect class="box" x="815" y="1870" width="730" height="170" rx="15" fill="#e6f2e8"/>
+<text x="835" y="1908" class="head" text-anchor="start">同一S-Flow，同时学习转换与重建</text>
+<text x="835" y="1946" class="body" text-anchor="start">反应路径：C → W；监督速度 W−C</text>
+<text x="835" y="1977" class="body" text-anchor="start">上下文路径：ε → C；监督速度 C−ε</text>
+<text x="835" y="2008" class="body" text-anchor="start">总损失：L转换 + 0.25 L上下文</text>
+<path class="edge dash" d="M55 1940 H40 V505 H380"/>
+<path class="edge dash" d="M1545 1940 H1555 V1065 H1220"/>
+<text x="55" y="2100" class="body" text-anchor="start">实线：论文算法推理；虚线：训练／参数复用。代码双路状态积分细节在正文另述。</text>
+<text x="55" y="2140" class="body" text-anchor="start">N&gt;2主要是零样本扩展；碰撞与滑步仍非零，不能当作物理约束已满足。</text>
+</svg>

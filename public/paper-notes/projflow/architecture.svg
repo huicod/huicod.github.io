@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1720" viewBox="0 0 1500 1720"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10" fill="#47637b"/></marker><marker id="train" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10" fill="#8762aa"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans SC",sans-serif;fill:#18344e}.t{font-size:27px;font-weight:700}.b{font-size:23px}.s{font-size:21px}</style><rect width="1500" height="1720" fill="#fff"/>
+<text x="40" y="42" class="t">ProjFlow｜把线性硬约束放进生成采样循环</text>
+<text x="40" y="73" class="s">依据原文图2–3、式4–20；硬精度来自投影，动作质量依赖先验与重组。</text>
+<rect x="35" y="100" width="1430" height="250" rx="17" fill="#f5f8fc" stroke="#d7e1ec"/>
+<text x="55" y="136" class="t">A  已有训练：动作先验与可复用骨架结构</text>
+<rect x="70" y="165" width="350" height="115" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="87" y="200" class="t">动作 / 文本数据</text>
+<text x="87" y="233" class="b">HumanML3D等训练来源</text>
+<text x="87" y="262" class="b">训练成本仍然存在</text>
+<rect x="540" y="165" width="390" height="115" rx="11" fill="#f2ecfa" stroke="#b5a0d1" stroke-width="1.5"/>
+<text x="557" y="200" class="t">预训练 ACMDM Flow</text>
+<text x="557" y="233" class="b">已有连续动作生成先验</text>
+<text x="557" y="262" class="b">本次控制无需重训</text>
+<rect x="1050" y="165" width="375" height="115" rx="11" fill="#fff" stroke="#b4c5d5" stroke-width="1.5"/>
+<text x="1067" y="200" class="t">骨架图 → 度量 R</text>
+<text x="1067" y="233" class="b">图拉普拉斯 + λI</text>
+<text x="1067" y="262" class="b">协调相连关节的修正</text>
+<polyline points="420,220 540,220" fill="none" stroke="#8762aa" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#train)"/>
+<text x="440" y="205" class="s">训练参数</text>
+<rect x="35" y="385" width="1430" height="1080" rx="17" fill="#f5f8fc" stroke="#d7e1ec"/>
+<text x="55" y="421" class="t">B  推理：文本 + 用户空间条件 → 多步采样（论文100 NFE）</text>
+<rect x="70" y="460" width="365" height="150" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="87" y="495" class="t">用户空间条件</text>
+<text x="87" y="528" class="b">关键帧 / 轨迹 / 双腕偏移</text>
+<text x="87" y="557" class="b">首尾位置 / 已知正交投影</text>
+<text x="87" y="586" class="b">构造A、目标y、协方差Σ</text>
+<rect x="70" y="680" width="365" height="175" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="87" y="715" class="t">稀疏补间的软参考</text>
+<text x="87" y="748" class="b">插值/最近观测外推</text>
+<text x="87" y="777" class="b">邻域缩小、曲率调置信度</text>
+<text x="87" y="806" class="b">真实点Σ=0始终保留</text>
+<text x="87" y="835" class="b">伪观测Σ&gt;0允许偏离</text>
+<rect x="560" y="460" width="375" height="150" rx="11" fill="#fff" stroke="#b4c5d5" stroke-width="1.5"/>
+<text x="577" y="495" class="t">当前动作 xₜ</text>
+<text x="577" y="528" class="b">初始为高斯噪声</text>
+<text x="577" y="557" class="b">形状 N帧 × J关节 × 3</text>
+<text x="577" y="586" class="b">文本作为生成条件</text>
+<rect x="1055" y="460" width="370" height="150" rx="11" fill="#edf5ff" stroke="#96b9d8" stroke-width="1.5"/>
+<text x="1072" y="495" class="t">冻结速度网络 vθ</text>
+<text x="1072" y="528" class="b">ACMDM预测生成速度</text>
+<text x="1072" y="557" class="b">t为生成时间，非动作帧</text>
+<polyline points="935,530 1055,530" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="735,280 735,350 1240,350 1240,460" fill="none" stroke="#8762aa" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#train)"/>
+<text x="1060" y="335" class="s">已训练参数</text>
+<rect x="560" y="685" width="865" height="125" rx="11" fill="#edf5ff" stroke="#96b9d8" stroke-width="1.5"/>
+<text x="577" y="720" class="t">估计干净终点：x̂₁ = xₜ + (1−t)vθ</text>
+<text x="577" y="753" class="b">先转成无噪动作候选；不能直接拿目标覆盖带噪xₜ</text>
+<polyline points="1240,610 1240,685" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="750,610 750,685" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<rect x="560" y="900" width="865" height="175" rx="11" fill="#f2ecfa" stroke="#b5a0d1" stroke-width="1.5"/>
+<text x="577" y="935" class="t">骨架度量下的解析投影</text>
+<text x="577" y="968" class="b">Δx = R⁻¹Aᵀ(AR⁻¹Aᵀ+Σ)⁻¹(y−Ax̂₁)</text>
+<text x="577" y="997" class="b">修正终点 x̂₁* = x̂₁ + Δx</text>
+<text x="577" y="1026" class="b">一致的线性硬约束 → A x̂₁* = y（数值精度）</text>
+<polyline points="1000,810 1000,900" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="435,535 485,535 485,950 560,950" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="435,770 460,770 460,1010 560,1010" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="1425,220 1445,220 1445,990 1425,990" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<text x="1430" y="865" class="s">R</text>
+<rect x="560" y="1155" width="865" height="125" rx="11" fill="#edf5ff" stroke="#96b9d8" stroke-width="1.5"/>
+<text x="577" y="1190" class="t">随机重组到下一生成时间</text>
+<text x="577" y="1223" class="b">复用噪声端，并混合新高斯噪声</text>
+<text x="577" y="1252" class="b">xₜ₊Δₜ = α x̂₁* + σ 混合噪声；继续采样</text>
+<polyline points="1000,1075 1000,1155" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="560,1215 510,1215 510,640 680,640 680,610" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<text x="515" y="1098" class="s">下一步</text>
+<rect x="560" y="1345" width="865" height="85" rx="11" fill="#eaf7f0" stroke="#97c6b0" stroke-width="1.5"/>
+<text x="577" y="1380" class="t">终点输出：三维关节位置轨迹</text>
+<polyline points="1000,1280 1000,1345" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<text x="70" y="1400" class="s">“无内层优化”仍有多步生成。</text>
+<rect x="35" y="1495" width="1430" height="145" rx="17" fill="#fff9ee" stroke="#d7e1ec"/>
+<text x="55" y="1531" class="t">C  保证范围与独立验收</text>
+<text x="65" y="1565" class="b">精确：所编码且一致的线性等式。另验：骨长、接触、避碰、文本语义与物理可执行性。</text>
+<text x="65" y="1608" class="b">二维零残差不唯一确定三维深度；首尾位置相等不自动保证速度与接触连续。</text>
+<text x="40" y="1690" class="s">教学重绘｜实线：推理/数据；紫色虚线：训练监督或参数；非运行结果。</text></svg>

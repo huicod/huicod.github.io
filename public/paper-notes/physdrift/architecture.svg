@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1550" viewBox="0 0 1500 1550"><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10" fill="#47637b"/></marker><marker id="train" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10" fill="#8762aa"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans SC",sans-serif;fill:#18344e}.t{font-size:27px;font-weight:700}.b{font-size:23px}.s{font-size:21px}</style><rect width="1500" height="1550" fill="#fff"/>
+<text x="40" y="42" class="t">PhysDrift｜先建立机器人监督，再一步生成关节轨迹</text>
+<text x="40" y="73" class="s">依据原文图1、3、4与§IV；运动生成、离线重定向和控制器分别标出。</text>
+<rect x="35" y="100" width="1430" height="300" rx="17" fill="#f5f8fc" stroke="#d7e1ec"/>
+<text x="55" y="136" class="t">A  离线构建：人体动作 → IK-EER → 机器人监督</text>
+<rect x="70" y="165" width="350" height="130" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="87" y="200" class="t">BEAT2同步片段</text>
+<text x="87" y="233" class="b">人体动作 / 语音 / 文本</text>
+<text x="87" y="262" class="b">过滤悬浮、扭曲与穿地</text>
+<rect x="545" y="165" width="390" height="175" rx="11" fill="#edf5ff" stroke="#96b9d8" stroke-width="1.5"/>
+<text x="562" y="200" class="t">IK初始化 + EE优化</text>
+<text x="562" y="233" class="b">匹配关键点位置与方向</text>
+<text x="562" y="262" class="b">优化关节角与根位置</text>
+<text x="562" y="291" class="b">节奏相关 + 限位/接触项</text>
+<rect x="1060" y="165" width="365" height="175" rx="11" fill="#eaf7f0" stroke="#97c6b0" stroke-width="1.5"/>
+<text x="1077" y="200" class="t">G1原生动作数据</text>
+<text x="1077" y="233" class="b">根旋转6D + 29关节角</text>
+<text x="1077" y="262" class="b">+ 根位置3D；同步语音</text>
+<text x="1077" y="291" class="b">训练监督，非推理必需</text>
+<polyline points="420,230 545,230" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<text x="445" y="212" class="s">对应点</text>
+<polyline points="935,230 1060,230" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<text x="975" y="212" class="s">轨迹</text>
+<text x="70" y="372" class="s">根朝向沿用人体序列；IK-EER的重定向成本发生在数据准备阶段。</text>
+<rect x="35" y="430" width="1430" height="555" rx="17" fill="#faf7fd" stroke="#d7e1ec"/>
+<text x="55" y="466" class="t">B  生成器训练：条件注意力 + 漂移目标 + 软约束</text>
+<rect x="70" y="505" width="385" height="140" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="87" y="540" class="t">语音与文本编码</text>
+<text x="87" y="573" class="b">图4分别给出两路编码器</text>
+<text x="87" y="602" class="b">具体型号/层数未充分披露</text>
+<rect x="70" y="710" width="385" height="105" rx="11" fill="#fff" stroke="#b4c5d5" stroke-width="1.5"/>
+<text x="87" y="745" class="t">噪声动作</text>
+<text x="87" y="778" class="b">随机输入，训练生成器</text>
+<rect x="575" y="505" width="390" height="205" rx="11" fill="#edf5ff" stroke="#96b9d8" stroke-width="1.5"/>
+<text x="592" y="540" class="t">可训练注意力网络</text>
+<text x="592" y="573" class="b">条件cross-attention</text>
+<text x="592" y="602" class="b">时间attention</text>
+<text x="592" y="631" class="b">空间attention × N</text>
+<text x="592" y="660" class="b">直接预测机器人状态</text>
+<rect x="1080" y="505" width="345" height="145" rx="11" fill="#eaf7f0" stroke="#97c6b0" stroke-width="1.5"/>
+<text x="1097" y="540" class="t">预测动作 x</text>
+<text x="1097" y="573" class="b">原生连续轨迹</text>
+<text x="1097" y="602" class="b">不经人体VQ解码</text>
+<rect x="575" y="790" width="850" height="145" rx="11" fill="#f2ecfa" stroke="#b5a0d1" stroke-width="1.5"/>
+<text x="592" y="825" class="t">训练目标：p为IK-EER参考分布，q为生成分布</text>
+<text x="592" y="858" class="b">MDF：参考样本吸引 + 生成样本分布作用</text>
+<text x="592" y="887" class="b">stopgrad(x + D)目标；另加关节限位与EE损失</text>
+<polyline points="455,570 575,570" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="455,760 520,760 520,665 575,665" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="965,575 1080,575" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="1250,650 1250,790" fill="none" stroke="#8762aa" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#train)"/>
+<text x="1270" y="748" class="s">生成分布 q</text>
+<polyline points="1400,340 1445,340 1445,760 1350,760 1350,790" fill="none" stroke="#8762aa" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#train)"/>
+<text x="1325" y="435" class="s">监督 p</text>
+<polyline points="770,790 770,710" fill="none" stroke="#8762aa" stroke-width="2.2" stroke-dasharray="8 6" marker-end="url(#train)"/>
+<text x="70" y="960" class="s">漂移计算在训练中塑造生成器；推理时不取真实样本，不运行ODE循环。</text>
+<rect x="35" y="1015" width="1430" height="445" rx="17" fill="#f5f8fc" stroke="#d7e1ec"/>
+<text x="55" y="1051" class="t">C  推理与执行：一次网络前向 ≠ 一次电机命令</text>
+<rect x="70" y="1090" width="350" height="125" rx="11" fill="#fff4e3" stroke="#e7bf84" stroke-width="1.5"/>
+<text x="87" y="1125" class="t">新语音 / 文本 + 噪声</text>
+<text x="87" y="1158" class="b">准备条件特征</text>
+<text x="87" y="1187" class="b">未披露因果/前视协议</text>
+<rect x="545" y="1090" width="390" height="125" rx="11" fill="#edf5ff" stroke="#96b9d8" stroke-width="1.5"/>
+<text x="562" y="1125" class="t">已训练 PhysDrift</text>
+<text x="562" y="1158" class="b">单次前向，NFE=1</text>
+<text x="562" y="1187" class="b">输出整段状态序列</text>
+<rect x="1060" y="1090" width="365" height="125" rx="11" fill="#eaf7f0" stroke="#97c6b0" stroke-width="1.5"/>
+<text x="1077" y="1125" class="t">机器人参考轨迹</text>
+<text x="1077" y="1158" class="b">根状态 + 关节角</text>
+<text x="1077" y="1187" class="b">不再做人体→机器人转换</text>
+<polyline points="420,1150 545,1150" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="935,1150 1060,1150" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<rect x="795" y="1290" width="630" height="120" rx="11" fill="#f2ecfa" stroke="#b5a0d1" stroke-width="1.5"/>
+<text x="812" y="1325" class="t">全身控制器 → G1执行</text>
+<text x="812" y="1358" class="b">图1明确存在控制器；平衡/跟踪由下游承担</text>
+<text x="812" y="1387" class="b">论文未给充分的控制频率与执行成功率</text>
+<rect x="70" y="1290" width="600" height="120" rx="11" fill="#fff" stroke="#b4c5d5" stroke-width="1.5"/>
+<text x="87" y="1325" class="t">分别验收</text>
+<text x="87" y="1358" class="b">生成质量 / 限位 / 抖动 / 接触 / 跟踪误差</text>
+<text x="87" y="1387" class="b">2880 APS为生成吞吐，不能当控制频率</text>
+<polyline points="1245,1215 1245,1290" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<polyline points="795,1350 670,1350" fill="none" stroke="#47637b" stroke-width="2.2"  marker-end="url(#arrow)"/>
+<text x="40" y="1520" class="s">教学重绘｜实线：推理/数据；紫色虚线：训练监督或参数；非运行结果。</text></svg>
