@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2970" viewBox="0 0 1600 2970" role="img" aria-labelledby="title desc">
+<title id="title">SALAD完整生成、训练与编辑架构</title><desc id="desc">词级文本与扩散时间分别条件化骨架时序去噪器，VAE学习连续七节点隐空间；编辑共享初始噪声并复用源注意力。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#42677b"/></marker><marker id="reuse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#559878"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#203d50} .title{font-size:40px;font-weight:700}.section{font-size:29px;font-weight:700}.head{font-size:27px;font-weight:700}.body{font-size:24px}.small{font-size:22px}.line{fill:none;stroke:#42677b;stroke-width:3;marker-end:url(#arrow)}.reuse{fill:none;stroke:#559878;stroke-width:3;stroke-dasharray:10 7;marker-end:url(#reuse)}</style><rect width="1600" height="2970" fill="white"/>
+<text x="50" y="62" class="title">SALAD · 让时间、骨架与文字在隐空间中交互</text>
+<text x="50" y="99" class="small">教学重绘｜原文图1–3、补充A–B及算法1｜实线：数据流；绿色虚线：训练后复用</text>
+<rect x="30" y="125" width="1540" height="1085" rx="24" fill="#f4f8fd" stroke="#d1dfe5" stroke-width="2"/>
+<text x="55" y="170" class="section">生成：文本条件的连续隐空间扩散</text>
+<rect x="60" y="215" width="360" height="175" rx="16" fill="#e8f2fd" stroke="#a6bfd0" stroke-width="2"/>
+<text x="78" y="253" class="head">文本 c → 冻结CLIP</text>
+<text x="78" y="291" class="body">保留逐词表示，而非仅整句向量</text>
+<text x="78" y="322" class="body">词向量提供CrossAttn的K、V</text>
+<text x="78" y="353" class="body">同一提示可配不同初始噪声</text>
+<rect x="530" y="215" width="540" height="175" rx="16" fill="#e8f2fd" stroke="#a6bfd0" stroke-width="2"/>
+<text x="548" y="253" class="head">初始隐变量 z_T ～ 高斯噪声</text>
+<text x="548" y="291" class="body">形状：N/4 × 7 × 32</text>
+<text x="548" y="322" class="body">七个节点是压缩后的骨架区域</text>
+<text x="548" y="353" class="body">每格连续特征；没有离散码本</text>
+<rect x="1180" y="215" width="340" height="175" rx="16" fill="#e8f2fd" stroke="#a6bfd0" stroke-width="2"/>
+<text x="1198" y="253" class="head">扩散时间 t</text>
+<text x="1198" y="291" class="body">时间编码 → MLP</text>
+<text x="1198" y="322" class="body">生成每个模块的γₜ、βₜ</text>
+<text x="1198" y="353" class="body">控制FiLM的缩放与平移</text>
+<rect x="530" y="470" width="990" height="350" rx="16" fill="#e8f2fd" stroke="#a6bfd0" stroke-width="2"/>
+<text x="548" y="508" class="head">骨架时序去噪器 · 隐藏宽度256</text>
+<text x="548" y="546" class="body">位置编码与输入MLP → 多层Transformer → 输出MLP</text>
+<text x="548" y="577" class="body">① TempAttn：每个骨架节点沿时间交换信息</text>
+<text x="548" y="608" class="body">② SkelAttn：每个时刻的七节点全局交换信息</text>
+<text x="548" y="639" class="body">③ CrossAttn：骨架时序单元查询逐词特征</text>
+<text x="548" y="670" class="body">④ FFN：非线性特征更新</text>
+<text x="548" y="701" class="body">各模块：LayerNorm → 模块 → FiLM → 残差；层间还有skip</text>
+<text x="548" y="732" class="body">输出扩散参数 v̂；v是噪声与干净latent的组合</text>
+<path d="M420 305 H470 V620 H530" class="line"/>
+<text x="65" y="446" class="small">文本内容进入交叉注意力</text>
+<path d="M800 390 V470" class="line"/>
+<path d="M1340 390 V470" class="line"/>
+<rect x="530" y="895" width="480" height="155" rx="16" fill="#e8f2fd" stroke="#a6bfd0" stroke-width="2"/>
+<text x="548" y="933" class="head">CFG + DDIM更新</text>
+<text x="548" y="971" class="body">合并有文本／空文本预测</text>
+<text x="548" y="1002" class="body">默认CFG 7.5，DDIM共50步</text>
+<text x="548" y="1033" class="body">更新zₜ₋₁，继续去噪循环</text>
+<rect x="1100" y="895" width="420" height="155" rx="16" fill="#e8f2fd" stroke="#a6bfd0" stroke-width="2"/>
+<text x="1118" y="933" class="head">VAE解码器 D（复用）</text>
+<text x="1118" y="971" class="body">STConv与骨架／时间上采样</text>
+<text x="1118" y="1002" class="body">关节MLP恢复连续动作特征</text>
+<text x="1118" y="1033" class="body">无需文本编辑专用解码器</text>
+<path d="M800 820 V895" class="line"/>
+<path d="M1010 972 H1100" class="line"/>
+<text x="1024" y="950" class="small">z₀</text>
+<path d="M530 990 H440 V432 H690 V470" class="line"/>
+<text x="65" y="810" class="small">迭代更新的是连续latent</text>
+<text x="65" y="845" class="small">骨架轴始终保留七节点结构</text>
+<rect x="1100" y="1100" width="420" height="80" rx="16" fill="#e8f2fd" stroke="#a6bfd0" stroke-width="2"/>
+<text x="1118" y="1138" class="head">输出：连续单人动作</text>
+<path d="M1310 1050 V1100" class="line"/>
+<text x="65" y="1148" class="small">生成不要求先提供一条真实动作；运动的空间、时间关系来自学习到的表示。</text>
+<rect x="30" y="1260" width="1540" height="890" rx="24" fill="#f0f8f3" stroke="#d1dfe5" stroke-width="2"/>
+<text x="55" y="1305" class="section">训练：先学习骨架时序VAE，再冻结VAE训练扩散去噪器</text>
+<rect x="60" y="1350" width="360" height="205" rx="16" fill="#e5f3e9" stroke="#a6bfd0" stroke-width="2"/>
+<text x="78" y="1388" class="head">真实动作 m</text>
+<text x="78" y="1426" class="body">关节拆分 → 各关节MLP</text>
+<text x="78" y="1457" class="body">根7维；足／趾13维；其余12维</text>
+<text x="78" y="1488" class="body">HumanML3D 22节点</text>
+<text x="78" y="1519" class="body">KIT-ML 21节点</text>
+<rect x="500" y="1350" width="550" height="205" rx="16" fill="#e5f3e9" stroke="#a6bfd0" stroke-width="2"/>
+<text x="518" y="1388" class="head">ST-VAE编码器 E</text>
+<text x="518" y="1426" class="body">STConv = 骨架图卷积 + 时间卷积</text>
+<text x="518" y="1457" class="body">STPool：节点22/21 → 12 → 7</text>
+<text x="518" y="1488" class="body">两次时间平均池化：N → N/2 → N/4</text>
+<text x="518" y="1519" class="body">连续分布采样z；每格32维</text>
+<rect x="1130" y="1350" width="390" height="205" rx="16" fill="#e5f3e9" stroke="#a6bfd0" stroke-width="2"/>
+<text x="1148" y="1388" class="head">ST-VAE解码器 D</text>
+<text x="1148" y="1426" class="body">镜像结构逐级恢复分辨率</text>
+<text x="1148" y="1457" class="body">骨架特征汇集 + 时间插值</text>
+<text x="1148" y="1488" class="body">恢复各关节动作特征</text>
+<path d="M420 1450 H500" class="line"/>
+<path d="M1050 1450 H1130" class="line"/>
+<text x="1070" y="1428" class="small">z</text>
+<rect x="1130" y="1610" width="390" height="130" rx="16" fill="#e5f3e9" stroke="#a6bfd0" stroke-width="2"/>
+<text x="1148" y="1648" class="head">重建监督 + KL正则</text>
+<text x="1148" y="1686" class="body">动作特征、关节位置、速度</text>
+<text x="1148" y="1717" class="body">约束重建质量与latent分布</text>
+<path d="M1325 1555 V1610" class="line"/>
+<path d="M1520 1440 H1548 V1000 H1520" class="reuse"/>
+<text x="60" y="1648" class="small">骨架图卷积使用相邻关节；池化保留结构。</text>
+<text x="60" y="1684" class="small">七个聚合节点并非互斥身体分块，邻域可重叠。</text>
+<rect x="60" y="1830" width="360" height="235" rx="16" fill="#e5f3e9" stroke="#a6bfd0" stroke-width="2"/>
+<text x="78" y="1868" class="head">冻结E，构造训练样本</text>
+<text x="78" y="1906" class="body">取连续latent z₀</text>
+<text x="78" y="1937" class="body">采样噪声ε与时间步t</text>
+<text x="78" y="1968" class="body">zₜ = αₜz₀ + σₜε</text>
+<text x="78" y="1999" class="body">配对文本由冻结CLIP编码</text>
+<rect x="500" y="1830" width="550" height="235" rx="16" fill="#e5f3e9" stroke="#a6bfd0" stroke-width="2"/>
+<text x="518" y="1868" class="head">训练同一骨架时序去噪器</text>
+<text x="518" y="1906" class="body">输入zₜ、时间t与词级条件</text>
+<text x="518" y="1937" class="body">随机丢弃文本以训练CFG</text>
+<text x="518" y="1968" class="body">预测 v̂ₜ</text>
+<text x="518" y="1999" class="body">不另训练一个文本编辑模型</text>
+<rect x="1130" y="1830" width="390" height="235" rx="16" fill="#e5f3e9" stroke="#a6bfd0" stroke-width="2"/>
+<text x="1148" y="1868" class="head">扩散训练监督</text>
+<text x="1148" y="1906" class="body">目标 vₜ = αₜε − σₜz₀</text>
+<text x="1148" y="1937" class="body">最小化 ‖v̂ₜ − vₜ‖²</text>
+<text x="1148" y="1968" class="body">v不是人体关节的运动速度</text>
+<text x="1148" y="1999" class="body">与VAE重建损失分阶段训练</text>
+<path d="M1080 1450 V1765 H240 V1830" class="line"/>
+<path d="M1080 1675 H1130" class="line"/>
+<text x="1082" y="1657" class="small">KL</text>
+<path d="M420 1940 H500" class="line"/>
+<path d="M1050 1940 H1130" class="line"/>
+<path d="M775 2065 V2090 H18 V530 H530" class="reuse"/>
+<text x="60" y="2118" class="small">训练好的去噪器用于生成和编辑；训练好的D负责将两种路径的latent还原成动作。</text>
+<rect x="30" y="2200" width="1540" height="710" rx="24" fill="#f7f3fb" stroke="#d1dfe5" stroke-width="2"/>
+<text x="55" y="2245" class="section">可选编辑：共享噪声与源注意力，目标文本内容仍参与生成</text>
+<rect x="60" y="2300" width="300" height="145" rx="16" fill="#eee6f7" stroke="#a6bfd0" stroke-width="2"/>
+<text x="78" y="2338" class="head">同一噪声起点</text>
+<text x="78" y="2376" class="body">初始时 z_T = z*_T</text>
+<text x="78" y="2407" class="body">随后两分支分别演化</text>
+<rect x="450" y="2300" width="460" height="190" rx="16" fill="#eee6f7" stroke="#a6bfd0" stroke-width="2"/>
+<text x="468" y="2338" class="head">源文本 c 的生成</text>
+<text x="468" y="2376" class="body">复用已训练SALAD去噪器</text>
+<text x="468" y="2407" class="body">得到源动作与逐步注意力M</text>
+<text x="468" y="2438" class="body">源码可先生成并缓存这些信息</text>
+<rect x="1050" y="2300" width="470" height="190" rx="16" fill="#eee6f7" stroke="#a6bfd0" stroke-width="2"/>
+<text x="1068" y="2338" class="head">目标文本 c* 的生成</text>
+<text x="1068" y="2376" class="body">同一噪声起点、不同文本条件</text>
+<text x="1068" y="2407" class="body">取得当前目标注意力M*</text>
+<text x="1068" y="2438" class="body">目标文本计算当前内容向量V*</text>
+<path d="M360 2372 H450" class="line"/>
+<path d="M402 2372 V2272 H1280 V2300" class="line"/>
+<rect x="450" y="2575" width="460" height="205" rx="16" fill="#eee6f7" stroke="#a6bfd0" stroke-width="2"/>
+<text x="468" y="2613" class="head">编辑注意力算子</text>
+<text x="468" y="2651" class="body">换词：早期源M，后期目标M*</text>
+<text x="468" y="2682" class="body">加词：保留旧词、加入新词注意力</text>
+<text x="468" y="2713" class="body">重加权：缩放所选词的注意力列</text>
+<text x="468" y="2744" class="body">镜像：交换左右骨架区域行</text>
+<rect x="1050" y="2575" width="470" height="205" rx="16" fill="#eee6f7" stroke="#a6bfd0" stroke-width="2"/>
+<text x="1068" y="2613" class="head">注入M̂，继续目标采样</text>
+<text x="1068" y="2651" class="body">修改后的权重 × 目标内容V*</text>
+<text x="1068" y="2682" class="body">执行后续DDIM更新</text>
+<text x="1068" y="2713" class="body">复用VAE解码器 → 编辑后的动作</text>
+<text x="1068" y="2744" class="body">源SA/TA也可选在早期复用</text>
+<path d="M680 2490 V2575" class="line"/>
+<path d="M1280 2490 V2520 H970 V2680 H910" class="line"/>
+<path d="M1450 2490 V2575" class="line"/>
+<text x="1310" y="2552" class="small">目标V*</text>
+<path d="M910 2725 H1050" class="line"/>
+<path d="M1520 2660 H1540 V2395 H1520" class="line"/>
+<text x="60" y="2660" class="head">原动作来源：</text>
+<text x="60" y="2702" class="body">源提示生成的动作</text>
+<text x="60" y="2750" class="body">真实动捕反演</text>
+<text x="60" y="2785" class="body">不在本文标准流程中</text>
+<text x="60" y="2858" class="small">编辑干预的是学习到的注意力；没有额外训练，也没有逐关节位置、接触或时序事件的硬求解器。</text>
+<text x="50" y="2950" class="small">示意遵循论文主机制；实现细节与源码版本在正文单独说明。本次未运行模型。</text>
+</svg>
