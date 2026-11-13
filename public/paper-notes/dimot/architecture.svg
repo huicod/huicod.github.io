@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="3360" viewBox="0 0 1440 3360" role="img" aria-labelledby="title desc">
+<title id="title">DiMoT：完整训练与推理架构</title>
+<desc id="desc">上方为文本条件十步隐空间生成与一步AMD解码。中间为冻结旧评判器和解码器、含双重停止梯度的CSA编码器训练。下方为分阶段训练顺序与平均速度课程，区分两种噪声、连续隐变量、重建梯度和训练后复用。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3b5066"/></marker><marker id="grad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#23836d"/></marker></defs>
+<style>
+text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill:#1f354b; }
+.title {font-size:38px;font-weight:700}.subtitle{font-size:23px;fill:#53697b}.paneltitle{font-size:30px;font-weight:700}.node-title{font-size:25px;font-weight:700}.body{font-size:22px}.small{font-size:20px;fill:#53697b}.label{font-size:20px;fill:#344e65}.note{font-size:23px;font-weight:600}
+.flow {fill:none;stroke:#3b5066;stroke-width:3;marker-end:url(#arrow)}
+.gradient {fill:none;stroke:#23836d;stroke-width:3;stroke-dasharray:10 7;marker-end:url(#grad)}
+</style>
+<rect width="1440" height="3360" fill="#fff"/>
+
+<text x="60" y="60" class="title" text-anchor="start">DiMoT：让隐空间易于生成，让解码器恢复连续动态</text>
+<text x="60" y="103" class="subtitle" text-anchor="start">教学重绘 · 连续 VAE token + Critic Spectral Adaptation + Alpha-Flow Motion Decoder</text>
+<rect x="30" y="140" width="1380" height="910" rx="22" fill="#f0f6fd" stroke="#c9d5df" stroke-width="2"/>
+<text x="55" y="183" class="paneltitle" text-anchor="start">A  推理：10 步隐空间生成 → 1 步动作解码</text>
+<text x="55" y="220" class="subtitle" text-anchor="start">CSA 评判器与旧解码器不参与推理；两类噪声属于不同空间、不同阶段。</text>
+<rect x="75" y="270" width="350" height="122" rx="13" fill="#fff" stroke="#8dabc0" stroke-width="2"/>
+<text x="250.0" y="306" class="node-title" text-anchor="middle">文本 y</text>
+<text x="250.0" y="340" class="body" text-anchor="middle">双人交互描述</text>
+<rect x="515" y="270" width="350" height="122" rx="13" fill="#e2edfb" stroke="#8dabc0" stroke-width="2"/>
+<text x="690.0" y="306" class="node-title" text-anchor="middle">冻结 CLIP + 文本细化</text>
+<text x="690.0" y="340" class="body" text-anchor="middle">提取全局文本条件</text>
+<rect x="975" y="440" width="350" height="140" rx="13" fill="#d8e9fd" stroke="#8dabc0" stroke-width="2"/>
+<text x="1150.0" y="476" class="node-title" text-anchor="middle">新的隐空间生成器</text>
+<text x="1150.0" y="510" class="body" text-anchor="middle">11 层 Transformer</text>
+<text x="1150.0" y="539" class="body" text-anchor="middle">10 步流采样 · CFG 3</text>
+<rect x="515" y="440" width="350" height="140" rx="13" fill="#ffffff" stroke="#8dabc0" stroke-width="2"/>
+<text x="690.0" y="476" class="node-title" text-anchor="middle">隐空间高斯噪声</text>
+<text x="690.0" y="510" class="body" text-anchor="middle">与动作噪声形状不同</text>
+<text x="690.0" y="539" class="body" text-anchor="middle">起点 → 生成连续隐变量</text>
+<path d="M 425,331 L 515,331" class="flow"/>
+<text x="470" y="315" class="label" text-anchor="middle">文本</text>
+<path d="M 865,331 L 1150,331 L 1150,440" class="flow"/>
+<text x="1020" y="315" class="label" text-anchor="middle">文本条件</text>
+<path d="M 865,510 L 975,510" class="flow"/>
+<text x="920" y="491" class="label" text-anchor="middle">噪声</text>
+<rect x="975" y="650" width="350" height="140" rx="13" fill="#e6f0fb" stroke="#8dabc0" stroke-width="2"/>
+<text x="1150.0" y="686" class="node-title" text-anchor="middle">连续隐变量 z</text>
+<text x="1150.0" y="720" class="body" text-anchor="middle">16 tokens × 32 channels</text>
+<text x="1150.0" y="749" class="body" text-anchor="middle">没有离散码本或动作词</text>
+<path d="M 1150,580 L 1150,650" class="flow"/>
+<rect x="515" y="650" width="350" height="140" rx="13" fill="#e6f0fb" stroke="#8dabc0" stroke-width="2"/>
+<text x="690.0" y="686" class="node-title" text-anchor="middle">逐帧条件投影</text>
+<text x="690.0" y="720" class="body" text-anchor="middle">2 层 Transformer decoder</text>
+<text x="690.0" y="749" class="body" text-anchor="middle">帧查询关注全部 latent</text>
+<rect x="75" y="650" width="350" height="140" rx="13" fill="#ffffff" stroke="#8dabc0" stroke-width="2"/>
+<text x="250.0" y="686" class="node-title" text-anchor="middle">T 个可学习帧查询</text>
+<text x="250.0" y="720" class="body" text-anchor="middle">加入帧位置编码</text>
+<text x="250.0" y="749" class="body" text-anchor="middle">提供输出帧的查询位置</text>
+<path d="M 975,720 L 865,720" class="flow"/>
+<text x="920" y="701" class="label" text-anchor="middle">记忆</text>
+<path d="M 425,720 L 515,720" class="flow"/>
+<text x="470" y="701" class="label" text-anchor="middle">查询</text>
+<rect x="75" y="860" width="350" height="140" rx="13" fill="#ffffff" stroke="#8dabc0" stroke-width="2"/>
+<text x="250.0" y="896" class="node-title" text-anchor="middle">动作空间噪声 x₁</text>
+<text x="250.0" y="930" class="body" text-anchor="middle">与整段输出动作同形状</text>
+<text x="250.0" y="959" class="body" text-anchor="middle">不是上方的 latent 噪声</text>
+<rect x="515" y="860" width="350" height="140" rx="13" fill="#d8e9fd" stroke="#8dabc0" stroke-width="2"/>
+<text x="690.0" y="896" class="node-title" text-anchor="middle">AMD：9 层 Transformer</text>
+<text x="690.0" y="930" class="body" text-anchor="middle">预测区间 [0,1] 平均速度</text>
+<text x="690.0" y="959" class="body" text-anchor="middle">动作解码 1 步 · CFG 3</text>
+<rect x="975" y="860" width="350" height="140" rx="13" fill="#d8e9fd" stroke="#8dabc0" stroke-width="2"/>
+<text x="1150.0" y="896" class="node-title" text-anchor="middle">连续动作输出 x̂</text>
+<text x="1150.0" y="930" class="body" text-anchor="middle">x̂ = x₁ − uψ(x₁, 0, 1, z)</text>
+<text x="1150.0" y="959" class="body" text-anchor="middle">整段双人 / 单人动作</text>
+<path d="M 690,790 L 690,860" class="flow"/>
+<text x="795" y="830" class="label" text-anchor="middle">逐帧条件 c_z</text>
+<path d="M 425,930 L 515,930" class="flow"/>
+<text x="470" y="912" class="label" text-anchor="middle">x₁</text>
+<path d="M 865,930 L 975,930" class="flow"/>
+<text x="920" y="911" class="label" text-anchor="middle">一次更新</text>
+<text x="80" y="617" class="small" text-anchor="start">token 对应粗粒度时间信息，不强制一 token 对应一帧。</text>
+<rect x="30" y="1110" width="1380" height="1110" rx="22" fill="#f0faf6" stroke="#c9d5df" stroke-width="2"/>
+<text x="55" y="1153" class="paneltitle" text-anchor="start">B  CSA 训练：只适配编码器，旧评判器与旧解码器冻结</text>
+<text x="55" y="1190" class="subtitle" text-anchor="start">实线传递表示；绿色虚线是梯度。冻结参数与停止梯度是两种不同操作。</text>
+<rect x="75" y="1240" width="330" height="122" rx="13" fill="#ffffff" stroke="#8dabc0" stroke-width="2"/>
+<text x="240.0" y="1276" class="node-title" text-anchor="middle">真实动作 x</text>
+<text x="240.0" y="1310" class="body" text-anchor="middle">配有文本 y</text>
+<rect x="515" y="1240" width="350" height="122" rx="13" fill="#d9f1e6" stroke="#69a691" stroke-width="2"/>
+<text x="690.0" y="1276" class="node-title" text-anchor="middle">编码器 Eφ：可训练</text>
+<text x="690.0" y="1310" class="body" text-anchor="middle">沿用预训练初始化</text>
+<rect x="975" y="1240" width="350" height="122" rx="13" fill="#e6f5ee" stroke="#8dabc0" stroke-width="2"/>
+<text x="1150.0" y="1276" class="node-title" text-anchor="middle">连续 z = Eφ(x)</text>
+<text x="1150.0" y="1310" class="body" text-anchor="middle">保留可回传梯度的目标 z</text>
+<path d="M 405,1301 L 515,1301" class="flow"/>
+<path d="M 865,1301 L 975,1301" class="flow"/>
+<rect x="75" y="1455" width="330" height="145" rx="13" fill="#ffffff" stroke="#8dabc0" stroke-width="2"/>
+<text x="240.0" y="1491" class="node-title" text-anchor="middle">文本 y + 噪声 ε + t</text>
+<text x="240.0" y="1525" class="body" text-anchor="middle">文本作为 critic 条件</text>
+<text x="240.0" y="1554" class="body" text-anchor="middle">ε 属于隐空间</text>
+<rect x="515" y="1455" width="350" height="145" rx="13" fill="#e6f5ee" stroke="#8dabc0" stroke-width="2"/>
+<text x="690.0" y="1491" class="node-title" text-anchor="middle">构造评判器输入</text>
+<text x="690.0" y="1525" class="body" text-anchor="middle">zₜ = (1−t) sg(z) + t ε</text>
+<text x="690.0" y="1554" class="body" text-anchor="middle">第 1 处 sg：隔断输入梯度</text>
+<path d="M 405,1527 L 515,1527" class="flow"/>
+<path d="M 1150,1362 L 1150,1410 L 690,1410 L 690,1455" class="flow"/>
+<text x="825" y="1398" class="label" text-anchor="middle">仅此分支使用 sg(z)</text>
+<rect x="975" y="1455" width="350" height="122" rx="13" fill="#f0f2f4" stroke="#a2b0ba" stroke-width="2"/>
+<text x="1150.0" y="1491" class="node-title" text-anchor="middle">旧解码器 D₀：冻结</text>
+<text x="1150.0" y="1525" class="body" text-anchor="middle">重建 D₀(z)</text>
+<path d="M 1150,1362 L 1150,1455" class="flow"/>
+<rect x="975" y="1650" width="350" height="122" rx="13" fill="#e6f5ee" stroke="#8dabc0" stroke-width="2"/>
+<text x="1150.0" y="1686" class="node-title" text-anchor="middle">重建损失 Lrec</text>
+<text x="1150.0" y="1720" class="body" text-anchor="middle">对比原动作 x</text>
+<text x="1150.0" y="1749" class="body" text-anchor="middle">梯度经过 D₀ 回到 Eφ</text>
+<path d="M 1150,1577 L 1150,1650" class="flow"/>
+<rect x="515" y="1670" width="350" height="145" rx="13" fill="#f0f2f4" stroke="#a2b0ba" stroke-width="2"/>
+<text x="690.0" y="1706" class="node-title" text-anchor="middle">旧生成器 f₀：冻结</text>
+<text x="690.0" y="1740" class="body" text-anchor="middle">文本条件 RF 评判器</text>
+<text x="690.0" y="1769" class="body" text-anchor="middle">c = sg(f₀(zₜ,t,y))</text>
+<path d="M 690,1600 L 690,1670" class="flow"/>
+<text x="830" y="1641" class="label" text-anchor="middle">加噪输入与条件</text>
+<rect x="515" y="1885" width="350" height="145" rx="13" fill="#d9f1e6" stroke="#69a691" stroke-width="2"/>
+<text x="690.0" y="1921" class="node-title" text-anchor="middle">残差目标 r = c − (ε−z)</text>
+<text x="690.0" y="1955" class="body" text-anchor="middle">c 不回传；+z 回传</text>
+<text x="690.0" y="1984" class="body" text-anchor="middle">不穿过评判器求梯度</text>
+<path d="M 690,1815 L 690,1885" class="flow"/>
+<text x="860" y="1857" class="label" text-anchor="middle">第 2 处 sg：分离输出</text>
+<path d="M 1325,1301 L 1367,1301 L 1367,1957 L 865,1957" class="flow"/>
+<text x="1135" y="1940" class="label" text-anchor="middle">未分离的目标 z</text>
+<rect x="515" y="2080" width="350" height="105" rx="13" fill="#d9f1e6" stroke="#69a691" stroke-width="2"/>
+<text x="690.0" y="2116" class="node-title" text-anchor="middle">时间轴 FFT → 加权残差</text>
+<text x="690.0" y="2150" class="body" text-anchor="middle">LCSA：高频位置权重更高</text>
+<path d="M 690,2030 L 690,2080" class="flow"/>
+<path d="M 515,2130 L 465,2130 L 465,1280 L 515,1280" class="gradient"/>
+<text x="279" y="1830" class="label" text-anchor="middle">λc · LCSA 回传</text>
+<text x="279" y="1870" class="note" text-anchor="middle">只更新编码器</text>
+<path d="M 975,1711 L 920,1711 L 920,1340 L 865,1340" class="gradient"/>
+<rect x="75" y="2025" width="330" height="160" rx="13" fill="#fff" stroke="#8dabc0" stroke-width="2"/>
+<text x="240.0" y="2061" class="node-title" text-anchor="middle">固定频谱权重</text>
+<text x="240.0" y="2095" class="body" text-anchor="middle">w(k) = 1 + κ d(k)ᵖ</text>
+<text x="240.0" y="2124" class="body" text-anchor="middle">κ=1，p=2，λc=0.1</text>
+<text x="240.0" y="2153" class="body" text-anchor="middle">按均值归一化</text>
+<path d="M 405,2130 L 515,2130" class="flow"/>
+<text x="1010" y="2078" class="note" text-anchor="start">总目标：Lrec + λc LCSA</text>
+<text x="1010" y="2120" class="small" text-anchor="start">权重固定；残差依数据而变</text>
+<text x="1010" y="2152" class="small" text-anchor="start">token 轴频率 ≠ 关节运动 Hz</text>
+<rect x="30" y="2280" width="1380" height="970" rx="22" fill="#f7f2fc" stroke="#c9d5df" stroke-width="2"/>
+<text x="55" y="2323" class="paneltitle" text-anchor="start">C  分阶段训练与 AMD 课程：一步能力来自专门的训练</text>
+<text x="55" y="2360" class="subtitle" text-anchor="start">箭头表示先后顺序；CSA 完成后，必须为新的隐空间另训生成器。</text>
+<rect x="65" y="2420" width="290" height="140" rx="13" fill="#fff" stroke="#8dabc0" stroke-width="2"/>
+<text x="210.0" y="2456" class="node-title" text-anchor="middle">① 基线准备</text>
+<text x="210.0" y="2490" class="body" text-anchor="middle">训练 VAE：6000 epochs</text>
+<text x="210.0" y="2519" class="body" text-anchor="middle">再训练旧 latent 生成器</text>
+<rect x="405" y="2420" width="290" height="140" rx="13" fill="#e6f5ee" stroke="#8dabc0" stroke-width="2"/>
+<text x="550.0" y="2456" class="node-title" text-anchor="middle">② CSA 适配</text>
+<text x="550.0" y="2490" class="body" text-anchor="middle">编码器：1000 epochs</text>
+<text x="550.0" y="2519" class="body" text-anchor="middle">旧 decoder / critic 冻结</text>
+<rect x="745" y="2420" width="290" height="140" rx="13" fill="#e6f0fb" stroke="#8dabc0" stroke-width="2"/>
+<text x="890.0" y="2456" class="node-title" text-anchor="middle">③ 新 latent 生成器</text>
+<text x="890.0" y="2490" class="body" text-anchor="middle">冻结适配后的编码器</text>
+<text x="890.0" y="2519" class="body" text-anchor="middle">同架构从头训练</text>
+<rect x="1080" y="2420" width="290" height="140" rx="13" fill="#eee1f8" stroke="#ac8dc7" stroke-width="2"/>
+<text x="1225.0" y="2456" class="node-title" text-anchor="middle">④ 新 AMD 解码器</text>
+<text x="1225.0" y="2490" class="body" text-anchor="middle">从头训练 2000 epochs</text>
+<text x="1225.0" y="2519" class="body" text-anchor="middle">投影 + 生成式解码</text>
+<path d="M 355,2490 L 405,2490" class="flow"/>
+<path d="M 695,2490 L 745,2490" class="flow"/>
+<path d="M 1035,2490 L 1080,2490" class="flow"/>
+<rect x="75" y="2670" width="350" height="160" rx="13" fill="#fff" stroke="#8dabc0" stroke-width="2"/>
+<text x="250.0" y="2706" class="node-title" text-anchor="middle">AMD 的两类条件来源</text>
+<text x="250.0" y="2740" class="body" text-anchor="middle">75%：真实动作经新编码器</text>
+<text x="250.0" y="2769" class="body" text-anchor="middle">25%：新生成器预测 latent</text>
+<text x="250.0" y="2798" class="body" text-anchor="middle">上游在本阶段冻结</text>
+<rect x="515" y="2670" width="350" height="160" rx="13" fill="#eee1f8" stroke="#ac8dc7" stroke-width="2"/>
+<text x="690.0" y="2706" class="node-title" text-anchor="middle">条件投影 → c_z</text>
+<text x="690.0" y="2740" class="body" text-anchor="middle">复用 A 中的帧查询结构</text>
+<text x="690.0" y="2769" class="body" text-anchor="middle">学习覆盖预测 latent 偏差</text>
+<rect x="975" y="2670" width="350" height="160" rx="13" fill="#eee1f8" stroke="#ac8dc7" stroke-width="2"/>
+<text x="1150.0" y="2706" class="node-title" text-anchor="middle">训练 AMD 速度网络</text>
+<text x="1150.0" y="2740" class="body" text-anchor="middle">输入 xₜ、r_d、t、c_z</text>
+<text x="1150.0" y="2769" class="body" text-anchor="middle">输出区间平均速度 uψ</text>
+<path d="M 425,2750 L 515,2750" class="flow"/>
+<path d="M 865,2750 L 975,2750" class="flow"/>
+<rect x="75" y="2890" width="350" height="145" rx="13" fill="#fff" stroke="#8dabc0" stroke-width="2"/>
+<text x="250.0" y="2926" class="node-title" text-anchor="middle">真实动作 + 动作噪声</text>
+<text x="250.0" y="2960" class="body" text-anchor="middle">xₜ = (1−t)x + t ε</text>
+<text x="250.0" y="2989" class="body" text-anchor="middle">瞬时目标 v = ε − x</text>
+<rect x="515" y="2890" width="350" height="145" rx="13" fill="#fff" stroke="#8dabc0" stroke-width="2"/>
+<text x="690.0" y="2926" class="node-title" text-anchor="middle">区间与目标采样</text>
+<text x="690.0" y="2960" class="body" text-anchor="middle">50%：t = r_d，瞬时学习</text>
+<text x="690.0" y="2989" class="body" text-anchor="middle">50%：区间平均速度学习</text>
+<rect x="975" y="2890" width="350" height="145" rx="13" fill="#eee1f8" stroke="#ac8dc7" stroke-width="2"/>
+<text x="1150.0" y="2926" class="node-title" text-anchor="middle">平均速度训练目标</text>
+<text x="1150.0" y="2960" class="body" text-anchor="middle">自举目标分支停止梯度</text>
+<text x="1150.0" y="2989" class="body" text-anchor="middle">终点 MeanFlow 使用 JVP</text>
+<path d="M 425,2962 L 515,2962" class="flow"/>
+<path d="M 865,2962 L 975,2962" class="flow"/>
+<path d="M 1150,2890 L 1150,2830" class="gradient"/>
+<text x="1225" y="2870" class="label" text-anchor="middle">监督</text>
+<path d="M 250,2890 L 250,2855 L 940,2855 L 940,2710 L 975,2710" class="flow"/>
+<text x="706" y="2850" class="label" text-anchor="middle">加噪动作 xₜ</text>
+<rect x="75" y="3090" width="1250" height="115" rx="14" fill="#eee1f8" stroke="#ac8dc7" stroke-width="2"/>
+<text x="100" y="3126" class="note" text-anchor="start">α 课程：前 1000 epochs 由 1 线性降至 0.005；后 1000 切换精确 MeanFlow 目标。</text>
+<text x="100" y="3164" class="body" text-anchor="start">α→0 是目标的极限关系，不能把 0 直接代入含 1/α 的有限 α 公式。</text>
+<text x="100" y="3195" class="small" text-anchor="start">平均速度沿生成流时间计算，不是对人物真实动作时间求关节速度平均。</text>
+<text x="60" y="3292" class="subtitle" text-anchor="start">来源：DiMoT v1，图 2、式 1–7、算法 1、附录 E。教学示意，不表示已运行模型。</text>
+<text x="60" y="3328" class="subtitle" text-anchor="start">最终输出仍需检查接触、穿透与脚滑；连续 latent 和逐帧条件均不提供硬约束保证。</text>
+</svg>
