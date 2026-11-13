@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="3260" viewBox="0 0 1600 3260" role="img" aria-labelledby="title desc">
+<title id="title">MoMask++完整生成、训练与数据构建架构</title>
+<desc id="desc">多尺度残差量化使用共享码本；单一掩码Transformer通过T5文字条件共同预测全部尺度，经过上采样求和解码为动作。另展示两阶段训练、数据构建及可选LLM改写和根速度修正。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#42677b"/></marker><marker id="reuse" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#569377"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#203d50}.title{font-size:39px;font-weight:700}.section{font-size:29px;font-weight:700}.head{font-size:27px;font-weight:700}.body{font-size:24px}.small{font-size:22px}.line{fill:none;stroke:#42677b;stroke-width:3;marker-end:url(#arrow)}.dash{fill:none;stroke:#569377;stroke-width:3;stroke-dasharray:10 7;marker-end:url(#reuse)}.optional{fill:none;stroke:#8c75ab;stroke-width:3;stroke-dasharray:10 7;marker-end:url(#arrow)}</style>
+<rect width="1600" height="3260" fill="white"/>
+<text x="50" y="63" class="title">MoMask++ · 用一个模型共同生成多尺度动作token</text>
+<text x="50" y="102" class="small">教学重绘｜SnapMoGen原文图2、式5–7｜实线：数据流；虚线：复用、监督或可选步骤</text>
+<rect x="30" y="130" width="1540" height="1370" rx="24" fill="#f4f8fd" stroke="#d1dfe5" stroke-width="2"/>
+<text x="55" y="177" class="section">A  生成：给定文本与时长，不需要输入真实动作</text>
+<rect x="60" y="220" width="400" height="170" rx="16" fill="#e8f2fd" stroke="#acc5d7" stroke-width="2"/>
+<text x="80" y="259" class="head">详细文本 c</text>
+<text x="80" y="300" class="body">动作、方向、姿态、风格与先后</text>
+<text x="80" y="334" class="body">可以直接由用户提供</text>
+<text x="80" y="368" class="body">或使用左下方的可选LLM改写</text>
+<rect x="550" y="220" width="580" height="170" rx="16" fill="#e8f2fd" stroke="#acc5d7" stroke-width="2"/>
+<text x="570" y="259" class="head">按目标长度建立全MASK序列</text>
+<text x="570" y="300" class="body">q = concat(q⁰, q¹, …, qⱽ)</text>
+<text x="570" y="334" class="body">各尺度长度不同，全部先填MASK</text>
+<text x="570" y="368" class="body">拼接位置不是实际播放时间</text>
+<rect x="1220" y="220" width="300" height="170" rx="16" fill="#e8f2fd" stroke="#acc5d7" stroke-width="2"/>
+<text x="1240" y="259" class="head">目标时长 / 帧数</text>
+<text x="1240" y="300" class="body">决定有效潜长度 n</text>
+<text x="1240" y="334" class="body">与各尺度长度 hᵛ</text>
+<text x="1240" y="368" class="body">主模型时间压缩4倍</text>
+<path d="M1220 305 H1130" class="line"/>
+<rect x="60" y="480" width="400" height="190" rx="16" fill="#e8f2fd" stroke="#acc5d7" stroke-width="2"/>
+<text x="80" y="519" class="head">冻结 T5-base</text>
+<text x="80" y="560" class="body">提取逐词特征</text>
+<text x="80" y="594" class="body">文字条件不是一个动作程序</text>
+<text x="80" y="628" class="body">代码关闭T5梯度</text>
+<path d="M260 390 V480" class="line"/>
+<rect x="550" y="480" width="970" height="260" rx="16" fill="#e8f2fd" stroke="#acc5d7" stroke-width="2"/>
+<text x="570" y="519" class="head">单一双向掩码Transformer · 所有尺度联合建模</text>
+<text x="570" y="560" class="body">动作token嵌入 + 位置结构 → 8层Transformer → 码本类别分布</text>
+<text x="570" y="594" class="body">文字接入（二选一）：in-context拼接，或cross-attention查询</text>
+<text x="570" y="628" class="body">CFG融合有文本 / 空文本预测；当前待预测位置并行采样</text>
+<text x="570" y="662" class="body">不同尺度可互相交换信息，不强制逐尺度自回归生成</text>
+<text x="570" y="696" class="body">SnapMoGen论文：10轮 / CFG 5；HumanML3D：18轮 / CFG 4</text>
+<path d="M840 390 V480" class="line"/>
+<path d="M460 570 H550" class="line"/>
+<rect x="60" y="830" width="400" height="220" rx="16" fill="#f2ecfa" stroke="#c9b6dc" stroke-width="2"/>
+<text x="80" y="869" class="head">可选：简短指令 → LLM</text>
+<text x="80" y="910" class="body">如“投篮” → 细致动作描述</text>
+<text x="80" y="944" class="body">并建议4–12秒时长</text>
+<text x="80" y="978" class="body">允许补入细节，不是严格保意</text>
+<text x="80" y="1012" class="body">当前demo用预写文本，非在线API</text>
+<path d="M80 830 H45 V305 H60" class="optional"/>
+<rect x="550" y="830" width="510" height="190" rx="16" fill="#e8f2fd" stroke="#acc5d7" stroke-width="2"/>
+<text x="570" y="869" class="head">置信度筛选与再次掩码</text>
+<text x="570" y="910" class="body">保留较高置信token</text>
+<text x="570" y="944" class="body">低置信位置重新MASK，继续迭代</text>
+<text x="570" y="978" class="body">待补全比例随轮数下降</text>
+<rect x="1140" y="830" width="380" height="190" rx="16" fill="#e8f2fd" stroke="#acc5d7" stroke-width="2"/>
+<text x="1160" y="869" class="head">全部尺度token完成</text>
+<text x="1160" y="910" class="body">每个索引属于同一共享码本</text>
+<text x="1160" y="944" class="body">按尺度拆回不同长度序列</text>
+<text x="1160" y="978" class="body">不是人工定义的动作标签</text>
+<path d="M805 740 V830" class="line"/>
+<path d="M1060 925 H1140" class="line"/>
+<text x="1065" y="894" class="small">结束</text>
+<path d="M550 930 H495 V705 H550" class="line"/>
+<text x="60" y="1130" class="head">粗尺度通常更早稳定：</text>
+<text x="60" y="1170" class="body">原文图5观察到的趋势，</text>
+<text x="60" y="1205" class="body">不是人为固定的生成顺序。</text>
+<rect x="550" y="1100" width="970" height="170" rx="16" fill="#e8f2fd" stroke="#acc5d7" stroke-width="2"/>
+<text x="570" y="1139" class="head">共享码本查表 → 上采样求和 → 复用动作解码器</text>
+<text x="570" y="1180" class="body">每尺度 qᵛ → lookup(C,qᵛ) → 上采样至同一潜长度 n</text>
+<text x="570" y="1214" class="body">所有尺度特征相加得到 f̂ → 解码器 D(f̂)</text>
+<text x="570" y="1248" class="body">连续动作特征包含根运动与关节运动；不是输出离散token就结束</text>
+<path d="M1330 1020 V1100" class="line"/>
+<rect x="550" y="1350" width="550" height="115" rx="16" fill="#e8f2fd" stroke="#acc5d7" stroke-width="2"/>
+<text x="570" y="1389" class="head">连续动作输出</text>
+<text x="570" y="1430" class="body">SnapMoGen：24关节 / 296维 / 30fps</text>
+<rect x="1160" y="1330" width="360" height="155" rx="16" fill="#f2ecfa" stroke="#c9b6dc" stroke-width="2"/>
+<text x="1180" y="1369" class="head">代码可选：根速度回归</text>
+<text x="1180" y="1410" class="body">局部特征 → 重估根水平速度</text>
+<text x="1180" y="1444" class="body">后处理，不保证足地接触</text>
+<text x="1180" y="1478" class="body">再做运动学重建 / BVH导出</text>
+<path d="M825 1270 V1350" class="line"/>
+<path d="M1100 1400 H1160" class="optional"/>
+<rect x="30" y="1540" width="1540" height="1230" rx="24" fill="#f3faf6" stroke="#c8ddcf" stroke-width="2"/>
+<text x="55" y="1588" class="section">B  训练：先学习动作表示，再学习文字到token的映射</text>
+<text x="60" y="1643" class="head">阶段1 · 多尺度残差量化器（编码器、共享码本、解码器参与学习）</text>
+<rect x="60" y="1680" width="330" height="170" rx="16" fill="#e7f4ec" stroke="#abcbb7" stroke-width="2"/>
+<text x="80" y="1719" class="head">真实动作 m</text>
+<text x="80" y="1760" class="body">动捕片段，标准化 / 镜像</text>
+<text x="80" y="1794" class="body">输入为完整连续动作特征</text>
+<text x="80" y="1828" class="body">重建监督来自同一段动作</text>
+<rect x="470" y="1680" width="390" height="170" rx="16" fill="#e7f4ec" stroke="#abcbb7" stroke-width="2"/>
+<text x="490" y="1719" class="head">动作编码器 E</text>
+<text x="490" y="1760" class="body">膨胀残差块 + 自注意力</text>
+<text x="490" y="1794" class="body">时间压缩4倍得到 f</text>
+<text x="490" y="1828" class="body">初始残差 r⁰ = f</text>
+<rect x="940" y="1680" width="580" height="385" rx="16" fill="#e7f4ec" stroke="#abcbb7" stroke-width="2"/>
+<text x="960" y="1719" class="head">多尺度残差循环 v = 0 … V</text>
+<text x="960" y="1760" class="body">① 将完整分辨率残差缩放到 hᵛ</text>
+<text x="960" y="1794" class="body">② 共享码本 C 最近邻量化 → qᵛ</text>
+<text x="960" y="1828" class="body">③ 查表得到该尺度码向量</text>
+<text x="960" y="1862" class="body">④ 上采样回完整潜长度 n</text>
+<text x="960" y="1896" class="body">⑤ 从当前残差中减去该层解释量</text>
+<text x="960" y="1930" class="body">⑥ 剩余残差进入下一、更细尺度</text>
+<text x="960" y="1964" class="body">尺度递增：h⁰ &lt; … &lt; hⱽ = n</text>
+<text x="960" y="1998" class="body">注意：这个顺序属于量化器</text>
+<text x="960" y="2032" class="body">不等于生成器必须遵守的预测顺序</text>
+<path d="M390 1760 H470" class="line"/>
+<path d="M860 1760 H940" class="line"/>
+<rect x="60" y="1960" width="800" height="175" rx="16" fill="#e7f4ec" stroke="#abcbb7" stroke-width="2"/>
+<text x="80" y="1999" class="head">各尺度上采样 → 求和 → 动作解码器 D</text>
+<text x="80" y="2040" class="body">与上方生成阶段使用同一个共享码本和解码器</text>
+<text x="80" y="2074" class="body">重建 m̂，与输入 m 对照；额外强调关键旋转特征</text>
+<text x="80" y="2108" class="body">训练：动作重建 + 量化承诺 + 关键旋转损失；码本EMA更新</text>
+<path d="M940 2010 H860" class="line"/>
+<path d="M225 1850 V1960" class="dash"/>
+<text x="250" y="1915" class="small">重建监督</text>
+<path d="M1520 1990 H1545 V1180 H1520" class="dash"/>
+<path d="M860 2070 H890 V2150 H1545 V1180 H1520" class="dash"/>
+<text x="995" y="2120" class="small">训练后复用共享码本与解码器 ↑</text>
+<text x="60" y="2230" class="head">阶段2 · 固定动作表示与T5，训练一个掩码生成器</text>
+<rect x="60" y="2280" width="430" height="200" rx="16" fill="#e7f4ec" stroke="#abcbb7" stroke-width="2"/>
+<text x="80" y="2319" class="head">动作 → 已训练量化器</text>
+<text x="80" y="2360" class="body">输出各尺度真值索引</text>
+<text x="80" y="2394" class="body">q⁰、q¹、…、qⱽ按尺度拼接</text>
+<text x="80" y="2428" class="body">既作为待遮盖输入，也作监督</text>
+<text x="80" y="2462" class="body">所有尺度使用统一词表</text>
+<path d="M940 2035 H905 V2190 H280 V2280" class="dash"/>
+<rect x="570" y="2280" width="400" height="200" rx="16" fill="#e7f4ec" stroke="#abcbb7" stroke-width="2"/>
+<text x="590" y="2319" class="head">随机掩码 / 替换</text>
+<text x="590" y="2360" class="body">随机抽取余弦分布掩码比例</text>
+<text x="590" y="2394" class="body">在全尺度拼接序列中遮盖</text>
+<text x="590" y="2428" class="body">10%样本去掉文字条件</text>
+<text x="590" y="2462" class="body">为CFG学习空文本分支</text>
+<rect x="1050" y="2280" width="470" height="200" rx="16" fill="#e7f4ec" stroke="#abcbb7" stroke-width="2"/>
+<text x="1070" y="2319" class="head">单一掩码Transformer</text>
+<text x="1070" y="2360" class="body">输入：部分可见token + 文字</text>
+<text x="1070" y="2394" class="body">预测：被遮盖位置的码类别</text>
+<text x="1070" y="2428" class="body">只在监督位置计算交叉熵</text>
+<text x="1070" y="2462" class="body">训练后的生成器复用于A区</text>
+<path d="M490 2370 H570" class="line"/>
+<path d="M970 2370 H1050" class="line"/>
+<rect x="570" y="2560" width="400" height="145" rx="16" fill="#e7f4ec" stroke="#abcbb7" stroke-width="2"/>
+<text x="590" y="2599" class="head">配对描述 → 冻结T5</text>
+<text x="590" y="2640" class="body">人工描述 / 保意改写描述</text>
+<text x="590" y="2674" class="body">同一动作可对应多种措辞</text>
+<path d="M970 2635 H1285 V2480" class="line"/>
+<path d="M280 2480 V2735 H1440 V2480" class="dash"/>
+<text x="70" y="2705" class="small">真值token索引监督</text>
+<rect x="30" y="2810" width="1540" height="400" rx="24" fill="#faf9f3" stroke="#dfdbc5" stroke-width="2"/>
+<text x="55" y="2860" class="section">C  数据构建：SnapMoGen（不是推理时必经步骤）</text>
+<rect x="60" y="2910" width="400" height="190" rx="16" fill="#f4f1e4" stroke="#d7cfb4" stroke-width="2"/>
+<text x="80" y="2949" class="head">动捕采集与片段筛选</text>
+<text x="80" y="2990" class="body">10位表演者，Xsens / Rokoko</text>
+<text x="80" y="3024" class="body">按运动变化切分4–12秒片段</text>
+<text x="80" y="3058" class="body">20,450段 / 43.7小时</text>
+<text x="80" y="3092" class="body">保留片段原长序列关系</text>
+<rect x="550" y="2910" width="420" height="190" rx="16" fill="#f4f1e4" stroke="#d7cfb4" stroke-width="2"/>
+<text x="570" y="2949" class="head">人工细致描述 + 复核</text>
+<text x="570" y="2990" class="body">55位标注员参与</text>
+<text x="570" y="3024" class="body">每段由两位不同标注员描述</text>
+<text x="570" y="3058" class="body">方向 / 姿态 / 风格 / 先后</text>
+<text x="570" y="3092" class="body">40,859条人工描述</text>
+<rect x="1060" y="2910" width="460" height="190" rx="16" fill="#f4f1e4" stroke="#d7cfb4" stroke-width="2"/>
+<text x="1080" y="2949" class="head">LLM保意改写扩充</text>
+<text x="1080" y="2990" class="body">每条人工描述再改写两次</text>
+<text x="1080" y="3024" class="body">共122,565条，平均48词</text>
+<text x="1080" y="3058" class="body">保留动作与顺序，不随意加戏</text>
+<text x="1080" y="3092" class="body">配对动作 / 描述送往阶段1与2</text>
+<path d="M460 3005 H550" class="line"/>
+<path d="M970 3005 H1060" class="line"/>
+<path d="M1520 3020 H1555 V2520 H770 V2560" class="dash"/>
+<path d="M60 3000 H45 V1760 H60" class="dash"/>
+<path d="M1520 2370 H1565 V600 H1520" class="dash"/>
+<text x="60" y="3165" class="small">界限：长文本与多尺度token不是可执行事件程序；没有逐关节硬约束、接触求解器或物理保证。</text>
+<text x="50" y="3240" class="small">数据与训练监督有明确来源；实际连续动作由共享码本与动作解码器产生。</text>
+</svg>

@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="3260" viewBox="0 0 1600 3260" role="img" aria-labelledby="title desc">
+<title id="title">MoMask：残差动作表示与双向掩码生成</title><desc id="desc">完整教学架构，包含生成主线、独立训练和可选时间补全；基础层十轮、五层残差、码本查表求和与连续动作解码。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:'Microsoft YaHei','Noto Sans SC',Arial,sans-serif;fill:#16324a}.title{font-size:42px;font-weight:700}.section{font-size:33px;font-weight:700}.head{font-size:30px;font-weight:700}.body{font-size:27px}.small{font-size:24px}.edge{fill:none;stroke:#475569;stroke-width:3;marker-end:url(#arrow)}.dash{stroke-dasharray:10 7}.note{fill:#57677b}</style><rect width="1600" height="3260" fill="#fff"/>
+<text x="800" y="65" class="title" text-anchor="middle">MoMask：先完成全局基础码，再补残差细节</text>
+<text x="800" y="108" class="small" text-anchor="middle">教学重绘 · CVPR 2024 · 实线：数据流；虚线：复用或可选输入</text>
+<rect x="60" y="150" width="1480" height="1360" rx="26" fill="#f8fbff" stroke="#bfd2e5" stroke-width="2"/>
+<text x="100" y="205" class="section" text-anchor="start">A  文本到动作：冻结codec，调用两个生成器</text>
+<rect x="130" y="250" width="550" height="115" rx="18" fill="#eff6ff" stroke="#93b7db" stroke-width="2"/>
+<text x="405.0" y="293" class="head" text-anchor="middle">文本描述 c</text>
+<text x="405.0" y="333" class="body" text-anchor="middle">例如：向前走，踉跄，再恢复平衡</text>
+<rect x="850" y="250" width="580" height="115" rx="18" fill="#eff6ff" stroke="#93b7db" stroke-width="2"/>
+<text x="1140.0" y="293" class="head" text-anchor="middle">目标长度 N</text>
+<text x="1140.0" y="333" class="body" text-anchor="middle">基础层位置数 n = N / 4</text>
+<rect x="130" y="420" width="550" height="120" rx="18" fill="#eef2ff" stroke="#b8bce1" stroke-width="2"/>
+<text x="405.0" y="463" class="head" text-anchor="middle">冻结CLIP</text>
+<text x="405.0" y="503" class="body" text-anchor="middle">提供文本特征</text>
+<rect x="850" y="420" width="580" height="120" rx="18" fill="#eff6ff" stroke="#93b7db" stroke-width="2"/>
+<text x="1140.0" y="463" class="head" text-anchor="middle">全MASK基础序列</text>
+<text x="1140.0" y="503" class="body" text-anchor="middle">n个位置，无需源动作</text>
+<path d="M405 365 V420" class="edge"/>
+<path d="M1140 365 V420" class="edge"/>
+<rect x="850" y="600" width="580" height="145" rx="18" fill="#eff6ff" stroke="#93b7db" stroke-width="2"/>
+<text x="1140.0" y="643" class="head" text-anchor="middle">M-Transformer</text>
+<text x="1140.0" y="683" class="body" text-anchor="middle">双向注意力 · 并行预测待填位置</text>
+<text x="1140.0" y="718" class="body" text-anchor="middle">文本条件／无条件logits → CFG</text>
+<path d="M1140 540 V600" class="edge"/>
+<path d="M680 480 H745 V655 H850" class="edge"/>
+<text x="772" y="625" class="small" text-anchor="middle">文本</text>
+<rect x="850" y="810" width="580" height="145" rx="18" fill="#eff6ff" stroke="#93b7db" stroke-width="2"/>
+<text x="1140.0" y="853" class="head" text-anchor="middle">置信度筛选与重掩码</text>
+<text x="1140.0" y="893" class="body" text-anchor="middle">接受高置信度候选</text>
+<text x="1140.0" y="928" class="body" text-anchor="middle">低置信度位置重新MASK</text>
+<path d="M1140 745 V810" class="edge"/>
+<path d="M1430 880 H1480 V670 H1430" class="edge"/>
+<text x="1360" y="785" class="small" text-anchor="middle">重复至L=10轮</text>
+<rect x="130" y="650" width="550" height="145" rx="18" fill="#fff" stroke="#c4d5e8" stroke-width="2"/>
+<text x="405.0" y="693" class="head" text-anchor="middle">可见上下文是双向的</text>
+<text x="405.0" y="733" class="body" text-anchor="middle">每轮可修改分散的时间位置</text>
+<text x="405.0" y="768" class="body" text-anchor="middle">不是逐帧从左向右写动作</text>
+<rect x="850" y="1020" width="580" height="145" rx="18" fill="#eff6ff" stroke="#93b7db" stroke-width="2"/>
+<text x="1140.0" y="1063" class="head" text-anchor="middle">R-Transformer</text>
+<text x="1140.0" y="1103" class="body" text-anchor="middle">t⁰ → t¹ → … → t⁵，跨层5次</text>
+<text x="1140.0" y="1138" class="body" text-anchor="middle">每层所有时间位置并行预测</text>
+<path d="M1140 955 V1020" class="edge"/>
+<text x="1270" y="996" class="small" text-anchor="middle">完整基础层 t⁰</text>
+<path d="M680 510 H715 V910 H770 V1090 H850" class="edge"/>
+<text x="580" y="895" class="small" text-anchor="middle">文本条件</text>
+<rect x="130" y="1020" width="550" height="145" rx="18" fill="#fff" stroke="#c4d5e8" stroke-width="2"/>
+<text x="405.0" y="1063" class="head" text-anchor="middle">残差层输入</text>
+<text x="405.0" y="1103" class="body" text-anchor="middle">前面各层的学习型embedding之和</text>
+<text x="405.0" y="1138" class="body" text-anchor="middle">与codec码本向量是不同参数</text>
+<path d="M680 1100 H850" class="edge"/>
+<path d="M850 1145 H745 V1195 H100 V1090 H130" class="edge"/>
+<text x="420" y="1188" class="small" text-anchor="middle">追加tʲ，推进到下一残差层</text>
+<rect x="850" y="1230" width="580" height="115" rx="18" fill="#eff6ff" stroke="#93b7db" stroke-width="2"/>
+<text x="1140.0" y="1273" class="head" text-anchor="middle">查六层码本并求和</text>
+<text x="1140.0" y="1313" class="body" text-anchor="middle">b⁰ + b¹ + … + b⁵，得到连续隐向量</text>
+<path d="M1140 1165 V1230" class="edge"/>
+<text x="1270" y="1208" class="small" text-anchor="middle">全部6 × n个token</text>
+<rect x="130" y="1230" width="550" height="115" rx="18" fill="#eff6ff" stroke="#93b7db" stroke-width="2"/>
+<text x="405.0" y="1273" class="head" text-anchor="middle">冻结卷积Decoder D</text>
+<text x="405.0" y="1313" class="body" text-anchor="middle">恢复时间分辨率，输出N帧动作</text>
+<path d="M850 1288 H680" class="edge"/>
+<rect x="130" y="1400" width="1300" height="80" rx="18" fill="#e7f2ff" stroke="#93b7db" stroke-width="2"/>
+<text x="780.0" y="1443" class="head" text-anchor="middle">连续全身动作：不是可读动作词，也没有自动的接触／碰撞硬保证</text>
+<path d="M405 1345 V1400" class="edge"/>
+<rect x="60" y="1570" width="1480" height="1020" rx="26" fill="#f7fcf9" stroke="#b3d8c2" stroke-width="2"/>
+<text x="100" y="1625" class="section" text-anchor="start">B  训练：codec先训练；两个Transformer随后独立学习</text>
+<rect x="120" y="1680" width="380" height="125" rx="18" fill="#edf8f1" stroke="#a2ccb4" stroke-width="2"/>
+<text x="310.0" y="1723" class="head" text-anchor="middle">真实动作 m</text>
+<text x="310.0" y="1763" class="body" text-anchor="middle">N帧姿态特征</text>
+<rect x="610" y="1680" width="350" height="125" rx="18" fill="#edf8f1" stroke="#a2ccb4" stroke-width="2"/>
+<text x="785.0" y="1723" class="head" text-anchor="middle">卷积Encoder E</text>
+<text x="785.0" y="1763" class="body" text-anchor="middle">时间压缩4倍</text>
+<rect x="1070" y="1680" width="380" height="125" rx="18" fill="#edf8f1" stroke="#a2ccb4" stroke-width="2"/>
+<text x="1260.0" y="1723" class="head" text-anchor="middle">RVQ分层量化</text>
+<text x="1260.0" y="1763" class="body" text-anchor="middle">r⁰ → 基础码 → 逐层残差</text>
+<path d="M500 1740 H610" class="edge"/>
+<path d="M960 1740 H1070" class="edge"/>
+<rect x="1070" y="1880" width="380" height="145" rx="18" fill="#edf8f1" stroke="#a2ccb4" stroke-width="2"/>
+<text x="1260.0" y="1923" class="head" text-anchor="middle">六层向量相加</text>
+<text x="1260.0" y="1963" class="body" text-anchor="middle">训练时以q=0.2</text>
+<text x="1260.0" y="1998" class="body" text-anchor="middle">随机关闭若干末端层</text>
+<rect x="610" y="1880" width="350" height="145" rx="18" fill="#edf8f1" stroke="#a2ccb4" stroke-width="2"/>
+<text x="785.0" y="1923" class="head" text-anchor="middle">卷积Decoder D</text>
+<text x="785.0" y="1963" class="body" text-anchor="middle">重建动作 m̂</text>
+<rect x="120" y="1880" width="380" height="145" rx="18" fill="#edf8f1" stroke="#a2ccb4" stroke-width="2"/>
+<text x="310.0" y="1923" class="head" text-anchor="middle">codec训练目标</text>
+<text x="310.0" y="1963" class="body" text-anchor="middle">动作重建 + commitment</text>
+<text x="310.0" y="1998" class="body" text-anchor="middle">码本EMA / reset</text>
+<path d="M1260 1805 V1880" class="edge"/>
+<path d="M1070 1950 H960" class="edge"/>
+<path d="M610 1950 H500" class="edge"/>
+<path d="M310 1805 V1880" class="edge"/>
+<text x="420" y="1852" class="small" text-anchor="middle">真实动作监督</text>
+<rect x="120" y="2120" width="610" height="220" rx="18" fill="#edf8f1" stroke="#a2ccb4" stroke-width="2"/>
+<text x="425.0" y="2163" class="head" text-anchor="middle">独立训练M-Transformer</text>
+<text x="425.0" y="2203" class="body" text-anchor="middle">冻结RVQ产生基础层标签t⁰</text>
+<text x="425.0" y="2238" class="body" text-anchor="middle">随机选比例，破坏基础码</text>
+<text x="425.0" y="2273" class="body" text-anchor="middle">80% MASK / 10%随机 / 10%保留</text>
+<text x="425.0" y="2308" class="body" text-anchor="middle">文本条件 → 交叉熵恢复选中位置</text>
+<rect x="820" y="2120" width="630" height="185" rx="18" fill="#edf8f1" stroke="#a2ccb4" stroke-width="2"/>
+<text x="1135.0" y="2163" class="head" text-anchor="middle">独立训练R-Transformer</text>
+<text x="1135.0" y="2203" class="body" text-anchor="middle">冻结RVQ产生全部层标签</text>
+<text x="1135.0" y="2238" class="body" text-anchor="middle">随机选j，前面各层 + 文本 + j</text>
+<text x="1135.0" y="2273" class="body" text-anchor="middle">并行预测tʲ，交叉熵</text>
+<path d="M1260 1805 H1495 V2070 H425 V2120" class="edge dash"/>
+<text x="810" y="2057" class="small" text-anchor="middle">离散标签来自训练完成的codec</text>
+<path d="M1135 2070 V2120" class="edge dash"/>
+<rect x="120" y="2390" width="1330" height="145" rx="18" fill="#e6f4ed" stroke="#a2ccb4" stroke-width="2"/>
+<text x="785.0" y="2433" class="head" text-anchor="middle">训练后复用：E / 六层码本 / D冻结；CLIP冻结；M与R用于生成</text>
+<text x="785.0" y="2473" class="body" text-anchor="middle">基础码与五层残差码始终有相同时间长度n</text>
+<text x="785.0" y="2508" class="body" text-anchor="middle">时间上双向并行 ≠ 残差层完全并行；残差码 ≠ 显式语义层</text>
+<path d="M425 2340 V2390" class="edge dash"/>
+<path d="M1135 2305 V2390" class="edge dash"/>
+<rect x="60" y="2650" width="1480" height="535" rx="26" fill="#fbf8ff" stroke="#d4c3e6" stroke-width="2"/>
+<text x="100" y="2705" class="section" text-anchor="start">C  可选时间补全：新增源动作、区间掩码与目标文本</text>
+<rect x="120" y="2760" width="400" height="130" rx="18" fill="#f3edfb" stroke="#c5addd" stroke-width="2"/>
+<text x="320.0" y="2803" class="head" text-anchor="middle">源动作 + 待改区间</text>
+<text x="320.0" y="2843" class="body" text-anchor="middle">前缀 / 中间片段 / 后缀</text>
+<rect x="610" y="2760" width="390" height="130" rx="18" fill="#f3edfb" stroke="#c5addd" stroke-width="2"/>
+<text x="805.0" y="2803" class="head" text-anchor="middle">冻结Encoder与RVQ</text>
+<text x="805.0" y="2843" class="body" text-anchor="middle">得到源动作的离散token</text>
+<rect x="1090" y="2760" width="360" height="130" rx="18" fill="#f3edfb" stroke="#c5addd" stroke-width="2"/>
+<text x="1270.0" y="2803" class="head" text-anchor="middle">遮住待编辑位置</text>
+<text x="1270.0" y="2843" class="body" text-anchor="middle">保留区外基础码上下文</text>
+<path d="M520 2825 H610" class="edge"/>
+<path d="M1000 2825 H1090" class="edge"/>
+<rect x="120" y="2970" width="1330" height="155" rx="18" fill="#f3edfb" stroke="#c5addd" stroke-width="2"/>
+<text x="785.0" y="3013" class="head" text-anchor="middle">复用A中的M → R → 查表求和 → Decoder</text>
+<text x="785.0" y="3053" class="body" text-anchor="middle">当前公开编辑脚本仅固定区外基础层；残差层在全序列重新生成</text>
+<text x="785.0" y="3088" class="body" text-anchor="middle">没有将原始未编辑帧直接贴回：token保留不等于连续坐标严格不变</text>
+<path d="M1270 2890 V2970" class="edge dash"/>
+<text x="800" y="3230" class="small" text-anchor="middle">依据：正式论文图2–3、§3–4及补充；编辑实现边界按官方固定版本静态核查</text>
+</svg>
