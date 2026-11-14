@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1920" viewBox="0 0 1440 1920" role="img" aria-labelledby="title desc">
+<title id="title">VOXPERFORMER：分部位先验与音频条件支持连续语音舞蹈动作</title>
+<desc id="desc">依据官方海报绘制。训练动作提供上身下身手部VQ-VAE先验及训练片段记忆，音频学生学习先验对齐。推理音频经WavLM和EnCodec形成多尺度条件及预测先验，记忆检索补充原型。三路MPC DiT处理带噪部位特征，共享协调token，输出全身动作；外部语音音乐安排驱动同一连续输出。判别器为训练监督，具体历史接口和动作解码格式未公开。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#465b70"/></marker><style>
+text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;font-size:22px;fill:#203447}.title{font-size:30px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:23px;font-weight:700}.small{font-size:19px}.muted{fill:#586d80}.panel{fill:#f7f9fc;stroke:#cbd6e1;stroke-width:1.5;rx:17}.box{fill:#fff;stroke:#a6b8c9;stroke-width:1.5;rx:12}.audio{fill:#edf1f5;stroke:#a6b6c4}.input{fill:#f1eafa;stroke:#b6a0cf}.prior{fill:#e7f5ee;stroke:#7aa993}.model{fill:#eaf2ff;stroke:#80a5d8}.train{fill:#fff3df;stroke:#c6a36c}.arr{fill:none;stroke:#465b70;stroke-width:2;marker-end:url(#arrow)}.dash{fill:none;stroke:#8c749e;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#arrow)}</style></defs><rect width="1440" height="1920" fill="white"/>
+<text x="32" y="44" class="title">VOXPERFORMER：音频 → 部位先验 → 分支去噪 → 连续全身表演</text>
+<text x="32" y="78" class="small muted">教学重绘 · NeurIPS 2026 官方海报分区1–2、5–6 · 海报级证据，未取得论文全文</text>
+<rect x="25" y="105" width="1390" height="320" class="panel"/>
+<text x="46" y="141" class="section">A　训练与准备：动作先验、记忆以及学习监督各有作用</text>
+<rect x="55" y="175" width="350" height="165" class="box train"/>
+<text x="71" y="207" class="head">训练动作：语音 / 舞蹈</text>
+<text x="71" y="238" class="small">BEAT2 / FineDance</text>
+<text x="71" y="266" class="small">拆分上身、下身、手部</text>
+<text x="71" y="294" class="small">各部位 VQ-VAE tokenizer</text>
+<text x="71" y="322" class="small">手部独立码本</text>
+<rect x="465" y="175" width="420" height="165" class="box prior"/>
+<text x="481" y="207" class="head">动作空间中的条件与原型</text>
+<text x="481" y="238" class="small">分部位latent → 先验对齐目标</text>
+<text x="481" y="266" class="small">训练片段 → 动作记忆库</text>
+<text x="481" y="294" class="small">不使用测试动作作为推理输入</text>
+<text x="481" y="322" class="small">码本大小 / k / 表示维度未披露</text>
+<rect x="945" y="175" width="435" height="165" class="box train"/>
+<text x="961" y="207" class="head">音频学生 + 生成器训练</text>
+<text x="961" y="238" class="small">音频到部位先验蒸馏 / 对齐</text>
+<text x="961" y="266" class="small">三路MPC去噪 + posterior sampling</text>
+<text x="961" y="294" class="small">判别器监督较大的反向步</text>
+<text x="961" y="322" class="small">完整损失 / 阶段冻结范围未披露</text>
+<path d="M405 257H465" class="arr"/>
+<path d="M885 257H945" class="arr"/>
+<text x="55" y="385" class="small muted">上方为训练期依赖；海报没有给出全部训练顺序。判别器不是推理时循环验收动作的模块。</text>
+<rect x="25" y="450" width="1390" height="410" class="panel"/>
+<text x="46" y="486" class="section">B　推理条件：预测先验与检索先验共同补充声音，而非复制某一段检索动作</text>
+<rect x="55" y="520" width="290" height="116" class="box input"/>
+<text x="71" y="552" class="head">输入音频</text>
+<text x="71" y="583" class="small">语音段 / 音乐段</text>
+<text x="71" y="611" class="small">原始音频波形</text>
+<rect x="405" y="520" width="425" height="116" class="box audio"/>
+<text x="421" y="552" class="head">WavLM + EnCodec 特征</text>
+<text x="421" y="583" class="small">声学 / 韵律 / 语义相关通路</text>
+<text x="421" y="611" class="small">多尺度音频token与融合</text>
+<rect x="890" y="520" width="490" height="116" class="box model"/>
+<text x="906" y="552" class="head">音频学生 → 预测部位先验</text>
+<text x="906" y="583" class="small">预测上身、下身、手部latent</text>
+<text x="906" y="611" class="small">先验是潜在表示，不是可读事件</text>
+<path d="M345 578H405" class="arr"/>
+<path d="M830 578H890" class="arr"/>
+<rect x="405" y="700" width="425" height="110" class="box prior"/>
+<text x="421" y="732" class="head">训练片段记忆 → 相似性检索</text>
+<text x="421" y="763" class="small">top-k动作原型</text>
+<text x="421" y="791" class="small">具体度量与检索空间尚待核实</text>
+<rect x="890" y="700" width="490" height="110" class="box prior"/>
+<text x="906" y="732" class="head">送往对应部位的条件</text>
+<text x="906" y="763" class="small">音频特征 + 预测先验 + 检索先验</text>
+<text x="906" y="791" class="small">MPC连接各自音频与记忆信息</text>
+<path d="M618 636V700" class="arr"/>
+<path d="M830 755H890" class="arr"/>
+<path d="M1135 636V700" class="arr"/>
+<text x="55" y="696" class="small muted">推理使用已学习模块，</text>
+<text x="55" y="727" class="small muted">无需真实目标动作。</text>
+<rect x="25" y="885" width="1390" height="615" class="panel"/>
+<text x="46" y="921" class="section">C　分部位去噪：独立支路保留细节，共享协调信息维持全身配合</text>
+<rect x="55" y="965" width="305" height="117" class="box input"/>
+<text x="71" y="997" class="head">带噪动作特征 x_t</text>
+<text x="71" y="1028" class="small">上身 / 下身 / 手部</text>
+<text x="71" y="1056" class="small">各路接收对应输入</text>
+<rect x="55" y="1155" width="305" height="150" class="box prior"/>
+<text x="71" y="1187" class="head">共享协调 token</text>
+<text x="71" y="1218" class="small">跨部位配合</text>
+<text x="71" y="1246" class="small">海报明确有此机制</text>
+<text x="71" y="1274" class="small">层位置与更新方式未披露</text>
+<rect x="470" y="955" width="465" height="115" class="box model"/>
+<text x="486" y="987" class="head">上身 MPC DiT</text>
+<text x="486" y="1018" class="small">self / cross attention、FiLM、FFN</text>
+<text x="486" y="1046" class="small">部位条件化 → 预测去噪特征</text>
+<rect x="470" y="1140" width="465" height="115" class="box model"/>
+<text x="486" y="1172" class="head">下身 MPC DiT</text>
+<text x="486" y="1203" class="small">对应音频与记忆先验</text>
+<text x="486" y="1231" class="small">保留本分支的动作变化</text>
+<rect x="470" y="1325" width="465" height="115" class="box model"/>
+<text x="486" y="1357" class="head">手部 MPC DiT</text>
+<text x="486" y="1388" class="small">独立手部先验与去噪</text>
+<text x="486" y="1416" class="small">避免大幅身体动作掩盖手指</text>
+<rect x="1045" y="1140" width="335" height="165" class="box prior"/>
+<text x="1061" y="1172" class="head">全身动作输出</text>
+<text x="1061" y="1203" class="small">三路生成结果构成全身动作</text>
+<text x="1061" y="1231" class="small">默认报告10步DDIM</text>
+<text x="1061" y="1259" class="small">具体骨架 / 解码接口未披露</text>
+<text x="1061" y="1287" class="small">不是RGB视频生成器</text>
+<path d="M360 1024H410V1013H470" class="arr"/>
+<path d="M410 1024V1197H470" class="arr"/>
+<path d="M410 1197V1382H470" class="arr"/>
+<path d="M360 1230H440V1089H700V1070" class="dash"/>
+<path d="M440 1230V1280H700V1255" class="dash"/>
+<path d="M440 1280V1464H700V1440" class="dash"/>
+<path d="M1135 810V875H965V925H850V955" class="dash"/>
+<path d="M965 925V1110H850V1140" class="dash"/>
+<path d="M965 1110V1295H850V1325" class="dash"/>
+<path d="M935 1013H1005V1222H1045" class="arr"/>
+<path d="M935 1197H1005" class="arr"/>
+<path d="M935 1382H1005V1222" class="arr"/>
+<text x="1045" y="1360" class="small muted">条件与协调是学习机制，</text>
+<text x="1045" y="1389" class="small muted">没有接触 / 平衡求解保证。</text>
+<rect x="25" y="1525" width="1390" height="255" class="panel"/>
+<text x="46" y="1561" class="section">D　连续切换与评测：同一输出历史，区别于两段独立动作的硬切或混合</text>
+<rect x="55" y="1595" width="365" height="116" class="box input"/>
+<text x="71" y="1627" class="head">外部 speech/music schedule</text>
+<text x="71" y="1658" class="small">指定语音 / 音乐时间安排</text>
+<text x="71" y="1686" class="small">不是自动检测任意任务边界</text>
+<rect x="475" y="1595" width="425" height="116" class="box model"/>
+<text x="491" y="1627" class="head">持续全身生成 / continuous rollout</text>
+<text x="491" y="1658" class="small">沿同一动作历史完成切换</text>
+<text x="491" y="1686" class="small">历史长度与缓存接口未展开</text>
+<rect x="955" y="1595" width="425" height="116" class="box prior"/>
+<text x="971" y="1627" class="head">Transition-400 等事后评价</text>
+<text x="971" y="1658" class="small">手 / 身体FID、脚滑、平滑性</text>
+<text x="971" y="1686" class="small">分开joint与单任务检查点</text>
+<path d="M420 1653H475" class="arr"/>
+<path d="M900 1653H955" class="arr"/>
+<path d="M1212 1305H1395V1578H688V1595" class="arr"/>
+<text x="55" y="1753" class="small muted">海报提供跨状态实验；没有证明同时语音与音乐作用于同一部位时的任意冲突消解。</text>
+<text x="32" y="1820" class="small muted">图例：橙色为训练监督；紫色为输入；绿色为先验/输出；蓝色为学习模块；灰色为音频前端。</text>
+<text x="32" y="1853" class="small muted">实线为主要数据关系；紫色虚线为条件/协调信息。图示不补画未公开的骨架解码器或实时缓存。</text>
+<text x="32" y="1887" class="small muted">联合训练 ≠ 所有任务共用同一个最优检查点；少步采样 ≠ 已验证完整在线延迟或物理正确性。</text>
+</svg>

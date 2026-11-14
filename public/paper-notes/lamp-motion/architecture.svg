@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="2320" viewBox="0 0 1480 2320" role="img" aria-labelledby="title desc">
+<title id="title">LaMP:语言动作预训练与三个下游任务</title><desc id="desc">动作编码器预训练，查询式四任务语言动作对齐，分别用于动作生成、检索与描述。训练和推理注意力区分，评估单独展示。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#415d78"/></marker><marker id="warm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#b1781b"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#183c59}.title{font-size:32px;font-weight:700}.subtitle{font-size:19px;fill:#54748e}.heading{font-size:26px;font-weight:700}.box-title{font-size:23px;font-weight:700}.body{font-size:21px}.note{font-size:19px;fill:#54748e}.line{fill:none;stroke:#415d78;stroke-width:2.2;marker-end:url(#arrow)}.reuse{fill:none;stroke:#b1781b;stroke-width:2;stroke-dasharray:7 6;marker-end:url(#warm)}</style><rect width="1480" height="2320" fill="white"/>
+<text x="32" y="47" class="title">LaMP：先学习动作与语言的共同表示，再连接三种任务</text>
+<text x="32" y="79" class="subtitle">教学重绘 · 依据 arXiv:2410.07093v2 图1–2、A1–A2与附录A.3 · 非作者原图或本次运行结果</text>
+<rect x="24" y="108" width="1432" height="263" rx="20" fill="#f7f9fc" stroke="#cbdbea" stroke-width="1.5"/>
+<text x="46" y="148" class="heading">A 动作表示预训练：连续序列 → 离散码本 → 连续重建</text>
+<rect x="55" y="180" width="285" height="116" rx="15" fill="#f1ebfa" stroke="#ad91cf" stroke-width="1.5"/>
+<text x="71" y="213" class="box-title">人体动作 M</text>
+<text x="71" y="245" class="body">HumanML3D：263维 / 帧</text>
+<text x="71" y="273" class="body">KIT-ML：251维 / 帧</text>
+<rect x="390" y="180" width="285" height="116" rx="15" fill="#ebf2ff" stroke="#7b9ed3" stroke-width="1.5"/>
+<text x="406" y="213" class="box-title">卷积编码器 E</text>
+<text x="406" y="245" class="body">时间下采样4倍</text>
+<text x="406" y="273" class="body">局部连续 latent</text>
+<rect x="725" y="180" width="285" height="116" rx="15" fill="#e7f4ef" stroke="#7aafa0" stroke-width="1.5"/>
+<text x="741" y="213" class="box-title">最近邻量化 Q</text>
+<text x="741" y="245" class="body">码本索引 → 码本向量</text>
+<text x="741" y="273" class="body">主要方法：单码本</text>
+<rect x="1060" y="180" width="340" height="116" rx="15" fill="#ebf2ff" stroke="#7b9ed3" stroke-width="1.5"/>
+<text x="1076" y="213" class="box-title">卷积解码器 D</text>
+<text x="1076" y="245" class="body">输出连续动作重建</text>
+<text x="1076" y="273" class="body">重建 + 速度 + 量化损失</text>
+<path d="M340 238H390" class="line"/>
+<path d="M675 238H725" class="line"/>
+<path d="M1010 238H1060" class="line"/>
+<text x="55" y="339" class="note">训练码本与编解码器；随后复用动作编码器 / 量化器。论文§4.1量化层数与主方法不一致，正文单列。</text>
+<rect x="24" y="401" width="1432" height="588" rx="20" fill="#f7f9fc" stroke="#cbdbea" stroke-width="1.5"/>
+<text x="46" y="441" class="heading">B 语言—动作预训练：冻结动作编码器，训练查询与共享Transformer</text>
+<rect x="55" y="481" width="295" height="120" rx="15" fill="#edf2f6" stroke="#aabed0" stroke-width="1.5"/>
+<text x="71" y="514" class="box-title">配对动作序列</text>
+<text x="71" y="546" class="body">经已训练动作编码器 E</text>
+<text x="71" y="574" class="body">编码器权重冻结</text>
+<rect x="400" y="481" width="450" height="164" rx="15" fill="#ebf2ff" stroke="#7b9ed3" stroke-width="1.5"/>
+<text x="416" y="514" class="box-title">动作 Transformer</text>
+<text x="416" y="546" class="body">49个可学习查询，每个768维</text>
+<text x="416" y="574" class="body">查询自注意力 + 动作交叉注意力</text>
+<text x="416" y="602" class="body">抽取语言相关动作特征 fₘ</text>
+<rect x="55" y="723" width="295" height="120" rx="15" fill="#f1ebfa" stroke="#ad91cf" stroke-width="1.5"/>
+<text x="71" y="756" class="box-title">对应文本</text>
+<text x="71" y="788" class="body">例如：一个人绕圈走</text>
+<text x="71" y="816" class="body">BERT tokenizer</text>
+<rect x="400" y="723" width="450" height="164" rx="15" fill="#ebf2ff" stroke="#7b9ed3" stroke-width="1.5"/>
+<text x="416" y="756" class="box-title">文本 Transformer</text>
+<text x="416" y="788" class="body">BERT-base 初始化</text>
+<text x="416" y="816" class="body">与动作分支共享自注意力权重</text>
+<text x="416" y="844" class="body">得到动作相关文本特征 fₜ</text>
+<rect x="950" y="481" width="450" height="406" rx="15" fill="#fff4e0" stroke="#dfa342" stroke-width="1.5"/>
+<text x="966" y="514" class="box-title">四项联合预训练目标</text>
+<text x="966" y="546" class="body">① 对比：独立编码正 / 负配对</text>
+<text x="966" y="574" class="body">    查询特征与句子特征比较</text>
+<text x="966" y="602" class="body">② 匹配：双向跨模态交互</text>
+<text x="966" y="630" class="body">    判断动作—文本是否匹配</text>
+<text x="966" y="658" class="body">③ 动作 → 文字：因果预测词</text>
+<text x="966" y="686" class="body">④ 文字 → 动作：预测码本索引</text>
+<text x="966" y="714" class="body">不同目标使用不同注意力掩码</text>
+<text x="966" y="742" class="body">标签来自真实配对与动作量化</text>
+<text x="966" y="770" class="body">更新共享模型、查询和任务头</text>
+<path d="M350 541H400" class="line"/>
+<path d="M350 783H400" class="line"/>
+<path d="M850 556H950" class="line"/>
+<path d="M850 808H950" class="line"/>
+<path d="M625 723V645" class="reuse"/>
+<text x="645" y="689" class="note">共享参数</text>
+<text x="55" y="939" class="note">查询是学习到的表征槽位；没有逐查询标注身体部位、事件名称或精确起止时刻。</text>
+<path d="M531 296V318H38V455H200V481" class="reuse"/>
+<rect x="24" y="1020" width="1432" height="911" rx="20" fill="#f7f9fc" stroke="#cbdbea" stroke-width="1.5"/>
+<text x="46" y="1060" class="heading">C 复用LaMP：三条任务分支，不是一个解码器完成所有输出</text>
+<rect x="55" y="1100" width="270" height="126" rx="15" fill="#f1ebfa" stroke="#ad91cf" stroke-width="1.5"/>
+<text x="71" y="1133" class="box-title">T2M 文本输入</text>
+<text x="71" y="1165" class="body">自然语言动作要求</text>
+<text x="71" y="1193" class="body">例如：先走，再停，再跳</text>
+<rect x="375" y="1100" width="310" height="126" rx="15" fill="#edf2f6" stroke="#aabed0" stroke-width="1.5"/>
+<text x="391" y="1133" class="box-title">LaMP 条件编码</text>
+<text x="391" y="1165" class="body">文本特征 ↔ 学习查询</text>
+<text x="391" y="1193" class="body">论文图A2：冻结复用</text>
+<rect x="735" y="1100" width="340" height="126" rx="15" fill="#ebf2ff" stroke="#7b9ed3" stroke-width="1.5"/>
+<text x="751" y="1133" class="box-title">掩码 Transformer</text>
+<text x="751" y="1165" class="body">训练：因果注意力设计</text>
+<text x="751" y="1193" class="body">推理：双向注意力补全</text>
+<rect x="1125" y="1100" width="275" height="126" rx="15" fill="#e7f4ef" stroke="#7aafa0" stroke-width="1.5"/>
+<text x="1141" y="1133" class="box-title">码本 + 解码器</text>
+<text x="1141" y="1165" class="body">最终 token → 连续动作</text>
+<text x="1141" y="1193" class="body">没有外加物理求解器</text>
+<path d="M325 1163H375" class="line"/>
+<path d="M685 1163H735" class="line"/>
+<path d="M1075 1163H1125" class="line"/>
+<rect x="735" y="1270" width="665" height="119" rx="15" fill="#ebf2ff" stroke="#7b9ed3" stroke-width="1.5"/>
+<text x="751" y="1303" class="box-title">推理循环：通常10轮</text>
+<text x="751" y="1335" class="body">采样掩码位置 → 按置信度选低分位置重掩码 → 再预测</text>
+<text x="751" y="1363" class="body">训练含无文本分支；推理使用CFG组合条件 / 无条件 logits</text>
+<path d="M905 1226V1270" class="line"/>
+<path d="M735 1328H706V1248H1008V1226" class="line"/>
+<rect x="55" y="1270" width="600" height="119" rx="15" fill="#f1ebfa" stroke="#ad91cf" stroke-width="1.5"/>
+<text x="71" y="1303" class="box-title">动作token输入</text>
+<text x="71" y="1335" class="body">训练：真实动作token → 随机掩码</text>
+<text x="71" y="1363" class="body">推理：给定长度 → 全掩码序列</text>
+<path d="M655 1328H680V1240H800V1226" class="line"/>
+<text x="55" y="1418" class="note">本行展示论文设计；当前公开mask实现差异见正文。</text>
+<rect x="55" y="1450" width="270" height="125" rx="15" fill="#f1ebfa" stroke="#ad91cf" stroke-width="1.5"/>
+<text x="71" y="1483" class="box-title">检索输入</text>
+<text x="71" y="1515" class="body">文字查询或动作查询</text>
+<text x="71" y="1543" class="body">已有动作 / 文字候选库</text>
+<rect x="375" y="1450" width="310" height="125" rx="15" fill="#edf2f6" stroke="#aabed0" stroke-width="1.5"/>
+<text x="391" y="1483" class="box-title">LaMP-Feat</text>
+<text x="391" y="1515" class="body">文字与动作分别编码</text>
+<text x="391" y="1543" class="body">动作特征来自查询接口</text>
+<rect x="735" y="1450" width="340" height="125" rx="15" fill="#ebf2ff" stroke="#7b9ed3" stroke-width="1.5"/>
+<text x="751" y="1483" class="box-title">跨模态相似度</text>
+<text x="751" y="1515" class="body">查询动作特征 ↔ 文本特征</text>
+<text x="751" y="1543" class="body">对候选样本评分与排序</text>
+<rect x="1125" y="1450" width="275" height="125" rx="15" fill="#e7f4ef" stroke="#7aafa0" stroke-width="1.5"/>
+<text x="1141" y="1483" class="box-title">返回数据库结果</text>
+<text x="1141" y="1515" class="body">文字 → 动作</text>
+<text x="1141" y="1543" class="body">动作 → 文字</text>
+<path d="M325 1512H375" class="line"/>
+<path d="M685 1512H735" class="line"/>
+<path d="M1075 1512H1125" class="line"/>
+<text x="55" y="1620" class="note">此分支只检索已有样本；不经过掩码生成器，也不输出新的连续动作。</text>
+<rect x="55" y="1690" width="270" height="157" rx="15" fill="#f1ebfa" stroke="#ad91cf" stroke-width="1.5"/>
+<text x="71" y="1723" class="box-title">描述输入</text>
+<text x="71" y="1755" class="body">已有 / 生成的人体动作</text>
+<text x="71" y="1783" class="body">冻结动作编码器 E</text>
+<text x="71" y="1811" class="body">LaMP动作查询特征</text>
+<rect x="375" y="1690" width="310" height="157" rx="15" fill="#ebf2ff" stroke="#7b9ed3" stroke-width="1.5"/>
+<text x="391" y="1723" class="box-title">线性投影</text>
+<text x="391" y="1755" class="body">动作特征 → LLM嵌入维度</text>
+<text x="391" y="1783" class="body">公开可见类：768 → 2560</text>
+<text x="391" y="1811" class="body">并与提示嵌入组合</text>
+<rect x="735" y="1690" width="340" height="157" rx="15" fill="#ebf2ff" stroke="#7b9ed3" stroke-width="1.5"/>
+<text x="751" y="1723" class="box-title">OPT-2.7B + LoRA</text>
+<text x="751" y="1755" class="body">通过动作—描述监督适配</text>
+<text x="751" y="1783" class="body">LoRA调整LLM</text>
+<text x="751" y="1811" class="body">不是逐帧数组当文字输入</text>
+<rect x="1125" y="1690" width="275" height="157" rx="15" fill="#e7f4ef" stroke="#7aafa0" stroke-width="1.5"/>
+<text x="1141" y="1723" class="box-title">自然语言描述</text>
+<text x="1141" y="1755" class="body">例如：一个人向前走</text>
+<text x="1141" y="1783" class="body">停下后轻轻跳一下</text>
+<path d="M325 1768H375" class="line"/>
+<path d="M685 1768H735" class="line"/>
+<path d="M1075 1768H1125" class="line"/>
+<text x="55" y="1893" class="note">生成器、检索与描述器分别使用预训练成果；描述分支不能笼统标为整个LaMP全部冻结。</text>
+<path d="M850 865H920V1002H1437V1073H529V1100" class="reuse"/>
+<path d="M1437 1073V1425H529V1450" class="reuse"/>
+<path d="M1437 1425V1662H190V1690" class="reuse"/>
+<rect x="24" y="1960" width="1432" height="243" rx="20" fill="#f7f9fc" stroke="#cbdbea" stroke-width="1.5"/>
+<text x="46" y="2000" class="heading">D 语义评估：用动作描述器补充传统动作特征指标</text>
+<rect x="55" y="2031" width="370" height="113" rx="15" fill="#f1ebfa" stroke="#ad91cf" stroke-width="1.5"/>
+<text x="71" y="2064" class="box-title">生成动作 → LaMP-M2T</text>
+<text x="71" y="2096" class="body">先得到生成动作的描述句子</text>
+<text x="71" y="2124" class="body">继承描述器的能力与错误</text>
+<rect x="505" y="2031" width="430" height="113" rx="15" fill="#ebf2ff" stroke="#7b9ed3" stroke-width="1.5"/>
+<text x="521" y="2064" class="box-title">BERTScore 与目标描述比较</text>
+<text x="521" y="2096" class="body">得到 LaMP-BertScore</text>
+<text x="521" y="2124" class="body">不是逐事件 / 逐关节执行检查</text>
+<rect x="1015" y="2031" width="385" height="113" rx="15" fill="#e7f4ef" stroke="#7aafa0" stroke-width="1.5"/>
+<text x="1031" y="2064" class="box-title">联合看不同证据</text>
+<text x="1031" y="2096" class="body">原有评估器 + LaMP特征评估</text>
+<text x="1031" y="2124" class="body">定性动作 + 独立语义检查</text>
+<path d="M425 2087H505" class="line"/>
+<path d="M935 2087H1015" class="line"/>
+<text x="55" y="2178" class="note">共享表征 / 描述器可能产生评价偏向；高相似度不保证精确次数、接触、方向或时序全部正确。</text>
+<text x="32" y="2242" class="note">图例：紫色 = 输入；蓝色 = 学习模块；绿色 = 表示 / 输出；灰色 = 预训练复用；橙色 = 训练目标。</text>
+<text x="32" y="2274" class="note">实线 = 数据流；虚线 = 参数或模块复用。训练 / 推理差异与源码边界以正文的固定版本审计为准。</text>
+<text x="32" y="2306" class="note">全文阅读：ICLR 2025 · arXiv v2（20页），原生HTML与官方代码入口均附于解读。</text>
+</svg>
