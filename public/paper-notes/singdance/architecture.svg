@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1740" viewBox="0 0 1440 1740" role="img" aria-labelledby="title desc">
+<title id="title">SingDance：角色条件如何把说话能力与音乐舞蹈组合成唱跳视频</title>
+<desc id="desc">条件编码区分全局与逐帧表示，任务指定路由把语音、音乐和角色组成联合键值，注入视频扩散主干。冻结编码器与VAE，可训练适配器、角色条件和DiT。先用说话与倾听训练，再用只跳舞与语音回放训练；歌曲加发声者角色只在推理组合。最终输出RGB视频，不输出三维骨骼或生成歌声。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#43566b"/></marker><marker id="gold" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#b1742e"/></marker>
+<style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;font-size:22px;fill:#203447}.title{font-size:31px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:23px;font-weight:700}.small{font-size:19px}.tiny{font-size:17px}.muted{fill:#566a7c}.panel{fill:#f8fafc;stroke:#c9d4de;stroke-width:1.5;rx:17}.box{stroke:#a5b7c8;stroke-width:1.5;rx:13;fill:#fff}.frozen{fill:#edf1f5;stroke:#abb8c4}.train{fill:#e9f2ff;stroke:#7ba3d3}.music{fill:#e7f5ef;stroke:#79ae9b}.role{fill:#f2eafa;stroke:#b09bc9}.loss{fill:#fff3df;stroke:#c8a16b}.arr{fill:none;stroke:#43566b;stroke-width:2;marker-end:url(#arrow)}.dash{fill:none;stroke:#b1742e;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#gold)}</style></defs><rect width="1440" height="1740" fill="white"/>
+<text x="32" y="43" class="title">SingDance：以发声角色组合口型与音乐舞蹈</text>
+<text x="32" y="74" class="small muted">教学示意 · 依据 arXiv:2608.16220v1 图2–3、表1及方法 · 不是作者原图或模型运行结果</text>
+<rect x="25" y="100" width="1390" height="440" class="panel"/>
+<text x="46" y="135" class="section">A　条件编码：同一音轨分成语音与音乐表示，角色另行指定</text>
+<rect x="55" y="192" width="180" height="138" class="box"/>
+<text x="71" y="223" class="head">输入音轨</text>
+<text x="71" y="253" class="small">语音 / 纯音乐</text>
+<text x="71" y="280" class="small">或含人声歌曲</text>
+<rect x="300" y="157" width="220" height="88" class="box frozen"/>
+<text x="316" y="188" class="head">Wav2Vec 2.0</text>
+<text x="316" y="218" class="small">冻结 · 语音特征</text>
+<rect x="300" y="287" width="220" height="88" class="box frozen"/>
+<text x="316" y="318" class="head">MuQ</text>
+<text x="316" y="348" class="small">冻结 · 音乐特征</text>
+<rect x="575" y="157" width="300" height="88" class="box train"/>
+<text x="591" y="188" class="head">语音适配器［可训练］</text>
+<text x="591" y="218" class="small">层加权＋非因果时间卷积</text>
+<rect x="575" y="287" width="300" height="88" class="box music"/>
+<text x="591" y="318" class="head">音乐适配器［可训练］</text>
+<text x="591" y="348" class="small">非因果时间卷积</text>
+<rect x="945" y="157" width="430" height="88" class="box train"/>
+<text x="961" y="188" class="head">Sg：全局语音；Sf：逐帧语音</text>
+<text x="961" y="218" class="small">Source / Listener 共用这一路</text>
+<rect x="945" y="287" width="430" height="88" class="box music"/>
+<text x="961" y="318" class="head">Mf：逐帧音乐</text>
+<text x="961" y="348" class="small">音乐不提供独立全局条件</text>
+<path d="M235 240H267V201H300" class="arr"/>
+<path d="M267 240V331H300" class="arr"/>
+<path d="M520 201H575" class="arr"/>
+<path d="M520 331H575" class="arr"/>
+<path d="M875 201H945" class="arr"/>
+<path d="M875 331H945" class="arr"/>
+<rect x="55" y="410" width="420" height="100" class="box role"/>
+<text x="71" y="441" class="head">用户指定 Source / Listener</text>
+<text x="71" y="471" class="small">可见人物发声 / 倾听外部声音</text>
+<rect x="535" y="410" width="420" height="100" class="box role"/>
+<text x="551" y="441" class="head">角色条件［可训练］</text>
+<text x="551" y="471" class="small">全局 Rg ＋局部 Rf；同时更新文本</text>
+<rect x="1015" y="410" width="360" height="100" class="box role"/>
+<text x="1031" y="441" class="head">五字段文本提示</text>
+<text x="1031" y="471" class="small">角色、风格、动作、首帧、镜头</text>
+<path d="M475 460H535" class="arr"/>
+<path d="M475 445H495V395H1195V410" class="arr"/>
+<rect x="25" y="565" width="1390" height="285" class="panel"/>
+<text x="46" y="600" class="section">B　逐帧音频注入：C 中注入模块的局部放大</text>
+<rect x="55" y="628" width="370" height="162" class="box role"/>
+<text x="71" y="659" class="head">全局调制 G</text>
+<text x="71" y="689" class="small">语音 / 歌曲：Sg ＋ Rg</text>
+<text x="71" y="716" class="small">纯音乐：仅 Rg</text>
+<text x="71" y="743" class="small">条件进入 C 的视频主干</text>
+<rect x="475" y="628" width="365" height="162" class="box train"/>
+<text x="491" y="659" class="head">任务指定 Hard Router</text>
+<text x="491" y="689" class="small">语音：Sf ＋ Rf</text>
+<text x="491" y="716" class="small">纯音乐：Rf ＋ Mf</text>
+<text x="491" y="743" class="small">歌曲：Sf ＋ Rf ＋ Mf</text>
+<rect x="930" y="628" width="445" height="162" class="box train"/>
+<text x="946" y="659" class="head">联合音频交叉注意力</text>
+<text x="946" y="689" class="small">Q = 生成帧 f 的视觉 token Hf</text>
+<text x="946" y="716" class="small">K,V = 同帧路由 token 序列</text>
+<text x="946" y="743" class="small">残差更新：H′f = Hf ＋ ΔHf</text>
+<path d="M840 710H930" class="arr"/>
+<text x="857" y="694" class="small">K,V</text>
+<text x="55" y="827" class="small muted">路由由任务给定，不自动识别谁在发声。角色切换保留同一语音通路；注入不更新参考帧位置。</text>
+<rect x="25" y="875" width="1390" height="385" class="panel"/>
+<text x="46" y="910" class="section">C　共享视频生成：参考帧保持干净，只生成后续视频位置</text>
+<rect x="55" y="950" width="235" height="140" class="box frozen"/>
+<text x="71" y="981" class="head">视频 latent 输入</text>
+<text x="71" y="1011" class="small">参考图 → VAE → zref</text>
+<text x="71" y="1038" class="small">训练：后续编码加噪</text>
+<text x="71" y="1065" class="small">推理：从噪声起步</text>
+<rect x="370" y="950" width="480" height="140" class="box train"/>
+<text x="386" y="981" class="head">Wan2.2-TI2V-5B［可训练］</text>
+<text x="386" y="1011" class="small">30个 DiT blocks；原文本交叉注意力</text>
+<text x="386" y="1038" class="small">10个选定 block 后接 B 的音频注入</text>
+<text x="386" y="1065" class="small">预测流速度；舞蹈采样 50 步</text>
+<rect x="930" y="950" width="205" height="140" class="box frozen"/>
+<text x="946" y="981" class="head">3D VAE 解码</text>
+<text x="946" y="1011" class="small">冻结</text>
+<text x="946" y="1038" class="small">将生成 latent</text>
+<text x="946" y="1065" class="small">恢复为视频帧</text>
+<rect x="1195" y="950" width="185" height="140" class="box music"/>
+<text x="1211" y="981" class="head">RGB 视频</text>
+<text x="1211" y="1011" class="small">121帧 / 24 fps</text>
+<text x="1211" y="1038" class="small">舞蹈704×1280</text>
+<text x="1211" y="1065" class="small">沿用输入音轨</text>
+<path d="M290 1020H370" class="arr"/>
+<path d="M850 1020H930" class="arr"/>
+<path d="M1135 1020H1195" class="arr"/>
+<rect x="55" y="1143" width="400" height="80" class="box frozen"/>
+<text x="71" y="1174" class="head">A 的文本 → 冻结文本编码器</text>
+<text x="71" y="1204" class="small">角色字段与学习角色保持一致</text>
+<rect x="500" y="1143" width="350" height="80" class="box role"/>
+<text x="516" y="1174" class="head">来自 B 的全局 G 与局部音频</text>
+<text x="516" y="1204" class="small">同一模型联合使用各路条件</text>
+<path d="M455 1183H477V1115H530V1090" class="arr"/>
+<path d="M675 1143V1090" class="arr"/>
+<path d="M850 1060H890V1124H820V1090" class="arr"/>
+<text x="917" y="1202" class="small muted">迭代仅改变视频生成状态；没有后接独立修嘴模型。</text>
+<rect x="25" y="1285" width="1390" height="360" class="panel"/>
+<text x="46" y="1320" class="section">D　训练与留出组合：学习两种能力，在推理时拼成唱跳</text>
+<rect x="55" y="1354" width="380" height="140" class="box train"/>
+<text x="71" y="1385" class="head">阶段1：语音角色学习</text>
+<text x="71" y="1415" class="small">Speech / Source：说话</text>
+<text x="71" y="1442" class="small">Speech / Listener：倾听、回应</text>
+<text x="71" y="1469" class="small">这一阶段没有音乐通路</text>
+<rect x="495" y="1354" width="485" height="140" class="box music"/>
+<text x="511" y="1385" class="head">阶段2：舞蹈学习＋语音回放</text>
+<text x="511" y="1415" class="small">Instrumental / Listener，Song / Listener</text>
+<text x="511" y="1442" class="small">歌曲跳舞样本剔除可疑对口型片段</text>
+<text x="511" y="1469" class="small">20%训练样本仍为两类语音角色</text>
+<rect x="1040" y="1354" width="340" height="140" class="box loss"/>
+<text x="1056" y="1385" class="head">得到 C 的同一模型</text>
+<text x="1056" y="1415" class="small">两阶段均用 Flow Matching</text>
+<text x="1056" y="1442" class="small">仅在生成 latent 位置计算损失</text>
+<text x="1056" y="1469" class="small">无专用唇同步 / 节拍损失</text>
+<path d="M435 1424H495" class="arr"/>
+<path d="M980 1424H1040" class="arr"/>
+<path d="M1210 1354V1319H1400V930H610V950" class="dash"/>
+<text x="55" y="1544" class="head">推理留出组合：Song / Listener → Song / Source；同步改变文本角色、Rg 与 Rf。</text>
+<text x="55" y="1581" class="small">图片、歌曲、其余提示词、Sf / Mf、采样种子与模型保持相同；输出由只跳舞切换为唱跳。</text>
+<text x="55" y="1615" class="small muted">Song / Source 从未作为 SingDance 的训练组合；“零样本”不表示无训练或预训练基座未见过唱跳。</text>
+<text x="32" y="1681" class="small muted">图例：灰色为冻结模块；蓝/绿/紫为可训练条件或表示；橙色为训练目标；虚线表示训练所得模型的复用。</text>
+<text x="32" y="1715" class="small muted">边界：输出是二维 RGB 视频，不是可直接驱动角色的三维骨骼，也不生成新的歌声。</text>
+</svg>
