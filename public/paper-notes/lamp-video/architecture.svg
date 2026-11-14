@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1640" viewBox="0 0 1440 1640" role="img" aria-labelledby="title desc">
+<title id="title">LAMP：语言生成运动程序，经几何转换与控制视频驱动视频生成</title>
+<desc id="desc">程序化语言与DSL配对用于监督微调Qwen2.5-VL规划器。推理先生成对象运动程序，再以对象计划与相机描述生成相机程序。确定性转换器输出共享世界坐标中的对象包围盒与相机轨迹，经投影形成控制视频。预训练VACE接收控制视频、文本和可选首帧，生成RGB视频。用户可先检查和修改轨迹；最终视频仍可能偏离控制。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#43566b"/></marker><marker id="gold" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#ae772c"/></marker>
+<style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;font-size:22px;fill:#203447}.title{font-size:31px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:23px;font-weight:700}.small{font-size:19px}.tiny{font-size:17px}.muted{fill:#566a7c}.panel{fill:#f8fafc;stroke:#c9d4de;stroke-width:1.5;rx:17}.box{stroke:#a5b7c8;stroke-width:1.5;rx:13;fill:#fff}.frozen{fill:#edf1f5;stroke:#abb8c4}.train{fill:#e9f2ff;stroke:#7ba3d3}.geo{fill:#e7f5ef;stroke:#79ae9b}.edit{fill:#f2eafa;stroke:#b09bc9}.data{fill:#fff3df;stroke:#c8a16b}.arr{fill:none;stroke:#43566b;stroke-width:2;marker-end:url(#arrow)}.dash{fill:none;stroke:#ae772c;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#gold)}</style></defs><rect width="1440" height="1640" fill="white"/>
+<text x="32" y="43" class="title">LAMP：先写运动程序，再把几何意图交给视频生成器</text>
+<text x="32" y="75" class="small muted">教学示意 · 依据 arXiv:2512.03619v4 图2、§3.3–3.6 与补充§4、§6 · 非作者原图或运行结果</text>
+<rect x="25" y="100" width="1390" height="300" class="panel"/>
+<text x="46" y="136" class="section">A　数据与训练：用文本—DSL监督适配规划器，复用已有视频生成器</text>
+<rect x="55" y="170" width="245" height="150" class="box data"/>
+<text x="71" y="202" class="head">程序化采样</text>
+<text x="71" y="234" class="small">四种原语＋修饰符</text>
+<text x="71" y="263" class="small">对象与相机运动组合</text>
+<text x="71" y="292" class="small">语料：21帧、4个时段</text>
+<rect x="350" y="170" width="305" height="150" class="box data"/>
+<text x="366" y="202" class="head">构建配对样本</text>
+<text x="366" y="234" class="small">模板描述＋LLM改写</text>
+<text x="366" y="263" class="small">DSL作为程序标签</text>
+<text x="366" y="292" class="small">转换器给出对应3D轨迹</text>
+<rect x="715" y="170" width="310" height="150" class="box train"/>
+<text x="731" y="202" class="head">监督微调规划器</text>
+<text x="731" y="234" class="small">Qwen2.5-VL-7B</text>
+<text x="731" y="263" class="small">学习：文本 → DSL</text>
+<text x="731" y="292" class="small">不直接训练视频像素生成</text>
+<rect x="1085" y="170" width="295" height="150" class="box train"/>
+<text x="1101" y="202" class="head">得到 LAMP 规划器</text>
+<text x="1101" y="234" class="small">权重复用于 B</text>
+<text x="1101" y="263" class="small">预测对象与相机程序</text>
+<text x="1101" y="292" class="small">VACE保持预训练权重</text>
+<path d="M300 245H350" class="arr"/>
+<path d="M655 245H715" class="arr"/>
+<path d="M1025 245H1085" class="arr"/>
+<text x="55" y="369" class="small muted">配对的轨迹用于几何落地与评价；规划器输出的是可读程序，不是逐帧回归整段视频。</text>
+<rect x="25" y="425" width="1390" height="310" class="panel"/>
+<text x="46" y="461" class="section">B　语言规划：先确定对象怎么走，再决定相机如何相对它运动</text>
+<rect x="55" y="495" width="260" height="145" class="box"/>
+<text x="71" y="527" class="head">用户文本</text>
+<text x="71" y="559" class="small">拆分对象描述 t_obj</text>
+<text x="71" y="588" class="small">与相机描述 t_cam</text>
+<text x="71" y="617" class="small">支持追加修改指令</text>
+<rect x="370" y="495" width="300" height="145" class="box train"/>
+<text x="386" y="527" class="head">先生成对象程序</text>
+<text x="386" y="559" class="small">共享 LAMP 规划器</text>
+<text x="386" y="588" class="small">t_obj → s_obj</text>
+<text x="386" y="617" class="small">平移＋有限姿态转动</text>
+<rect x="735" y="495" width="380" height="145" class="box train"/>
+<text x="751" y="527" class="head">再生成相机程序</text>
+<text x="751" y="559" class="small">共享 LAMP 规划器</text>
+<text x="751" y="588" class="small">以 s_obj 与 t_cam 为条件</text>
+<text x="751" y="617" class="small">相机程序 s_cam：6-DoF</text>
+<rect x="1175" y="495" width="205" height="145" class="box edit"/>
+<text x="1191" y="527" class="head">两路 DSL</text>
+<text x="1191" y="559" class="small">对象 s_obj</text>
+<text x="1191" y="588" class="small">相机 s_cam</text>
+<text x="1191" y="617" class="small">可读、可编辑</text>
+<path d="M315 567H370" class="arr"/>
+<path d="M670 567H735" class="arr"/>
+<path d="M1115 567H1175" class="arr"/>
+<text x="678" y="548" class="tiny">s_obj</text>
+<path d="M185 640V671H925V640" class="arr"/>
+<text x="400" y="661" class="small">相机文本 t_cam</text>
+<text x="55" y="710" class="small muted">四种原语：free_form / orbit_track / tail_track / rotation_track；省略的修饰符使用默认值。</text>
+<path d="M1380 245H1400V475H520V495" class="dash"/>
+<rect x="25" y="760" width="1390" height="465" class="panel"/>
+<text x="46" y="796" class="section">C　几何落地与视频合成：DSL先变轨迹，再投影成生成器可用的控制视频</text>
+<rect x="55" y="835" width="380" height="165" class="box geo"/>
+<text x="71" y="867" class="head">确定性 DSL→轨迹转换</text>
+<text x="71" y="899" class="small">先生成对象轨迹</text>
+<text x="71" y="928" class="small">相机先相对对象计算，再转世界系</text>
+<text x="71" y="957" class="small">坐标锚定首个相机帧</text>
+<rect x="500" y="835" width="400" height="165" class="box geo"/>
+<text x="516" y="867" class="head">显式3D几何代理</text>
+<text x="516" y="899" class="small">物体：包围盒的位置与朝向</text>
+<text x="516" y="928" class="small">相机：随时间变化的位姿</text>
+<text x="516" y="957" class="small">提供规划与预览，不是人体关节</text>
+<rect x="965" y="835" width="415" height="165" class="box geo"/>
+<text x="981" y="867" class="head">逐帧投影 → 控制视频</text>
+<text x="981" y="899" class="small">对象包围盒 → 当前视图2D轮廓</text>
+<text x="981" y="928" class="small">固定世界立方体边 → 方向/地平线</text>
+<text x="981" y="957" class="small">视频帧与预定轨迹按时间对应</text>
+<path d="M435 918H500" class="arr"/>
+<path d="M900 918H965" class="arr"/>
+<path d="M1277 640H1400V816H245V835" class="arr"/>
+<text x="1105" y="805" class="small">两路DSL</text>
+<rect x="55" y="1060" width="380" height="120" class="box edit"/>
+<text x="71" y="1092" class="head">附加生成条件</text>
+<text x="71" y="1124" class="small">原始文本描述</text>
+<text x="71" y="1153" class="small">可选：首帧外观图像</text>
+<rect x="500" y="1060" width="400" height="120" class="box frozen"/>
+<text x="516" y="1092" class="head">VACE［预训练、未微调］</text>
+<text x="516" y="1124" class="small">控制视频＋文本＋可选首帧</text>
+<text x="516" y="1153" class="small">生成外观、局部细节与连续视频</text>
+<rect x="965" y="1060" width="415" height="120" class="box geo"/>
+<text x="981" y="1092" class="head">RGB 视频</text>
+<text x="981" y="1124" class="small">视觉结果由生成器补全</text>
+<text x="981" y="1153" class="small">可能偏离预定轨迹，需检查输出</text>
+<path d="M435 1120H500" class="arr"/>
+<path d="M900 1120H965" class="arr"/>
+<path d="M1172 1000V1030H700V1060" class="arr"/>
+<text x="947" y="1020" class="small">控制视频</text>
+<text x="55" y="1207" class="small muted">绿色链路落实几何程序；灰色生成器将控制转成视觉内容，不能把程序有效性当作视频执行保证。</text>
+<rect x="25" y="1250" width="1390" height="255" class="panel"/>
+<text x="46" y="1286" class="section">D　交互回路：先改计划和预览，确认后再做较重的视频生成</text>
+<rect x="55" y="1315" width="400" height="108" class="box edit"/>
+<text x="71" y="1347" class="head">检查3D路径与控制预览</text>
+<text x="71" y="1379" class="small">如：把90°环绕改成60°</text>
+<text x="71" y="1408" class="small">再增加逐渐拉远的螺旋运动</text>
+<rect x="515" y="1315" width="365" height="108" class="box train"/>
+<text x="531" y="1347" class="head">复用 B 与 C 的几何部分</text>
+<text x="531" y="1379" class="small">新文字 → 新DSL → 新轨迹</text>
+<text x="531" y="1408" class="small">无需每次先生成完整视频</text>
+<rect x="940" y="1315" width="440" height="108" class="box frozen"/>
+<text x="956" y="1347" class="head">确认后运行 C 的 VACE</text>
+<text x="956" y="1379" class="small">保留可编辑程序与几何控制</text>
+<text x="956" y="1408" class="small">检查最终视频是否遵循运动意图</text>
+<path d="M455 1369H515" class="arr"/>
+<path d="M880 1369H940" class="arr"/>
+<path d="M697 1423V1450H255V1423" class="arr"/>
+<text x="398" y="1440" class="small">继续检查与修改</text>
+<text x="55" y="1485" class="small muted">扩展边界：多物体先手动对齐初始位置、相机跟随一个对象；长镜头采用轨迹端点与视频末帧逐段衔接。</text>
+<text x="32" y="1545" class="small muted">图例：橙色为数据构建；蓝色为学习规划器；绿色为确定性几何/表示；紫色为用户条件或编辑；灰色为冻结生成器。</text>
+<text x="32" y="1582" class="small muted">实线表示数据或调用流；橙色虚线表示训练权重复用。本文不训练VACE，也不生成可驱动人体的关节动作。</text>
+<text x="32" y="1618" class="small muted">程序可解析 ≠ 语言意图全对 ≠ 最终视频精确执行；物体3D包围盒只是场景运动代理。</text>
+</svg>
