@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="3530" viewBox="0 0 1400 3530" role="img" aria-labelledby="title desc"><title id="title">MotionBind完整架构</title><desc id="desc">MuTMoT产生可解码序列和全局语义，通过双侧适配与冻结LanguageBind对齐。REALM检索两个参考动作，逐潜帧查询读取条件和参考，时间条件扩散生成连续运动。</desc><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#415870"/></marker></defs><style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#20394e}.title{font-size:36px;font-weight:700}.head{font-size:29px;font-weight:700}.node{font-size:26px;font-weight:700}.body{font-size:24px}.small{font-size:22px;fill:#526a7c}.flow{fill:none;stroke:#415870;stroke-width:3;marker-end:url(#a)}.dash{fill:none;stroke:#7a62a1;stroke-width:3;stroke-dasharray:9 6;marker-end:url(#a)}</style><rect width="1400" height="3530" fill="white"/>
+<text x="55" y="57" class="title" text-anchor="start">MotionBind：先对齐语义，再检索与生成连续动作</text>
+<text x="55" y="101" class="body" text-anchor="start">教学重绘 · MuTMoT 表示学习 + REALM 检索增强潜空间扩散</text>
+<rect x="25" y="140" width="1350" height="1180" rx="22" fill="#eff7f3" stroke="#c5d4df" stroke-width="2"/>
+<text x="50" y="183" class="head" text-anchor="start">A MuTMoT：时间序列负责重建，全局向量负责语义对齐</text>
+<text x="50" y="222" class="small" text-anchor="start">动作与文本／渲染视频／音视频分别配对；LanguageBind冻结，动作模型及双侧适配器学习。</text>
+<rect x="70" y="280" width="360" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="250.0" y="317" class="node" text-anchor="middle">多数据集动作</text>
+<text x="250.0" y="354" class="body" text-anchor="middle">HumanML3D / KIT-ML</text>
+<text x="250.0" y="385" class="body" text-anchor="middle">AMASS / AIST++</text>
+<rect x="960" y="280" width="370" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="317" class="node" text-anchor="middle">配对的非动作输入</text>
+<text x="1145.0" y="354" class="body" text-anchor="middle">文本、图像／视频、音频</text>
+<text x="1145.0" y="385" class="body" text-anchor="middle">按数据集选择对应配对</text>
+<rect x="70" y="470" width="360" height="140" rx="14" fill="#dff0e7" stroke="#91adbf" stroke-width="2"/>
+<text x="250.0" y="507" class="node" text-anchor="middle">数据集专属入口</text>
+<text x="250.0" y="544" class="body" text-anchor="middle">Conv → 512维 + 位置</text>
+<text x="250.0" y="575" class="body" text-anchor="middle">全局token + 数据集FiLM</text>
+<rect x="960" y="470" width="370" height="140" rx="14" fill="#dce9fa" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="507" class="node" text-anchor="middle">LanguageBind 编码器</text>
+<text x="1145.0" y="544" class="body" text-anchor="middle">对应模态编码分支</text>
+<text x="1145.0" y="575" class="body" text-anchor="middle">预训练权重冻结</text>
+<path d="M250 420L250 470" class="flow"/>
+<path d="M1145 420L1145 470" class="flow"/>
+<rect x="70" y="660" width="360" height="140" rx="14" fill="#dff0e7" stroke="#91adbf" stroke-width="2"/>
+<text x="250.0" y="697" class="node" text-anchor="middle">多尺度动作 Transformer</text>
+<text x="250.0" y="734" class="body" text-anchor="middle">时间注意力 + 卷积下采样</text>
+<text x="250.0" y="765" class="body" text-anchor="middle">保留各尺度全局token</text>
+<rect x="520" y="660" width="360" height="140" rx="14" fill="#dff0e7" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="697" class="node" text-anchor="middle">全局动作 embedding</text>
+<text x="700.0" y="734" class="body" text-anchor="middle">多尺度token软加权</text>
+<text x="700.0" y="765" class="body" text-anchor="middle">512维全局语义</text>
+<rect x="960" y="660" width="370" height="140" rx="14" fill="#dce9fa" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="697" class="node" text-anchor="middle">非动作侧适配器</text>
+<text x="1145.0" y="734" class="body" text-anchor="middle">768维残差MLP</text>
+<text x="1145.0" y="765" class="body" text-anchor="middle">学习共享语义坐标</text>
+<path d="M250 610L250 660" class="flow"/>
+<path d="M430 730L520 730" class="flow"/>
+<path d="M1145 610L1145 660" class="flow"/>
+<rect x="70" y="890" width="360" height="140" rx="14" fill="#dff0e7" stroke="#91adbf" stroke-width="2"/>
+<text x="250.0" y="927" class="node" text-anchor="middle">低分辨率动作序列</text>
+<text x="250.0" y="964" class="body" text-anchor="middle">z：L × 512</text>
+<text x="250.0" y="995" class="body" text-anchor="middle">正文报告 L = T/4</text>
+<rect x="520" y="890" width="360" height="140" rx="14" fill="#dff0e7" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="927" class="node" text-anchor="middle">动作侧投影与适配器</text>
+<text x="700.0" y="964" class="body" text-anchor="middle">512 → 768维</text>
+<text x="700.0" y="995" class="body" text-anchor="middle">残差MLP语义适配</text>
+<rect x="960" y="890" width="370" height="140" rx="14" fill="#eee3f5" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="927" class="node" text-anchor="middle">共享语义与对比学习</text>
+<text x="1145.0" y="964" class="body" text-anchor="middle">配对相近，负例区分</text>
+<text x="1145.0" y="995" class="body" text-anchor="middle">长度权重 + 语义margin</text>
+<path d="M250 800L250 890" class="flow"/>
+<path d="M700 800L700 890" class="flow"/>
+<path d="M1145 800L1145 890" class="flow"/>
+<path d="M880 960L960 960" class="flow"/>
+<rect x="70" y="1110" width="360" height="140" rx="14" fill="#dff0e7" stroke="#91adbf" stroke-width="2"/>
+<text x="250.0" y="1147" class="node" text-anchor="middle">MuTMoT 解码器</text>
+<text x="250.0" y="1184" class="body" text-anchor="middle">上采样 + 数据集FiLM/头</text>
+<text x="250.0" y="1215" class="body" text-anchor="middle">重建逐帧运动</text>
+<path d="M250 1030L250 1110" class="flow"/>
+<rect x="520" y="1110" width="360" height="140" rx="14" fill="#eee3f5" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="1147" class="node" text-anchor="middle">重建监督</text>
+<text x="700.0" y="1184" class="body" text-anchor="middle">重建动作对比真实动作</text>
+<text x="700.0" y="1215" class="body" text-anchor="middle">Smooth L1</text>
+<path d="M430 1180L520 1180" class="dash"/>
+<rect x="960" y="1110" width="370" height="140" rx="14" fill="#eee3f5" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="1147" class="node" text-anchor="middle">语义空间用途</text>
+<text x="1145.0" y="1184" class="body" text-anchor="middle">跨模态检索、类别匹配</text>
+<text x="1145.0" y="1215" class="body" text-anchor="middle">REALM参考检索索引</text>
+<path d="M1145 1030L1145 1110" class="flow"/>
+<text x="70" y="1290" class="small" text-anchor="start">序列latent与全局向量不是同一个对象；3块与下采样层位的原文歧义在正文说明。</text>
+<rect x="25" y="1370" width="1350" height="1460" rx="22" fill="#f1f6fd" stroke="#c5d4df" stroke-width="2"/>
+<text x="50" y="1413" class="head" text-anchor="start">B REALM：参考运动与条件共同引导新动作生成</text>
+<text x="50" y="1452" class="small" text-anchor="start">生成器训练只使用文本动作对；图片／视频／音频生成是共享空间迁移，论文仅做定性展示。</text>
+<rect x="70" y="1510" width="360" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="250.0" y="1547" class="node" text-anchor="middle">用户条件</text>
+<text x="250.0" y="1584" class="body" text-anchor="middle">文本 或 图片／视频 或 音频</text>
+<text x="250.0" y="1615" class="body" text-anchor="middle">选择相应模态编码器</text>
+<rect x="960" y="1510" width="370" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="1547" class="node" text-anchor="middle">离线动作数据库</text>
+<text x="1145.0" y="1584" class="body" text-anchor="middle">存储MuTMoT全局向量</text>
+<text x="1145.0" y="1615" class="body" text-anchor="middle">关联原动作与序列latent</text>
+<rect x="70" y="1730" width="360" height="140" rx="14" fill="#dce9fa" stroke="#91adbf" stroke-width="2"/>
+<text x="250.0" y="1767" class="node" text-anchor="middle">条件编码与适配</text>
+<text x="250.0" y="1804" class="body" text-anchor="middle">冻结LanguageBind + 适配</text>
+<text x="250.0" y="1835" class="body" text-anchor="middle">查询共享语义空间</text>
+<rect x="960" y="1730" width="370" height="140" rx="14" fill="#dce9fa" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="1767" class="node" text-anchor="middle">余弦检索 Top-2</text>
+<text x="1145.0" y="1804" class="body" text-anchor="middle">选择语义相近参考动作</text>
+<text x="1145.0" y="1835" class="body" text-anchor="middle">检索结果不是最终输出</text>
+<path d="M250 1650L250 1730" class="flow"/>
+<path d="M1145 1650L1145 1730" class="flow"/>
+<path d="M430 1800L960 1800" class="flow"/>
+<rect x="70" y="1950" width="360" height="140" rx="14" fill="#dce9fa" stroke="#91adbf" stroke-width="2"/>
+<text x="250.0" y="1987" class="node" text-anchor="middle">可学习时间查询 yL</text>
+<text x="250.0" y="2024" class="body" text-anchor="middle">L个查询，每个对应潜帧</text>
+<text x="250.0" y="2055" class="body" text-anchor="middle">不是人工标注动作事件</text>
+<rect x="520" y="1950" width="360" height="140" rx="14" fill="#dce9fa" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="1987" class="node" text-anchor="middle">条件上下文 c</text>
+<text x="700.0" y="2024" class="body" text-anchor="middle">外部条件 yC</text>
+<text x="700.0" y="2055" class="body" text-anchor="middle">+ 参考运动 yR</text>
+<rect x="960" y="1950" width="370" height="140" rx="14" fill="#dff0e7" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="1987" class="node" text-anchor="middle">参考动作表示</text>
+<text x="1145.0" y="2024" class="body" text-anchor="middle">MuTMoT序列latent</text>
+<text x="1145.0" y="2055" class="body" text-anchor="middle">保留参考时序结构</text>
+<path d="M1145 1870L1145 1950" class="flow"/>
+<path d="M960 2020L880 2020" class="flow"/>
+<path d="M430 1830L475 1830L475 2020L520 2020" class="flow"/>
+<rect x="520" y="2170" width="360" height="170" rx="14" fill="#dce9fa" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="2207" class="node" text-anchor="middle">时间条件交叉注意力</text>
+<text x="700.0" y="2244" class="body" text-anchor="middle">3层TCC：查询读取上下文</text>
+<text x="700.0" y="2275" class="body" text-anchor="middle">当前扩散步调制AdaLN</text>
+<text x="700.0" y="2306" class="body" text-anchor="middle">得到逐潜帧条件 ŷL</text>
+<rect x="960" y="2170" width="370" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="2207" class="node" text-anchor="middle">扩散时间步 s</text>
+<text x="1145.0" y="2244" class="body" text-anchor="middle">正弦嵌入 → 调制参数</text>
+<text x="1145.0" y="2275" class="body" text-anchor="middle">每个去噪步更新条件</text>
+<path d="M700 2090L700 2170" class="flow"/>
+<path d="M250 2090L250 2240L520 2240" class="flow"/>
+<path d="M960 2240L880 2240" class="flow"/>
+<rect x="70" y="2430" width="360" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="250.0" y="2467" class="node" text-anchor="middle">高斯噪声 latent</text>
+<text x="250.0" y="2504" class="body" text-anchor="middle">zS：L × 512</text>
+<text x="250.0" y="2535" class="body" text-anchor="middle">训练目标为噪声预测</text>
+<rect x="520" y="2430" width="360" height="140" rx="14" fill="#dce9fa" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="2467" class="node" text-anchor="middle">潜空间去噪Transformer</text>
+<text x="700.0" y="2504" class="body" text-anchor="middle">6层、4头；CFG=2.75</text>
+<text x="700.0" y="2535" class="body" text-anchor="middle">推理50步得到 z₀</text>
+<rect x="960" y="2430" width="370" height="140" rx="14" fill="#dff0e7" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="2467" class="node" text-anchor="middle">MuTMoT 解码器</text>
+<text x="1145.0" y="2504" class="body" text-anchor="middle">时间上采样</text>
+<text x="1145.0" y="2535" class="body" text-anchor="middle">数据集FiLM + 输出头</text>
+<path d="M700 2340L700 2430" class="flow"/>
+<path d="M430 2500L520 2500" class="flow"/>
+<path d="M880 2500L960 2500" class="flow"/>
+<path d="M700 2570L700 2620L480 2620L480 2540L520 2540" class="flow"/>
+<rect x="960" y="2650" width="370" height="125" rx="14" fill="#dff0e7" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="2687" class="node" text-anchor="middle">新的连续动作</text>
+<text x="1145.0" y="2724" class="body" text-anchor="middle">逐帧骨架运动</text>
+<text x="1145.0" y="2755" class="body" text-anchor="middle">并非直接播放检索片段</text>
+<path d="M1145 2570L1145 2650" class="flow"/>
+<text x="70" y="2740" class="small" text-anchor="start">CFG：完整条件与空条件两次预测组合。</text>
+<text x="70" y="2780" class="small" text-anchor="start">没有额外的接触、轨迹或事件时间硬约束求解器。</text>
+<rect x="25" y="2880" width="1350" height="530" rx="22" fill="#f7f1fc" stroke="#c5d4df" stroke-width="2"/>
+<text x="50" y="2923" class="head" text-anchor="start">C 训练顺序与证据边界</text>
+<text x="50" y="2962" class="small" text-anchor="start">表示学习覆盖四数据集，生成学习仅覆盖HumanML3D和KIT-ML文本动作。</text>
+<rect x="70" y="3020" width="560" height="150" rx="14" fill="#ece1f5" stroke="#91adbf" stroke-width="2"/>
+<text x="350.0" y="3057" class="node" text-anchor="middle">阶段1：MuTMoT + 双侧适配</text>
+<text x="350.0" y="3094" class="body" text-anchor="middle">重建 + 对比对齐；文本5种GPT-4o改写</text>
+<text x="350.0" y="3125" class="body" text-anchor="middle">20epoch；8×A5000；约8小时</text>
+<rect x="770" y="3020" width="560" height="150" rx="14" fill="#ece1f5" stroke="#91adbf" stroke-width="2"/>
+<text x="1050.0" y="3057" class="node" text-anchor="middle">阶段2：REALM 生成器</text>
+<text x="1050.0" y="3094" class="body" text-anchor="middle">文本条件 + 参考；latent扩散噪声目标</text>
+<text x="1050.0" y="3125" class="body" text-anchor="middle">最多50epoch；8×A5000；约5天</text>
+<path d="M630 3095L770 3095" class="flow"/>
+<text x="70" y="3245" class="body" text-anchor="start">检索与识别有定量表；非文本条件生成只有定性例子。</text>
+<text x="70" y="3290" class="body" text-anchor="start">训练时外部条件和参考动作各自独立以9%概率丢弃。</text>
+<text x="70" y="3350" class="small" text-anchor="start">截至2026-11-14，官方仓库仅确认文档与演示资源，未发现可运行模型代码或权重。</text>
+<text x="55" y="3460" class="small" text-anchor="start">依据 NeurIPS 2025 正式版图1、§3、附录A。教学重绘；未运行模型或复现实验。</text>
+<text x="55" y="3500" class="small" text-anchor="start">软语义对齐与检索命中不保证时序同步、物体接触、骨架拓扑泛化或事件执行。</text>
+</svg>

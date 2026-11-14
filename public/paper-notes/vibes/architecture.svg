@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="3140" viewBox="0 0 1440 3140" role="img"><title>ViBES：对话主干、面部与身体的有向协作</title><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#3c556b"/></marker></defs><style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#233f55}.t{font-size:38px;font-weight:700}.p{font-size:30px;font-weight:700}.n{font-size:26px;font-weight:700}.b{font-size:24px}.s{font-size:22px;fill:#506a7c}.f{fill:none;stroke:#3c556b;stroke-width:3;marker-end:url(#a)}.d{fill:none;stroke:#637d70;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#a)}</style><rect width="1440" height="3140" fill="white"/>
+<text x="55" y="60" class="t" text-anchor="start">ViBES：对话主干、面部与身体的有向协作</text>
+<text x="55" y="103" class="b" text-anchor="start">论文教学图；最后一栏单列当前公开组合演示，避免混淆论文与部署链。</text>
+<rect x="30" y="140" width="1380" height="720" rx="22" fill="#eff8f3" stroke="#c8d7e2" stroke-width="2"/>
+<text x="55" y="183" class="p" text-anchor="start">A  数据与表示：准备多模态监督，保留各自的时间速率</text>
+<text x="55" y="221" class="s" text-anchor="start">训练素材含真实动作、单目估计与合成对话，并非全部天然同步全身动捕。</text>
+<rect x="70" y="270" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="307" class="n" text-anchor="middle">网络对话视频</text>
+<text x="265.0" y="345" class="b" text-anchor="middle">说话人检测 + 词级 ASR</text>
+<text x="265.0" y="376" class="b" text-anchor="middle">身体 / 手 / 脸单目重建</text>
+<text x="265.0" y="407" class="b" text-anchor="middle">质量与可见性过滤</text>
+<rect x="525" y="270" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="307" class="n" text-anchor="middle">已有动作数据</text>
+<text x="720.0" y="345" class="b" text-anchor="middle">AMASS / BEAT2 / TFHP 等</text>
+<text x="720.0" y="376" class="b" text-anchor="middle">改写问题 + 合成语音 / 回答</text>
+<text x="720.0" y="407" class="b" text-anchor="middle">缺失模态仅按来源补齐</text>
+<rect x="980" y="270" width="390" height="165" rx="14" fill="#ddf0e4" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="307" class="n" text-anchor="middle">Converse3D 配对序列</text>
+<text x="1175.0" y="345" class="b" text-anchor="middle">统一 SMPL-X / FLAME</text>
+<text x="1175.0" y="376" class="b" text-anchor="middle">25 fps 时间参照</text>
+<text x="1175.0" y="407" class="b" text-anchor="middle">时间戳与 token–frame 映射</text>
+<path d="M460 350 L493 350 L493 475 L1175 475 L1175 435" class="f"/>
+<path d="M915 350 L980 350" class="f"/>
+<rect x="70" y="545" width="390" height="170" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="582" class="n" text-anchor="middle">文本与语音 tokenizer</text>
+<text x="265.0" y="620" class="b" text-anchor="middle">文本：Tiktoken + 词级时间</text>
+<text x="265.0" y="651" class="b" text-anchor="middle">语音：GLM-4-Voice 12.5 Hz</text>
+<text x="265.0" y="682" class="b" text-anchor="middle">预训练语音语言表示</text>
+<rect x="525" y="545" width="390" height="170" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="582" class="n" text-anchor="middle">面部与组合身体码</text>
+<text x="720.0" y="620" class="b" text-anchor="middle">脸：25 Hz，目标数据微调</text>
+<text x="720.0" y="651" class="b" text-anchor="middle">上 / 下身 / 手：6.25 Hz</text>
+<text x="720.0" y="682" class="b" text-anchor="middle">离散动作码不是可读动作词</text>
+<rect x="980" y="545" width="390" height="170" rx="14" fill="#ddf0e4" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="582" class="n" text-anchor="middle">交错序列 + 分数 RoPE</text>
+<text x="1175.0" y="620" class="b" text-anchor="middle">TS 锚点保留整数位置</text>
+<text x="1175.0" y="651" class="b" text-anchor="middle">动作按时间插入分数位置</text>
+<text x="1175.0" y="682" class="b" text-anchor="middle">不是将所有流变为同频率</text>
+<path d="M1175 435 L1175 515 L265 515 L265 545" class="f"/>
+<path d="M720 515 L720 545" class="f"/>
+<path d="M460 630 L495 630 L495 760 L1175 760 L1175 715" class="f"/>
+<path d="M915 630 L980 630" class="f"/>
+<text x="75" y="815" class="b" text-anchor="start">训练：下一 token 预测；语音语言主干冻结，新增面部与身体专家学习条件生成。</text>
+<rect x="30" y="920" width="1380" height="1400" rx="22" fill="#f1f6fc" stroke="#c8d7e2" stroke-width="2"/>
+<text x="55" y="963" class="p" text-anchor="start">B  论文推理：TS 只读自己，动作专家读取 TS</text>
+<text x="55" y="1001" class="s" text-anchor="start">TS = 语音与文字；箭头显示信息读取方向。没有面部 ↔ 身体，也没有动作回写 TS。</text>
+<rect x="70" y="1050" width="390" height="145" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="1087" class="n" text-anchor="middle">输入请求 / 对话历史</text>
+<text x="265.0" y="1125" class="b" text-anchor="middle">语音或文字，可含动作指令</text>
+<text x="265.0" y="1156" class="b" text-anchor="middle">例如：请后退一步并挥手</text>
+<rect x="525" y="1050" width="390" height="145" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="1087" class="n" text-anchor="middle">token 化与交错位置</text>
+<text x="720.0" y="1125" class="b" text-anchor="middle">文本 / 音频输入和已生成码</text>
+<text x="720.0" y="1156" class="b" text-anchor="middle">分数 RoPE 对齐物理时间</text>
+<rect x="980" y="1050" width="390" height="145" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="1087" class="n" text-anchor="middle">自回归输出安排</text>
+<text x="1175.0" y="1125" class="b" text-anchor="middle">按模态进入对应专家</text>
+<text x="1175.0" y="1156" class="b" text-anchor="middle">逐步预测相应类型 token</text>
+<path d="M460 1120 L525 1120" class="f"/>
+<path d="M915 1120 L980 1120" class="f"/>
+<rect x="525" y="1310" width="390" height="185" rx="14" fill="#e3e9ef" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="1347" class="n" text-anchor="middle">TS 专家：冻结</text>
+<text x="720.0" y="1385" class="b" text-anchor="middle">GLM-4-Voice，约 9B</text>
+<text x="720.0" y="1416" class="b" text-anchor="middle">TS query 只关注 TS KV</text>
+<text x="720.0" y="1447" class="b" text-anchor="middle">保留原对话与语音生成能力</text>
+<path d="M1175 1195 L1175 1250 L720 1250 L720 1310" class="f"/>
+<rect x="70" y="1595" width="390" height="190" rx="14" fill="#e3eefc" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="1632" class="n" text-anchor="middle">面部专家：可训练</text>
+<text x="265.0" y="1670" class="b" text-anchor="middle">自己的 Q / LN / FFN</text>
+<text x="265.0" y="1701" class="b" text-anchor="middle">只读取 TS 的 K、V</text>
+<text x="265.0" y="1732" class="b" text-anchor="middle">约 430M；40 层</text>
+<rect x="980" y="1595" width="390" height="190" rx="14" fill="#e3eefc" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="1632" class="n" text-anchor="middle">身体专家：可训练</text>
+<text x="1175.0" y="1670" class="b" text-anchor="middle">自己的 Q / LN / FFN</text>
+<text x="1175.0" y="1701" class="b" text-anchor="middle">上身 / 下身 / 手共用专家</text>
+<text x="1175.0" y="1732" class="b" text-anchor="middle">只读取 TS 的 K、V</text>
+<path d="M525 1410 L265 1410 L265 1595" class="f"/>
+<text x="345" y="1390" class="s" text-anchor="middle">TS 键和值</text>
+<path d="M915 1410 L1175 1410 L1175 1595" class="f"/>
+<text x="1090" y="1390" class="s" text-anchor="middle">TS 键和值</text>
+<rect x="525" y="1595" width="390" height="190" rx="14" fill="#e3e9ef" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="1632" class="n" text-anchor="middle">文字与语音 token</text>
+<text x="720.0" y="1670" class="b" text-anchor="middle">TS 自回归输出</text>
+<text x="720.0" y="1701" class="b" text-anchor="middle">语音解码器恢复声音</text>
+<text x="720.0" y="1732" class="b" text-anchor="middle">文字可作为回应文本</text>
+<path d="M720 1495 L720 1595" class="f"/>
+<rect x="70" y="1900" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="1937" class="n" text-anchor="middle">脸部码 → 连续表情</text>
+<text x="265.0" y="1975" class="b" text-anchor="middle">面部 VQ 解码器</text>
+<text x="265.0" y="2006" class="b" text-anchor="middle">FLAME 表情 / 嘴部参数</text>
+<text x="265.0" y="2037" class="b" text-anchor="middle">25 fps 时间对应</text>
+<rect x="980" y="1900" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="1937" class="n" text-anchor="middle">身体码 → 连续动作</text>
+<text x="1175.0" y="1975" class="b" text-anchor="middle">组合 VQ 解码器</text>
+<text x="1175.0" y="2006" class="b" text-anchor="middle">SMPL-X 姿态与手部</text>
+<text x="1175.0" y="2037" class="b" text-anchor="middle">时间映射回连续序列</text>
+<path d="M265 1785 L265 1900" class="f"/>
+<path d="M1175 1785 L1175 1900" class="f"/>
+<rect x="525" y="2120" width="390" height="140" rx="14" fill="#dceafa" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="2157" class="n" text-anchor="middle">声音 + 表情 + 身体</text>
+<text x="720.0" y="2195" class="b" text-anchor="middle">形成三维对话角色</text>
+<text x="720.0" y="2226" class="b" text-anchor="middle">没有硬接触或空间约束求解</text>
+<path d="M265 2065 L265 2190 L525 2190" class="f"/>
+<path d="M1175 2065 L1175 2190 L915 2190" class="f"/>
+<path d="M720 1785 L720 2120" class="f"/>
+<text x="820" y="2000" class="s" text-anchor="middle">同一时间参照</text>
+<rect x="30" y="2380" width="1380" height="625" rx="22" fill="#f6f1fb" stroke="#c8d7e2" stroke-width="2"/>
+<text x="55" y="2423" class="p" text-anchor="start">C  当前公开脸 + 身体演示：两阶段执行</text>
+<text x="55" y="2461" class="s" text-anchor="start">依据固定版本 README / 推理文档；与上面的论文三专家抽象分开。</text>
+<rect x="70" y="2510" width="390" height="175" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="2547" class="n" text-anchor="middle">先运行面部模型</text>
+<text x="265.0" y="2585" class="b" text-anchor="middle">用户问题 → 回复声音与脸</text>
+<text x="265.0" y="2616" class="b" text-anchor="middle">输出语音与面部序列</text>
+<text x="265.0" y="2647" class="b" text-anchor="middle">加载语音语言基座 + 脸专家</text>
+<rect x="525" y="2510" width="390" height="175" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="2547" class="n" text-anchor="middle">再运行共语身体模型</text>
+<text x="720.0" y="2585" class="b" text-anchor="middle">读取前一步生成的声音</text>
+<text x="720.0" y="2616" class="b" text-anchor="middle">生成上身 / 下身 / 手</text>
+<text x="720.0" y="2647" class="b" text-anchor="middle">两个模型先后装载</text>
+<rect x="980" y="2510" width="390" height="175" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="2547" class="n" text-anchor="middle">合并并输出</text>
+<text x="1175.0" y="2585" class="b" text-anchor="middle">SMPL-X 参数 + 音频</text>
+<text x="1175.0" y="2616" class="b" text-anchor="middle">根位移由 Global VAE 恢复</text>
+<text x="1175.0" y="2647" class="b" text-anchor="middle">官方提示长序列可能漂移</text>
+<path d="M460 2595 L525 2595" class="f"/>
+<path d="M915 2595 L980 2595" class="f"/>
+<text x="75" y="2790" class="b" text-anchor="start">指令身体使用 Agent 检查点与对应提示；Cospeech 检查点只跟随声音。</text>
+<text x="75" y="2840" class="b" text-anchor="start">论文训练报告：4 × L40S，约一周；不同任务基准使用各自训练版本。</text>
+<text x="75" y="2890" class="b" text-anchor="start">0.5B 语音骨干与 Qwen3 文本动作版本是后续发布扩展，不替代原论文主表。</text>
+<text x="75" y="2940" class="s" text-anchor="start">本图是架构教学与文档核查，不代表已经执行模型或验证实时延迟。</text>
+<text x="55" y="3070" class="s" text-anchor="start">来源：ViBES CVPR 2026，图 2、式 1–12；arXiv v2 补充 §7；官方仓库 7821e5e。</text>
+</svg>

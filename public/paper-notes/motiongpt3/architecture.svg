@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="3100" viewBox="0 0 1400 3100" role="img" aria-labelledby="title desc"><title id="title">MotionGPT3完整架构</title><desc id="desc">连续动作VAE与文字输入经双流Transformer共享注意力；四个动作占位符汇聚成条件，扩散生成单个连续latent；训练分VAE预训练和三阶段对齐。</desc><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#415870"/></marker></defs><style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#20394e}.title{font-size:36px;font-weight:700}.head{font-size:29px;font-weight:700}.node{font-size:26px;font-weight:700}.body{font-size:24px}.small{font-size:22px;fill:#526a7c}.flow{fill:none;stroke:#415870;stroke-width:3;marker-end:url(#a)}.dash{fill:none;stroke:#7a62a1;stroke-width:3;stroke-dasharray:9 6;marker-end:url(#a)}</style><rect width="1400" height="3100" fill="white"/>
+<text x="55" y="57" class="title" text-anchor="start">MotionGPT3：双流共享上下文，动作保持连续</text>
+<text x="55" y="101" class="body" text-anchor="start">正式版教学重绘 · 默认 4 个查询 → 1 个全局动作潜变量</text>
+<rect x="25" y="140" width="1350" height="1110" rx="22" fill="#f0f6fd" stroke="#c5d4df" stroke-width="2"/>
+<text x="50" y="183" class="head" text-anchor="start">A 输入与双流骨干：参数分路，注意力交换信息</text>
+<text x="50" y="222" class="small" text-anchor="start">纯文本生成无需动作输入；动作理解或条件任务才使用左侧动作编码路径。</text>
+<rect x="70" y="265" width="520" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="330.0" y="302" class="node" text-anchor="middle">动作输入 m₁…mₙ</text>
+<text x="330.0" y="339" class="body" text-anchor="middle">逐帧运动特征（HumanML3D为263维）</text>
+<text x="330.0" y="370" class="body" text-anchor="middle">进入动作理解／条件任务</text>
+<rect x="810" y="265" width="520" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="1070.0" y="302" class="node" text-anchor="middle">文字指令与上下文</text>
+<text x="1070.0" y="339" class="body" text-anchor="middle">文字 tokenizer + embedding</text>
+<text x="1070.0" y="370" class="body" text-anchor="middle">边界：&lt;som&gt; / &lt;eom&gt;</text>
+<rect x="70" y="470" width="520" height="140" rx="14" fill="#f9e6d6" stroke="#91adbf" stroke-width="2"/>
+<text x="330.0" y="507" class="node" text-anchor="middle">VAE编码器 E → 理解投影</text>
+<text x="330.0" y="544" class="body" text-anchor="middle">整段动作 → 1 × 256 连续 latent</text>
+<text x="330.0" y="575" class="body" text-anchor="middle">线性投影到骨干隐藏维度</text>
+<rect x="810" y="470" width="520" height="140" rx="14" fill="#dbe9fb" stroke="#91adbf" stroke-width="2"/>
+<text x="1070.0" y="507" class="node" text-anchor="middle">动作生成触发器</text>
+<text x="1070.0" y="544" class="body" text-anchor="middle">文字预测 &lt;som&gt; 后</text>
+<text x="1070.0" y="575" class="body" text-anchor="middle">插入 K=4 个 &lt;motion_out&gt;</text>
+<path d="M330 405L330 470" class="flow"/>
+<path d="M1070 405L1070 470" class="flow"/>
+<rect x="70" y="700" width="520" height="155" rx="14" fill="#f9e6d6" stroke="#91adbf" stroke-width="2"/>
+<text x="330.0" y="737" class="node" text-anchor="middle">动作分支 M</text>
+<text x="330.0" y="774" class="body" text-anchor="middle">专属投影、归一化、FFN</text>
+<text x="330.0" y="805" class="body" text-anchor="middle">从头学习动作参数</text>
+<text x="330.0" y="836" class="body" text-anchor="middle">接收动作输入或生成占位符</text>
+<rect x="810" y="700" width="520" height="155" rx="14" fill="#dbe9fb" stroke="#91adbf" stroke-width="2"/>
+<text x="1070.0" y="737" class="node" text-anchor="middle">文本分支 T</text>
+<text x="1070.0" y="774" class="body" text-anchor="middle">专属投影、归一化、FFN</text>
+<text x="1070.0" y="805" class="body" text-anchor="middle">预训练 GPT-2 初始化</text>
+<text x="1070.0" y="836" class="body" text-anchor="middle">自回归文字位置</text>
+<path d="M330 610L330 700" class="flow"/>
+<path d="M1070 610L1070 655L500 655L500 700" class="flow"/>
+<path d="M1330 335L1350 335L1350 670L1250 670L1250 700" class="flow"/>
+<rect x="390" y="950" width="620" height="155" rx="14" fill="#dce9ee" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="987" class="node" text-anchor="middle">共享自注意力 / CMA</text>
+<text x="700.0" y="1024" class="body" text-anchor="middle">重排回原交错序列，交换跨模态信息</text>
+<text x="700.0" y="1055" class="body" text-anchor="middle">再按模态送回各自分支</text>
+<text x="700.0" y="1086" class="body" text-anchor="middle">12层骨干；跨模态开放层位可配置</text>
+<path d="M330 855L330 920L500 920L500 950" class="flow"/>
+<path d="M1070 855L1070 920L900 920L900 950" class="flow"/>
+<path d="M390 1025L55 1025L55 778L70 778" class="flow"/>
+<path d="M1010 1025L1345 1025L1345 778L1330 778" class="flow"/>
+<text x="80" y="1170" class="node" text-anchor="start">输出按模态分开：文字隐藏状态 → LM head；动作查询状态 → 生成头</text>
+<text x="80" y="1210" class="small" text-anchor="start">共享的是信息交互，不是要求两种模态共用全部权重或同一种输出损失。</text>
+<rect x="25" y="1290" width="1350" height="900" rx="22" fill="#fff7ee" stroke="#c5d4df" stroke-width="2"/>
+<text x="50" y="1333" class="head" text-anchor="start">B 两类解码：文字分类；连续动作条件扩散</text>
+<text x="50" y="1372" class="small" text-anchor="start">4个占位符是条件查询，不代表4段动作；骨干一次前向后，扩散头重复采样。</text>
+<rect x="70" y="1430" width="370" height="145" rx="14" fill="#dbe9fb" stroke="#91adbf" stroke-width="2"/>
+<text x="255.0" y="1467" class="node" text-anchor="middle">文字隐藏状态</text>
+<text x="255.0" y="1504" class="body" text-anchor="middle">LM head → Softmax</text>
+<text x="255.0" y="1535" class="body" text-anchor="middle">预测下一个文字词元</text>
+<rect x="520" y="1430" width="360" height="145" rx="14" fill="#f9e6d6" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="1467" class="node" text-anchor="middle">动作查询隐藏状态</text>
+<text x="700.0" y="1504" class="body" text-anchor="middle">4 × 768</text>
+<text x="700.0" y="1535" class="body" text-anchor="middle">一次骨干前向取得</text>
+<rect x="960" y="1430" width="370" height="145" rx="14" fill="#f9e6d6" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="1467" class="node" text-anchor="middle">条件聚合</text>
+<text x="1145.0" y="1504" class="body" text-anchor="middle">Transformer + MHA池化</text>
+<text x="1145.0" y="1535" class="body" text-anchor="middle">全局条件 c：1 × 256</text>
+<path d="M880 1502L960 1502" class="flow"/>
+<path d="M900 1105L900 1130L1365 1130L1365 1400L700 1400L700 1430" class="flow"/>
+<path d="M500 1105L500 1130L35 1130L35 1400L255 1400L255 1430" class="flow"/>
+<rect x="70" y="1660" width="370" height="145" rx="14" fill="#dbe9fb" stroke="#91adbf" stroke-width="2"/>
+<text x="255.0" y="1697" class="node" text-anchor="middle">文字回答／描述</text>
+<text x="255.0" y="1734" class="body" text-anchor="middle">逐词元生成至结束</text>
+<text x="255.0" y="1765" class="body" text-anchor="middle">需要时可以穿插动作</text>
+<path d="M255 1575L255 1660" class="flow"/>
+<rect x="520" y="1660" width="360" height="145" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="1697" class="node" text-anchor="middle">噪声 + 时间步</text>
+<text x="700.0" y="1734" class="body" text-anchor="middle">zT ~ N(0,I)</text>
+<text x="700.0" y="1765" class="body" text-anchor="middle">连续 latent 的采样起点</text>
+<rect x="960" y="1660" width="370" height="145" rx="14" fill="#f9e6d6" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="1697" class="node" text-anchor="middle">条件扩散头 H</text>
+<text x="1145.0" y="1734" class="body" text-anchor="middle">c + 时间嵌入 → AdaLN</text>
+<text x="1145.0" y="1765" class="body" text-anchor="middle">1024宽残差MLP；预测 ε</text>
+<path d="M1145 1575L1145 1660" class="flow"/>
+<path d="M880 1730L960 1730" class="flow"/>
+<path d="M1330 1710L1350 1710L1350 1840L1195 1840L1195 1805" class="flow"/>
+<text x="630" y="1845" class="small" text-anchor="start">默认100步，条件c保持固定</text>
+<rect x="520" y="1920" width="360" height="145" rx="14" fill="#f9e6d6" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="1957" class="node" text-anchor="middle">去噪后的动作 latent</text>
+<text x="700.0" y="1994" class="body" text-anchor="middle">单个 1 × 256 向量</text>
+<text x="700.0" y="2025" class="body" text-anchor="middle">不含可读的时间轴事件表</text>
+<rect x="960" y="1920" width="370" height="145" rx="14" fill="#f9e6d6" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="1957" class="node" text-anchor="middle">VAE解码器 D</text>
+<text x="1145.0" y="1994" class="body" text-anchor="middle">结合目标长度的帧查询</text>
+<text x="1145.0" y="2025" class="body" text-anchor="middle">恢复逐帧连续运动</text>
+<path d="M1145 1805L1145 1880L700 1880L700 1920" class="flow"/>
+<path d="M880 1990L960 1990" class="flow"/>
+<text x="70" y="2120" class="small" text-anchor="start">动作后确定性追加 &lt;eom&gt;，可返回文字生成；无逐帧硬约束或接触求解器。</text>
+<rect x="25" y="2230" width="1350" height="740" rx="22" fill="#f6f1fb" stroke="#c5d4df" stroke-width="2"/>
+<text x="50" y="2273" class="head" text-anchor="start">C 训练流程：先学习动作空间，再生成、对齐、联合微调</text>
+<text x="50" y="2312" class="small" text-anchor="start">文字与&lt;som&gt;用交叉熵；动作以潜空间噪声预测损失训练。</text>
+<rect x="70" y="2370" width="370" height="145" rx="14" fill="#e9e0f2" stroke="#91adbf" stroke-width="2"/>
+<text x="255.0" y="2407" class="node" text-anchor="middle">VAE预训练</text>
+<text x="255.0" y="2444" class="body" text-anchor="middle">真实动作 → E → z → D</text>
+<text x="255.0" y="2475" class="body" text-anchor="middle">重建误差 + KL 正则</text>
+<rect x="520" y="2370" width="360" height="145" rx="14" fill="#e9e0f2" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="2407" class="node" text-anchor="middle">阶段 I：生成预训练</text>
+<text x="700.0" y="2444" class="body" text-anchor="middle">文本分支冻结</text>
+<text x="700.0" y="2475" class="body" text-anchor="middle">T2M；100K迭代</text>
+<rect x="960" y="2370" width="370" height="145" rx="14" fill="#e9e0f2" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="2407" class="node" text-anchor="middle">阶段 II：跨模态对齐</text>
+<text x="1145.0" y="2444" class="body" text-anchor="middle">文本分支继续冻结</text>
+<text x="1145.0" y="2475" class="body" text-anchor="middle">加入理解等任务；300K</text>
+<path d="M440 2442L520 2442" class="flow"/>
+<path d="M880 2442L960 2442" class="flow"/>
+<rect x="70" y="2670" width="370" height="145" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="255.0" y="2707" class="node" text-anchor="middle">真实动作 latent z₀</text>
+<text x="255.0" y="2744" class="body" text-anchor="middle">随机时间步加噪得到 zt</text>
+<text x="255.0" y="2775" class="body" text-anchor="middle">监督扩散头预测 ε</text>
+<rect x="520" y="2670" width="360" height="145" rx="14" fill="#e9e0f2" stroke="#91adbf" stroke-width="2"/>
+<text x="700.0" y="2707" class="node" text-anchor="middle">两种监督</text>
+<text x="700.0" y="2744" class="body" text-anchor="middle">文字：交叉熵</text>
+<text x="700.0" y="2775" class="body" text-anchor="middle">动作：Ldiff噪声预测</text>
+<rect x="960" y="2670" width="370" height="145" rx="14" fill="#e9e0f2" stroke="#91adbf" stroke-width="2"/>
+<text x="1145.0" y="2707" class="node" text-anchor="middle">阶段 III：联合微调</text>
+<text x="1145.0" y="2744" class="body" text-anchor="middle">解冻文本分支</text>
+<text x="1145.0" y="2775" class="body" text-anchor="middle">指令微调；50K迭代</text>
+<path d="M1145 2515L1145 2670" class="flow"/>
+<path d="M440 2742L520 2742" class="dash"/>
+<path d="M880 2742L960 2742" class="dash"/>
+<text x="70" y="2900" class="small" text-anchor="start">论文主配置：2 × RTX 3090、batch 32；默认双流骨干合计238M参数。</text>
+<text x="70" y="2940" class="small" text-anchor="start">没有将图3的训练收敛加速解释为所有任务的端到端推理速度提升。</text>
+<text x="55" y="3030" class="small" text-anchor="start">依据 ICLR 2026 正式版图1–2、图10、§3和附录C.5/D。未运行模型或复现实验。</text>
+<text x="55" y="3070" class="small" text-anchor="start">连续latent避免码本量化，仍是有损压缩；全局表示不等于局部可编辑或严格语义执行。</text>
+</svg>

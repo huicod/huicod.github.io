@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="3020" viewBox="0 0 1440 3020" role="img"><title>CoordSpeaker：离线补写动作描述，再分层协调语音与动作</title><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#3c556b"/></marker></defs><style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#233f55}.t{font-size:38px;font-weight:700}.p{font-size:30px;font-weight:700}.n{font-size:26px;font-weight:700}.b{font-size:24px}.s{font-size:22px;fill:#506a7c}.f{fill:none;stroke:#3c556b;stroke-width:3;marker-end:url(#a)}.d{fill:none;stroke:#637d70;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#a)}</style><rect width="1440" height="3020" fill="white"/>
+<text x="55" y="60" class="t" text-anchor="start">CoordSpeaker：离线补写动作描述，再分层协调语音与动作</text>
+<text x="55" y="103" class="b" text-anchor="start">从数据监督到连续动作的完整路径；离散 caption 模型与连续生成 latent 分开。</text>
+<rect x="30" y="140" width="1380" height="800" rx="22" fill="#eff8f3" stroke="#c8d7e2" stroke-width="2"/>
+<text x="55" y="183" class="p" text-anchor="start">A  离线准备：动作 → 可复用的多粒度描述</text>
+<text x="55" y="221" class="s" text-anchor="start">冻结 MotionGPT；只在数据准备阶段运行，不增加每次动作生成的在线 LLM 开销。</text>
+<rect x="70" y="270" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="307" class="n" text-anchor="middle">原始动作数据</text>
+<text x="265.0" y="345" class="b" text-anchor="middle">BEAT：语音 + 说话动作</text>
+<text x="265.0" y="376" class="b" text-anchor="middle">HumanML3D：文本 + 动作</text>
+<text x="265.0" y="407" class="b" text-anchor="middle">缺音频设零；缺描述则补写</text>
+<rect x="525" y="270" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="307" class="n" text-anchor="middle">统一动作表示</text>
+<text x="720.0" y="345" class="b" text-anchor="middle">SMPL-X 对齐，55 关节</text>
+<text x="720.0" y="376" class="b" text-anchor="middle">每帧 659 维，20 fps</text>
+<text x="720.0" y="407" class="b" text-anchor="middle">根运动 / 关节 / 足接触</text>
+<rect x="980" y="270" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="307" class="n" text-anchor="middle">caption 专用投影</text>
+<text x="1175.0" y="345" class="b" text-anchor="middle">选 22 主体关节，263 维</text>
+<text x="1175.0" y="376" class="b" text-anchor="middle">适配 MotionGPT 预训练输入</text>
+<text x="1175.0" y="407" class="b" text-anchor="middle">部分手指细节会丢失</text>
+<path d="M460 350 L525 350" class="f"/>
+<path d="M915 350 L980 350" class="f"/>
+<rect x="980" y="540" width="390" height="175" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="577" class="n" text-anchor="middle">冻结 VQ + MotionGPT</text>
+<text x="1175.0" y="615" class="b" text-anchor="middle">动作 → 离散 token</text>
+<text x="1175.0" y="646" class="b" text-anchor="middle">与描述动作的提示一起输入</text>
+<text x="1175.0" y="677" class="b" text-anchor="middle">输出自然语言伪 caption</text>
+<path d="M1175 435 L1175 540" class="f"/>
+<rect x="525" y="540" width="390" height="175" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="577" class="n" text-anchor="middle">分段与多尺度 caption</text>
+<text x="720.0" y="615" class="b" text-anchor="middle">Regular：固定片段描述</text>
+<text x="720.0" y="646" class="b" text-anchor="middle">Dynamic：变化片段与组合</text>
+<text x="720.0" y="677" class="b" text-anchor="middle">Hierarchical：局部 + 全局</text>
+<path d="M980 625 L915 625" class="f"/>
+<rect x="70" y="540" width="390" height="175" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="577" class="n" text-anchor="middle">缓存训练配对</text>
+<text x="265.0" y="615" class="b" text-anchor="middle">局部 C_local 分段对应</text>
+<text x="265.0" y="646" class="b" text-anchor="middle">全局 C_global 由局部拼接</text>
+<text x="265.0" y="677" class="b" text-anchor="middle">与音频、连续动作配对</text>
+<path d="M525 625 L460 625" class="f"/>
+<text x="75" y="795" class="b" text-anchor="start">质量控制：过滤少于 5 个词的描述及对应片段；这不等于自动校验动作语义正确。</text>
+<text x="75" y="850" class="b" text-anchor="start">caption 描述身体做什么，不是语音转录；全局文本不是额外生成的动作程序。</text>
+<rect x="30" y="1000" width="1380" height="580" rx="22" fill="#fff8eb" stroke="#c8d7e2" stroke-width="2"/>
+<text x="55" y="1043" class="p" text-anchor="start">B  两阶段训练：统一连续 latent → 条件扩散</text>
+<text x="55" y="1081" class="s" text-anchor="start">先训练动作 VAE；再在同一潜空间学习带音频与动作描述的去噪。</text>
+<rect x="70" y="1140" width="390" height="170" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="1177" class="n" text-anchor="middle">连续动作 → VAE 编码器</text>
+<text x="265.0" y="1215" class="b" text-anchor="middle">659 维 × 帧序列</text>
+<text x="265.0" y="1246" class="b" text-anchor="middle">输出高斯 μ、σ 并采样</text>
+<text x="265.0" y="1277" class="b" text-anchor="middle">连续 z₀：1 × 512</text>
+<rect x="525" y="1140" width="390" height="170" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="1177" class="n" text-anchor="middle">VAE 解码器</text>
+<text x="720.0" y="1215" class="b" text-anchor="middle">零动作 query 读取 latent</text>
+<text x="720.0" y="1246" class="b" text-anchor="middle">恢复连续动作序列</text>
+<text x="720.0" y="1277" class="b" text-anchor="middle">重建 MSE + KL 正则</text>
+<path d="M460 1225 L525 1225" class="f"/>
+<rect x="980" y="1140" width="390" height="170" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="1177" class="n" text-anchor="middle">训练条件去噪器</text>
+<text x="1175.0" y="1215" class="b" text-anchor="middle">z₀ → 加高斯噪声 → zₜ</text>
+<text x="1175.0" y="1246" class="b" text-anchor="middle">预测噪声，最小化 L₂ 损失</text>
+<text x="1175.0" y="1277" class="b" text-anchor="middle">10% 条件随机丢弃</text>
+<path d="M265 1310 L265 1380 L1175 1380 L1175 1310" class="f"/>
+<text x="75" y="1470" class="b" text-anchor="start">VAE 6000 epochs；扩散 2000 epochs；训练 1000 噪声步，推理 50 步 DDIM。</text>
+<text x="75" y="1520" class="s" text-anchor="start">caption VQ token 不进入这个生成器；此处被去噪的是连续动作 latent。</text>
+<rect x="30" y="1640" width="1380" height="1190" rx="22" fill="#f1f6fc" stroke="#c8d7e2" stroke-width="2"/>
+<text x="55" y="1683" class="p" text-anchor="start">C  推理：局部音频 / 文本进自注意力，全局文本进交叉注意力</text>
+<text x="55" y="1721" class="s" text-anchor="start">输入给定整段音频与动作描述；例：平静讲话，同时向前行走并保留共语手势。</text>
+<rect x="70" y="1770" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="1807" class="n" text-anchor="middle">语音 + 局部动作文本</text>
+<text x="265.0" y="1845" class="b" text-anchor="middle">WavLM 音频特征</text>
+<text x="265.0" y="1876" class="b" text-anchor="middle">CLIP 局部 caption 特征</text>
+<text x="265.0" y="1907" class="b" text-anchor="middle">投影到 512 维，组成 c₁</text>
+<rect x="525" y="1770" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="1807" class="n" text-anchor="middle">噪声 latent + 扩散时刻</text>
+<text x="720.0" y="1845" class="b" text-anchor="middle">从高斯噪声 z_T 开始</text>
+<text x="720.0" y="1876" class="b" text-anchor="middle">拼接 zₜ、t、c₁</text>
+<text x="720.0" y="1907" class="b" text-anchor="middle">局部条件与动作共同建模</text>
+<rect x="980" y="1770" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="1807" class="n" text-anchor="middle">全局动作文本</text>
+<text x="1175.0" y="1845" class="b" text-anchor="middle">局部 caption 用分隔符串联</text>
+<text x="1175.0" y="1876" class="b" text-anchor="middle">CLIP 编码得到 c₂</text>
+<text x="1175.0" y="1907" class="b" text-anchor="middle">保持整体动作意图</text>
+<path d="M460 1850 L525 1850" class="f"/>
+<rect x="525" y="2040" width="390" height="145" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="2077" class="n" text-anchor="middle">去噪编码器 E_d</text>
+<text x="720.0" y="2115" class="b" text-anchor="middle">自注意力处理局部条件</text>
+<text x="720.0" y="2146" class="b" text-anchor="middle">输出中间特征 h</text>
+<path d="M720 1935 L720 2040" class="f"/>
+<rect x="980" y="2040" width="390" height="145" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="2077" class="n" text-anchor="middle">去噪解码器 D_d</text>
+<text x="1175.0" y="2115" class="b" text-anchor="middle">h 与全局 c₂ 交叉注意力</text>
+<text x="1175.0" y="2146" class="b" text-anchor="middle">输出预测噪声 ε</text>
+<path d="M915 2110 L980 2110" class="f"/>
+<path d="M1175 1935 L1175 2040" class="f"/>
+<rect x="70" y="2040" width="390" height="195" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="2077" class="n" text-anchor="middle">双条件 CFG</text>
+<text x="265.0" y="2115" class="b" text-anchor="middle">音频分支 + caption 分支</text>
+<text x="265.0" y="2146" class="b" text-anchor="middle">再减去无条件基线贡献</text>
+<text x="265.0" y="2177" class="b" text-anchor="middle">默认音频 7，caption 0.75</text>
+<text x="265.0" y="2208" class="b" text-anchor="middle">软组合，不是优先级规则</text>
+<path d="M1175 2185 L1175 2290 L490 2290 L490 2140 L460 2140" class="f"/>
+<rect x="70" y="2410" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="2447" class="n" text-anchor="middle">DDIM 更新与迭代</text>
+<text x="265.0" y="2485" class="b" text-anchor="middle">由 ε_cfg 更新 zₜ → zₜ₋₁</text>
+<text x="265.0" y="2516" class="b" text-anchor="middle">重复 50 步得到 ẑ₀</text>
+<text x="265.0" y="2547" class="b" text-anchor="middle">使用训练好的 VAE 解码</text>
+<path d="M265 2235 L265 2410" class="f"/>
+<rect x="525" y="2410" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="2447" class="n" text-anchor="middle">连续人体运动</text>
+<text x="720.0" y="2485" class="b" text-anchor="middle">55 关节表示随时间展开</text>
+<text x="720.0" y="2516" class="b" text-anchor="middle">根运动、关节姿态及手势</text>
+<text x="720.0" y="2547" class="b" text-anchor="middle">20 fps；实验片段最多 9 秒</text>
+<path d="M460 2490 L525 2490" class="f"/>
+<rect x="980" y="2410" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="2447" class="n" text-anchor="middle">控制与评估边界</text>
+<text x="1175.0" y="2485" class="b" text-anchor="middle">联合条件产生动作</text>
+<text x="1175.0" y="2516" class="b" text-anchor="middle">没有空间投影 / 接触求解</text>
+<text x="1175.0" y="2547" class="b" text-anchor="middle">未测同部位矛盾指令成功率</text>
+<path d="M915 2490 L980 2490" class="f"/>
+<text x="75" y="2670" class="b" text-anchor="start">原实验：AITS 0.842 秒（RTX 3090，batch 1，不计装载）；不等于流式首帧延迟。</text>
+<text x="75" y="2730" class="b" text-anchor="start">实际指标存在取舍：分层 caption 的语义距离更好，但音频节拍与 FGD 未全面领先。</text>
+<text x="55" y="2910" class="s" text-anchor="start">来源：CoordSpeaker CVPR 2026，图 2–3、式 1–5；补充材料 §6–9。</text>
+<text x="55" y="2960" class="s" text-anchor="start">教学架构重绘；已读原文与补充材料，未执行生成模型。</text>
+</svg>

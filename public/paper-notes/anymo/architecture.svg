@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="3650" viewBox="0 0 1440 3650" role="img"><title>AnyMo：数据、残差动作码与多模态并行掩码生成</title><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#3c556b"/></marker></defs><style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#233f55}.t{font-size:38px;font-weight:700}.p{font-size:30px;font-weight:700}.n{font-size:26px;font-weight:700}.b{font-size:24px}.s{font-size:22px;fill:#506a7c}.f{fill:none;stroke:#3c556b;stroke-width:3;marker-end:url(#a)}.d{fill:none;stroke:#637d70;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#a)}</style><rect width="1440" height="3650" fill="white"/>
+<text x="55" y="60" class="t" text-anchor="start">AnyMo：数据、残差动作码与多模态并行掩码生成</text>
+<text x="55" y="103" class="b" text-anchor="start">共享生成器响应多个条件；轨迹精修单独列出，避免把软条件误当硬约束。</text>
+<rect x="30" y="140" width="1380" height="420" rx="22" fill="#eff8f3" stroke="#c8d7e2" stroke-width="2"/>
+<text x="55" y="183" class="p" text-anchor="start">A  OmniHuMo 数据：从网络视频提取动作与条件</text>
+<text x="55" y="221" class="s" text-anchor="start">3.2M 序列 / 5048 小时 / 约 4M caption；只有约 500 小时可靠音频配对。</text>
+<rect x="70" y="270" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="307" class="n" text-anchor="middle">网络视频 → 人体运动</text>
+<text x="265.0" y="345" class="b" text-anchor="middle">镜头 / 质量 / 二维姿态过滤</text>
+<text x="265.0" y="376" class="b" text-anchor="middle">GVHMR + 相机估计</text>
+<text x="265.0" y="407" class="b" text-anchor="middle">世界坐标运动，继续去异常</text>
+<rect x="525" y="270" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="307" class="n" text-anchor="middle">同一动作的条件标注</text>
+<text x="720.0" y="345" class="b" text-anchor="middle">Qwen3-VL 生成动作描述</text>
+<text x="720.0" y="376" class="b" text-anchor="middle">音频分离 / 说话人同步</text>
+<text x="720.0" y="407" class="b" text-anchor="middle">语音转录与动作描述分开</text>
+<rect x="980" y="270" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="307" class="n" text-anchor="middle">可用的多模态配对</text>
+<text x="1175.0" y="345" class="b" text-anchor="middle">每段 1–3 条动作 caption</text>
+<text x="1175.0" y="376" class="b" text-anchor="middle">子集具有语音或音乐</text>
+<text x="1175.0" y="407" class="b" text-anchor="middle">没有精细手指动作标注</text>
+<path d="M460 350 L525 350" class="f"/>
+<path d="M915 350 L980 350" class="f"/>
+<text x="75" y="505" class="b" text-anchor="start">视频重建与自动 caption 提供监督；它们不是全量真实动捕或逐帧人工事件标注。</text>
+<rect x="30" y="620" width="1380" height="470" rx="22" fill="#fff8eb" stroke="#c8d7e2" stroke-width="2"/>
+<text x="55" y="663" class="p" text-anchor="start">B  表示训练：四层残差 FSQ 将连续动作压成多路 token</text>
+<text x="55" y="701" class="s" text-anchor="start">FSQ 在固定标量网格上量化；每层 2048 个码，时间下采样 4 倍。</text>
+<rect x="70" y="750" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="787" class="n" text-anchor="middle">连续运动 → 编码器</text>
+<text x="265.0" y="825" class="b" text-anchor="middle">卷积残差块 + 自注意力</text>
+<text x="265.0" y="856" class="b" text-anchor="middle">T 帧 → T/4 个时间位置</text>
+<text x="265.0" y="887" class="b" text-anchor="middle">输出连续潜变量 Z</text>
+<rect x="525" y="750" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="787" class="n" text-anchor="middle">4 层残差 FSQ</text>
+<text x="720.0" y="825" class="b" text-anchor="middle">m₀：量化原 latent</text>
+<text x="720.0" y="856" class="b" text-anchor="middle">m₁、m₂、m₃：逐级量化残差</text>
+<text x="720.0" y="887" class="b" text-anchor="middle">各层有序，时间位置对应</text>
+<rect x="980" y="750" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="787" class="n" text-anchor="middle">相加 → 动作解码器</text>
+<text x="1175.0" y="825" class="b" text-anchor="middle">各层量化近似相加</text>
+<text x="1175.0" y="856" class="b" text-anchor="middle">重建连续人体动作</text>
+<text x="1175.0" y="887" class="b" text-anchor="middle">使用重建损失训练</text>
+<path d="M460 830 L525 830" class="f"/>
+<path d="M915 830 L980 830" class="f"/>
+<text x="75" y="995" class="b" text-anchor="start">粗到细指近似误差，不等于每层分别对应“事件 / 身体部位 / 动作语义”。</text>
+<rect x="30" y="1150" width="1380" height="430" rx="22" fill="#f6f1fb" stroke="#c8d7e2" stroke-width="2"/>
+<text x="55" y="1193" class="p" text-anchor="start">C  生成器训练：先建立文本先验，再对齐与联合训练</text>
+<text x="55" y="1231" class="s" text-anchor="start">同一时间位置的 4 层一起 mask；逐层独立交叉熵训练输出头。</text>
+<rect x="70" y="1280" width="390" height="170" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="1317" class="n" text-anchor="middle">阶段 I：文本 → 动作</text>
+<text x="265.0" y="1355" class="b" text-anchor="middle">使用全部文本配对</text>
+<text x="265.0" y="1386" class="b" text-anchor="middle">先训练稳定的运动先验</text>
+<text x="265.0" y="1417" class="b" text-anchor="middle">音频 / 轨迹编码器冻结</text>
+<rect x="525" y="1280" width="390" height="170" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="1317" class="n" text-anchor="middle">阶段 II：模态对齐</text>
+<text x="720.0" y="1355" class="b" text-anchor="middle">冻结文本编码器与主干</text>
+<text x="720.0" y="1386" class="b" text-anchor="middle">训练音频 / 轨迹编码器</text>
+<text x="720.0" y="1417" class="b" text-anchor="middle">映射进已有条件空间</text>
+<rect x="980" y="1280" width="390" height="170" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="1317" class="n" text-anchor="middle">阶段 III：联合微调</text>
+<text x="1175.0" y="1355" class="b" text-anchor="middle">每轮 10% 纯文本 + 音频集</text>
+<text x="1175.0" y="1386" class="b" text-anchor="middle">随机增加文本 / 轨迹条件</text>
+<text x="1175.0" y="1417" class="b" text-anchor="middle">学习不同条件的组合</text>
+<path d="M460 1365 L525 1365" class="f"/>
+<path d="M915 1365 L980 1365" class="f"/>
+<text x="75" y="1520" class="s" text-anchor="start">公开训练配置：tokenizer 16 × H20；生成器 48 × H20；原文未报告总 GPU 小时。</text>
+<rect x="30" y="1640" width="1380" height="1850" rx="22" fill="#f1f6fc" stroke="#c8d7e2" stroke-width="2"/>
+<text x="55" y="1683" class="p" text-anchor="start">D  推理：条件特征 + 掩码动作 → 4 路并行预测 → 连续运动</text>
+<text x="55" y="1721" class="s" text-anchor="start">论文覆盖文本、语音 / 音乐、轨迹组合；公开现成 CLI 当前只支持文本 / 轨迹。</text>
+<rect x="70" y="1770" width="390" height="160" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="1807" class="n" text-anchor="middle">动作文本条件</text>
+<text x="265.0" y="1845" class="b" text-anchor="middle">T5-XL 编码</text>
+<text x="265.0" y="1876" class="b" text-anchor="middle">描述身体要做什么</text>
+<text x="265.0" y="1907" class="b" text-anchor="middle">不是先生成动作程序</text>
+<rect x="525" y="1770" width="390" height="160" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="1807" class="n" text-anchor="middle">语音或音乐条件</text>
+<text x="720.0" y="1845" class="b" text-anchor="middle">WavTokenizer 编码器</text>
+<text x="720.0" y="1876" class="b" text-anchor="middle">提供音频时间特征</text>
+<text x="720.0" y="1907" class="b" text-anchor="middle">不把 codec ID 当动作词</text>
+<rect x="980" y="1770" width="390" height="160" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="1807" class="n" text-anchor="middle">轨迹条件</text>
+<text x="1175.0" y="1845" class="b" text-anchor="middle">轻量卷积编码器</text>
+<text x="1175.0" y="1876" class="b" text-anchor="middle">空间路径随时间变化</text>
+<text x="1175.0" y="1907" class="b" text-anchor="middle">原生生成属于软控制</text>
+<rect x="70" y="2050" width="390" height="145" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="265.0" y="2087" class="n" text-anchor="middle">共同条件表示</text>
+<text x="265.0" y="2125" class="b" text-anchor="middle">模态特征各自投影</text>
+<text x="265.0" y="2156" class="b" text-anchor="middle">与动作位置一起送入主干</text>
+<path d="M265 1930 L265 2050" class="f"/>
+<path d="M720 1930 L720 1985 L265 1985" class="f"/>
+<path d="M1175 1930 L1175 1985 L720 1985" class="f"/>
+<rect x="980" y="2050" width="390" height="145" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="2087" class="n" text-anchor="middle">4 路动作 embedding</text>
+<text x="1175.0" y="2125" class="b" text-anchor="middle">同一时间位置同步 mask</text>
+<text x="1175.0" y="2156" class="b" text-anchor="middle">Embd(m₀)+…+Embd(m₃)</text>
+<rect x="525" y="2280" width="390" height="160" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="2317" class="n" text-anchor="middle">双向 Masked Transformer</text>
+<text x="720.0" y="2355" class="b" text-anchor="middle">LLaMA 架构，111M–3B</text>
+<text x="720.0" y="2386" class="b" text-anchor="middle">同时利用左右时间上下文</text>
+<text x="720.0" y="2417" class="b" text-anchor="middle">共享隐藏状态 h</text>
+<path d="M265 2195 L265 2360 L525 2360" class="f"/>
+<path d="M1175 2195 L1175 2360 L915 2360" class="f"/>
+<rect x="50" y="2550" width="300" height="125" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="200.0" y="2587" class="n" text-anchor="middle">预测头 FFN₀</text>
+<text x="200.0" y="2625" class="b" text-anchor="middle">预测基础层 m₀</text>
+<rect x="395" y="2550" width="300" height="125" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="545.0" y="2587" class="n" text-anchor="middle">预测头 FFN₁</text>
+<text x="545.0" y="2625" class="b" text-anchor="middle">预测残差层 m₁</text>
+<rect x="740" y="2550" width="300" height="125" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="890.0" y="2587" class="n" text-anchor="middle">预测头 FFN₂</text>
+<text x="890.0" y="2625" class="b" text-anchor="middle">预测残差层 m₂</text>
+<rect x="1085" y="2550" width="300" height="125" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1235.0" y="2587" class="n" text-anchor="middle">预测头 FFN₃</text>
+<text x="1235.0" y="2625" class="b" text-anchor="middle">预测残差层 m₃</text>
+<path d="M720 2440 L720 2495 L200 2495 L200 2550" class="f"/>
+<path d="M720 2495 L545 2495 L545 2550" class="f"/>
+<path d="M720 2495 L890 2495 L890 2550" class="f"/>
+<path d="M720 2495 L1235 2495 L1235 2550" class="f"/>
+<rect x="525" y="2800" width="390" height="155" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="2837" class="n" text-anchor="middle">补码完成 → 反量化相加</text>
+<text x="720.0" y="2875" class="b" text-anchor="middle">四路 token 并行预测</text>
+<text x="720.0" y="2906" class="b" text-anchor="middle">公开 CLI 默认 6 轮补码</text>
+<text x="720.0" y="2937" class="b" text-anchor="middle">得到解码用连续 latent</text>
+<path d="M200 2675 L200 2735 L720 2735 L720 2800" class="f"/>
+<path d="M545 2675 L545 2735" class="f"/>
+<path d="M890 2675 L890 2735 L720 2735" class="f"/>
+<path d="M1235 2675 L1235 2735 L890 2735" class="f"/>
+<rect x="525" y="3040" width="390" height="140" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="3077" class="n" text-anchor="middle">动作解码器</text>
+<text x="720.0" y="3115" class="b" text-anchor="middle">复用已训练的 tokenizer D</text>
+<text x="720.0" y="3146" class="b" text-anchor="middle">恢复连续逐帧运动</text>
+<path d="M720 2955 L720 3040" class="f"/>
+<rect x="980" y="3040" width="390" height="165" rx="14" fill="#fff" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="3077" class="n" text-anchor="middle">原生输出 native</text>
+<text x="1175.0" y="3115" class="b" text-anchor="middle">公开实现：30 fps / 272 维</text>
+<text x="1175.0" y="3146" class="b" text-anchor="middle">可恢复 22 关节 XYZ</text>
+<text x="1175.0" y="3177" class="b" text-anchor="middle">同时保留采样 token</text>
+<path d="M915 3110 L980 3110" class="f"/>
+<rect x="980" y="3270" width="390" height="165" rx="14" fill="#fff1d8" stroke="#91aebe" stroke-width="2"/>
+<text x="1175.0" y="3307" class="n" text-anchor="middle">可选：轨迹 latent 拟合</text>
+<text x="1175.0" y="3345" class="b" text-anchor="middle">加入目标骨盆 XYZ</text>
+<text x="1175.0" y="3376" class="b" text-anchor="middle">固定权重，仅优化 latent</text>
+<text x="1175.0" y="3407" class="b" text-anchor="middle">AdamW 最小化骨盆 MSE</text>
+<path d="M1175 3205 L1175 3270" class="f"/>
+<rect x="525" y="3270" width="390" height="165" rx="14" fill="#fff1d8" stroke="#91aebe" stroke-width="2"/>
+<text x="720.0" y="3307" class="n" text-anchor="middle">再次解码 → optimized</text>
+<text x="720.0" y="3345" class="b" text-anchor="middle">原 token 仅作初始化</text>
+<text x="720.0" y="3376" class="b" text-anchor="middle">不重新量化为新 token</text>
+<text x="720.0" y="3407" class="b" text-anchor="middle">不保证自然接触或必达目标</text>
+<path d="M980 3350 L915 3350" class="f"/>
+<text x="75" y="3065" class="n" text-anchor="start">公开实现补充</text>
+<text x="75" y="3115" class="b" text-anchor="start">文本 / 轨迹可用；</text>
+<text x="75" y="3160" class="b" text-anchor="start">音频入口仍在 TODO。</text>
+<text x="75" y="3260" class="b" text-anchor="start">附录 E 的轨迹展示</text>
+<text x="75" y="3305" class="b" text-anchor="start">明确使用测试时优化；</text>
+<text x="75" y="3350" class="s" text-anchor="start">原主表未完整交代适用范围。</text>
+<text x="55" y="3555" class="s" text-anchor="start">来源：AnyMo arXiv v3，图 2、6、式 1–5、附录 E；官方实现固定版本 55a386da。</text>
+<text x="55" y="3600" class="s" text-anchor="start">教学图与静态代码核查；没有执行模型、拟合或验证生成成功率。</text>
+</svg>

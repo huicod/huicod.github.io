@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="3120" viewBox="0 0 1400 3120" role="img" aria-labelledby="title desc"><title id="title">HMVLM完整架构</title><desc id="desc">提示驱动混合LoRA、零专家、视觉投影与三类输出；五部位姿态动作量化；codec预训练与指令和门控监督。</desc><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#415870"/></marker></defs><style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#20394e}.title{font-size:36px;font-weight:700}.head{font-size:29px;font-weight:700}.node{font-size:26px;font-weight:700}.body{font-size:24px}.small{font-size:22px;fill:#526a7c}.flow{fill:none;stroke:#415870;stroke-width:3;marker-end:url(#a)}.dash{fill:none;stroke:#7a62a1;stroke-width:3;stroke-dasharray:9 6;marker-end:url(#a)}</style><rect width="1400" height="3120" fill="white"/>
+<text x="55" y="57" class="title" text-anchor="start">HMVLM：按任务适配模型，让普通对话保留原路径</text>
+<text x="55" y="101" class="body" text-anchor="start">教学重绘 · 零专家 + 混合 LoRA + 五部位姿态／动作词元</text>
+<rect x="25" y="140" width="1350" height="1080" rx="22" fill="#f0f6fd" stroke="#c5d4df" stroke-width="2"/>
+<text x="50" y="183" class="head" text-anchor="start">A 任务推理：提示决定适配，输入与输出按任务选择</text>
+<text x="50" y="222" class="small" text-anchor="start">文本动作、图像估姿、视频理解共享基础模型；没有音乐或语音输入分支。</text>
+<rect x="70" y="260" width="300" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="220.0" y="297" class="node" text-anchor="middle">任务指令 I + 提示 P</text>
+<text x="220.0" y="334" class="body" text-anchor="middle">如“生成绕圈行走动作”</text>
+<text x="220.0" y="365" class="body" text-anchor="middle">或“描述视频中的动作”</text>
+<rect x="430" y="260" width="400" height="140" rx="14" fill="#e1edfb" stroke="#91adbf" stroke-width="2"/>
+<text x="630.0" y="297" class="node" text-anchor="middle">文本词元与词嵌入</text>
+<text x="630.0" y="334" class="body" text-anchor="middle">原词表 + 姿态／动作词表</text>
+<text x="630.0" y="365" class="body" text-anchor="middle">构成共享自回归输入</text>
+<rect x="430" y="460" width="400" height="145" rx="14" fill="#e1edfb" stroke="#91adbf" stroke-width="2"/>
+<text x="630.0" y="497" class="node" text-anchor="middle">CLIP 文本 → 门控 MLP</text>
+<text x="630.0" y="534" class="body" text-anchor="middle">512维提示特征</text>
+<text x="630.0" y="565" class="body" text-anchor="middle">产生软混合权重 α₀…α₄</text>
+<rect x="920" y="460" width="380" height="145" rx="14" fill="#e6e1f5" stroke="#91adbf" stroke-width="2"/>
+<text x="1110.0" y="497" class="node" text-anchor="middle">1 零专家 + 4 LoRA专家</text>
+<text x="1110.0" y="534" class="body" text-anchor="middle">零专家增量固定为 0</text>
+<text x="1110.0" y="565" class="body" text-anchor="middle">其余专家可训练，rank 8</text>
+<rect x="70" y="680" width="300" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="220.0" y="717" class="node" text-anchor="middle">可选视觉输入</text>
+<text x="220.0" y="754" class="body" text-anchor="middle">图像：估计单帧姿态</text>
+<text x="220.0" y="785" class="body" text-anchor="middle">视频：均匀抽取 8 帧</text>
+<rect x="430" y="680" width="400" height="140" rx="14" fill="#e1edfb" stroke="#91adbf" stroke-width="2"/>
+<text x="630.0" y="717" class="node" text-anchor="middle">CLIP ViT-L/14 + 投影</text>
+<text x="630.0" y="754" class="body" text-anchor="middle">LLaVA 视觉投影</text>
+<text x="630.0" y="785" class="body" text-anchor="middle">视觉特征进入词嵌入空间</text>
+<rect x="920" y="680" width="380" height="140" rx="14" fill="#d7e7fb" stroke="#91adbf" stroke-width="2"/>
+<text x="1110.0" y="717" class="node" text-anchor="middle">共享基础语言模型</text>
+<text x="1110.0" y="754" class="body" text-anchor="middle">W′ = W + Σ αᵢAᵢBᵢ</text>
+<text x="1110.0" y="785" class="body" text-anchor="middle">自回归预测扩展词表</text>
+<path d="M370 330L430 330" class="flow"/>
+<path d="M370 355L400 355L400 532L430 532" class="flow"/>
+<path d="M830 532L920 532" class="flow"/>
+<path d="M830 330L1330 330L1330 630L1110 630L1110 680" class="flow"/>
+<text x="1150" y="660" class="small" text-anchor="start">文本输入</text>
+<path d="M1110 605L1110 680" class="flow"/>
+<path d="M370 750L430 750" class="flow"/>
+<path d="M830 750L920 750" class="flow"/>
+<rect x="70" y="1000" width="340" height="145" rx="14" fill="#e1edfb" stroke="#91adbf" stroke-width="2"/>
+<text x="240.0" y="1037" class="node" text-anchor="middle">文本回答</text>
+<text x="240.0" y="1074" class="body" text-anchor="middle">普通对话或视频描述</text>
+<text x="240.0" y="1105" class="body" text-anchor="middle">直接输出文字</text>
+<rect x="510" y="1000" width="340" height="145" rx="14" fill="#e1edfb" stroke="#91adbf" stroke-width="2"/>
+<text x="680.0" y="1037" class="node" text-anchor="middle">姿态码 → 姿态解码器</text>
+<text x="680.0" y="1074" class="body" text-anchor="middle">图像估姿路径</text>
+<text x="680.0" y="1105" class="body" text-anchor="middle">恢复单帧连续姿态</text>
+<rect x="950" y="1000" width="340" height="145" rx="14" fill="#e1edfb" stroke="#91adbf" stroke-width="2"/>
+<text x="1120.0" y="1037" class="node" text-anchor="middle">动作码 → 动作解码器</text>
+<text x="1120.0" y="1074" class="body" text-anchor="middle">文本动作路径</text>
+<text x="1120.0" y="1105" class="body" text-anchor="middle">恢复整段连续运动</text>
+<path d="M1110 820L1110 920L240 920L240 1000" class="flow"/>
+<path d="M680 920L680 1000" class="flow"/>
+<path d="M1110 920L1120 920L1120 1000" class="flow"/>
+<text x="70" y="1190" class="small" text-anchor="start">零专家不生成动作；它让对应 LoRA 增量趋近零。一般对话是否保留仍需评测。</text>
+<rect x="25" y="1270" width="1350" height="950" rx="22" fill="#eff9f5" stroke="#c5d4df" stroke-width="2"/>
+<text x="50" y="1313" class="head" text-anchor="start">B 词元来源：先空间分组，再按姿态或序列分路</text>
+<text x="50" y="1352" class="small" text-anchor="start">5个部位：躯干、左右手臂、左右腿；独立码本提供部位身份，不提供可读动作词。</text>
+<rect x="70" y="1400" width="300" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="220.0" y="1437" class="node" text-anchor="middle">真实姿态／动作</text>
+<text x="220.0" y="1474" class="body" text-anchor="middle">逐帧关节特征</text>
+<text x="220.0" y="1505" class="body" text-anchor="middle">姿态 1 帧；动作 F 帧</text>
+<rect x="430" y="1400" width="400" height="140" rx="14" fill="#def1e7" stroke="#91adbf" stroke-width="2"/>
+<text x="630.0" y="1437" class="node" text-anchor="middle">空间 Transformer</text>
+<text x="630.0" y="1474" class="body" text-anchor="middle">关节投影 + 位置编码</text>
+<text x="630.0" y="1505" class="body" text-anchor="middle">5个部位查询 + 部位掩码</text>
+<rect x="920" y="1400" width="380" height="140" rx="14" fill="#def1e7" stroke="#91adbf" stroke-width="2"/>
+<text x="1110.0" y="1437" class="node" text-anchor="middle">逐帧五部位特征</text>
+<text x="1110.0" y="1474" class="body" text-anchor="middle">各部位汇聚相应关节</text>
+<text x="1110.0" y="1505" class="body" text-anchor="middle">每个部位 512 维</text>
+<path d="M370 1470L430 1470" class="flow"/>
+<path d="M830 1470L920 1470" class="flow"/>
+<rect x="430" y="1640" width="400" height="140" rx="14" fill="#def1e7" stroke="#91adbf" stroke-width="2"/>
+<text x="630.0" y="1677" class="node" text-anchor="middle">动作：时间卷积压缩</text>
+<text x="630.0" y="1714" class="body" text-anchor="middle">对各部位沿时间编码</text>
+<text x="630.0" y="1745" class="body" text-anchor="middle">压缩率 4，约 F/4 个位置</text>
+<rect x="920" y="1640" width="380" height="140" rx="14" fill="#def1e7" stroke="#91adbf" stroke-width="2"/>
+<text x="1110.0" y="1677" class="node" text-anchor="middle">姿态：直接分部位量化</text>
+<text x="1110.0" y="1714" class="body" text-anchor="middle">每部位独立码本 K=512</text>
+<text x="1110.0" y="1745" class="body" text-anchor="middle">得到 5 个姿态码</text>
+<path d="M1110 1540L1110 1640" class="flow"/>
+<path d="M1000 1540L1000 1590L630 1590L630 1640" class="flow"/>
+<rect x="430" y="1850" width="400" height="140" rx="14" fill="#def1e7" stroke="#91adbf" stroke-width="2"/>
+<text x="630.0" y="1887" class="node" text-anchor="middle">动作：分部位量化</text>
+<text x="630.0" y="1924" class="body" text-anchor="middle">每部位独立码本 K=512</text>
+<text x="630.0" y="1955" class="body" text-anchor="middle">约 5 × F/4 个动作码</text>
+<rect x="920" y="1850" width="380" height="140" rx="14" fill="#def1e7" stroke="#91adbf" stroke-width="2"/>
+<text x="1110.0" y="1887" class="node" text-anchor="middle">姿态解码器 Dₘ</text>
+<text x="1110.0" y="1924" class="body" text-anchor="middle">查码本 + 连续重建</text>
+<text x="1110.0" y="1955" class="body" text-anchor="middle">输出单帧姿态</text>
+<path d="M630 1780L630 1850" class="flow"/>
+<path d="M1110 1780L1110 1850" class="flow"/>
+<rect x="430" y="2060" width="400" height="125" rx="14" fill="#def1e7" stroke="#91adbf" stroke-width="2"/>
+<text x="630.0" y="2097" class="node" text-anchor="middle">动作解码器 Dᴹ</text>
+<text x="630.0" y="2134" class="body" text-anchor="middle">查码本 + 时间重建</text>
+<text x="630.0" y="2165" class="body" text-anchor="middle">输出 F 帧动作</text>
+<path d="M630 1990L630 2060" class="flow"/>
+<text x="70" y="1790" class="node" text-anchor="start">两类词表分开</text>
+<text x="70" y="1840" class="small" text-anchor="start">部位码不是动作标签</text>
+<text x="70" y="1880" class="small" text-anchor="start">也不是硬控制指令</text>
+<text x="920" y="2080" class="node" text-anchor="start">codec 预训练目标：</text>
+<text x="920" y="2122" class="small" text-anchor="start">重建 + 码本 + 承诺损失</text>
+<text x="920" y="2162" class="small" text-anchor="start">再供共享指令模型使用</text>
+<rect x="25" y="2270" width="1350" height="740" rx="22" fill="#f7f1fc" stroke="#c5d4df" stroke-width="2"/>
+<text x="50" y="2313" class="head" text-anchor="start">C 训练与保护：先训练 codec，再学习任务及门控</text>
+<text x="50" y="2352" class="small" text-anchor="start">基础权重与零专家保持不更新；对话提示为零专家提供明确监督。</text>
+<rect x="70" y="2410" width="340" height="140" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="240.0" y="2447" class="node" text-anchor="middle">动作／姿态训练数据</text>
+<text x="240.0" y="2484" class="body" text-anchor="middle">HumanML3D、KIT-ML</text>
+<text x="240.0" y="2515" class="body" text-anchor="middle">Human3.6M、3DPW</text>
+<rect x="510" y="2410" width="340" height="140" rx="14" fill="#ece0f5" stroke="#91adbf" stroke-width="2"/>
+<text x="680.0" y="2447" class="node" text-anchor="middle">预训练两种 codec</text>
+<text x="680.0" y="2484" class="body" text-anchor="middle">部位量化与重建</text>
+<text x="680.0" y="2515" class="body" text-anchor="middle">学习姿态／动作码本</text>
+<rect x="950" y="2410" width="340" height="140" rx="14" fill="#ece0f5" stroke="#91adbf" stroke-width="2"/>
+<text x="1120.0" y="2447" class="node" text-anchor="middle">构建任务目标序列</text>
+<text x="1120.0" y="2484" class="body" text-anchor="middle">文本、图像、MoVid视频</text>
+<text x="1120.0" y="2515" class="body" text-anchor="middle">对应动作码／姿态码／文字</text>
+<path d="M410 2480L510 2480" class="flow"/>
+<path d="M850 2480L950 2480" class="flow"/>
+<rect x="510" y="2640" width="340" height="140" rx="14" fill="#ece0f5" stroke="#91adbf" stroke-width="2"/>
+<text x="680.0" y="2677" class="node" text-anchor="middle">任务指令微调</text>
+<text x="680.0" y="2714" class="body" text-anchor="middle">训练 LoRA 与门控</text>
+<text x="680.0" y="2745" class="body" text-anchor="middle">自回归交叉熵 Lfm</text>
+<rect x="950" y="2830" width="340" height="130" rx="14" fill="#ece0f5" stroke="#91adbf" stroke-width="2"/>
+<text x="1120.0" y="2867" class="node" text-anchor="middle">联合目标</text>
+<text x="1120.0" y="2904" class="body" text-anchor="middle">Ltotal = Lfm + Lgat</text>
+<text x="1120.0" y="2935" class="body" text-anchor="middle">保留语言、适配动作任务</text>
+<path d="M1120 2550L1120 2600L680 2600L680 2640" class="flow"/>
+<rect x="70" y="2830" width="340" height="130" rx="14" fill="#fff" stroke="#91adbf" stroke-width="2"/>
+<text x="240.0" y="2867" class="node" text-anchor="middle">一般对话提示</text>
+<text x="240.0" y="2904" class="body" text-anchor="middle">LMSYS-Chat-1M</text>
+<text x="240.0" y="2935" class="body" text-anchor="middle">与动作无关的监督样本</text>
+<rect x="510" y="2830" width="340" height="130" rx="14" fill="#ece0f5" stroke="#91adbf" stroke-width="2"/>
+<text x="680.0" y="2867" class="node" text-anchor="middle">零专家门控监督</text>
+<text x="680.0" y="2904" class="body" text-anchor="middle">Lgat 鼓励 α₀ 接近 1</text>
+<text x="680.0" y="2935" class="body" text-anchor="middle">减少运动增量干扰</text>
+<path d="M410 2895L510 2895" class="flow"/>
+<path d="M850 2895L950 2895" class="dash"/>
+<path d="M850 2710L1120 2710L1120 2830" class="dash"/>
+<text x="55" y="3060" class="small" text-anchor="start">依据 NeurIPS 2025 正式版图2–3、§3、附录D。图示为论文机制整理，未运行模型。</text>
+<text x="55" y="3098" class="small" text-anchor="start">零专家降低遗忘；部位表示提高粒度；二者都不提供精确事件、轨迹或接触保证。</text>
+</svg>

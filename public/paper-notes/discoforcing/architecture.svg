@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1360" height="3410" viewBox="0 0 1360 3410" role="img" aria-labelledby="title"><title id="title">DiscoForcing完整架构：音频编码、时间引导、在线执行与训练</title>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#40566c"/></marker></defs><style>text{font-family:Microsoft YaHei,Noto Sans CJK SC,sans-serif;fill:#20394c}.flow{fill:none;stroke:#40566c;stroke-width:3;marker-end:url(#arrow)}.dash{fill:none;stroke:#38867b;stroke-width:3;stroke-dasharray:9 6;marker-end:url(#arrow)}</style>
+<rect width="1360" height="3410" fill="white"/>
+<text x="55" y="60" font-size="37" text-anchor="start" font-weight="700">DiscoForcing：持续听音乐，滚动生成可播放的动作</text>
+<text x="55" y="105" font-size="25" text-anchor="start" font-weight="400">教学重绘 · 音频码与音频相位是条件；动作由连续 latent 流模型生成</text>
+<rect x="25" y="145" width="1310" height="1190" rx="22" fill="#eff6fc" stroke="#cbd8e2" stroke-width="2"/>
+<text x="50" y="188" font-size="30" text-anchor="start" font-weight="700">A 在线主线：新音频 → 条件 → 动作隐变量 → 连续动作</text>
+<text x="50" y="225" font-size="23" text-anchor="start" font-weight="400">两类时间要区分：动作的时间位置 t，与每个位置的噪声等级 kₜ。</text>
+<rect x="60" y="265" width="350" height="140" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="235.0" y="301" font-size="26" text-anchor="middle" font-weight="700">实时音乐输入</text>
+<text x="235.0" y="337" font-size="24" text-anchor="middle" font-weight="400">16 kHz 单声道</text>
+<text x="235.0" y="368" font-size="24" text-anchor="middle" font-weight="400">6 秒过去音频 FIFO 缓存</text>
+<rect x="505" y="265" width="350" height="140" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="680.0" y="301" font-size="26" text-anchor="middle" font-weight="700">因果卷积编码</text>
+<text x="680.0" y="337" font-size="24" text-anchor="middle" font-weight="400">冷启动缺失前缀补零</text>
+<text x="680.0" y="368" font-size="24" text-anchor="middle" font-weight="400">提取共享音频特征</text>
+<rect x="950" y="220" width="350" height="140" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="1125.0" y="256" font-size="26" text-anchor="middle" font-weight="700">音频 RVQ 分支</text>
+<text x="1125.0" y="292" font-size="24" text-anchor="middle" font-weight="400">9 层 × 128 码 × 8 维</text>
+<text x="1125.0" y="323" font-size="24" text-anchor="middle" font-weight="400">离散节奏模式</text>
+<rect x="950" y="430" width="350" height="140" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="1125.0" y="466" font-size="26" text-anchor="middle" font-weight="700">周期相位分支</text>
+<text x="1125.0" y="502" font-size="24" text-anchor="middle" font-weight="400">频率 F、相位 φ、幅度 A</text>
+<text x="1125.0" y="533" font-size="24" text-anchor="middle" font-weight="400">正弦重建 + 偏移 B</text>
+<path d="M410 335H505" class="flow"/>
+<path d="M855 305H900V290H950" class="flow"/>
+<path d="M855 365H900V500H950" class="flow"/>
+<rect x="505" y="585" width="350" height="140" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="680.0" y="621" font-size="26" text-anchor="middle" font-weight="700">组合音乐条件 c</text>
+<text x="680.0" y="657" font-size="24" text-anchor="middle" font-weight="400">[f_vq ; f_pae]</text>
+<text x="680.0" y="688" font-size="24" text-anchor="middle" font-weight="400">池化对齐动作时间轴</text>
+<path d="M1125 360V390H1320V655H855" class="flow"/>
+<path d="M1125 570V610H900V690H855" class="flow"/>
+<rect x="60" y="825" width="350" height="150" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="235.0" y="861" font-size="26" text-anchor="middle" font-weight="700">历史动作 latent</text>
+<text x="235.0" y="897" font-size="24" text-anchor="middle" font-weight="400">有限长度缓存</text>
+<text x="235.0" y="928" font-size="24" text-anchor="middle" font-weight="400">默认 60 个历史 token</text>
+<rect x="505" y="825" width="350" height="180" rx="12" fill="#deebfa" stroke="#8aa9bd" stroke-width="2"/>
+<text x="680.0" y="861" font-size="26" text-anchor="middle" font-weight="700">滚动 Diffusion Forcing</text>
+<text x="680.0" y="897" font-size="24" text-anchor="middle" font-weight="400">8 层 Transformer</text>
+<text x="680.0" y="928" font-size="24" text-anchor="middle" font-weight="400">活动窗口联合细化</text>
+<text x="680.0" y="959" font-size="24" text-anchor="middle" font-weight="400">双分支时间引导见 B</text>
+<rect x="950" y="825" width="350" height="150" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="1125.0" y="861" font-size="26" text-anchor="middle" font-weight="700">新高斯噪声</text>
+<text x="1125.0" y="897" font-size="24" text-anchor="middle" font-weight="400">每次推进加入窗口右端</text>
+<text x="1125.0" y="928" font-size="24" text-anchor="middle" font-weight="400">左端成熟后提交输出</text>
+<path d="M680 725V825" class="flow"/>
+<text x="700" y="785" font-size="22" text-anchor="start" font-weight="400">音乐条件</text>
+<path d="M410 900H505" class="flow"/>
+<path d="M950 900H855" class="flow"/>
+<rect x="505" y="1080" width="350" height="140" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="680.0" y="1116" font-size="26" text-anchor="middle" font-weight="700">动作 VAE 解码</text>
+<text x="680.0" y="1152" font-size="24" text-anchor="middle" font-weight="400">4 维连续 latent</text>
+<text x="680.0" y="1183" font-size="24" text-anchor="middle" font-weight="400">时间压缩 4 倍 → 动作帧</text>
+<path d="M680 1005V1080" class="flow"/>
+<rect x="950" y="1080" width="350" height="140" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="1125.0" y="1116" font-size="26" text-anchor="middle" font-weight="700">272 维动作流恢复</text>
+<text x="1125.0" y="1152" font-size="24" text-anchor="middle" font-weight="400">累积根平移与朝向</text>
+<text x="1125.0" y="1183" font-size="24" text-anchor="middle" font-weight="400">输出关节 / SMPL 参数</text>
+<path d="M855 1150H950" class="flow"/>
+<path d="M680 1040H235V975" class="flow"/>
+<text x="65" y="1075" font-size="22" text-anchor="start" font-weight="400">提交已完成 latent</text>
+<text x="60" y="1285" font-size="24" text-anchor="start" font-weight="400">音频 RVQ 是离散条件；动作 latent 连续。两者都不是可读的动作事件程序。</text>
+<rect x="25" y="1390" width="1310" height="570" rx="22" fill="#f5effb" stroke="#cbd8e2" stroke-width="2"/>
+<text x="50" y="1433" font-size="30" text-anchor="start" font-weight="700">B 时间引导：保留近期衔接，减弱陈旧历史</text>
+<text x="50" y="1470" font-size="23" text-anchor="start" font-weight="400">同一个生成模型做两次预测；活动窗口不被重新初始化。</text>
+<rect x="60" y="1530" width="350" height="155" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="235.0" y="1566" font-size="26" text-anchor="middle" font-weight="700">历史分支 v_hist</text>
+<text x="235.0" y="1602" font-size="24" text-anchor="middle" font-weight="400">单调噪声调度</text>
+<text x="235.0" y="1633" font-size="24" text-anchor="middle" font-weight="400">保留历史，无音乐条件</text>
+<rect x="505" y="1530" width="350" height="155" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="680.0" y="1566" font-size="26" text-anchor="middle" font-weight="700">音乐分支 v_cond</text>
+<text x="680.0" y="1602" font-size="24" text-anchor="middle" font-weight="400">梯形调度：远端历史加噪</text>
+<text x="680.0" y="1633" font-size="24" text-anchor="middle" font-weight="400">近期上下文 + 新音乐</text>
+<rect x="950" y="1530" width="350" height="155" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="1125.0" y="1566" font-size="26" text-anchor="middle" font-weight="700">组合速度</text>
+<text x="1125.0" y="1602" font-size="24" text-anchor="middle" font-weight="400">v_hist + ω(v_cond−v_hist)</text>
+<text x="1125.0" y="1633" font-size="24" text-anchor="middle" font-weight="400">默认引导权重 ω = 2.5</text>
+<path d="M410 1607H455V1720H1125V1685" class="flow"/>
+<path d="M855 1607H950" class="flow"/>
+<rect x="505" y="1790" width="795" height="120" rx="12" fill="#eadef7" stroke="#8aa9bd" stroke-width="2"/>
+<text x="902.5" y="1826" font-size="26" text-anchor="middle" font-weight="700">更新活动窗口 → 输出最早成熟的 latent</text>
+<text x="902.5" y="1862" font-size="24" text-anchor="middle" font-weight="400">每次推进可有 S 个子步；累计 S × l，不能称整个链路一步</text>
+<path d="M1125 1685V1790" class="flow"/>
+<text x="65" y="1835" font-size="24" text-anchor="start" font-weight="400">随机 / 单调 / 梯形</text>
+<text x="65" y="1870" font-size="24" text-anchor="start" font-weight="400">调度能力由训练获得</text>
+<rect x="25" y="2015" width="1310" height="610" rx="22" fill="#eff6fc" stroke="#cbd8e2" stroke-width="2"/>
+<text x="50" y="2058" font-size="30" text-anchor="start" font-weight="700">C 两种消费路径：角色播放与机器人执行</text>
+<text x="50" y="2095" font-size="23" text-anchor="start" font-weight="400">ROS2 异步通信；生成器输出运动参考，机器人控制器另行执行。</text>
+<rect x="60" y="2155" width="350" height="140" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="235.0" y="2191" font-size="26" text-anchor="middle" font-weight="700">恢复后的连续动作</text>
+<text x="235.0" y="2227" font-size="24" text-anchor="middle" font-weight="400">包含关节旋转与根状态</text>
+<text x="235.0" y="2258" font-size="24" text-anchor="middle" font-weight="400">输出以 30 FPS 消费</text>
+<rect x="505" y="2155" width="350" height="140" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="680.0" y="2191" font-size="26" text-anchor="middle" font-weight="700">Unity 虚拟角色</text>
+<text x="680.0" y="2227" font-size="24" text-anchor="middle" font-weight="400">重定向与播放</text>
+<text x="680.0" y="2258" font-size="24" text-anchor="middle" font-weight="400">已播出动作不回改</text>
+<path d="M410 2225H505" class="flow"/>
+<rect x="60" y="2390" width="350" height="150" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="235.0" y="2426" font-size="26" text-anchor="middle" font-weight="700">GMR 在线重定向</text>
+<text x="235.0" y="2462" font-size="24" text-anchor="middle" font-weight="400">人体动作 → G1 关节参考</text>
+<text x="235.0" y="2493" font-size="24" text-anchor="middle" font-weight="400">机器人关节限位与 IK</text>
+<rect x="505" y="2390" width="350" height="150" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="680.0" y="2426" font-size="26" text-anchor="middle" font-weight="700">插值与全身跟踪</text>
+<text x="680.0" y="2462" font-size="24" text-anchor="middle" font-weight="400">参考插值至 50 Hz</text>
+<text x="680.0" y="2493" font-size="24" text-anchor="middle" font-weight="400">读取机器人状态闭环跟踪</text>
+<rect x="950" y="2390" width="350" height="150" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="1125.0" y="2426" font-size="26" text-anchor="middle" font-weight="700">低层 PD 控制</text>
+<text x="1125.0" y="2462" font-size="24" text-anchor="middle" font-weight="400">执行关节目标 / 力矩</text>
+<text x="1125.0" y="2493" font-size="24" text-anchor="middle" font-weight="400">跟踪可能失败，非硬保证</text>
+<path d="M235 2295V2390" class="flow"/>
+<path d="M410 2465H505" class="flow"/>
+<path d="M855 2465H950" class="flow"/>
+<text x="950" y="2167" font-size="24" text-anchor="start" font-weight="400">作者测得首帧延迟：</text>
+<text x="950" y="2205" font-size="24" text-anchor="start" font-weight="400">虚拟人 34.78 ms</text>
+<text x="950" y="2243" font-size="24" text-anchor="start" font-weight="400">机器人 52.92 ms</text>
+<text x="950" y="2281" font-size="22" text-anchor="start" font-weight="400">不等于生成耗时 26.26 ms</text>
+<rect x="25" y="2680" width="1310" height="570" rx="22" fill="#eff9f4" stroke="#cbd8e2" stroke-width="2"/>
+<text x="50" y="2723" font-size="30" text-anchor="start" font-weight="700">D 分阶段学习：表示、噪声状态与默认行为</text>
+<text x="50" y="2760" font-size="23" text-anchor="start" font-weight="400">训练支线不是在线推理的额外输入。模型与控制器也不是一个网络。</text>
+<rect x="60" y="2830" width="350" height="165" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="235.0" y="2866" font-size="26" text-anchor="middle" font-weight="700">音频 VQ-PAE</text>
+<text x="235.0" y="2902" font-size="24" text-anchor="middle" font-weight="400">音频重建 + 量化相关损失</text>
+<text x="235.0" y="2933" font-size="24" text-anchor="middle" font-weight="400">周期一致性</text>
+<text x="235.0" y="2964" font-size="24" text-anchor="middle" font-weight="400">约 200 epochs</text>
+<rect x="505" y="2830" width="350" height="165" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="680.0" y="2866" font-size="26" text-anchor="middle" font-weight="700">动作 VAE</text>
+<text x="680.0" y="2902" font-size="24" text-anchor="middle" font-weight="400">272 维重建 + KL</text>
+<text x="680.0" y="2933" font-size="24" text-anchor="middle" font-weight="400">64 帧窗口 / 150K steps</text>
+<text x="680.0" y="2964" font-size="24" text-anchor="middle" font-weight="400">提供连续动作 latent</text>
+<rect x="950" y="2830" width="350" height="165" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="1125.0" y="2866" font-size="26" text-anchor="middle" font-weight="700">动作流模型</text>
+<text x="1125.0" y="2902" font-size="24" text-anchor="middle" font-weight="400">速度回归 / 300K steps</text>
+<text x="1125.0" y="2933" font-size="24" text-anchor="middle" font-weight="400">随机 25% / 单调 50%</text>
+<text x="1125.0" y="2964" font-size="24" text-anchor="middle" font-weight="400">梯形 25% 噪声调度</text>
+<path d="M855 2910H950" class="flow"/>
+<path d="M410 2910H455V3050H1125V2995" class="dash"/>
+<rect x="60" y="3090" width="795" height="115" rx="12" fill="#ffffff" stroke="#8aa9bd" stroke-width="2"/>
+<text x="457.5" y="3126" font-size="26" text-anchor="middle" font-weight="700">补充静音训练：BABEL 站立片段 + 空音乐</text>
+<text x="457.5" y="3162" font-size="24" text-anchor="middle" font-weight="400">无音乐时站立来自训练设计，并非扩散结构天然保证</text>
+<path d="M855 3150H1125V2995" class="dash"/>
+<text x="55" y="3310" font-size="23" text-anchor="start" font-weight="400">来源：正式版图 2、式 1–14、附录 A 及算法 2–6。教学示意，未在本次执行模型。</text>
+<text x="55" y="3353" font-size="24" text-anchor="start" font-weight="400">吞吐、首帧等待、通信缓冲和物理执行成功必须分别验证。</text>
+</svg>
