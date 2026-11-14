@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="1730" viewBox="0 0 1480 1730" role="img" aria-labelledby="title desc">
+<title id="title">NeuS-V：将文字要求与视觉证据分别形式化，再做概率模型检查</title>
+<desc id="desc">准备阶段优化提示、校准视觉置信度并建立参考分布。评测时文字经PULS形成命题和时序逻辑，视频经VLM形成概率序列并构建DTMC，STORM检查满足概率，ECDF映射后平均四个模式的分数。生成器只提供被评测视频，不被该流程训练或修改。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9Z" fill="#405a70"/></marker><marker id="dasharrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9Z" fill="#b27c28"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#193347}.title{font-size:32px;font-weight:700}.h{font-size:26px;font-weight:700}.b{font-size:23px;font-weight:700}.t{font-size:21px}.small{font-size:19px;fill:#526c80}.arr{fill:none;stroke:#405a70;stroke-width:2.5;marker-end:url(#arrow)}.dash{fill:none;stroke:#b27c28;stroke-width:2.2;stroke-dasharray:7 5;marker-end:url(#dasharrow)}</style>
+<rect width="1480" height="1730" fill="white"/>
+
+<text x="32" y="45" class="title">NeuS-V：先形式化要求与证据，再检查视频是否符合时序</text>
+<text x="32" y="80" class="small">教学重绘 · 依据 arXiv:2411.16718v5 图2–3、算法1–3 · 展示论文设计；非本次运行结果</text>
+<rect x="25" y="105" width="1430" height="275" rx="18" fill="#f8fafc" stroke="#c8d6e2" stroke-width="1.6"/>
+<text x="48" y="142" class="h">A  准备与校准：优化提示和评分映射，不训练视频生成器</text>
+<rect x="55" y="175" width="420" height="145" rx="14" fill="#fff4df" stroke="#d5ad60" stroke-width="1.5"/>
+<text x="71" y="208" class="b">PULS 提示优化</text>
+<text x="71" y="240" class="t">文本—命题—公式示例</text>
+<text x="71" y="269" class="t">DSPy / MIPROv2 选择指令与 few-shot</text>
+<text x="71" y="298" class="t">优化的是提示配置，不是 LLM 权重</text>
+<rect x="525" y="175" width="420" height="145" rx="14" fill="#fff4df" stroke="#d5ad60" stroke-width="1.5"/>
+<text x="541" y="208" class="b">VLM 置信度校准</text>
+<text x="541" y="240" class="t">COCO 图文正负配对：40,000 条</text>
+<text x="541" y="269" class="t">扫描阈值，建立置信度→概率映射</text>
+<text x="541" y="298" class="t">图片校准不等于视频事件真值</text>
+<rect x="995" y="175" width="420" height="145" rx="14" fill="#fff4df" stroke="#d5ad60" stroke-width="1.5"/>
+<text x="1011" y="208" class="b">最终分数的参考分布</text>
+<text x="1011" y="240" class="t">合成视频的各模式满足概率 Dₘ</text>
+<text x="1011" y="269" class="t">建立经验累计分布 ECDF</text>
+<text x="1011" y="298" class="t">用于映射分数，不等于安全概率</text>
+<text x="55" y="355" class="small">论文设置：PULS 使用 GPT-4o / o1-preview；视觉检测使用 InternVL2-8B 与 3 帧上下文。</text>
+<rect x="25" y="410" width="1430" height="525" rx="18" fill="#f8fafc" stroke="#c8d6e2" stroke-width="1.6"/>
+<text x="48" y="447" class="h">B  评测输入的两路表示：文字定义检查什么，视频提供观察证据</text>
+<rect x="55" y="490" width="350" height="140" rx="14" fill="#f2ebfa" stroke="#af96cb" stroke-width="1.5"/>
+<text x="71" y="523" class="b">文字提示 T + 模式 m</text>
+<text x="71" y="555" class="t">存在 / 空间 / 对象动作 / 整体</text>
+<text x="71" y="584" class="t">分别生成命题集合与规范</text>
+<text x="71" y="613" class="t">支持人工检查中间语义</text>
+<rect x="475" y="490" width="450" height="140" rx="14" fill="#eaf2ff" stroke="#7ca7db" stroke-width="1.5"/>
+<text x="491" y="523" class="b">PULS：两阶段语言解析</text>
+<text x="491" y="555" class="t">T2P：抽取原子命题 P</text>
+<text x="491" y="584" class="t">T2TL：结合 P 写出时序逻辑 Φ</text>
+<text x="491" y="613" class="t">AND / NOT / F / G / U 等</text>
+<rect x="995" y="490" width="420" height="140" rx="14" fill="#f2ebfa" stroke="#af96cb" stroke-width="1.5"/>
+<text x="1011" y="523" class="b">形式规范 Φ</text>
+<text x="1011" y="555" class="t">如：A U (B U C)</text>
+<text x="1011" y="584" class="t">约束何时、按何种关系发生</text>
+<text x="1011" y="613" class="t">语法可解析 ≠ 翻译语义正确</text>
+<path d="M405 560 H475" class="arr"/>
+<path d="M925 560 H995" class="arr"/>
+<path d="M265 320 V333 H965 V470 H700 V490" class="dash"/>
+<rect x="55" y="735" width="350" height="145" rx="14" fill="#edf1f5" stroke="#a8b9c7" stroke-width="1.5"/>
+<text x="71" y="768" class="b">待评测 RGB 视频 V</text>
+<text x="71" y="800" class="t">来自任意待测 T2V 模型</text>
+<text x="71" y="829" class="t">先抽取短帧窗口</text>
+<text x="71" y="858" class="t">生成器不接受本流程的梯度</text>
+<rect x="475" y="735" width="450" height="145" rx="14" fill="#eaf2ff" stroke="#7ca7db" stroke-width="1.5"/>
+<text x="491" y="768" class="b">视觉语言模型 VLM</text>
+<text x="491" y="800" class="t">逐命题询问窗口内是否成立</text>
+<text x="491" y="829" class="t">Yes / No 响应的 token 置信度</text>
+<text x="491" y="858" class="t">经校准得到 c*ₜ,ᵢ 概率序列</text>
+<rect x="995" y="735" width="420" height="145" rx="14" fill="#e8f5ee" stroke="#7bb4a0" stroke-width="1.5"/>
+<text x="1011" y="768" class="b">证据序列 C*</text>
+<text x="1011" y="800" class="t">各时间窗口、各命题的概率</text>
+<text x="1011" y="829" class="t">保留不确定性，不先全量硬阈值化</text>
+<text x="1011" y="858" class="t">检测错了，后续检查仍可能错</text>
+<path d="M405 807 H475" class="arr"/>
+<path d="M925 807 H995" class="arr"/>
+<path d="M700 630 V735" class="arr"/>
+<text x="712" y="687" class="small">命题集合 P</text>
+<path d="M945 245 H975 V700 H950 V770 H925" class="dash"/>
+<text x="55" y="910" class="small">此处是对既有视频的测量；没有去噪更新、视频修复或人体动作解码。</text>
+<rect x="25" y="965" width="1430" height="470" rx="18" fill="#f8fafc" stroke="#c8d6e2" stroke-width="1.6"/>
+<text x="48" y="1002" class="h">C  符号检查与聚合：满足的是所构造的概率模型，不是直接证明像素真值</text>
+<rect x="55" y="1080" width="420" height="170" rx="14" fill="#e8f5ee" stroke="#7bb4a0" stroke-width="1.5"/>
+<text x="71" y="1113" class="b">视频自动机 / DTMC</text>
+<text x="71" y="1145" class="t">每个窗口枚举命题真假组合</text>
+<text x="71" y="1174" class="t">转移权重 = ∏ c* 或 (1 − c*)</text>
+<text x="71" y="1203" class="t">按时间层连接，末端做终止处理</text>
+<text x="71" y="1232" class="t">乘积采用命题因子化假设</text>
+<rect x="525" y="1080" width="420" height="170" rx="14" fill="#e8f5ee" stroke="#7bb4a0" stroke-width="1.5"/>
+<text x="541" y="1113" class="b">STORM 概率模型检查</text>
+<text x="541" y="1145" class="t">输入：视频自动机 Aᵥ + 规范 Φ</text>
+<text x="541" y="1174" class="t">沿概率路径计算规范满足程度</text>
+<text x="541" y="1203" class="t">输出 rₘ = P[Aᵥ ⊨ Φ]</text>
+<text x="541" y="1232" class="t">精确计算针对当前模型及规范</text>
+<rect x="995" y="1080" width="420" height="170" rx="14" fill="#f2ebfa" stroke="#af96cb" stroke-width="1.5"/>
+<text x="1011" y="1113" class="b">模式分数与综合得分</text>
+<text x="1011" y="1145" class="t">论文：sₘ = ECDF(rₘ ; Dₘ)</text>
+<text x="1011" y="1174" class="t">四个模式分别映射，再取平均</text>
+<text x="1011" y="1203" class="t">得分依赖视觉检测与参考分布</text>
+<text x="1011" y="1232" class="t">分数高不代表已认证物理安全</text>
+<path d="M1205 880 V1035 H265 V1080" class="arr"/>
+<text x="1000" y="1024" class="small">命题概率 → 状态与转移</text>
+<path d="M475 1165 H525" class="arr"/>
+<path d="M945 1165 H995" class="arr"/>
+<path d="M1415 560 H1435 V1060 H735 V1080" class="arr"/>
+<text x="1180" y="1053" class="small">规范 Φ</text>
+<path d="M1205 320 H1445 V1280 H1205 V1250" class="dash"/>
+<rect x="55" y="1300" width="1360" height="125" rx="14" fill="#edf1f5" stroke="#a8b9c7" stroke-width="1.5"/>
+<text x="71" y="1333" class="b">如何理解输出</text>
+<text x="71" y="1365" class="t">神经模型：解释文字、观察图像；符号工具：在这些解释上检查时间关系。</text>
+<text x="71" y="1394" class="t">语义翻译正确、视觉证据可靠、逻辑未被实现改写，三者都需要单独核查。</text>
+<rect x="25" y="1465" width="1430" height="170" rx="18" fill="#f8fafc" stroke="#c8d6e2" stroke-width="1.6"/>
+<text x="48" y="1502" class="h">D  论文与当前开源演示需分开阅读</text>
+<text x="55" y="1538" class="t">固定代码版本 03db19a：部分 G→F，U→&amp; F；ECDF 路径被注释，直接返回原始概率。</text>
+<text x="55" y="1573" class="t">因此上述图是论文方法图；当前演示输出不能直接当作严格同语义的论文分数。</text>
+<text x="55" y="1608" class="small">静态核查，不含模型运行或实验复现；详细源码位置及其影响见正文。</text>
+<text x="32" y="1675" class="small">图例：紫色为输入规范/评分；蓝色为神经解释；绿色为概率表示与符号计算；橙色为准备与校准。</text>
+<text x="32" y="1706" class="small">实线 = 评测时的数据关系；虚线 = 预先准备的提示或映射。没有从分数返回生成器的训练/控制箭头。</text>
+</svg>

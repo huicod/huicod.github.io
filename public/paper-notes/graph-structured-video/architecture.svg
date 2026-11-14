@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1700" viewBox="0 0 1440 1700"><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#476077"/></marker><marker id="train" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#b7791f"/></marker></defs><rect width="1440" height="1700" fill="white"/><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',Arial,sans-serif;fill:#18344b}.title{font-size:30px;font-weight:700}.head{font-size:27px;font-weight:700}.boxhead{font-size:23px;font-weight:700}.body{font-size:20px}.small{font-size:19px}.muted{fill:#526b83}.line{fill:none;stroke:#476077;stroke-width:2;marker-end:url(#arrow)}.dash{fill:none;stroke:#b7791f;stroke-width:2;stroke-dasharray:7 6;marker-end:url(#train)}</style>
+<text x="32" y="42" class="title">Graph-Structured Knowledge：让关系图影响视频生成与编辑</text>
+<text x="32" y="74" class="small muted">教学示意 · 依据 ACL 2026 v2，图1–4、式4–9、附录B · 非作者原图或本次模型运行结果</text>
+<rect x="24" y="98" width="1392" height="360" rx="18" fill="#f7f9fc" stroke="#cedae7" stroke-width="1.5"/>
+<text x="46" y="137" class="head">A  训练数据：视频抽图 + 同步对象移除，得到可对照的视觉变化</text>
+<rect x="55" y="166" width="280" height="159" rx="14" fill="#fff3df" stroke="#d8a04d" stroke-width="1.5"/>
+<text x="71" y="198" class="boxhead">原视频 x 与对象掩码</text>
+<text x="71" y="231" class="body">YouTube-VOS / A2D</text>
+<text x="71" y="260" class="body">MeViS 等分割数据</text>
+<text x="71" y="289" class="body">沿时间指定待移除对象</text>
+<rect x="390" y="166" width="285" height="159" rx="14" fill="#fff3df" stroke="#d8a04d" stroke-width="1.5"/>
+<text x="406" y="198" class="boxhead">视频修复 / Inpainting</text>
+<text x="406" y="231" class="body">移除目标对象 → 视频 x′</text>
+<text x="406" y="260" class="body">保留其余场景作为配对</text>
+<text x="406" y="289" class="body">图4：溪流中的狗消失</text>
+<rect x="730" y="166" width="285" height="159" rx="14" fill="#fff3df" stroke="#d8a04d" stroke-width="1.5"/>
+<text x="746" y="198" class="boxhead">Qwen2-VL 抽取时序图</text>
+<text x="746" y="231" class="body">视频采样帧 + 示例指令</text>
+<text x="746" y="260" class="body">对象 / 谓词 / Camera</text>
+<text x="746" y="289" class="body">Context + 跨帧实体关系</text>
+<rect x="1070" y="166" width="310" height="159" rx="14" fill="#fff3df" stroke="#d8a04d" stroke-width="1.5"/>
+<text x="1086" y="198" class="boxhead">同步配对监督</text>
+<text x="1086" y="231" class="body">原始 (x, G)</text>
+<text x="1086" y="260" class="body">编辑后 (x′, G′)</text>
+<text x="1086" y="289" class="body">图与视频中的对象一起删</text>
+<path d="M335 232 H390" class="line"/>
+<path d="M675 232 H730" class="line"/>
+<path d="M1015 232 H1070" class="line"/>
+<path d="M195 325 V352 H872 V325" class="line"/>
+<text x="431" y="346" class="small">原视频也独立抽图</text>
+<text x="55" y="398" class="body muted">训练图来自可见视频；给新文本自动规划未来时序图的完整流程，论文没有充分披露。</text>
+<text x="55" y="432" class="small muted">10,977 个 video–graph pairs；本文明确的数据构造主要是对象移除，添加与替换另有定性展示。</text>
+<rect x="24" y="482" width="1392" height="600" rx="18" fill="#f7f9fc" stroke="#cedae7" stroke-width="1.5"/>
+<text x="46" y="521" class="head">B  图条件生成：实体与关系变成注意力条件，仍由视频模型产生连续画面</text>
+<rect x="55" y="550" width="310" height="171" rx="14" fill="#f1eafa" stroke="#b49ad8" stroke-width="1.5"/>
+<text x="71" y="582" class="boxhead">给定时序场景图 G / G′</text>
+<text x="71" y="615" class="body">可对节点做增 / 删 / 替换</text>
+<text x="71" y="644" class="body">Camera：相对视角关系</text>
+<text x="71" y="673" class="body">Context：跨帧环境信息</text>
+<text x="71" y="702" class="body">时间边：连接相同实体</text>
+<rect x="420" y="550" width="340" height="171" rx="14" fill="#eaf2ff" stroke="#7eabe8" stroke-width="1.5"/>
+<text x="436" y="582" class="boxhead">文本编码 + 图编码</text>
+<text x="436" y="615" class="body">节点 → GAT 消息传递</text>
+<text x="436" y="644" class="body">[主语, 谓词, 宾语] → MLP</text>
+<text x="436" y="673" class="body">节点 / 边：零初始化门控</text>
+<text x="436" y="702" class="body">输出两类图 token h_node / h_edge</text>
+<rect x="830" y="550" width="550" height="171" rx="14" fill="#eaf2ff" stroke="#7eabe8" stroke-width="1.5"/>
+<text x="846" y="582" class="boxhead">按视频帧 k 注入图交叉注意力</text>
+<text x="846" y="615" class="body">Query = 视频 latent 的空间 patch</text>
+<text x="846" y="644" class="body">Key / Value = 对应图的节点与关系 token</text>
+<text x="846" y="673" class="body">门控随扩散步 t 调节，初值为0</text>
+<text x="846" y="702" class="body">无抽样图的帧：在注意力后插值相邻表示</text>
+<path d="M365 632 H420" class="line"/>
+<path d="M760 632 H830" class="line"/>
+<rect x="55" y="788" width="310" height="165" rx="14" fill="#f1eafa" stroke="#b49ad8" stroke-width="1.5"/>
+<text x="71" y="820" class="boxhead">噪声 latent + 文本</text>
+<text x="71" y="853" class="body">保留基础模型文本条件</text>
+<text x="71" y="882" class="body">不是以图替换全部文字</text>
+<text x="71" y="911" class="body">未定义图与文本冲突优先级</text>
+<rect x="420" y="788" width="520" height="165" rx="14" fill="#eaf2ff" stroke="#7eabe8" stroke-width="1.5"/>
+<text x="436" y="820" class="boxhead">预训练视频主干 + 新增图路径</text>
+<text x="436" y="853" class="body">Open-Sora (DiT) / VideoCrafter2 (3D UNet)</text>
+<text x="436" y="882" class="body">在训练中微调；具体冻结范围未详列</text>
+<text x="436" y="911" class="body">迭代去噪 → 干净视频 latent</text>
+<rect x="1000" y="788" width="380" height="165" rx="14" fill="#e7f5ef" stroke="#76b49e" stroke-width="1.5"/>
+<text x="1016" y="820" class="boxhead">视频解码 → RGB 输出</text>
+<text x="1016" y="853" class="body">VAE 解码为连续画面</text>
+<text x="1016" y="882" class="body">不是3D骨架或物理状态</text>
+<text x="1016" y="911" class="body">图条件没有逐项执行硬保证</text>
+<path d="M365 870 H420" class="line"/>
+<path d="M1105 721 V752 H680 V788" class="line"/>
+<path d="M940 870 H1000" class="line"/>
+<text x="55" y="1000" class="body muted">k 是视频帧位置，t 是扩散去噪步：两种“时间”不能混用。</text>
+<text x="55" y="1040" class="body muted">节点和边提供语义关系；没有坐标轨迹求解器、碰撞模型或运动学执行模块。</text>
+<rect x="24" y="1108" width="1392" height="420" rx="18" fill="#f7f9fc" stroke="#cedae7" stroke-width="1.5"/>
+<text x="46" y="1147" class="head">C  GADL 训练支线：同噪声下，改图要对应编辑视频的去噪目标</text>
+<rect x="55" y="1178" width="340" height="145" rx="14" fill="#e7f5ef" stroke="#76b49e" stroke-width="1.5"/>
+<text x="71" y="1210" class="boxhead">原视频 x → 编码 / 加噪</text>
+<text x="71" y="1243" class="body">共享采样噪声 ε</text>
+<text x="71" y="1272" class="body">得到原视频的噪声 latent z_t</text>
+<rect x="465" y="1178" width="420" height="145" rx="14" fill="#eaf2ff" stroke="#7eabe8" stroke-width="1.5"/>
+<text x="481" y="1210" class="boxhead">用编辑图 G′ 条件去噪</text>
+<text x="481" y="1243" class="body">复用 B 的图条件生成器</text>
+<text x="481" y="1272" class="body">根据噪声预测计算去噪均值</text>
+<rect x="955" y="1178" width="425" height="145" rx="14" fill="#fff3df" stroke="#d8a04d" stroke-width="1.5"/>
+<text x="971" y="1210" class="boxhead">GADL：平方距离监督</text>
+<text x="971" y="1243" class="body">预测均值 ↔ 编辑视频目标</text>
+<text x="971" y="1272" class="body">训练权重 0.2</text>
+<text x="971" y="1301" class="body">推理时不计算此配对损失</text>
+<path d="M395 1250 H465" class="line"/>
+<path d="M885 1250 H955" class="line"/>
+<rect x="55" y="1360" width="555" height="120" rx="14" fill="#e7f5ef" stroke="#76b49e" stroke-width="1.5"/>
+<text x="71" y="1392" class="boxhead">编辑视频 x′ → 同噪声层级目标</text>
+<text x="71" y="1425" class="body">用相同 ε 构造对应 t−1 层级的目标 latent</text>
+<path d="M610 1420 H1168 V1323" class="line"/>
+<path d="M955 1202 H912 V971 H679 V953" class="dash"/>
+<text x="920" y="1138" class="small">训练监督</text>
+<text x="662" y="1474" class="body muted">不是检测最终视频后再做一次规则修复。</text>
+<text x="32" y="1573" class="small muted">图例：橙色 = 数据 / 监督；蓝色 = 可学习条件与生成；紫色 = 输入；绿色 = 视频表示与输出。</text>
+<text x="32" y="1610" class="small muted">实线为数据流；虚线表示训练目标作用。GADL改善关系遵循，不提供物理正确性的形式保证。</text>
+<text x="32" y="1650" class="small muted">复现边界：训练超参和推理图来源有缺失；本文未独立测量模型的生成或编辑成功率。</text>
+</svg>
