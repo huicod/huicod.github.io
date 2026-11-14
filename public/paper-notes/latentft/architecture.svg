@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1260" role="img" aria-labelledby="title desc">
+<title id="title">LatentFT：从潜在频率条件到音乐生成</title>
+<desc id="desc">共享时间对齐编码和傅里叶掩码，训练时条件去噪，推理时使用单曲或双曲条件生成mel谱并经BigVGAN输出音频。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#526278"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#203048} .title{font-size:30px;font-weight:700}.section{font-size:24px;font-weight:700}.main{font-size:22px;font-weight:650}.sub{font-size:18px}.small{font-size:17px}.edge{fill:none;stroke:#526278;stroke-width:2.2;marker-end:url(#arrow)}.train{stroke:#8a58ab;stroke-dasharray:7 5}.box{fill:white;stroke:#9cabb8;stroke-width:1.5}</style>
+<rect width="1440" height="1260" fill="#fff"/>
+
+<text x="42" y="42" class="title" text-anchor="start">LatentFT：选择音乐变化的时间尺度，再由扩散模型生成</text>
+<rect x="28" y="70" width="1384" height="285" rx="18" fill="#f0f8f3" stroke="#d3dce5"/>
+<text x="52" y="108" class="section" text-anchor="start">A  共享表示通路：模型学习时间对齐的连续特征</text>
+<rect x="60" y="170" width="215" height="105" rx="12" class="box" style="fill:white"/>
+<text x="167.5" y="201" class="main" text-anchor="middle">参考音乐</text>
+<text x="167.5" y="229" class="sub" text-anchor="middle">mel谱 80×512</text>
+<text x="167.5" y="253" class="sub" text-anchor="middle">或 DAC 连续embedding</text>
+<rect x="325" y="170" width="215" height="105" rx="12" class="box" style="fill:white"/>
+<text x="432.5" y="201" class="main" text-anchor="middle">编码器 Encϕ</text>
+<text x="432.5" y="229" class="sub" text-anchor="middle">MLP / 1D U-Net</text>
+<text x="432.5" y="253" class="sub" text-anchor="middle">可训练；输出 z</text>
+<rect x="590" y="170" width="215" height="105" rx="12" class="box" style="fill:white"/>
+<text x="697.5" y="201" class="main" text-anchor="middle">沿时间做 DFT</text>
+<text x="697.5" y="229" class="sub" text-anchor="middle">每个latent通道独立</text>
+<text x="697.5" y="253" class="sub" text-anchor="middle">补零：512 → 1024</text>
+<rect x="855" y="170" width="215" height="105" rx="12" class="box" style="fill:white"/>
+<text x="962.5" y="201" class="main" text-anchor="middle">选择潜在频率</text>
+<text x="962.5" y="229" class="sub" text-anchor="middle">Zₘ = M ⊙ Z</text>
+<text x="962.5" y="253" class="sub" text-anchor="middle">共享时间频带掩码</text>
+<rect x="1120" y="170" width="235" height="105" rx="12" class="box" style="fill:white"/>
+<text x="1237.5" y="201" class="main" text-anchor="middle">逆 DFT + 截取</text>
+<text x="1237.5" y="229" class="sub" text-anchor="middle">恢复条件序列 zₘ</text>
+<text x="1237.5" y="253" class="sub" text-anchor="middle">80通道 × 512时间帧</text>
+<path d="M275 222 H325" class="edge"/>
+<path d="M540 222 H590" class="edge"/>
+<path d="M805 222 H855" class="edge"/>
+<path d="M1070 222 H1120" class="edge"/>
+<text x="698" y="152" class="small" text-anchor="middle">复数系数：幅度 + 相位</text>
+<text x="965" y="120" class="sub" text-anchor="middle">训练：相关随机掩码</text>
+<text x="965" y="145" class="sub" text-anchor="middle">推理：用户选择区间</text>
+<path d="M965 151 V170" class="edge"/>
+<text x="63" y="317" class="sub" text-anchor="start">潜在 Hz = 特征每秒变化几次；不是音高 Hz。DFT 操作条件序列，扩散生成的对象仍是 mel 谱。</text>
+<rect x="28" y="380" width="1384" height="300" rx="18" fill="#f7f2fb" stroke="#d3dce5"/>
+<text x="52" y="418" class="section" text-anchor="start">B  训练：从加噪 mel 谱和部分频率条件重建；联合更新编码器与解码器</text>
+<rect x="60" y="480" width="205" height="90" rx="12" class="box" style="fill:white"/>
+<text x="162.5" y="511" class="main" text-anchor="middle">干净 mel 谱 x₀</text>
+<text x="162.5" y="539" class="sub" text-anchor="middle">重建目标</text>
+<rect x="335" y="480" width="215" height="90" rx="12" class="box" style="fill:white"/>
+<text x="442.5" y="511" class="main" text-anchor="middle">采样噪声水平 σ</text>
+<text x="442.5" y="539" class="sub" text-anchor="middle">xσ = x₀ + σϵ</text>
+<rect x="790" y="480" width="260" height="90" rx="12" class="box" style="fill:white"/>
+<text x="920.0" y="511" class="main" text-anchor="middle">共享解码器 Decθ</text>
+<text x="920.0" y="539" class="sub" text-anchor="middle">EDM预条件 + 1D U-Net</text>
+<rect x="1130" y="480" width="225" height="90" rx="12" class="box" style="fill:white"/>
+<text x="1242.5" y="511" class="main" text-anchor="middle">预测干净 mel 谱</text>
+<text x="1242.5" y="539" class="sub" text-anchor="middle">x̂₀</text>
+<path d="M265 525 H335" class="edge"/>
+<path d="M550 525 H790" class="edge"/>
+<text x="662" y="510" class="sub" text-anchor="middle">加噪谱 xσ</text>
+<path d="M1050 525 H1130" class="edge"/>
+<rect x="785" y="430" width="270" height="42" rx="12" class="box" style="fill:#ffffff"/>
+<text x="920.0" y="461" class="main" text-anchor="middle">A 的随机掩码条件 zₘ</text>
+<path d="M920 472 V480" class="edge"/>
+<path d="M162 570 V613 H690" class="edge"/>
+<path d="M1242 570 V613 H1010" class="edge"/>
+<rect x="690" y="587" width="320" height="52" rx="12" class="box" style="fill:#eee3f5"/>
+<text x="850.0" y="618" class="main" text-anchor="middle">MSE / EDM 重建损失</text>
+<path d="M850 639 V656 H495" class="edge train"/>
+<text x="487" y="662" class="sub" text-anchor="end">更新 Encϕ 与 Decθ</text>
+<rect x="28" y="705" width="1384" height="465" rx="18" fill="#eef5ff" stroke="#d3dce5"/>
+<text x="52" y="743" class="section" text-anchor="start">C  推理：用户选择频段；模型参数固定；单曲变奏或双曲融合</text>
+<rect x="60" y="802" width="210" height="90" rx="12" class="box" style="fill:white"/>
+<text x="165.0" y="833" class="main" text-anchor="middle">参考 A + 掩码 M₁</text>
+<text x="165.0" y="861" class="sub" text-anchor="middle">指定要保留的频段</text>
+<rect x="60" y="927" width="210" height="90" rx="12" class="box" style="fill:white"/>
+<text x="165.0" y="958" class="main" text-anchor="middle">参考 B + 掩码 M₂</text>
+<text x="165.0" y="986" class="sub" text-anchor="middle">双曲融合时使用</text>
+<rect x="330" y="802" width="230" height="90" rx="12" class="box" style="fill:white"/>
+<text x="445.0" y="833" class="main" text-anchor="middle">复用 A 表示通路</text>
+<text x="445.0" y="861" class="sub" text-anchor="middle">得到条件 z₁ₘ</text>
+<rect x="330" y="927" width="230" height="90" rx="12" class="box" style="fill:white"/>
+<text x="445.0" y="958" class="main" text-anchor="middle">复用 A 表示通路</text>
+<text x="445.0" y="986" class="sub" text-anchor="middle">得到条件 z₂ₘ</text>
+<path d="M270 847 H330" class="edge"/>
+<path d="M270 972 H330" class="edge"/>
+<rect x="655" y="802" width="285" height="90" rx="12" class="box" style="fill:white"/>
+<text x="797.5" y="833" class="main" text-anchor="middle">Decθ(x, σ, z₁ₘ)</text>
+<text x="797.5" y="861" class="sub" text-anchor="middle">预测 x̂₀⁽¹⁾ → 导数 d₁</text>
+<rect x="655" y="927" width="285" height="90" rx="12" class="box" style="fill:white"/>
+<text x="797.5" y="958" class="main" text-anchor="middle">Decθ(x, σ, z₂ₘ)</text>
+<text x="797.5" y="986" class="sub" text-anchor="middle">预测 x̂₀⁽²⁾ → 导数 d₂</text>
+<path d="M560 847 H655" class="edge"/>
+<path d="M560 972 H655" class="edge"/>
+<rect x="655" y="757" width="285" height="36" rx="8" class="box"/>
+<text x="797" y="782" class="sub" text-anchor="middle">共享 x、σ（高斯初始化）</text>
+<path d="M798 793 V802" class="edge"/>
+<path d="M655 775 H630 V955 H655" class="edge"/>
+<rect x="1065" y="851" width="285" height="115" rx="12" class="box" style="fill:white"/>
+<text x="1207.5" y="882" class="main" text-anchor="middle">合成同一更新方向</text>
+<text x="1207.5" y="910" class="sub" text-anchor="middle">单曲：d = d₁</text>
+<text x="1207.5" y="934" class="sub" text-anchor="middle">双曲：d = αd₁ + βd₂</text>
+<path d="M940 847 H1004 V882 H1065" class="edge"/>
+<path d="M940 972 H1004 V936 H1065" class="edge"/>
+<path d="M1208 851 V775 H940" class="edge"/>
+<text x="1084" y="755" class="small" text-anchor="middle">EDM迭代 + 二阶校正</text>
+<path d="M1208 966 V1045" class="edge"/>
+<rect x="1070" y="1045" width="275" height="84" rx="12" class="box" style="fill:white"/>
+<text x="1207.5" y="1076" class="main" text-anchor="middle">最终 mel 谱</text>
+<text x="1207.5" y="1104" class="sub" text-anchor="middle">连续时频表示</text>
+<rect x="690" y="1045" width="260" height="84" rx="12" class="box" style="fill:white"/>
+<text x="820.0" y="1076" class="main" text-anchor="middle">BigVGAN 声码器</text>
+<text x="820.0" y="1104" class="sub" text-anchor="middle">预训练模型，波形解码</text>
+<rect x="330" y="1045" width="240" height="84" rx="12" class="box" style="fill:white"/>
+<text x="450.0" y="1076" class="main" text-anchor="middle">生成的音乐波形</text>
+<text x="450.0" y="1104" class="sub" text-anchor="middle">新变奏 / 融合作品</text>
+<path d="M1070 1087 H950" class="edge"/>
+<path d="M690 1087 H570" class="edge"/>
+<text x="63" y="1149" class="sub" text-anchor="start">双参考只增加条件预测次数；没有把原始波形直接相加。频段条件遵循是学习结果，不是输出硬约束。</text>
+<text x="44" y="1210" class="sub" text-anchor="start">实线：数据与采样迭代    虚线：训练更新    依据原图2、算法1–3、附录A.1–A.2教学重绘</text>
+<text x="44" y="1239" class="small" text-anchor="start">MLP / UNet 主设置为5.9秒、80×512；可选DAC前端另有44.1kHz波形编码。未执行模型。</text>
+</svg>

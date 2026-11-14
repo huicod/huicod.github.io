@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1580" viewBox="0 0 1240 1580" role="img" aria-labelledby="title desc">
+<title id="title">PHASOR：人体相位锚点与跨人形机器人动作表示</title>
+<desc id="desc">先在人类动作上训练五部位周期和姿态重建，再冻结人体参考。机器人速度经线性适配和共享相位编码形成32维相位轨迹，和128维池化姿态融合为64维动作表示。监督区显示配对、LaMP、速度和形状损失，底部区分检索、离线关节预测和PPO仿真控制。</desc>
+<defs>
+<marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#43566b"/></marker>
+<marker id="o" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ba752a"/></marker>
+<style>
+text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#203447;font-size:18px}.title{font-size:29px;font-weight:700}.section{font-size:22px;font-weight:700}.head{font-size:20px;font-weight:700}.small{font-size:16px}.muted{fill:#546b7c}.box{stroke:#a6b5c3;stroke-width:1.5;rx:13;fill:#fff}.human{fill:#e3f3f0;stroke:#62a499}.train{fill:#e8f1ff;stroke:#79a2d1}.pose{fill:#f2eafa;stroke:#b29bc9}.loss{fill:#fff4df;stroke:#d4ac6f}.arrow{fill:none;stroke:#43566b;stroke-width:2;marker-end:url(#a)}.dash{fill:none;stroke:#ba752a;stroke-width:2;stroke-dasharray:7 5;marker-end:url(#o)}.panel{fill:#f8fafc;stroke:#c8d3dc;stroke-width:1.5;rx:18}
+</style>
+</defs>
+<rect width="1240" height="1580" fill="#fff"/>
+<text x="32" y="42" class="title">PHASOR：先固定人体相位坐标，再对齐多种机器人</text>
+<text x="32" y="69" class="small muted">教学重绘 · arXiv:2606.01851v2 图2 / 附录A–B · 表示、重建与实际控制分别展示</text>
+
+<rect x="25" y="90" width="1190" height="230" class="panel"/>
+<text x="45" y="123" class="section">A　阶段1：人体预训练</text>
+<rect x="50" y="151" width="220" height="130" class="box human"/>
+<text x="67" y="182" class="head">人体动作窗口</text>
+<text x="67" y="211">121帧 / 60 fps</text>
+<text x="67" y="238">速度＋根线速度</text>
+<text x="67" y="265">6D旋转＋根位置</text>
+<rect x="330" y="145" width="245" height="64" class="box human"/>
+<text x="348" y="173" class="head">五部位相位编码</text><text x="348" y="197" class="small">卷积 → FFT / 相位头</text>
+<rect x="330" y="230" width="245" height="64" class="box pose"/>
+<text x="348" y="259" class="head">人体姿态编码</text><text x="348" y="282" class="small">8 × 128 姿态token</text>
+<rect x="630" y="145" width="235" height="64" class="box human"/>
+<text x="648" y="173" class="head">周期重合成与解码</text><text x="648" y="197" class="small">恢复关节 / 根速度</text>
+<rect x="630" y="230" width="235" height="64" class="box pose"/>
+<text x="648" y="259" class="head">姿态解码</text><text x="648" y="282" class="small">恢复旋转与根位置</text>
+<rect x="925" y="163" width="265" height="112" class="box loss"/>
+<text x="944" y="194" class="head">重建训练</text><text x="944" y="221">速度＋姿态损失</text><text x="944" y="248">人体FK位置损失</text>
+<path d="M270 178H330 M270 258H330 M575 177H630 M575 262H630 M865 177H895V195H925 M865 262H895V245H925" class="arrow"/>
+<text x="645" y="224" class="small muted">双向FiLM（解码侧交互）</text>
+
+<rect x="25" y="350" width="1190" height="650" class="panel"/>
+<text x="45" y="383" class="section">B　阶段2：冻结人体参考，学习机器人适配与对齐</text>
+<rect x="50" y="410" width="210" height="105" class="box"/>
+<text x="67" y="441" class="head">机器人 k 的速度</text><text x="67" y="469">121 × Dk</text><text x="67" y="496" class="small">G1 / H1.2 / T1 / BHL</text>
+<rect x="300" y="410" width="220" height="105" class="box train"/>
+<text x="317" y="441" class="head">输入适配器 Eᵣᵏ</text><text x="317" y="469">全局Linear：Dk → 66</text><text x="317" y="496" class="small">按人体五部位拆分</text>
+<rect x="565" y="410" width="275" height="105" class="box human"/>
+<text x="582" y="441" class="head">共享人体编码器【冻结】</text><text x="582" y="469">部位通道：3 / 3 / 2 / 4 / 4</text><text x="582" y="496" class="small">卷积＋FFT → (A,F,B,相位)</text>
+<rect x="900" y="410" width="285" height="105" class="box human"/>
+<text x="918" y="441" class="head">P(τ)：32维相位轨迹</text><text x="918" y="469">16个幅度缩放圆坐标</text><text x="918" y="496" class="small">在姿态FiLM调制之前构造</text>
+<path d="M260 462H300 M520 462H565 M840 462H900" class="arrow"/>
+<path d="M452 145V133H605V397H690V410" class="dash"/>
+<text x="575" y="538" class="small muted">根线速度另外拼入躯干输入</text>
+
+<rect x="50" y="570" width="210" height="88" class="box"/>
+<text x="67" y="603" class="head">机器人姿态输入</text><text x="67" y="631">6D旋转＋根位置</text>
+<rect x="300" y="570" width="220" height="88" class="box pose"/>
+<text x="317" y="603" class="head">每机器人姿态编码</text><text x="317" y="631">zpose：8 × 128</text>
+<rect x="565" y="570" width="275" height="88" class="box pose"/>
+<text x="582" y="603" class="head">姿态上下文</text><text x="582" y="631">时间池化为128维</text>
+<rect x="900" y="561" width="285" height="118" class="box train"/>
+<text x="918" y="592" class="head">对齐头 π【可训练】</text><text x="918" y="620">32＋128 → 64 → L2</text><text x="918" y="648">z(τ)：64维单位球面嵌入</text><text x="918" y="670" class="small">池化后用于窗口 / clip检索</text>
+<path d="M260 614H300 M520 614H565 M840 614H900 M1042 515V561" class="arrow"/>
+<text x="59" y="548" class="small muted">P为纯相位；最终z包含姿态上下文。</text>
+
+<rect x="50" y="725" width="1135" height="112" class="box"/>
+<text x="69" y="754" class="head">重建支路（保持表示能够恢复动作）</text>
+<text x="69" y="784">(A,F,B,相位) → 周期潜曲线 → 姿态FiLM → 共享机器人速度解码器 → 输出适配器 → 关节速度</text>
+<text x="69" y="816">zpose ＋ P的FiLM上下文 → 每机器人姿态解码器 → 关节旋转与根位置</text>
+<path d="M820 515V551H874V710H740V725 M410 658V710H300V725" class="arrow"/>
+<text x="67" y="863" class="small muted">机器人解码器：复制人体权重后微调；每机器人姿态支路可训练；人体路径和相位到姿态模块保持冻结。</text>
+
+<rect x="50" y="882" width="1135" height="90" class="box loss"/>
+<text x="69" y="912" class="head">训练监督：GMR同步人体—机器人配对 ＋ 冻结LAMP语义教师</text>
+<text x="69" y="940">窗口目标＝70%硬配对＋30%软相似度；clip目标＝纯软指导（权重0.3）；另加球面步长 / 弦长一致性</text>
+<text x="69" y="963" class="small">机器人侧重建速度与姿态；FK损失仅人体路径。对齐约束不是脚底接触或物理可行性保证。</text>
+<path d="M1185 925H1200V621H1185" class="dash"/>
+
+<rect x="25" y="1030" width="1190" height="440" class="panel"/>
+<text x="45" y="1064" class="section">C　冻结表示后的三种用法：输出是什么，在哪里完成控制</text>
+<rect x="50" y="1090" width="340" height="130" class="box train"/>
+<text x="69" y="1122" class="head">① 跨身体检索</text><text x="69" y="1151">查询窗口 z ↔ 候选窗口 z</text><text x="69" y="1179">输出：对应的已有动作片段</text><text x="69" y="1204" class="small">相位偏移示例也是窗口检索</text>
+<rect x="450" y="1090" width="340" height="130" class="box train"/>
+<text x="469" y="1122" class="head">② 模仿 / 遥操作的离线预测</text><text x="469" y="1151">冻结 z → 单独训练的3层MLP</text><text x="469" y="1179">输出：连续3D关节位置</text><text x="469" y="1204" class="small">模仿还输入机器人本体状态</text>
+<rect x="850" y="1090" width="335" height="130" class="box train"/>
+<text x="869" y="1122" class="head">③ PPO仿真控制</text><text x="869" y="1151">本体历史750D＋机器人z 64D</text><text x="869" y="1179">→ PPO策略 → 仿真控制动作</text><text x="869" y="1204" class="small">IsaacLab；真实硬件未验证</text>
+<rect x="50" y="1260" width="410" height="130" class="box human"/>
+<text x="69" y="1292" class="head">人体参考（离线编码）</text><text x="69" y="1321">逐步读取 zreference</text><text x="69" y="1350">与在线 zrobot 计算余弦相似度</text><text x="69" y="1378" class="small">人体参考不进入策略观测</text>
+<rect x="540" y="1260" width="645" height="130" class="box loss"/>
+<text x="559" y="1292" class="head">训练策略的奖励</text><text x="559" y="1321">相位奖励：λphase · [cos(zrobot, zreference)＋1] / 2</text><text x="559" y="1350">另加存活、速度、脚滑、关节限制、力矩、动作变化等奖励</text><text x="559" y="1378" class="small">按附录B.4：机器人z也进入观测，不能概括为“嵌入只用于奖励”。</text>
+<path d="M460 1325H540" class="arrow"/>
+<path d="M1017 1260V1220" class="dash"/>
+<text x="50" y="1431" class="small muted">在线输入使用121帧滑窗；相位坐标提供时间结构，MLP / PPO才产生姿态预测或控制动作。</text>
+
+<rect x="35" y="1500" width="20" height="20" class="human"/><text x="64" y="1517" class="small">人体参考 / 冻结</text>
+<rect x="254" y="1500" width="20" height="20" class="train"/><text x="283" y="1517" class="small">阶段2可训练</text>
+<rect x="449" y="1500" width="20" height="20" class="pose"/><text x="478" y="1517" class="small">姿态支路</text>
+<rect x="620" y="1500" width="20" height="20" class="loss"/><text x="649" y="1517" class="small">训练监督</text>
+<path d="M790 1510H837" class="arrow"/><text x="850" y="1517" class="small">数据流</text>
+<path d="M965 1510H1012" class="dash"/><text x="1025" y="1517" class="small">监督 / 参数复用</text>
+<text x="35" y="1555" class="small muted">核心区别：周期参数 ≠ 语义事件；32维P ≠ 64维z；检索相似 ≠ 连续动作已满足物理约束。</text>
+</svg>

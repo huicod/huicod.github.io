@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1270" viewBox="0 0 1280 1270" role="img" aria-labelledby="title desc">
+<title id="title">Q-PART：准周期分解与测试时回归适配</title>
+<desc id="desc">视频经编码器进入周期参数投影与残差路径；频率相位偏置速度形成周期轨迹，残差经样条与Neural CDE产生非周期轨迹，两者相加进行LVEF回归及视频重建。下方分别说明成人带标签训练、儿童多增强无标签适配及BN差异学习率更新。</desc>
+<defs>
+ <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#38516c"/></marker>
+ <marker id="orangeArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#b96c18"/></marker>
+ <style>
+ text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#19334a;font-size:19px} .head{font-size:28px;font-weight:700}.section{font-size:23px;font-weight:700}.name{font-size:21px;font-weight:700}.small{font-size:17px}.note{fill:#566d7e;font-size:18px}.panel{fill:#f8fbff;stroke:#c4d5e5;stroke-width:1.5}.blue{fill:#e8f2ff;stroke:#6c9fce;stroke-width:1.8}.green{fill:#eaf6ed;stroke:#78ad8a;stroke-width:1.8}.purple{fill:#f1ecfc;stroke:#a690ca;stroke-width:1.8}.orange{fill:#fff3e4;stroke:#cc9a54;stroke-width:1.8}.line{fill:none;stroke:#38516c;stroke-width:2.4;marker-end:url(#arrow)}.update{fill:none;stroke:#b96c18;stroke-width:2.3;stroke-dasharray:7 5;marker-end:url(#orangeArrow)}
+ </style>
+</defs>
+<rect width="1280" height="1270" fill="#fff"/>
+<text x="32" y="44" class="head">Q-PART · 分解时间结构，再适配连续回归</text>
+<text x="32" y="74" class="note">论文机制教学示意｜输入：心超视频；输出：LVEF标量｜不是人体动作生成模型</text>
+
+<rect x="24" y="96" width="1232" height="526" rx="18" class="panel"/>
+<text x="48" y="133" class="section">A. 共享准周期网络：一个前向过程，两种输出</text>
+<rect x="50" y="252" width="170" height="112" rx="12" class="blue"/>
+<text x="135" y="289" text-anchor="middle" class="name">心超视频 x</text>
+<text x="135" y="321" text-anchor="middle">空间 × 时间</text>
+<text x="135" y="346" text-anchor="middle" class="small">无额外ECG输入</text>
+<path d="M220 308 H260" class="line"/>
+<rect x="262" y="252" width="194" height="112" rx="12" class="blue"/>
+<text x="359" y="289" text-anchor="middle" class="name">视频编码器</text>
+<text x="359" y="322" text-anchor="middle">潜在序列 z</text>
+<text x="359" y="347" text-anchor="middle" class="small">保留空间位置</text>
+
+<rect x="500" y="174" width="210" height="98" rx="12" class="blue"/>
+<text x="605" y="209" text-anchor="middle" class="name">周期参数投影 p</text>
+<text x="605" y="241" text-anchor="middle">f、φ、b、v</text>
+<path d="M456 281 H476 V223 H497" class="line"/>
+<rect x="752" y="174" width="220" height="98" rx="12" class="blue"/>
+<text x="862" y="209" text-anchor="middle" class="name">周期潜在轨迹 ẑᵖ</text>
+<text x="862" y="241" text-anchor="middle">sin / cos + vt + b</text>
+<path d="M710 223 H749" class="line"/>
+
+<rect x="500" y="370" width="210" height="108" rx="12" class="green"/>
+<text x="605" y="405" text-anchor="middle" class="name">残差与连续插值</text>
+<text x="605" y="435" text-anchor="middle">z′ = z − ẑᵖ</text>
+<text x="605" y="460" text-anchor="middle" class="small">样条路径 V(t)</text>
+<path d="M456 335 H476 V424 H497" class="line"/>
+<path d="M862 272 V313 H605 V367" class="line"/>
+<text x="716" y="304" text-anchor="middle" class="small">减去周期解释</text>
+<rect x="752" y="370" width="220" height="108" rx="12" class="green"/>
+<text x="862" y="404" text-anchor="middle" class="name">Neural CDE</text>
+<text x="862" y="435" text-anchor="middle">由 V(t) 驱动积分</text>
+<text x="862" y="461" text-anchor="middle" class="small">非周期表示 ẑᵃ</text>
+<path d="M710 424 H749" class="line"/>
+
+<circle cx="1010" cy="324" r="23" fill="#fff" stroke="#6e8ba5" stroke-width="2"/>
+<text x="1010" y="332" text-anchor="middle" style="font-size:30px">+</text>
+<path d="M972 223 H1010 V298" class="line"/>
+<path d="M972 424 H1010 V350" class="line"/>
+<rect x="1050" y="174" width="180" height="112" rx="12" class="blue"/>
+<text x="1140" y="211" text-anchor="middle" class="name">GAP + MLP</text>
+<text x="1140" y="243" text-anchor="middle">LVEF预测 ŷ</text>
+<text x="1140" y="268" text-anchor="middle" class="small">连续标量</text>
+<path d="M1033 324 H1040 V230 H1047" class="line"/>
+<rect x="1050" y="370" width="180" height="108" rx="12" class="blue"/>
+<text x="1140" y="406" text-anchor="middle" class="name">视频解码器</text>
+<text x="1140" y="437" text-anchor="middle">重建视频 x̂</text>
+<text x="1140" y="462" text-anchor="middle" class="small">用于表示约束</text>
+<path d="M1033 324 H1040 V424 H1047" class="line"/>
+<text x="52" y="531" class="note">周期项表达重复规律与缓慢漂移；残差项补充未被模板解释的动态。</text>
+<text x="52" y="565" class="note">两路通过重建与回归共同学习；未提供逐通道生理语义或分解唯一性保证。</text>
+<text x="52" y="597" class="small">图按正式论文结构绘制；公开代码的骨干、样条与适配实现差别见正文。</text>
+
+<rect x="24" y="646" width="1232" height="214" rx="18" fill="#fcfaff" stroke="#d2c6e4" stroke-width="1.5"/>
+<text x="48" y="683" class="section">B. 成人训练：视频 + 真实LVEF监督</text>
+<rect x="50" y="711" width="220" height="98" rx="12" class="purple"/>
+<text x="160" y="747" text-anchor="middle" class="name">成人训练视频 x</text>
+<text x="160" y="778" text-anchor="middle">配对标签 y</text>
+<rect x="322" y="711" width="244" height="98" rx="12" class="purple"/>
+<text x="444" y="747" text-anchor="middle" class="name">上方共享网络</text>
+<text x="444" y="778" text-anchor="middle">输出 ŷ 和 x̂</text>
+<path d="M270 760 H319" class="line"/>
+<rect x="618" y="711" width="298" height="98" rx="12" class="purple"/>
+<text x="767" y="747" text-anchor="middle" class="name">Lreg + Lrec</text>
+<text x="767" y="778" text-anchor="middle">回归真值 + 重建输入</text>
+<path d="M566 760 H615" class="line"/>
+<rect x="968" y="711" width="262" height="98" rx="12" class="purple"/>
+<text x="1099" y="747" text-anchor="middle" class="name">学习网络参数</text>
+<text x="1099" y="778" text-anchor="middle">得到成人预训练模型</text>
+<path d="M916 760 H965" class="line"/>
+<text x="52" y="839" class="small">源域监督训练是前提；“无标签”只描述后续测试时适配使用的目标。</text>
+
+<rect x="24" y="884" width="1232" height="354" rx="18" fill="#fffcf7" stroke="#e2cba7" stroke-width="1.5"/>
+<text x="48" y="921" class="section">C. 儿童测试：多视图一致性 → 更新BN → 适配后预测</text>
+<rect x="50" y="952" width="215" height="106" rx="12" class="orange"/>
+<text x="157" y="987" text-anchor="middle" class="name">儿童视频 xₜₑₛₜ</text>
+<text x="157" y="1018" text-anchor="middle">K个增强视图</text>
+<text x="157" y="1044" text-anchor="middle" class="small">默认K = 8；无标签</text>
+<rect x="316" y="952" width="240" height="106" rx="12" class="orange"/>
+<text x="436" y="987" text-anchor="middle" class="name">成人预训练网络</text>
+<text x="436" y="1018" text-anchor="middle">每路得到 ŷₖ、x̂ₖ</text>
+<text x="436" y="1044" text-anchor="middle" class="small">共享参数</text>
+<path d="M265 1005 H313" class="line"/>
+<rect x="610" y="952" width="300" height="106" rx="12" class="orange"/>
+<text x="760" y="987" text-anchor="middle" class="name">Lvar + Lrec</text>
+<text x="760" y="1018" text-anchor="middle">增强预测方差 + 重建</text>
+<text x="760" y="1044" text-anchor="middle" class="small">不使用该病例的LVEF真值</text>
+<path d="M556 1005 H607" class="line"/>
+<rect x="962" y="952" width="268" height="106" rx="12" class="orange"/>
+<text x="1096" y="987" text-anchor="middle" class="name">只更新BN参数</text>
+<text x="1096" y="1018" text-anchor="middle">周期10⁻⁵；非周期10⁻³</text>
+<text x="1096" y="1044" text-anchor="middle" class="small">其他可适配参数10⁻⁴</text>
+<path d="M910 1005 H959" class="line"/>
+<path d="M1096 1058 V1100 H436 V1061" class="update"/>
+<text x="755" y="1126" text-anchor="middle" class="small">差异学习率迭代适配；主体权重保持冻结</text>
+<text x="52" y="1172" class="note">适配后输出LVEF；附录误差界针对增强预测均值，依赖无偏性与零协方差前提。</text>
+<text x="52" y="1207" class="small">实线：数据流　　虚线：参数更新　　来源：正式图2–3、式1–10、补充算法1。</text>
+</svg>
