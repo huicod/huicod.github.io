@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="2290" viewBox="0 0 1260 2290" role="img" aria-labelledby="title desc">
+<title id="title">LMM：跨数据集动作表示、ArtAttention与两阶段训练</title>
+<desc id="desc">数据准备把16个数据集统一为10部位动作，推理时多模态条件经ImageBind和Transformer进入ArtAttention，噪声和可选动作上下文经数据集专用读入、共享去噪主干和专用读出得到连续动作；底部区分无条件预训练和有条件微调。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#4b677c"/></marker><marker id="orange" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#a46e33"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei",Arial,sans-serif;fill:#20394b}.title{font-size:29px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:23px;font-weight:700}.body{font-size:21px}.small{font-size:19px}.edge{fill:none;stroke:#4b677c;stroke-width:2.6;marker-end:url(#arrow)}.dash{fill:none;stroke:#a46e33;stroke-width:2.5;stroke-dasharray:8 5;marker-end:url(#orange)}</style><rect width="1260" height="2290" fill="#fff"/>
+<text x="35" y="45" class="title" text-anchor="start">LMM：共享动作先验，接收不同条件，保留部位与时间结构</text>
+<text x="35" y="80" class="small" text-anchor="start">ECCV 2024 · 教学重绘 · 蓝：模型 / 特征   绿：动作 / 输出   橙：训练 / 调度</text>
+<rect x="25" y="105" width="1210" height="325" rx="13" fill="#f7fafc" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="48" y="144" class="section" text-anchor="start">A  数据准备：MotionVerse统一格式，缺失部位单独标记</text>
+<rect x="55" y="175" width="310" height="130" rx="13" fill="#fff" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="210.0" y="208" class="head" text-anchor="middle">16个动作数据集</text>
+<text x="210.0" y="239" class="body" text-anchor="middle">SMPL / SMPL-X / 3D关键点</text>
+<text x="210.0" y="267" class="body" text-anchor="middle">不同帧率、不同覆盖部位</text>
+<rect x="425" y="175" width="370" height="130" rx="13" fill="#eaf5ee" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="610.0" y="208" class="head" text-anchor="middle">统一连续动作表示</text>
+<text x="610.0" y="239" class="body" text-anchor="middle">52个身体与手部关节 + 表情</text>
+<text x="610.0" y="267" class="body" text-anchor="middle">代码每帧669维；不含足接触项</text>
+<rect x="855" y="175" width="345" height="130" rx="13" fill="#eaf5ee" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="1027.5" y="208" class="head" text-anchor="middle">10个部位 + 数据元信息</text>
+<text x="1027.5" y="239" class="body" text-anchor="middle">根 / 头 / 脊柱 / 面部</text>
+<text x="1027.5" y="267" class="body" text-anchor="middle">左右臂 / 腿 / 手，共10部位</text>
+<text x="1027.5" y="295" class="body" text-anchor="middle">部位可用性 / 帧率 / 数据集ID</text>
+<path d="M365 238H425" class="edge"/>
+<path d="M795 238H855" class="edge"/>
+<text x="65" y="349" class="body" text-anchor="start">保留成对的文字 / 音乐 / 语音 / 视频条件；预训练暂不使用条件，微调再学习条件—动作关系。</text>
+<text x="65" y="389" class="body" text-anchor="start">评测时另用表示转换器回到各数据集格式；它与生成器的Read-Out不是同一模块。</text>
+<rect x="25" y="455" width="1210" height="1310" rx="13" fill="#f7fafc" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="48" y="496" class="section" text-anchor="start">B  推理主线：多路条件 + 噪声 / 可见动作 → 共享扩散主干 → 连续动作</text>
+<rect x="435" y="850" width="770" height="540" rx="13" fill="#edf2ff" stroke="#8aa9c6" stroke-width="1.5"/>
+<rect x="55" y="525" width="250" height="92" rx="13" fill="#fff" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="180.0" y="558" class="head" text-anchor="middle">文字 / 动作类别</text>
+<text x="180.0" y="589" class="body" text-anchor="middle">描述要做什么</text>
+<path d="M180 617V642H630V657" class="edge"/>
+<rect x="355" y="525" width="250" height="92" rx="13" fill="#fff" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="480.0" y="558" class="head" text-anchor="middle">语音</text>
+<text x="480.0" y="589" class="body" text-anchor="middle">说话声学条件</text>
+<path d="M480 617V642H630V657" class="edge"/>
+<rect x="655" y="525" width="250" height="92" rx="13" fill="#fff" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="780.0" y="558" class="head" text-anchor="middle">音乐</text>
+<text x="780.0" y="589" class="body" text-anchor="middle">音乐内容与节奏</text>
+<path d="M780 617V642H630V657" class="edge"/>
+<rect x="955" y="525" width="250" height="92" rx="13" fill="#fff" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="1080.0" y="558" class="head" text-anchor="middle">视频</text>
+<text x="1080.0" y="589" class="body" text-anchor="middle">动作模仿条件</text>
+<path d="M1080 617V642H630V657" class="edge"/>
+<rect x="310" y="657" width="640" height="102" rx="13" fill="#edf2ff" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="630.0" y="690" class="head" text-anchor="middle">ImageBind条件编码 → 两层可学习Transformer</text>
+<text x="630.0" y="721" class="body" text-anchor="middle">得到各模态条件token；可选择一路或组合多路</text>
+<path d="M630 759V830H1055V909" class="edge"/>
+<text x="826" y="805" class="small" text-anchor="middle">条件K / V；另加64个可学习占位token</text>
+<rect x="55" y="840" width="325" height="140" rx="13" fill="#eaf5ee" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="217.5" y="873" class="head" text-anchor="middle">噪声动作 xₜ + 可选上下文</text>
+<text x="217.5" y="904" class="body" text-anchor="middle">例如已知前缀 / 前后关键区间</text>
+<text x="217.5" y="932" class="body" text-anchor="middle">可见动作与待生成区域合并</text>
+<text x="217.5" y="960" class="body" text-anchor="middle">同时保留部位可用性掩码</text>
+<rect x="55" y="1035" width="325" height="140" rx="13" fill="#edf2ff" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="217.5" y="1068" class="head" text-anchor="middle">数据集专用 Read-In</text>
+<text x="217.5" y="1099" class="body" text-anchor="middle">每个部位独立线性映射</text>
+<text x="217.5" y="1127" class="body" text-anchor="middle">F × 10 × d 部位特征</text>
+<text x="217.5" y="1155" class="body" text-anchor="middle">训练10%概率选通用 all 分支</text>
+<path d="M218 980V1035" class="edge"/>
+<path d="M380 1105H420V1004H455" class="edge"/>
+<path d="M420 1004V899H999V910" class="edge"/>
+<text x="460" y="885" class="head" text-anchor="start">共享去噪主干：重复 N 层</text>
+<rect x="455" y="910" width="315" height="204" rx="13" fill="#e8f4ee" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="612.5" y="943" class="head" text-anchor="middle">ArtAttention：空间支路</text>
+<text x="612.5" y="974" class="body" text-anchor="middle">逐帧处理10个部位</text>
+<text x="612.5" y="1002" class="body" text-anchor="middle">归一化 → MoE映射Q / K / V</text>
+<text x="612.5" y="1030" class="body" text-anchor="middle">动态建模部位间相关性</text>
+<text x="612.5" y="1058" class="body" text-anchor="middle">适应缺失与人工遮挡部位</text>
+<rect x="810" y="910" width="375" height="204" rx="13" fill="#fff4e4" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="997.5" y="943" class="head" text-anchor="middle">ArtAttention：时间支路</text>
+<text x="997.5" y="974" class="body" text-anchor="middle">每个头对应一个部位</text>
+<text x="997.5" y="1002" class="body" text-anchor="middle">动作与条件K分别归一化</text>
+<text x="997.5" y="1030" class="body" text-anchor="middle">融合动作K/V与多模态K/V</text>
+<text x="997.5" y="1058" class="body" text-anchor="middle">时间中心 + Taylor系数模板</text>
+<text x="791" y="920" class="small" text-anchor="middle">X</text>
+<rect x="810" y="1145" width="375" height="100" rx="13" fill="#fff4e4" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="997.5" y="1178" class="head" text-anchor="middle">真实时间查询模板</text>
+<text x="997.5" y="1209" class="body" text-anchor="middle">秒位置 k / fps → 时间特征 Yₜ</text>
+<path d="M999 1114V1145" class="edge"/>
+<text x="700" y="1196" class="body" text-anchor="middle">空间特征 Yₛ</text>
+<path d="M612 1114V1258H820V1280" class="edge"/>
+<path d="M999 1245V1258H820V1280" class="edge"/>
+<rect x="455" y="1280" width="730" height="82" rx="13" fill="#edf2ff" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="820.0" y="1313" class="head" text-anchor="middle">Yₛ + Yₜ → Stylization / 残差 → FFN / 残差</text>
+<text x="820.0" y="1344" class="body" text-anchor="middle">Stylization注入扩散步、帧率和数据集身份</text>
+<rect x="55" y="1255" width="325" height="107" rx="13" fill="#fff4e4" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="217.5" y="1288" class="head" text-anchor="middle">调度与身份条件</text>
+<text x="217.5" y="1319" class="body" text-anchor="middle">扩散步 t / 帧率 fps / dataset ID</text>
+<path d="M380 1308H455" class="edge"/>
+<path d="M820 1390V1427H615V1450" class="edge"/>
+<rect x="440" y="1450" width="350" height="112" rx="13" fill="#edf2ff" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="615.0" y="1483" class="head" text-anchor="middle">数据集专用 Read-Out</text>
+<text x="615.0" y="1514" class="body" text-anchor="middle">各部位特征 → 干净动作预测 x̂₀</text>
+<text x="615.0" y="1542" class="body" text-anchor="middle">输出仍是统一669维格式</text>
+<path d="M790 1506H845" class="edge"/>
+<rect x="845" y="1450" width="350" height="112" rx="13" fill="#eaf5ee" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="1020.0" y="1483" class="head" text-anchor="middle">扩散采样迭代</text>
+<text x="1020.0" y="1514" class="body" text-anchor="middle">由 x̂₀ 更新到下一噪声等级</text>
+<text x="1020.0" y="1542" class="body" text-anchor="middle">最终得到连续动作序列</text>
+<path d="M1020 1562V1590H40V910H55" class="edge"/>
+<text x="264" y="1567" class="small" text-anchor="middle">迭代去噪反馈</text>
+<path d="M1020 1562V1630" class="edge"/>
+<rect x="55" y="1630" width="580" height="85" rx="13" fill="#eaf5ee" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="345.0" y="1663" class="head" text-anchor="middle">动作结果与使用</text>
+<text x="345.0" y="1694" class="body" text-anchor="middle">统一格式可恢复身体 / 手部动作；面部需核对实际demo</text>
+<rect x="695" y="1630" width="500" height="85" rx="13" fill="#eaf5ee" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="945.0" y="1663" class="head" text-anchor="middle">评测可选：Motion Translator</text>
+<text x="945.0" y="1694" class="body" text-anchor="middle">MLP映射回H3D / 关键点等格式，再计算指标</text>
+<path d="M1020 1562V1607H345V1630" class="edge"/>
+<text x="55" y="1747" class="small" text-anchor="start">多条件可共同输入；语义融合不提供同部位冲突优先级、接触求解或精确到点保证。</text>
+<rect x="25" y="1780" width="1210" height="425" rx="13" fill="#fffaf2" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="48" y="1820" class="section" text-anchor="start">C  两阶段训练：数据先验与条件对应分开学习，之后共享生成主干</text>
+<rect x="55" y="1850" width="540" height="235" rx="13" fill="#fff4e4" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="325.0" y="1883" class="head" text-anchor="middle">① 无条件预训练 · 80K步</text>
+<text x="325.0" y="1914" class="body" text-anchor="middle">MotionVerse真实动作 → 随机降采样</text>
+<text x="325.0" y="1942" class="body" text-anchor="middle">重新计算速度分量 + 加噪</text>
+<text x="325.0" y="1970" class="body" text-anchor="middle">人工随机mask → 可学习空token</text>
+<text x="325.0" y="1998" class="body" text-anchor="middle">恢复干净动作；只忽略原本缺失部位</text>
+<text x="325.0" y="2026" class="body" text-anchor="middle">无需文字 / 音乐 / 语音配对监督</text>
+<rect x="655" y="1850" width="540" height="235" rx="13" fill="#fff4e4" stroke="#bbcedb" stroke-width="1.5"/>
+<text x="925.0" y="1883" class="head" text-anchor="middle">② 有条件微调 · 40K步</text>
+<text x="925.0" y="1914" class="body" text-anchor="middle">接入各模态ImageBind条件特征</text>
+<text x="925.0" y="1942" class="body" text-anchor="middle">学习条件与动作的成对关系</text>
+<text x="925.0" y="1970" class="body" text-anchor="middle">10%丢弃条件，支持CFG</text>
+<text x="925.0" y="1998" class="body" text-anchor="middle">继续联合混合多个数据集与任务</text>
+<text x="925.0" y="2026" class="body" text-anchor="middle">不是每个任务分别训练完整生成器</text>
+<path d="M595 1960H655" class="edge"/>
+<text x="625" y="1940" class="small" text-anchor="middle">初始化</text>
+<text x="62" y="2122" class="body" text-anchor="start">所有样本仍遵守部位可用性；人工遮挡位置要重建，原始缺失位置不纳入动作重建监督。</text>
+<text x="62" y="2162" class="body" text-anchor="start">预训练不依赖条件标签，但整个系统仍复用ImageBind，微调仍依赖条件—动作成对数据。</text>
+<path d="M1195 2020H1220V1360H1205" class="dash"/>
+<text x="38" y="2240" class="small" text-anchor="start">依据正式论文图2–4、§3–4、补充A–C绘制，维度参考代码。实线：数据 / 采样；虚线：训练参数。</text>
+<text x="38" y="2271" class="small" text-anchor="start">注意：时间K分别归一化按论文绘制；发布代码为拼接后共同归一化，详见正文版本说明。</text>
+</svg>
