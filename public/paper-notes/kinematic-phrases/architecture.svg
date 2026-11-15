@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1810" viewBox="0 0 1440 1810" role="img" aria-labelledby="title desc"><title id="title">KP：训练、生成、编辑与白盒评测的完整架构</title><desc id="desc">规则把动作转为392维KP。双VAE联合对齐动作和KP latent。冻结后，文本条件扩散生成动作latent并解码；编辑和补间复用双编码器。KPG对解码动作重新提取KP，检查指定模式。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#4b6478"/></marker></defs><style>text{font-family:Arial,'Microsoft YaHei',sans-serif;fill:#1c3346}.title{font-size:32px;font-weight:700}.h{font-size:25px;font-weight:700}.b{font-size:22px;font-weight:700}.t{font-size:21px}.small{font-size:19px}.line{fill:none;stroke:#4b6478;stroke-width:2.5;marker-end:url(#arrow)}.dash{stroke-dasharray:8 6}</style><rect width="1440" height="1810" fill="#fff"/>
+<text x="40" y="48" class="title" text-anchor="start">KP：让运动学事实进入表征学习，并从生成动作中重新检查</text>
+<text x="42" y="88" class="small" text-anchor="start">教学示意 · ECCV 2024 正式稿图3–5 / §3–4 · 实线：数据与条件  |  虚线：阶段复用与训练关系</text>
+<rect x="30" y="120" width="1380" height="230" rx="16" fill="#f5f9fd" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="55" y="157" class="h" text-anchor="start">A  数据与规则表示：KPB → 动作 M + 运动学短语 C</text>
+<rect x="65" y="183" width="330" height="123" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="230.0" y="215" class="b" text-anchor="middle">Kinematic Phrase Base</text>
+<text x="230.0" y="244" class="t" text-anchor="middle">11个数据集 / 约14万段</text>
+<text x="230.0" y="273" class="t" text-anchor="middle">原始动作 + 已有文字</text>
+<rect x="455" y="183" width="410" height="123" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="660.0" y="215" class="b" text-anchor="middle">统一骨架与坐标</text>
+<text x="660.0" y="244" class="t" text-anchor="middle">17关节 / 人体上、右、前方向</text>
+<text x="660.0" y="273" class="t" text-anchor="middle">动作表示 M：147维 / 帧</text>
+<rect x="925" y="183" width="450" height="123" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="1150.0" y="215" class="b" text-anchor="middle">规则计算 → 指标符号</text>
+<text x="1150.0" y="244" class="t" text-anchor="middle">PP / PRPP / PDP / LAP / LOP / GVP</text>
+<text x="1150.0" y="273" class="t" text-anchor="middle">C：每帧392个 −1 / 0 / +1</text>
+<path d="M395 245H455" class="line"/>
+<path d="M865 245H925" class="line"/>
+<text x="985" y="332" class="small" text-anchor="start">不是动作类别，也不是完整事件</text>
+<path d="M720 350V380" class="line dash"/>
+<rect x="30" y="380" width="1380" height="430" rx="16" fill="#f4faf6" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="55" y="417" class="h" text-anchor="start">B  联合空间训练：动作 VAE 与 KP VAE（两个分支均训练）</text>
+<rect x="65" y="440" width="230" height="100" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="180.0" y="472" class="b" text-anchor="middle">配对动作 M</text>
+<text x="180.0" y="501" class="t" text-anchor="middle">来自A的连续表示</text>
+<rect x="325" y="440" width="230" height="100" rx="13" fill="#e5f3ea" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="440.0" y="472" class="b" text-anchor="middle">动作编码器 Eₘ</text>
+<text x="440.0" y="501" class="t" text-anchor="middle">高斯分布 μₘ, σₘ</text>
+<rect x="595" y="440" width="195" height="100" rx="13" fill="#e5f3ea" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="692.5" y="472" class="b" text-anchor="middle">动作 latent zₘ</text>
+<text x="692.5" y="501" class="t" text-anchor="middle">从分布采样</text>
+<rect x="65" y="590" width="230" height="110" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="180.0" y="622" class="b" text-anchor="middle">KP 序列 C</text>
+<text x="180.0" y="651" class="t" text-anchor="middle">来自A的规则输出</text>
+<text x="180.0" y="680" class="t" text-anchor="middle">随机置零 &lt;20%</text>
+<rect x="325" y="590" width="230" height="110" rx="13" fill="#e9effb" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="440.0" y="622" class="b" text-anchor="middle">短语编码器 Eₚ</text>
+<text x="440.0" y="651" class="t" text-anchor="middle">高斯分布 μₚ, σₚ</text>
+<rect x="595" y="590" width="195" height="110" rx="13" fill="#e9effb" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="692.5" y="622" class="b" text-anchor="middle">短语 latent zₚ</text>
+<text x="692.5" y="651" class="t" text-anchor="middle">从分布采样</text>
+<path d="M295 490H325" class="line"/>
+<path d="M555 490H595" class="line"/>
+<path d="M295 645H325" class="line"/>
+<path d="M555 645H595" class="line"/>
+<path d="M790 490H850V565H910V490H940" class="line"/>
+<path d="M790 645H850V565H910V645H940" class="line"/>
+<text x="820" y="428" class="small" text-anchor="start">分别或组合输入</text>
+<rect x="940" y="440" width="190" height="100" rx="13" fill="#e5f3ea" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="1035.0" y="472" class="b" text-anchor="middle">动作解码器 Dₘ</text>
+<text x="1035.0" y="501" class="t" text-anchor="middle">重建连续动作</text>
+<rect x="940" y="590" width="190" height="110" rx="13" fill="#e9effb" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="1035.0" y="622" class="b" text-anchor="middle">短语解码器 Dₚ</text>
+<text x="1035.0" y="651" class="t" text-anchor="middle">输出取符号</text>
+<text x="1035.0" y="680" class="t" text-anchor="middle">重建KP</text>
+<rect x="1170" y="440" width="205" height="100" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="1272.5" y="472" class="b" text-anchor="middle">动作重建</text>
+<text x="1272.5" y="501" class="t" text-anchor="middle">M̂ₘ / M̂ₚ / M̂ₘₚ</text>
+<rect x="1170" y="590" width="205" height="110" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="1272.5" y="622" class="b" text-anchor="middle">KP 重建</text>
+<text x="1272.5" y="651" class="t" text-anchor="middle">Ĉₚ / Ĉₘ / Ĉₘₚ</text>
+<path d="M1130 490H1170" class="line"/>
+<path d="M1130 645H1170" class="line"/>
+<rect x="65" y="735" width="1310" height="48" rx="13" fill="#fff8e7" stroke="#ddcfa8" stroke-width="1.5"/>
+<text x="90" y="766" class="small" text-anchor="start">训练目标：动作 / KP / 关节 / 网格 / 加速度重建  +  标准正态KL  +  两分布对齐  +  zₘ 与 zₚ 的L1对齐</text>
+<path d="M720 810V840" class="line dash"/>
+<rect x="30" y="840" width="1380" height="285" rx="16" fill="#fff9ee" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="55" y="877" class="h" text-anchor="start">C  文本 → 动作：冻结联合表示，另行训练扩散生成器</text>
+<rect x="65" y="925" width="225" height="95" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="177.5" y="957" class="b" text-anchor="middle">文本描述</text>
+<text x="177.5" y="986" class="t" text-anchor="middle">例如：捡起物体</text>
+<rect x="330" y="925" width="235" height="95" rx="13" fill="#fff0d1" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="447.5" y="957" class="b" text-anchor="middle">CLIP 文本编码器</text>
+<text x="447.5" y="986" class="t" text-anchor="middle">文本条件 zₜ</text>
+<rect x="625" y="925" width="320" height="95" rx="13" fill="#ffe8ba" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="785.0" y="957" class="b" text-anchor="middle">条件扩散去噪器</text>
+<text x="785.0" y="986" class="t" text-anchor="middle">zₘᵀ → … → zₘ⁰</text>
+<rect x="1000" y="925" width="185" height="95" rx="13" fill="#e5f3ea" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="1092.5" y="957" class="b" text-anchor="middle">动作解码器 Dₘ</text>
+<text x="1092.5" y="986" class="t" text-anchor="middle">冻结 / 复用B</text>
+<rect x="1225" y="925" width="150" height="95" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="1300.0" y="957" class="b" text-anchor="middle">连续动作</text>
+<text x="1300.0" y="986" class="t" text-anchor="middle">147维 / 帧</text>
+<path d="M290 973H330" class="line"/>
+<path d="M565 973H625" class="line"/>
+<path d="M945 973H1000" class="line"/>
+<path d="M1185 973H1225" class="line"/>
+<text x="785" y="907" class="small" text-anchor="middle">推理起点：高斯噪声 zₘᵀ</text>
+<path d="M785 912V925" class="line"/>
+<text x="65" y="1060" class="small" text-anchor="start">扩散训练：真实 M 经冻结 Eₘ 得到动作 latent，加噪后学习条件去噪；表示训练与扩散训练分阶段。</text>
+<text x="65" y="1094" class="small" text-anchor="start">生成推理不要求先输出可读KP；没有逐条执行符号计划或强制满足几何关系的求解器。</text>
+<rect x="30" y="1155" width="1380" height="295" rx="16" fill="#f5f7fc" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="55" y="1192" class="h" text-anchor="start">D  另两条应用：显式KP编辑与补间（复用B的编码器 / 解码器）</text>
+<rect x="65" y="1218" width="260" height="88" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="195.0" y="1250" class="b" text-anchor="middle">编辑：源动作 M</text>
+<text x="195.0" y="1279" class="t" text-anchor="middle">提取其 KP 序列</text>
+<rect x="385" y="1218" width="365" height="88" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="567.5" y="1250" class="b" text-anchor="middle">人工修改目标KP</text>
+<text x="567.5" y="1279" class="t" text-anchor="middle">同时遮住要修改的动作帧</text>
+<rect x="810" y="1218" width="260" height="88" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="940.0" y="1250" class="b" text-anchor="middle">Eₘ + Eₚ → Dₘ</text>
+<text x="940.0" y="1279" class="t" text-anchor="middle">联合条件重建</text>
+<rect x="1130" y="1218" width="245" height="88" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="1252.5" y="1250" class="b" text-anchor="middle">编辑后的动作 M̂</text>
+<text x="1252.5" y="1279" class="t" text-anchor="middle">神经重建 / 非硬保证</text>
+<path d="M325 1262H385" class="line"/>
+<path d="M750 1262H810" class="line"/>
+<path d="M1070 1262H1130" class="line"/>
+<rect x="65" y="1335" width="260" height="88" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="195.0" y="1367" class="b" text-anchor="middle">补间：损坏动作 M̃</text>
+<text x="195.0" y="1396" class="t" text-anchor="middle">及其提取的短语 C̃</text>
+<rect x="385" y="1335" width="365" height="88" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="567.5" y="1367" class="b" text-anchor="middle">Eₘ + Eₚ → Dₚ</text>
+<text x="567.5" y="1396" class="t" text-anchor="middle">先估计较完整的 KP Ĉ</text>
+<rect x="810" y="1335" width="260" height="88" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="940.0" y="1367" class="b" text-anchor="middle">M̃ + Ĉ → Eₘ / Eₚ</text>
+<text x="940.0" y="1396" class="t" text-anchor="middle">再由 Dₘ 解码</text>
+<rect x="1130" y="1335" width="245" height="88" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="1252.5" y="1367" class="b" text-anchor="middle">补全动作 M̂</text>
+<text x="1252.5" y="1396" class="t" text-anchor="middle">实验随机缺失50%帧</text>
+<path d="M325 1379H385" class="line"/>
+<path d="M750 1379H810" class="line"/>
+<path d="M1070 1379H1130" class="line"/>
+<rect x="30" y="1480" width="1380" height="260" rx="16" fill="#f1f9fa" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="55" y="1517" class="h" text-anchor="start">E  KPG白盒评测：不依赖被测模型是否采用KP架构</text>
+<rect x="65" y="1545" width="250" height="98" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="190.0" y="1577" class="b" text-anchor="middle">KP → 文本模板</text>
+<text x="190.0" y="1606" class="t" text-anchor="middle">7,776条测试提示</text>
+<rect x="375" y="1545" width="250" height="98" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="500.0" y="1577" class="b" text-anchor="middle">任意文本动作模型</text>
+<text x="500.0" y="1606" class="t" text-anchor="middle">生成连续动作 M̂</text>
+<rect x="685" y="1545" width="250" height="98" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="810.0" y="1577" class="b" text-anchor="middle">相同KP规则提取</text>
+<text x="810.0" y="1606" class="t" text-anchor="middle">得到生成动作的 Ĉ</text>
+<rect x="995" y="1545" width="380" height="98" rx="13" fill="#fff" stroke="#c6d6e2" stroke-width="1.5"/>
+<text x="1185.0" y="1577" class="b" text-anchor="middle">检测目标关系模式</text>
+<text x="1185.0" y="1606" class="t" text-anchor="middle">原子 / 重复 / 顺序 / 同时</text>
+<path d="M315 1595H375" class="line"/>
+<path d="M625 1595H685" class="line"/>
+<path d="M935 1595H995" class="line"/>
+<path d="M190 1643V1655H1185V1643" class="line"/><rect x="505" y="1644" width="420" height="26" fill="#f1f9fa"/><text x="715" y="1663" class="small" text-anchor="middle">原题的目标KP / 次序 / 重复次数</text>
+<text x="65" y="1686" class="small" text-anchor="start">原子片段超过5帧；重复 / 顺序 / 同时片段至少5帧。模式命中不是意图、接触或精确执行的证明。</text>
+<text x="65" y="1717" class="small" text-anchor="start">四类题数：252 + 492 + 3,912 + 3,120 = 7,776；正文个别位置写7,796，按分组及补充材料核对。</text>
+<text x="40" y="1780" class="small" text-anchor="start">绘图依据：ECCV 2024 01286.pdf 与 01286-supp.pdf；本图为教学重绘，不是作者原图或模型运行结果。</text>
+</svg>

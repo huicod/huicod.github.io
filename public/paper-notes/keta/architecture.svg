@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500" role="img" aria-labelledby="title desc">
+<title id="title">KETA：文本与运动学短语对齐、生成训练和反馈设计</title>
+<desc id="desc">三区展示对齐预训练、MDM生成训练、论文decoder推理设计。紫色虚线反馈尚未在标准公开采样链路中核实。</desc>
+<defs><marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#456075"/></marker><marker id="p" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#8352ac"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei",Arial,sans-serif;fill:#193247}.title{font-size:29px;font-weight:700}.section{font-size:23px;font-weight:700}.head{font-size:21px;font-weight:700}.body{font-size:19px}.small{font-size:17px}.edge{fill:none;stroke:#456075;stroke-width:2.2;marker-end:url(#a)}.purple{fill:none;stroke:#8352ac;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#p)}</style>
+<rect width="1200" height="1500" fill="#ffffff"/>
+<text x="36" y="46" class="title" text-anchor="start">KETA：先对齐局部运动学，再指导动作生成</text>
+<text x="36" y="77" class="body" text-anchor="start">教学重绘 · 数据与训练、生成训练、论文推理机制分开阅读</text>
+<rect x="25" y="104" width="1150" height="506" rx="15" fill="#f8fafc" stroke="#d4dde5"/>
+<text x="48" y="140" class="section" text-anchor="start">A  对齐模型预训练：真实动作 KP ↔ 分解文本</text>
+<rect x="50" y="166" width="230" height="110" rx="11" fill="#f0f2f5" stroke="#b2bdc7" stroke-width="1.5"/>
+<text x="165.0" y="196" class="head" text-anchor="middle">动作描述</text>
+<text x="165.0" y="224" class="body" text-anchor="middle">如：左腿踢出</text>
+<text x="165.0" y="249" class="body" text-anchor="middle">成对训练数据</text>
+<rect x="330" y="166" width="230" height="110" rx="11" fill="#edf5fc" stroke="#99b6ce" stroke-width="1.5"/>
+<text x="445.0" y="196" class="head" text-anchor="middle">GPT-4o-mini</text>
+<text x="445.0" y="224" class="body" text-anchor="middle">分解为 3–20 短句</text>
+<text x="445.0" y="249" class="body" text-anchor="middle">初始 / 中间 / 最终状态</text>
+<rect x="610" y="166" width="230" height="110" rx="11" fill="#f0f2f5" stroke="#b2bdc7" stroke-width="1.5"/>
+<text x="725.0" y="196" class="head" text-anchor="middle">Llama 3.1</text>
+<text x="725.0" y="224" class="body" text-anchor="middle">编码每个短句</text>
+<text x="725.0" y="249" class="body" text-anchor="middle">得到嵌入 eᵢ</text>
+<rect x="890" y="166" width="260" height="110" rx="11" fill="#edf5fc" stroke="#99b6ce" stroke-width="1.5"/>
+<text x="1020.0" y="196" class="head" text-anchor="middle">文本投影 MLP</text>
+<text x="1020.0" y="224" class="body" text-anchor="middle">两层网络，参与训练</text>
+<text x="1020.0" y="249" class="body" text-anchor="middle">得到 KP 空间特征 qᵢ</text>
+<path d="M280 220H330" class="edge"/>
+<path d="M560 220H610" class="edge"/>
+<path d="M840 220H890" class="edge"/>
+<rect x="50" y="340" width="230" height="110" rx="11" fill="#f0f2f5" stroke="#b2bdc7" stroke-width="1.5"/>
+<text x="165.0" y="370" class="head" text-anchor="middle">真实关节运动 X</text>
+<text x="165.0" y="398" class="body" text-anchor="middle">规则提取 KP 序列</text>
+<text x="165.0" y="423" class="body" text-anchor="middle">逐帧运动学事实</text>
+<rect x="330" y="340" width="290" height="110" rx="11" fill="#edf5fc" stroke="#99b6ce" stroke-width="1.5"/>
+<text x="475.0" y="370" class="head" text-anchor="middle">时间域模型：参与训练</text>
+<text x="475.0" y="398" class="body" text-anchor="middle">Transformer decoder</text>
+<text x="475.0" y="423" class="body" text-anchor="middle">文字 + KP → Gaussian 权重</text>
+<rect x="680" y="340" width="220" height="110" rx="11" fill="#edf5fc" stroke="#99b6ce" stroke-width="1.5"/>
+<text x="790.0" y="370" class="head" text-anchor="middle">加权局部 KP</text>
+<text x="790.0" y="398" class="body" text-anchor="middle">Ωᵢ = Σₜ wᵢ,ₜ Kₜ</text>
+<text x="790.0" y="423" class="body" text-anchor="middle">可行窗约束时间顺序</text>
+<rect x="950" y="340" width="200" height="110" rx="11" fill="#fff3d9" stroke="#d9bf7b" stroke-width="1.5"/>
+<text x="1050.0" y="370" class="head" text-anchor="middle">对齐目标</text>
+<text x="1050.0" y="398" class="body" text-anchor="middle">Ωᵢ 与 qᵢ</text>
+<text x="1050.0" y="423" class="body" text-anchor="middle">平方距离</text>
+<path d="M280 395H330" class="edge"/>
+<text x="282" y="378" class="small" text-anchor="start">KP 序列</text>
+<path d="M725 276V305H475V340" class="edge"/>
+<text x="490" y="299" class="small" text-anchor="start">短句嵌入</text>
+<path d="M620 395H680" class="edge"/>
+<text x="627" y="377" class="small" text-anchor="start">权重</text>
+<path d="M165 450V485H790V450" class="edge"/>
+<text x="365" y="478" class="small" text-anchor="start">同一动作的 KP</text>
+<path d="M900 395H950" class="edge"/>
+<path d="M1020 276V340" class="edge"/>
+<text x="1030" y="315" class="small" text-anchor="start">qᵢ</text>
+<text x="54" y="538" class="body" text-anchor="start">学到的对应：每个短句在何时、应接近怎样的运动学特征。</text>
+<text x="54" y="573" class="body" text-anchor="start">窗口由顺序先验限制；不是人工标注的精确事件边界，也不是生成出的 KP 计划。</text>
+<rect x="25" y="635" width="1150" height="330" rx="15" fill="#f8fafc" stroke="#d4dde5"/>
+<text x="48" y="671" class="section" text-anchor="start">B  生成训练：固定 AA，训练动作扩散模型</text>
+<rect x="50" y="704" width="230" height="112" rx="11" fill="#f0f2f5" stroke="#b2bdc7" stroke-width="1.5"/>
+<text x="165.0" y="734" class="head" text-anchor="middle">训练条件</text>
+<text x="165.0" y="762" class="body" text-anchor="middle">噪声动作 xₜ + 时间步</text>
+<text x="165.0" y="787" class="body" text-anchor="middle">文字 / 分解文字</text>
+<rect x="330" y="704" width="230" height="112" rx="11" fill="#edf5fc" stroke="#99b6ce" stroke-width="1.5"/>
+<text x="445.0" y="734" class="head" text-anchor="middle">MDM：参与训练</text>
+<text x="445.0" y="762" class="body" text-anchor="middle">encoder 或 decoder</text>
+<text x="445.0" y="787" class="body" text-anchor="middle">预测干净动作 x̂₀</text>
+<rect x="610" y="704" width="230" height="112" rx="11" fill="#f0f2f5" stroke="#b2bdc7" stroke-width="1.5"/>
+<text x="725.0" y="734" class="head" text-anchor="middle">平滑 KP 提取</text>
+<text x="725.0" y="762" class="body" text-anchor="middle">sign → tanh</text>
+<text x="725.0" y="787" class="body" text-anchor="middle">从 x̂₀ 计算连续 KP</text>
+<rect x="890" y="704" width="260" height="112" rx="11" fill="#f0f2f5" stroke="#b2bdc7" stroke-width="1.5"/>
+<text x="1020.0" y="734" class="head" text-anchor="middle">复用 AA：参数固定</text>
+<text x="1020.0" y="762" class="body" text-anchor="middle">与文字计算 Lalign</text>
+<text x="1020.0" y="787" class="body" text-anchor="middle">梯度仍可回传动作</text>
+<path d="M280 760H330" class="edge"/>
+<path d="M560 760H610" class="edge"/>
+<path d="M840 760H890" class="edge"/>
+<path d="M1020 816V856H445V816" class="edge"/>
+<text x="565" y="847" class="small" text-anchor="start">辅助监督梯度回到 MDM</text>
+<text x="55" y="902" class="body" text-anchor="start">总训练目标：原 MDM 目标 + 0.0001 × KP 对齐目标。</text>
+<text x="55" y="936" class="body" text-anchor="start">encoder 增加对齐损失；decoder 另有分解文字及 guide-token 接口。</text>
+<rect x="25" y="991" width="1150" height="377" rx="15" fill="#f8fafc" stroke="#d4dde5"/>
+<text x="48" y="1027" class="section" text-anchor="start">C  论文的 decoder 采样机制：差异作为下一步引导</text>
+<rect x="50" y="1056" width="220" height="106" rx="11" fill="#f0f2f5" stroke="#b2bdc7" stroke-width="1.5"/>
+<text x="160.0" y="1086" class="head" text-anchor="middle">噪声动作 xₜ</text>
+<text x="160.0" y="1114" class="body" text-anchor="middle">首次从噪声开始</text>
+<text x="160.0" y="1139" class="body" text-anchor="middle">文字 + 时间步</text>
+<rect x="330" y="1056" width="230" height="106" rx="11" fill="#edf5fc" stroke="#99b6ce" stroke-width="1.5"/>
+<text x="445.0" y="1086" class="head" text-anchor="middle">MDM decoder</text>
+<text x="445.0" y="1114" class="body" text-anchor="middle">接收文本与引导</text>
+<text x="445.0" y="1139" class="body" text-anchor="middle">预测干净动作 x̂₀</text>
+<rect x="620" y="1056" width="220" height="106" rx="11" fill="#e9f6ee" stroke="#92b99f" stroke-width="1.5"/>
+<text x="730.0" y="1086" class="head" text-anchor="middle">当前干净动作</text>
+<text x="730.0" y="1114" class="body" text-anchor="middle">连续关节运动</text>
+<text x="730.0" y="1139" class="body" text-anchor="middle">最后一步作为输出</text>
+<rect x="900" y="1056" width="250" height="106" rx="11" fill="#f2eafa" stroke="#b39bca" stroke-width="1.5"/>
+<text x="1025.0" y="1086" class="head" text-anchor="middle">KP 与文字比较</text>
+<text x="1025.0" y="1114" class="body" text-anchor="middle">KP 与文字特征的差异</text>
+<text x="1025.0" y="1139" class="body" text-anchor="middle">构造差异 guide token</text>
+<path d="M270 1110H330" class="edge"/>
+<path d="M560 1110H620" class="edge"/>
+<path d="M840 1110H900" class="edge"/>
+<path d="M730 1162V1200H160V1162" class="edge"/>
+<text x="60" y="1226" class="small" text-anchor="start">递减时间步，重新加噪</text>
+<path d="M1025 1162V1272H445V1162" class="purple"/>
+<text x="540" y="1261" class="small" text-anchor="start">论文反馈设计：供下一步修正使用</text>
+<text x="55" y="1324" class="small" text-anchor="start">紫色虚线：公开实现有训练接口，但标准采样循环未核实逐轮重算并回填此信号。</text>
+<text x="36" y="1410" class="body" text-anchor="start">读图边界：KP 是运动学代理，低对齐误差不保证精确接触、事件完成或物理稳定。</text>
+<text x="36" y="1447" class="small" text-anchor="start">来源：KETA arXiv:2501.15058v1 §III / 图2–3；公开代码 main a42bdf9。</text>
+<text x="36" y="1478" class="small" text-anchor="start">本图未代表已运行模型；连续动作由 MDM 产生，不经过离散 KP 码本解码。</text>
+</svg>
