@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2130" viewBox="0 0 1400 2130" role="img" aria-labelledby="title desc">
+<title id="title">SOSControl完整架构：符号提取、周期表示、控制训练与推理优化</title>
+<desc id="desc">四区分别描述SOS提取、分阶段训练、文本和SOS条件扩散、解码后方向误差更新连续latent。冻结安排标为论文设计，公开配置差异见正文。</desc>
+<defs><marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#476176"/></marker><marker id="g" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#866042"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei",Arial,sans-serif;fill:#20394b}.title{font-size:31px;font-weight:700}.section{font-size:24px;font-weight:700}.head{font-size:22px;font-weight:700}.body{font-size:20px}.small{font-size:18px}.edge{fill:none;stroke:#476176;stroke-width:2.4;marker-end:url(#a)}.grad{fill:none;stroke:#866042;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#g)}</style>
+<rect width="1400" height="2130" fill="white"/>
+<text x="38" y="47" class="title" text-anchor="start">SOSControl：可读方向脚本 → 连续动作生成 → 重新测量与修正</text>
+<text x="40" y="82" class="small" text-anchor="start">教学重绘 · AAAI 2026 · 实线：数据/条件；棕色虚线：梯度更新当前样本的 latent</text>
+<rect x="25" y="110" width="1350" height="395" rx="14" fill="#f7fafc" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="48" y="148" class="section" text-anchor="start">A  从动作提取 SOS；也可由用户直接编写合理的方向脚本</text>
+<rect x="55" y="205" width="235" height="110" rx="11" fill="#ffffff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="172.5" y="235" class="head" text-anchor="middle">已有动作 X</text>
+<text x="172.5" y="265" class="body" text-anchor="middle">逐帧骨架 / 姿态</text>
+<text x="172.5" y="293" class="body" text-anchor="middle">可保留原文字描述</text>
+<rect x="350" y="205" width="290" height="110" rx="11" fill="#ffffff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="495.0" y="235" class="head" text-anchor="middle">方向特征 o：T×6×3</text>
+<text x="495.0" y="265" class="body" text-anchor="middle">五部位相对方向</text>
+<text x="495.0" y="293" class="body" text-anchor="middle">Root 水平朝向</text>
+<rect x="710" y="170" width="300" height="110" rx="11" fill="#ffffff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="860.0" y="200" class="head" text-anchor="middle">空间量化</text>
+<text x="860.0" y="230" class="body" text-anchor="middle">身体 26 方向 / Root 8</text>
+<text x="860.0" y="258" class="body" text-anchor="middle">密集方向符号</text>
+<rect x="710" y="335" width="300" height="110" rx="11" fill="#ffffff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="860.0" y="365" class="head" text-anchor="middle">时间显著性</text>
+<text x="860.0" y="395" class="body" text-anchor="middle">方向响应的中心差分</text>
+<text x="860.0" y="423" class="body" text-anchor="middle">仅合并相邻片段的聚类</text>
+<rect x="1080" y="215" width="260" height="140" rx="11" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1210.0" y="245" class="head" text-anchor="middle">SMS → 稀疏 SOS d</text>
+<text x="1210.0" y="275" class="body" text-anchor="middle">方向 + 部位 + 帧号</text>
+<text x="1210.0" y="303" class="body" text-anchor="middle">未指定处由 mask 留空</text>
+<text x="1210.0" y="331" class="body" text-anchor="middle">模型控制张量 T×18</text>
+<path d="M290 260H350" class="edge"/>
+<path d="M640 240H675V225H710" class="edge"/>
+<path d="M640 285H675V390H710" class="edge"/>
+<path d="M1010 225H1045V255H1080" class="edge"/>
+<path d="M1010 390H1045V325H1080" class="edge"/>
+<text x="1085" y="160" class="body" text-anchor="start">用户编辑方向与时间</text>
+<path d="M1210 170V215" class="edge"/>
+<text x="55" y="465" class="small" text-anchor="start">SMS 按显著性阈值保留关键帧；阈值 0.9 ≠ 保留前 10%，主实验实际密度约 0.49%。</text>
+<rect x="25" y="535" width="1350" height="490" rx="14" fill="#f7fafc" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="48" y="573" class="section" text-anchor="start">B  分阶段训练：符号条件之外，内部使用连续的展开周期信号</text>
+<rect x="55" y="610" width="200" height="110" rx="11" fill="#ffffff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="155.0" y="640" class="head" text-anchor="middle">动作输入 X</text>
+<text x="155.0" y="670" class="body" text-anchor="middle">T×269</text>
+<text x="155.0" y="698" class="body" text-anchor="middle">263 维 + 根朝向</text>
+<rect x="295" y="610" width="225" height="110" rx="11" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="407.5" y="640" class="head" text-anchor="middle">ACTOR-PAE 编码</text>
+<text x="407.5" y="670" class="body" text-anchor="middle">输出 f / a / b / s</text>
+<text x="407.5" y="698" class="body" text-anchor="middle">四组各 512 通道</text>
+<rect x="560" y="610" width="225" height="110" rx="11" fill="#edf5ed" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="672.5" y="640" class="head" text-anchor="middle">周期信号展开</text>
+<text x="672.5" y="670" class="body" text-anchor="middle">4×512 参数</text>
+<text x="672.5" y="698" class="body" text-anchor="middle">→ p：T×512</text>
+<rect x="825" y="610" width="235" height="110" rx="11" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="942.5" y="640" class="head" text-anchor="middle">PAE 解码器</text>
+<text x="942.5" y="670" class="body" text-anchor="middle">p → 连续动作</text>
+<text x="942.5" y="698" class="body" text-anchor="middle">MSE 重建监督</text>
+<rect x="1100" y="610" width="240" height="110" rx="11" fill="#ffffff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1220.0" y="640" class="head" text-anchor="middle">重建动作 X̂</text>
+<text x="1220.0" y="670" class="body" text-anchor="middle">T×269</text>
+<text x="1220.0" y="698" class="body" text-anchor="middle">阶段 1：自编码训练</text>
+<path d="M255 665H295" class="edge"/>
+<path d="M520 665H560" class="edge"/>
+<path d="M785 665H825" class="edge"/>
+<path d="M1060 665H1100" class="edge"/>
+<rect x="55" y="755" width="600" height="200" rx="14" fill="#fff7e8" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="75" y="789" class="head" text-anchor="start">阶段 2：训练基础文本 latent 扩散</text>
+<rect x="75" y="810" width="240" height="110" rx="11" fill="#fffdf8" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="195.0" y="840" class="head" text-anchor="middle">CLIP 文本 + 带噪 p</text>
+<text x="195.0" y="870" class="body" text-anchor="middle">冻结文本编码器</text>
+<text x="195.0" y="898" class="body" text-anchor="middle">训练目标是真实 p</text>
+<rect x="365" y="810" width="265" height="110" rx="11" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="497.5" y="840" class="head" text-anchor="middle">基础去噪器 D⁻</text>
+<text x="497.5" y="870" class="body" text-anchor="middle">输入 pₖ、步数 k、文本</text>
+<text x="497.5" y="898" class="body" text-anchor="middle">预测干净 p₀</text>
+<path d="M315 865H365" class="edge"/>
+<rect x="700" y="755" width="640" height="200" rx="14" fill="#f0f4fb" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="720" y="789" class="head" text-anchor="start">阶段 3：用 SMS 脚本适配两个 ControlNet</text>
+<rect x="720" y="810" width="285" height="110" rx="11" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="862.5" y="840" class="head" text-anchor="middle">去噪控制分支 → D⁺</text>
+<text x="862.5" y="870" class="body" text-anchor="middle">SOS d 引导 latent 去噪</text>
+<text x="862.5" y="898" class="body" text-anchor="middle">训练新增控制模块</text>
+<rect x="1030" y="810" width="290" height="110" rx="11" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1175.0" y="840" class="head" text-anchor="middle">解码控制分支 → Pᴰ⁺</text>
+<text x="1175.0" y="870" class="body" text-anchor="middle">SOS d 引导动作重建</text>
+<text x="1175.0" y="898" class="body" text-anchor="middle">训练新增控制模块</text>
+<text x="55" y="990" class="small" text-anchor="start">论文：阶段 3 冻结基础模型；当前公开训练配置的冻结安排存在差异，见正文源码核查。</text>
+<rect x="25" y="1055" width="1350" height="485" rx="14" fill="#f7fafc" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="48" y="1093" class="section" text-anchor="start">C  推理：文本与 SOS 条件生成；优化 p，不在生成时训练网络</text>
+<rect x="55" y="1120" width="270" height="85" rx="11" fill="#fff7e8" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="190.0" y="1150" class="head" text-anchor="middle">文本 c → CLIP</text>
+<text x="190.0" y="1180" class="body" text-anchor="middle">整体动作语义</text>
+<rect x="1015" y="1120" width="325" height="85" rx="11" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1177.5" y="1150" class="head" text-anchor="middle">SOS d + 可见 mask</text>
+<text x="1177.5" y="1180" class="body" text-anchor="middle">输入两个控制分支及优化框</text>
+<rect x="55" y="1250" width="230" height="95" rx="11" fill="#ffffff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="170.0" y="1280" class="head" text-anchor="middle">带噪 latent pₖ</text>
+<text x="170.0" y="1310" class="body" text-anchor="middle">初始为 T×512 高斯噪声</text>
+<rect x="355" y="1250" width="275" height="95" rx="11" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="492.5" y="1280" class="head" text-anchor="middle">D⁺：条件去噪</text>
+<text x="492.5" y="1310" class="body" text-anchor="middle">文本 c + SOS d + k</text>
+<rect x="700" y="1250" width="300" height="95" rx="11" fill="#fff0df" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="850.0" y="1280" class="head" text-anchor="middle">干净估计 p₀ → 优化框 D</text>
+<text x="850.0" y="1310" class="body" text-anchor="middle">论文每步优化 1 次</text>
+<rect x="1070" y="1250" width="270" height="95" rx="11" fill="#ffffff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1205.0" y="1280" class="head" text-anchor="middle">DDIM 更新</text>
+<text x="1205.0" y="1310" class="body" text-anchor="middle">得到下一步 pₖ₋₁</text>
+<path d="M285 1298H355" class="edge"/>
+<path d="M630 1298H700" class="edge"/>
+<path d="M1000 1298H1070" class="edge"/>
+<path d="M190 1205V1225H450V1250" class="edge"/>
+<path d="M1175 1205V1225H560V1250" class="edge"/>
+<path d="M1200 1345V1370H170V1345" class="edge"/>
+<text x="310" y="1365" class="small" text-anchor="start">重复扩散步骤（论文 100 步）</text>
+<path d="M850 1345V1388H170V1410" fill="none" stroke="white" stroke-width="8"/>
+<path d="M850 1345V1388H170V1410" class="edge"/>
+<text x="865" y="1400" class="small" text-anchor="start">最后一轮的干净 latent</text>
+<rect x="55" y="1410" width="230" height="90" rx="11" fill="#ffffff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="170.0" y="1440" class="head" text-anchor="middle">最后一步 latent</text>
+<text x="170.0" y="1470" class="body" text-anchor="middle">完成去噪后继续优化</text>
+<rect x="355" y="1410" width="275" height="90" rx="11" fill="#fff0df" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="492.5" y="1440" class="head" text-anchor="middle">优化框 D：100 次</text>
+<text x="492.5" y="1470" class="body" text-anchor="middle">生成后优化同一个 p</text>
+<rect x="700" y="1410" width="300" height="90" rx="11" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="850.0" y="1440" class="head" text-anchor="middle">受 SOS 引导的 Pᴰ⁺</text>
+<text x="850.0" y="1470" class="body" text-anchor="middle">固定已训练解码器</text>
+<rect x="1070" y="1410" width="270" height="90" rx="11" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1205.0" y="1440" class="head" text-anchor="middle">最终连续动作 X̂</text>
+<text x="1205.0" y="1470" class="body" text-anchor="middle">T×269 → 骨架运动</text>
+<path d="M285 1455H355" class="edge"/>
+<path d="M630 1455H700" class="edge"/>
+<path d="M1000 1455H1070" class="edge"/>
+<text x="55" y="1240" class="small" text-anchor="start">条件输入</text>
+<rect x="25" y="1570" width="1350" height="450" rx="14" fill="#f7fafc" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="48" y="1608" class="section" text-anchor="start">D  可复用优化框：解码 → 方向提取 → 仅在指定部位帧比较 → 回传到 p</text>
+<rect x="55" y="1650" width="230" height="110" rx="11" fill="#fff0df" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="170.0" y="1680" class="head" text-anchor="middle">待优化的 p</text>
+<text x="170.0" y="1710" class="body" text-anchor="middle">当前样本 T×512</text>
+<text x="170.0" y="1738" class="body" text-anchor="middle">不改网络参数</text>
+<rect x="355" y="1650" width="275" height="110" rx="11" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="492.5" y="1680" class="head" text-anchor="middle">Pᴰ⁺ 解码 p + d</text>
+<text x="492.5" y="1710" class="body" text-anchor="middle">得到连续动作 X̂</text>
+<text x="492.5" y="1738" class="body" text-anchor="middle">模型参数固定</text>
+<rect x="700" y="1650" width="300" height="110" rx="11" fill="#ffffff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="850.0" y="1680" class="head" text-anchor="middle">可微方向测量</text>
+<text x="850.0" y="1710" class="body" text-anchor="middle">前向运动学 → 方向</text>
+<text x="850.0" y="1738" class="body" text-anchor="middle">softmax 方向响应</text>
+<rect x="1070" y="1650" width="270" height="110" rx="11" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1205.0" y="1680" class="head" text-anchor="middle">与 SOS d 比较</text>
+<text x="1205.0" y="1710" class="body" text-anchor="middle">可见 mask 内误差</text>
+<text x="1205.0" y="1738" class="body" text-anchor="middle">代码：分布差的 L1</text>
+<path d="M285 1705H355" class="edge"/>
+<path d="M630 1705H700" class="edge"/>
+<path d="M1000 1705H1070" class="edge"/>
+<path d="M1200 1760V1820H170V1760" class="grad"/>
+<text x="430" y="1810" class="body" text-anchor="start">梯度穿过方向计算与解码器；更新当前 p</text>
+<text x="55" y="1870" class="body" text-anchor="start">p ← p − η · ∇p Lcontrol；论文扩散期 / 生成后权重分别为 300 / 3000。</text>
+<text x="55" y="1910" class="body" text-anchor="start">优化对象不是 f / a / b / s；没有在每步后重新投影到严格正弦参数形式。</text>
+<text x="55" y="1950" class="small" text-anchor="start">方向符号命中不等于目标接触、完整事件完成或物理可行；不合理脚本也可能被强行追随。</text>
+<text x="55" y="1985" class="small" text-anchor="start">论文式6采用 L2 写法；公开实现与论文公式的差别、99/100 步配置差别在正文中说明。</text>
+<text x="40" y="2060" class="small" text-anchor="start">依据：SOSControl arXiv:2601.14258v1，图2–3、式1–8及补充材料；源码 050bebc。</text>
+<text x="40" y="2096" class="small" text-anchor="start">本图为教学示意，非作者原图或本次运行结果；蓝色：学习模块，绿色：脚本/动作，浅橙色：样本优化。</text>
+</svg>
