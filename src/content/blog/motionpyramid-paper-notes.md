@@ -2,6 +2,7 @@
 title: "[SCA2026] MotionPyramid：先生成可编辑相位，再控制动作的节奏、风格与路径"
 description: "解析风格化相位流形、Gram 统计与两级扩散，完整呈现主文和附录实验，区分相位条件生成与文本生成、软接触约束和当前代码版本。"
 pubDate: "2026-10-29T14:08:00+08:00"
+updatedDate: "2026-11-15"
 badge: "Paper"
 tags: ["MotionPyramid", "Phase-Manifold", "Motion-Control", "Motion-Style-Transfer", "Text-to-Motion", "Paper-Notes"]
 ---
@@ -11,6 +12,8 @@ tags: ["MotionPyramid", "Phase-Manifold", "Motion-Control", "Motion-Style-Transf
 <div class="paper-reading" lang="zh-CN">
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
+
+**原文阅读：** [HTML 全文（可使用翻译插件）][html] · [原版 PDF][localpdf]。HTML 由作者公开的正式版 PDF 本地转换，覆盖 **13 页、参考文献与附录 A–D**；图表和独立公式保留原图，支持点击放大。阅读版更新于 **2026-11-15**。
 
 <details class="paper-meta"><summary>论文信息与阅读范围 · SCA / CGF 2026 · 正式全文与附录 A–D</summary>
 
@@ -339,7 +342,7 @@ PDF p.9；数值为 mean ± std，**不是越低越好的误差，也不是置�
 ## 来源
 
 1. [Eurographics 正式记录][eg]、[DOI][doi]、[ETH 机构页面][eth]，用于确认 CGF 45(8) / SCA 2026 身份。
-2. [正式版 13 页 PDF，含附录 A–D][paper]：§3 方法，§4 主实验，附录 A–B 架构与配置，附录 C–D 滑动损失和表示容量消融。本文转写了原表 1–11 的全部内容。
+2. [正式版 13 页 PDF，含附录 A–D][paper] · [本站 HTML 全文][html]：§3 方法，§4 主实验，附录 A–B 架构与配置，附录 C–D 滑动损失和表示容量消融。本文转写了原表 1–11 的全部内容。HTML 按原文声明的 Creative Commons Attribution License 转换并保留署名、来源与许可；已校正双栏顺序和表格布局，数学记号以原 PDF 为准。
 3. [官方项目][project]与[固定仓库提交][commit]；[Python README][readme]、[Unity README][unityreadme]。
 4. [VQ/风格表示实现][vq]、[扩散模型接口][mdm]与[损失实现][loss]，用于区分论文和当前源码，不作为原表已复现的证据。
 5. README 链接的 [VQ / 嵌入资源][vqweights]、[扩散权重目录][weights]、[Unity 演示资源][unitydata]。仅核页面和可见文件条目，未下载大包或执行。
@@ -349,6 +352,8 @@ PDF p.9；数值为 mean ± std，**不是越低越好的误差，也不是置�
 </div>
 
 [paper]: https://igl.ethz.ch/projects/MotionPyramid/Mopyramid_SCA2026_camera_ready.pdf
+[html]: /paper-notes/motionpyramid/fulltext/
+[localpdf]: /paper-notes/motionpyramid/fulltext/source.pdf
 [doi]: https://doi.org/10.1111/cgf.70563
 [eg]: https://diglib.eg.org/items/f721ed90-745d-4489-bcea-517b49aa1233
 [eth]: https://igl.ethz.ch/projects/MotionPyramid/
