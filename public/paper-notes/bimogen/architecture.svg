@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2340" viewBox="0 0 1400 2340" role="img" aria-labelledby="title desc">
+<title id="title">BiMoGen完整架构：统一表示、分阶段训练、自纠错监督与双向生成</title>
+<desc id="desc">训练阶段先对动作和文字同时掩码，再固定条件微调；两个阶段加入从自身预测恢复真实token的监督。推理中置信度采样和早期自纠错交替，最后解码为连续动作或文本。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#476176"/></marker><marker id="supervision" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#96663f"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei",Arial,sans-serif;fill:#20394b}.title{font-size:31px;font-weight:700}.section{font-size:24px;font-weight:700}.head{font-size:21px;font-weight:700}.body{font-size:20px}.small{font-size:18px}.edge{fill:none;stroke:#476176;stroke-width:2.3;marker-end:url(#arrow)}.dash{fill:none;stroke:#96663f;stroke-width:2.3;stroke-dasharray:8 6;marker-end:url(#supervision)}</style>
+<rect width="1400" height="2340" fill="white"/>
+<text x="38" y="47" class="title" text-anchor="start">BiMoGen：统一双向生成，并让已经填好的 token 仍然可以修改</text>
+<text x="40" y="82" class="small" text-anchor="start">教学重绘 · NeurIPS 2026 · 实线：数据流；虚线：监督 / 参数复用；浅橙：自纠错</text>
+<rect x="25" y="110" width="1350" height="340" rx="15" fill="#f7fafc" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="48" y="148" class="section" text-anchor="start">A  表示：文字与动作进入同一词表；连续动作仍由 VQ 解码器生成</text>
+<rect x="55" y="175" width="240" height="80" rx="12" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="175.0" y="206" class="head" text-anchor="middle">文本描述</text>
+<text x="175.0" y="237" class="body" text-anchor="middle">单词 / 子词序列</text>
+<rect x="55" y="300" width="240" height="95" rx="12" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="175.0" y="331" class="head" text-anchor="middle">配对动作</text>
+<text x="175.0" y="362" class="body" text-anchor="middle">F 帧 × 263 维</text>
+<rect x="350" y="175" width="285" height="80" rx="12" fill="#fff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="492.5" y="206" class="head" text-anchor="middle">文本 tokenizer</text>
+<text x="492.5" y="237" class="body" text-anchor="middle">文本 token IDs</text>
+<rect x="350" y="300" width="285" height="95" rx="12" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="492.5" y="331" class="head" text-anchor="middle">预训练 VQ 编码器</text>
+<text x="492.5" y="362" class="body" text-anchor="middle">F/4 个动作 token</text>
+<rect x="720" y="205" width="300" height="150" rx="12" fill="#fff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="870.0" y="236" class="head" text-anchor="middle">统一词表 + 拼接</text>
+<text x="870.0" y="267" class="body" text-anchor="middle">文本 token + 动作 token</text>
+<text x="870.0" y="295" class="body" text-anchor="middle">512 项动作码是压缩索引</text>
+<text x="870.0" y="323" class="body" text-anchor="middle">不是可直接阅读的动作词</text>
+<rect x="1090" y="215" width="250" height="125" rx="12" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1215.0" y="246" class="head" text-anchor="middle">共享序列 x₀</text>
+<text x="1215.0" y="277" class="body" text-anchor="middle">双向注意力上下文</text>
+<text x="1215.0" y="305" class="body" text-anchor="middle">两类 token 共用预测器</text>
+<path d="M295 215H350" class="edge"/>
+<path d="M295 347H350" class="edge"/>
+<path d="M635 215H675V245H720" class="edge"/>
+<path d="M635 347H675V315H720" class="edge"/>
+<path d="M1020 280H1090" class="edge"/>
+<text x="55" y="428" class="small" text-anchor="start">主模型复用 MotionGPT 单层全身 VQ-VAE；双向 Transformer 从头训练，不是直接继承 LLaDA 语言预训练权重。</text>
+<rect x="25" y="480" width="1350" height="435" rx="15" fill="#f7fafc" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="48" y="518" class="section" text-anchor="start">B  两阶段训练 DUCMT：同一模型先建立对应关系，再学习条件生成</text>
+<rect x="55" y="540" width="600" height="290" rx="12" fill="#f0f4fb" stroke="#c5d5e2" stroke-width="1.5"/>
+<rect x="700" y="540" width="640" height="290" rx="12" fill="#f0f4fb" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="78" y="577" class="head" text-anchor="start">阶段 1：掩码预训练 PT</text>
+<rect x="78" y="605" width="230" height="145" rx="12" fill="#fff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="193.0" y="636" class="head" text-anchor="middle">配对文字 + 动作</text>
+<text x="193.0" y="667" class="body" text-anchor="middle">拼接顺序各 50%</text>
+<text x="193.0" y="695" class="body" text-anchor="middle">两边都按比例 t 遮盖</text>
+<text x="193.0" y="723" class="body" text-anchor="middle">可见值来自真实数据</text>
+<rect x="365" y="605" width="265" height="145" rx="12" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="497.5" y="636" class="head" text-anchor="middle">共享 Transformer</text>
+<text x="497.5" y="667" class="body" text-anchor="middle">恢复所有被遮盖位置</text>
+<text x="497.5" y="695" class="body" text-anchor="middle">建立跨模态对应关系</text>
+<text x="497.5" y="723" class="body" text-anchor="middle">基础损失 L_PT</text>
+<path d="M308 675H365" class="edge"/>
+<text x="80" y="800" class="body" text-anchor="start">标准前向 + 下方 C 的自纠错前向</text>
+<text x="723" y="577" class="head" text-anchor="start">阶段 2：条件微调 SFT</text>
+<rect x="725" y="605" width="270" height="145" rx="12" fill="#fff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="860.0" y="636" class="head" text-anchor="middle">条件可见，目标遮盖</text>
+<text x="860.0" y="667" class="body" text-anchor="middle">T2M：文字 → 动作</text>
+<text x="860.0" y="695" class="body" text-anchor="middle">M2T：动作 → 文字</text>
+<text x="860.0" y="723" class="body" text-anchor="middle">另混合动作补全 M2M</text>
+<rect x="1040" y="605" width="275" height="145" rx="12" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1177.5" y="636" class="head" text-anchor="middle">同一 Transformer</text>
+<text x="1177.5" y="667" class="body" text-anchor="middle">基础损失仅监督</text>
+<text x="1177.5" y="695" class="body" text-anchor="middle">被遮盖的目标 token</text>
+<text x="1177.5" y="723" class="body" text-anchor="middle">基础损失 L_SFT</text>
+<path d="M995 675H1040" class="edge"/>
+<text x="725" y="800" class="body" text-anchor="start">任务比 8:1:1；条件丢弃 10% → 学习 CFG</text>
+<path d="M500 750V860H1175V750" class="dash"/>
+<text x="700" y="885" class="small" text-anchor="middle">PT 参数用于初始化 SFT</text>
+<rect x="25" y="945" width="1350" height="355" rx="15" fill="#f7fafc" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="48" y="983" class="section" text-anchor="start">C  训练自纠错 GASC：两个阶段都学习从自身候选恢复真实 token</text>
+<rect x="55" y="1015" width="245" height="135" rx="12" fill="#fff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="177.5" y="1046" class="head" text-anchor="middle">当前带 mask 输入</text>
+<text x="177.5" y="1077" class="body" text-anchor="middle">标准预测前向</text>
+<text x="177.5" y="1105" class="body" text-anchor="middle">得到各位置预测分布</text>
+<rect x="355" y="1015" width="290" height="135" rx="12" fill="#fff0df" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="500.0" y="1046" class="head" text-anchor="middle">argmax + 停止梯度</text>
+<text x="500.0" y="1077" class="body" text-anchor="middle">构造完整的自生成候选</text>
+<text x="500.0" y="1105" class="body" text-anchor="middle">论文：只替换生成区域</text>
+<text x="500.0" y="1133" class="body" text-anchor="middle">条件微调时保留条件</text>
+<rect x="710" y="1015" width="275" height="135" rx="12" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="847.5" y="1046" class="head" text-anchor="middle">同一模型再前向</text>
+<text x="847.5" y="1077" class="body" text-anchor="middle">输入自身预测的上下文</text>
+<text x="847.5" y="1105" class="body" text-anchor="middle">纠错生成区域全部位置</text>
+<rect x="1045" y="1015" width="295" height="135" rx="12" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1192.5" y="1046" class="head" text-anchor="middle">与真实 token 比较</text>
+<text x="1192.5" y="1077" class="body" text-anchor="middle">不仅监督原有 mask</text>
+<text x="1192.5" y="1105" class="body" text-anchor="middle">得到纠错损失 L_SC</text>
+<path d="M300 1082H355" class="edge"/>
+<path d="M645 1082H710" class="edge"/>
+<path d="M985 1082H1045" class="edge"/>
+<path d="M1190 1150V1205H845V1150" class="dash"/>
+<text x="530" y="1200" class="body" text-anchor="start">真实配对数据监督第二次预测</text>
+<text x="55" y="1248" class="body" text-anchor="start">L = L_stage + λ L_SC，论文 λ=1；PT 的生成区域是整条序列，SFT 的生成区域是目标模态。</text>
+<text x="55" y="1278" class="small" text-anchor="start">这一步更新模型权重；停止梯度只作用于构造输入的离散 argmax，不是停止训练整个网络。</text>
+<rect x="25" y="1330" width="1350" height="850" rx="15" fill="#f7fafc" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="48" y="1368" class="section" text-anchor="start">D  固定参数推理：置信度填空 + 少数早期纠错 → 动作或文本</text>
+<rect x="55" y="1400" width="285" height="115" rx="12" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="197.5" y="1431" class="head" text-anchor="middle">条件与目标长度</text>
+<text x="197.5" y="1462" class="body" text-anchor="middle">T2M：文字 + 动作长度</text>
+<text x="197.5" y="1490" class="body" text-anchor="middle">M2T：动作码 + 文本上限</text>
+<rect x="400" y="1400" width="270" height="115" rx="12" fill="#fff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="535.0" y="1431" class="head" text-anchor="middle">目标全部初始化 [M]</text>
+<text x="535.0" y="1462" class="body" text-anchor="middle">条件保持可见</text>
+<text x="535.0" y="1490" class="body" text-anchor="middle">没有先写好的目标序列</text>
+<rect x="730" y="1400" width="285" height="115" rx="12" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="872.5" y="1431" class="head" text-anchor="middle">共享 Transformer</text>
+<text x="872.5" y="1462" class="body" text-anchor="middle">并行预测未知位置</text>
+<text x="872.5" y="1490" class="body" text-anchor="middle">T2M 使用 CFG=4</text>
+<rect x="1075" y="1400" width="265" height="115" rx="12" fill="#fff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1207.5" y="1431" class="head" text-anchor="middle">当前预测 + 置信度</text>
+<text x="1207.5" y="1462" class="body" text-anchor="middle">高置信度优先解除 mask</text>
+<text x="1207.5" y="1490" class="body" text-anchor="middle">低置信度留待后续</text>
+<path d="M340 1458H400" class="edge"/>
+<path d="M670 1458H730" class="edge"/>
+<path d="M1015 1458H1075" class="edge"/>
+<rect x="355" y="1560" width="985" height="215" rx="12" fill="#fff7e8" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="375" y="1593" class="head" text-anchor="start">第 5 / 10 步：早期采样自纠错（20 步主设置）</text>
+<rect x="375" y="1620" width="275" height="125" rx="12" fill="#fff0df" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="512.5" y="1651" class="head" text-anchor="middle">暂时补成完整候选</text>
+<text x="512.5" y="1682" class="body" text-anchor="middle">结合本轮预测与已填值</text>
+<text x="512.5" y="1710" class="body" text-anchor="middle">暂不提交所有未知位置</text>
+<rect x="710" y="1620" width="275" height="125" rx="12" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="847.5" y="1651" class="head" text-anchor="middle">同一模型再预测</text>
+<text x="847.5" y="1682" class="body" text-anchor="middle">利用更完整上下文</text>
+<text x="847.5" y="1710" class="body" text-anchor="middle">重新检查早期决定</text>
+<rect x="1045" y="1620" width="275" height="125" rx="12" fill="#fff0df" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1182.5" y="1651" class="head" text-anchor="middle">只改已解除 mask 位置</text>
+<text x="1182.5" y="1682" class="body" text-anchor="middle">尚未知的位置继续保留</text>
+<text x="1182.5" y="1710" class="body" text-anchor="middle">不把临时补全当终稿</text>
+<path d="M650 1682H710" class="edge"/>
+<path d="M985 1682H1045" class="edge"/>
+<path d="M1205 1515V1540H340V1682H375" class="edge"/>
+<text x="55" y="1615" class="small" text-anchor="start">其他步骤</text>
+<path d="M1205 1515V1535H170V1820" class="edge"/>
+<rect x="55" y="1820" width="285" height="115" rx="12" fill="#fff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="197.5" y="1851" class="head" text-anchor="middle">提交本轮可信预测</text>
+<text x="197.5" y="1882" class="body" text-anchor="middle">已纠错位置保留</text>
+<text x="197.5" y="1910" class="body" text-anchor="middle">其余按置信度解除 mask</text>
+<path d="M1180 1745V1798H245V1820" class="edge"/>
+<path d="M55 1878H43V1378H865V1400" class="edge"/>
+<text x="55" y="1990" class="small" text-anchor="start">循环 20 步；SC 之外保留已提交 token</text>
+<rect x="400" y="1820" width="270" height="115" rx="12" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="535.0" y="1851" class="head" text-anchor="middle">完整目标 token</text>
+<text x="535.0" y="1882" class="body" text-anchor="middle">动作码 / 文本码</text>
+<text x="535.0" y="1910" class="body" text-anchor="middle">生成过程结束</text>
+<path d="M340 1878H400" class="edge"/>
+<rect x="730" y="1820" width="285" height="115" rx="12" fill="#e7f1ff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="872.5" y="1851" class="head" text-anchor="middle">T2M：固定 VQ 解码器</text>
+<text x="872.5" y="1882" class="body" text-anchor="middle">动作码 → 连续特征</text>
+<text x="872.5" y="1910" class="body" text-anchor="middle">再转为骨架运动</text>
+<rect x="1075" y="1820" width="265" height="115" rx="12" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1207.5" y="1851" class="head" text-anchor="middle">连续动作输出</text>
+<text x="1207.5" y="1882" class="body" text-anchor="middle">示例：120 × 263</text>
+<text x="1207.5" y="1910" class="body" text-anchor="middle">20 FPS，共 6 秒</text>
+<path d="M670 1878H730" class="edge"/>
+<path d="M1015 1878H1075" class="edge"/>
+<rect x="730" y="1985" width="285" height="110" rx="12" fill="#fff" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="872.5" y="2016" class="head" text-anchor="middle">M2T：文本解码</text>
+<text x="872.5" y="2047" class="body" text-anchor="middle">截断至首个结束符</text>
+<text x="872.5" y="2075" class="body" text-anchor="middle">输出动作描述</text>
+<rect x="1075" y="1985" width="265" height="110" rx="12" fill="#e8f4ee" stroke="#c5d5e2" stroke-width="1.5"/>
+<text x="1207.5" y="2016" class="head" text-anchor="middle">自然语言输出</text>
+<text x="1207.5" y="2047" class="body" text-anchor="middle">不是物理验证结果</text>
+<text x="1207.5" y="2075" class="body" text-anchor="middle">也不是几何约束证明</text>
+<path d="M535 1935V2040H730" class="edge"/>
+<path d="M1015 2040H1075" class="edge"/>
+<text x="55" y="2140" class="small" text-anchor="start">采样 SC 只再次前向与改写 token，不做模型权重更新；更高置信度或更好的描述均不等于动作执行保证。</text>
+<text x="40" y="2225" class="small" text-anchor="start">依据：arXiv:2609.35407v2，原图2、式1–7及附录算法1；单层 VQ 与主干的分工见正文。</text>
+<text x="40" y="2264" class="small" text-anchor="start">源码差异：公开 Quick Start 未启用采样 SC；训练轮数和自生成候选构造也不同于论文，见文中折叠说明。</text>
+<text x="40" y="2305" class="small" text-anchor="start">蓝色：学习模块；绿色：输入 / 输出；浅橙：自纠错。教学示意，非作者原图或本次模型运行结果。</text>
+</svg>

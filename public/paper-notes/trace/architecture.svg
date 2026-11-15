@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2320" viewBox="0 0 1400 2320" role="img" aria-labelledby="title desc">
+<title id="title">TRACE：动作监督的事件计划、连续生成与参考动作编辑</title>
+<desc id="desc">A区说明训练监督，B区说明文本到40维G1动作，C区将当前动作和编辑请求编译为范围、相对目标与事件，D区展示独立编辑器和逐步参考投影，输出作为下一轮参考。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#496477"/></marker><marker id="darrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#9a6a3e"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei",Arial,sans-serif;fill:#20394b}.title{font-size:30px;font-weight:700}.section{font-size:24px;font-weight:700}.head{font-size:22px;font-weight:700}.body{font-size:20px}.small{font-size:18px}.edge{fill:none;stroke:#496477;stroke-width:2.4;marker-end:url(#arrow)}.dash{fill:none;stroke:#9a6a3e;stroke-width:2.4;stroke-dasharray:7 5;marker-end:url(#darrow)}</style>
+<rect width="1400" height="2320" fill="white"/>
+<text x="40" y="48" class="title" text-anchor="start">TRACE：用可测量事件连接生成、局部修改与结果验收</text>
+<text x="40" y="82" class="small" text-anchor="start">教学重绘 · arXiv 2026 · 蓝：学习模块；绿：运动学条件；实线：推理数据；虚线：监督/迭代</text>
+<rect x="25" y="110" width="1350" height="470" rx="15" fill="#f7fafc" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="48" y="148" class="section" text-anchor="start">A  训练：真实动作提供事件监督；生成器和编辑器分别学习</text>
+<rect x="55" y="185" width="250" height="115" rx="12" fill="#ffffff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="180.0" y="216" class="head" text-anchor="middle">干净 G1 动作 + 文本</text>
+<text x="180.0" y="247" class="body" text-anchor="middle">20 FPS / 40D 状态</text>
+<text x="180.0" y="275" class="body" text-anchor="middle">仅使用训练划分</text>
+<rect x="365" y="185" width="290" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="510.0" y="216" class="head" text-anchor="middle">FK + 阈值 + 置信度</text>
+<text x="510.0" y="247" class="body" text-anchor="middle">支撑 / 根升降与高度</text>
+<text x="510.0" y="275" class="body" text-anchor="middle">手掌相对骨盆高度</text>
+<rect x="715" y="185" width="275" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="852.5" y="216" class="head" text-anchor="middle">事件标签 Y、置信 W</text>
+<text x="852.5" y="247" class="body" text-anchor="middle">4 帧 → 一个 patch</text>
+<text x="852.5" y="275" class="body" text-anchor="middle">16 通道；时间上密集</text>
+<rect x="1050" y="185" width="290" height="115" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1195.0" y="216" class="head" text-anchor="middle">生成规划器适配</text>
+<text x="1195.0" y="247" class="body" text-anchor="middle">文本 → 长度 / 事件 JSON</text>
+<text x="1195.0" y="275" class="body" text-anchor="middle">监督训练后冻结</text>
+<path d="M305 242H365" class="edge"/>
+<path d="M655 242H715" class="edge"/>
+<path d="M990 242H1050" class="dash"/>
+<rect x="55" y="365" width="390" height="120" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="250.0" y="396" class="head" text-anchor="middle">生成器训练 Gθ</text>
+<text x="250.0" y="427" class="body" text-anchor="middle">先纯文本 32k 步，再事件续训 8k</text>
+<text x="250.0" y="455" class="body" text-anchor="middle">目标事件 / 预测事件 50:50 混合</text>
+<path d="M850 300V330H250V365" class="dash"/>
+<rect x="505" y="365" width="400" height="120" rx="12" fill="#ffffff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="705.0" y="396" class="head" text-anchor="middle">独立编辑训练数据</text>
+<text x="705.0" y="427" class="body" text-anchor="middle">重定向 MotionFix 配对动作</text>
+<text x="705.0" y="455" class="body" text-anchor="middle">局部相对修改：有界 IK 构造目标</text>
+<rect x="965" y="365" width="375" height="120" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1152.5" y="396" class="head" text-anchor="middle">独立编辑器 Eη</text>
+<text x="1152.5" y="427" class="body" text-anchor="middle">8k → 8k → 4k → 4k 训练</text>
+<text x="1152.5" y="455" class="body" text-anchor="middle">源动作 / 范围 / 偏移 / 事件</text>
+<path d="M905 425H965" class="dash"/>
+<text x="55" y="534" class="small" text-anchor="start">生成模型、编辑模型的权重与归一化统计独立；IK 构造编辑监督，不是手高评测的推理步骤。</text>
+<rect x="25" y="610" width="1350" height="465" rx="15" fill="#f7fafc" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="48" y="648" class="section" text-anchor="start">B  生成：文本预测事件，连续扩散输出 G1 动作</text>
+<rect x="55" y="700" width="220" height="105" rx="12" fill="#ffffff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="165.0" y="731" class="head" text-anchor="middle">用户文本 u</text>
+<text x="165.0" y="762" class="body" text-anchor="middle">动作与整体意图</text>
+<rect x="335" y="675" width="310" height="105" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="490.0" y="706" class="head" text-anchor="middle">冻结文本编码器</text>
+<text x="490.0" y="737" class="body" text-anchor="middle">Qwen3-Embedding-4B</text>
+<text x="490.0" y="765" class="body" text-anchor="middle">语义特征 e：2560 维</text>
+<rect x="335" y="825" width="310" height="105" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="490.0" y="856" class="head" text-anchor="middle">冻结生成规划器</text>
+<text x="490.0" y="887" class="body" text-anchor="middle">长度 N + 事件 JSON</text>
+<text x="490.0" y="915" class="body" text-anchor="middle">校验并栅格化</text>
+<rect x="705" y="825" width="285" height="105" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="847.5" y="856" class="head" text-anchor="middle">数值计划 C</text>
+<text x="847.5" y="887" class="body" text-anchor="middle">ceil(N/4) × 16</text>
+<text x="847.5" y="915" class="body" text-anchor="middle">保留时间对齐</text>
+<rect x="705" y="675" width="285" height="105" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="847.5" y="706" class="head" text-anchor="middle">连续扩散 Gθ</text>
+<text x="847.5" y="737" class="body" text-anchor="middle">文本 e + 事件 C + 噪声</text>
+<text x="847.5" y="765" class="body" text-anchor="middle">DDIM-50 / CFG 2.5</text>
+<rect x="1050" y="675" width="290" height="105" rx="12" fill="#ffffff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1195.0" y="706" class="head" text-anchor="middle">40D 状态解码</text>
+<text x="1195.0" y="737" class="body" text-anchor="middle">积分平面位移 / 偏航</text>
+<text x="1195.0" y="765" class="body" text-anchor="middle">直接读取高度 / 倾斜</text>
+<rect x="1050" y="825" width="290" height="105" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1195.0" y="856" class="head" text-anchor="middle">初始动作 M₀</text>
+<text x="1195.0" y="887" class="body" text-anchor="middle">根位姿 + 29 关节角</text>
+<text x="1195.0" y="915" class="body" text-anchor="middle">可作为下一步编辑参考</text>
+<path d="M275 727H335" class="edge"/>
+<path d="M275 770H305V877H335" class="edge"/>
+<path d="M645 727H705" class="edge"/>
+<path d="M645 877H705" class="edge"/>
+<path d="M850 825V780" class="edge"/>
+<path d="M990 727H1050" class="edge"/>
+<path d="M1195 780V825" class="edge"/>
+<text x="55" y="985" class="small" text-anchor="start">测试条件只来自文本；不读取目标动作事件或目标长度。事件条件不保证逐项实现或零滑脚。</text>
+<text x="55" y="1025" class="small" text-anchor="start">机器人执行在生成之后接下游跟踪控制器；这条生成路径本身不是动力学控制策略。</text>
+<rect x="25" y="1105" width="1350" height="500" rx="15" fill="#f7fafc" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="48" y="1143" class="section" text-anchor="start">C  编辑准备：当前参考 + 自包含请求 → 明确修改范围与相对目标</text>
+<rect x="55" y="1190" width="270" height="115" rx="12" fill="#ffffff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="190.0" y="1221" class="head" text-anchor="middle">当前动作 Mₜ</text>
+<text x="190.0" y="1252" class="body" text-anchor="middle">保持原有时长</text>
+<text x="190.0" y="1280" class="body" text-anchor="middle">计算源动作 FK 摘要</text>
+<rect x="55" y="1345" width="270" height="105" rx="12" fill="#ffffff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="190.0" y="1376" class="head" text-anchor="middle">本轮请求 uₜ</text>
+<text x="190.0" y="1407" class="body" text-anchor="middle">例如：右手抬高 5 cm</text>
+<text x="190.0" y="1435" class="body" text-anchor="middle">只改中间一半</text>
+<rect x="385" y="1260" width="300" height="135" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="535.0" y="1291" class="head" text-anchor="middle">冻结编辑解析器</text>
+<text x="535.0" y="1322" class="body" text-anchor="middle">独立 LoRA / JSON 校验</text>
+<text x="535.0" y="1350" class="body" text-anchor="middle">属性 / 部位 / 带符号变化</text>
+<text x="535.0" y="1378" class="body" text-anchor="middle">以及时间区间</text>
+<rect x="745" y="1190" width="260" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="875.0" y="1221" class="head" text-anchor="middle">确定性编译器</text>
+<text x="875.0" y="1252" class="body" text-anchor="middle">手 → 7 关节臂链</text>
+<text x="875.0" y="1280" class="body" text-anchor="middle">时间 → 帧区间</text>
+<rect x="1065" y="1190" width="275" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1202.5" y="1221" class="head" text-anchor="middle">S 与 D</text>
+<text x="1202.5" y="1252" class="body" text-anchor="middle">S：身体—时间 mask</text>
+<text x="1202.5" y="1280" class="body" text-anchor="middle">D：sin² 相对高度包络</text>
+<rect x="745" y="1385" width="260" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="875.0" y="1416" class="head" text-anchor="middle">源动作事件提取</text>
+<text x="875.0" y="1447" class="body" text-anchor="middle">测量当前 Mₜ</text>
+<text x="875.0" y="1475" class="body" text-anchor="middle">按 D 更新手高组</text>
+<rect x="1065" y="1385" width="275" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1202.5" y="1416" class="head" text-anchor="middle">源参考与事件</text>
+<text x="1202.5" y="1447" class="body" text-anchor="middle">源状态 / 源特征</text>
+<text x="1202.5" y="1475" class="body" text-anchor="middle">修改后的 16 通道事件</text>
+<path d="M325 1247H355V1295H385" class="edge"/>
+<path d="M325 1397H355V1355H385" class="edge"/>
+<path d="M685 1300H715V1247H745" class="edge"/>
+<path d="M1005 1247H1065" class="edge"/>
+<path d="M325 1215H350V1520H710V1442H745" class="edge"/>
+<path d="M1200 1305V1345H870V1385" class="edge"/>
+<path d="M1005 1442H1065" class="edge"/>
+<text x="55" y="1565" class="small" text-anchor="start">无效或不支持的请求 → 关闭范围并返回源动作；控制实验一次只改变一只手的高度。</text>
+<rect x="25" y="1635" width="1350" height="565" rx="15" fill="#f7fafc" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="48" y="1673" class="section" text-anchor="start">D  独立编辑采样：实现相对目标，同时逐步恢复受保护坐标</text>
+<rect x="55" y="1720" width="285" height="125" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="197.5" y="1751" class="head" text-anchor="middle">编辑器条件</text>
+<text x="197.5" y="1782" class="body" text-anchor="middle">文本特征 + 源动作特征</text>
+<text x="197.5" y="1810" class="body" text-anchor="middle">S + D + 修改后的事件</text>
+<rect x="400" y="1720" width="280" height="125" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="540.0" y="1751" class="head" text-anchor="middle">连续编辑扩散 Eη</text>
+<text x="540.0" y="1782" class="body" text-anchor="middle">带噪状态 + 条件</text>
+<text x="540.0" y="1810" class="body" text-anchor="middle">源编码器 + DiT</text>
+<rect x="740" y="1720" width="265" height="125" rx="12" fill="#ffffff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="872.5" y="1751" class="head" text-anchor="middle">DDIM 候选更新</text>
+<text x="872.5" y="1782" class="body" text-anchor="middle">接收干净状态预测</text>
+<text x="872.5" y="1810" class="body" text-anchor="middle">得到下一噪声级</text>
+<rect x="1065" y="1720" width="275" height="125" rx="12" fill="#fff3e6" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1202.5" y="1751" class="head" text-anchor="middle">参考投影</text>
+<text x="1202.5" y="1782" class="body" text-anchor="middle">范围内：保留候选</text>
+<text x="1202.5" y="1810" class="body" text-anchor="middle">范围外：同噪声级源状态</text>
+<path d="M340 1782H400" class="edge"/>
+<path d="M680 1782H740" class="edge"/>
+<path d="M1005 1782H1065" class="edge"/>
+<path d="M1200 1845V1890H540V1845" class="dash"/>
+<text x="640" y="1880" class="small" text-anchor="start">重复 50 步；CFG 1.5</text>
+<rect x="1065" y="1940" width="275" height="110" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1202.5" y="1971" class="head" text-anchor="middle">最终动作 Mₜ₊₁</text>
+<text x="1202.5" y="2002" class="body" text-anchor="middle">末步复制 → 40D 解码</text>
+<text x="1202.5" y="2030" class="body" text-anchor="middle">下一轮使用此实际输出</text>
+<path d="M1200 1890V1940" class="edge"/>
+<text x="55" y="1965" class="body" text-anchor="start">投影：x ← S ⊙ 候选 + (1 − S) ⊙ 加噪源状态</text>
+<text x="55" y="2005" class="small" text-anchor="start">手高评测固定根、其余关节和时长；编辑推理无 IK / 后平滑。</text>
+<text x="55" y="2060" class="body" text-anchor="start">坐标保持是投影机制；高度目标是否完成，需要对输出重新做 FK 测量。</text>
+<text x="55" y="2100" class="body" text-anchor="start">开放根或近端链时，局部角度不变不能保证世界位置不变。</text>
+<text x="55" y="2150" class="small" text-anchor="start">量化证据：199 源动作 / 597 四轮链；TRACE 四轮全成功 30.82%，不是通用对话成功率。</text>
+<text x="40" y="2245" class="small" text-anchor="start">依据：arXiv:2610.21515v2，原图2、式1–8、算法1与附录B–E；源码 a9aa0b4。</text>
+<text x="40" y="2285" class="small" text-anchor="start">此图描述论文生成与独立手高编辑；当前发布的实验性全身对话与默认后处理另见正文。</text>
+</svg>

@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2300" viewBox="0 0 1400 2300" role="img" aria-labelledby="title desc">
+<title id="title">MaDiS完整架构：三层预训练、时间检查点、部位融合与手语动作解码</title>
+<desc id="desc">展示SOKE部位化tokenizer、token及连续监督、UTC与MoP微调、双向掩码生成及连续动作输出。评测器不在生成链中。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#48677d"/></marker><marker id="reuse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#987146"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei",Arial,sans-serif;fill:#203b50}.title{font-size:30px;font-weight:700}.section{font-size:24px;font-weight:700}.head{font-size:22px;font-weight:700}.body{font-size:20px}.small{font-size:18px}.edge{fill:none;stroke:#48677d;stroke-width:2.4;marker-end:url(#arrow)}.dash{fill:none;stroke:#987146;stroke-width:2.4;stroke-dasharray:8 6;marker-end:url(#reuse)}</style><rect width="1400" height="2300" fill="white"/>
+<text x="38" y="48" class="title" text-anchor="start">MaDiS：文本 → 三部位掩码token → 连续手语动作</text>
+<text x="40" y="83" class="small" text-anchor="start">教学重绘 · 作者更新稿 · 实线：数据流；虚线：监督 / 参数复用；蓝色：可训练模块</text>
+<rect x="25" y="110" width="1350" height="295" rx="14" fill="#f7fafc" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="48" y="149" class="section" text-anchor="start">A  数据与已有 tokenizer：保持身体、左手和右手的独立码本</text>
+<rect x="55" y="180" width="285" height="120" rx="12" fill="#fff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="197.5" y="211" class="head" text-anchor="middle">配对手语动作</text>
+<text x="197.5" y="242" class="body" text-anchor="middle">SMPL-X：T×133</text>
+<text x="197.5" y="270" class="body" text-anchor="middle">上身 / 手指 / 表情</text>
+<rect x="400" y="180" width="430" height="120" rx="12" fill="#edf4ed" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="615.0" y="211" class="head" text-anchor="middle">SOKE 三个 VQ-VAE 编码器</text>
+<text x="615.0" y="242" class="body" text-anchor="middle">上身（含面部） / 左手 / 右手</text>
+<text x="615.0" y="270" class="body" text-anchor="middle">复用已训练 tokenizer；冻结</text>
+<rect x="890" y="180" width="450" height="120" rx="12" fill="#e8f4ee" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="1115.0" y="211" class="head" text-anchor="middle">三路离散动作 ID</text>
+<text x="1115.0" y="242" class="body" text-anchor="middle">每个时间位置同步承载三个部位</text>
+<text x="1115.0" y="270" class="body" text-anchor="middle">Ls≈T/4；不是 gloss 或可读动作词</text>
+<path d="M340 240H400" class="edge"/>
+<path d="M830 240H890" class="edge"/>
+<text x="55" y="342" class="body" text-anchor="start">配对书面文本由 Qwen 分词；训练数据来自三种手语的数据集。</text>
+<text x="55" y="378" class="small" text-anchor="start">400 帧 → 100 个时间位置 × 3 路 ID；不是 300 个依次生成的位置。</text>
+<rect x="25" y="435" width="1350" height="530" rx="14" fill="#f7fafc" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="48" y="474" class="section" text-anchor="start">B  三层跨模态预训练：混合训练集，文本与动作均随机 mask</text>
+<rect x="55" y="505" width="300" height="110" rx="12" fill="#fff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="205.0" y="536" class="head" text-anchor="middle">输入文本 + 三路动作 token</text>
+<text x="205.0" y="567" class="body" text-anchor="middle">同一时间的部位同步 mask</text>
+<text x="205.0" y="595" class="body" text-anchor="middle">t∼U(0,1)，并非仅遮动作</text>
+<rect x="420" y="505" width="380" height="110" rx="12" fill="#e7f1ff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="610.0" y="536" class="head" text-anchor="middle">Qwen3-0.6B → 双向 MDLM</text>
+<text x="610.0" y="567" class="body" text-anchor="middle">取消因果限制；嵌入平均融合</text>
+<text x="610.0" y="595" class="body" text-anchor="middle">训练语言主干与新增预测映射</text>
+<rect x="865" y="505" width="475" height="110" rx="12" fill="#e7f1ff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="1102.5" y="536" class="head" text-anchor="middle">共享隐藏状态</text>
+<text x="1102.5" y="567" class="body" text-anchor="middle">文本 / 动作分类 + 三个 latent MLP</text>
+<text x="1102.5" y="595" class="body" text-anchor="middle">动作隐藏维度 1024 → 各部位 512</text>
+<path d="M355 560H420" class="edge"/>
+<path d="M800 560H865" class="edge"/>
+<rect x="55" y="690" width="365" height="130" rx="12" fill="#fff7e8" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="237.5" y="721" class="head" text-anchor="middle">① Token 层：分类监督</text>
+<text x="237.5" y="752" class="body" text-anchor="middle">恢复被 mask 的文本 / 动作 ID</text>
+<text x="237.5" y="780" class="body" text-anchor="middle">交叉熵，权重 1/t</text>
+<text x="237.5" y="808" class="body" text-anchor="middle">真实 token 提供目标</text>
+<rect x="475" y="690" width="365" height="130" rx="12" fill="#fff7e8" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="657.5" y="721" class="head" text-anchor="middle">② Latent 层：连续监督</text>
+<text x="657.5" y="752" class="body" text-anchor="middle">三个 MLP 预测码本向量</text>
+<text x="657.5" y="780" class="body" text-anchor="middle">与真实码本向量作 smooth L1</text>
+<text x="657.5" y="808" class="body" text-anchor="middle">主要计算有效的 mask 位置</text>
+<rect x="895" y="690" width="445" height="130" rx="12" fill="#fff7e8" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="1117.5" y="721" class="head" text-anchor="middle">③ 动作层：连续重建</text>
+<text x="1117.5" y="752" class="body" text-anchor="middle">预测特征 → 冻结 VQ 解码器</text>
+<text x="1117.5" y="780" class="body" text-anchor="middle">与配对真实动作比较</text>
+<text x="1117.5" y="808" class="body" text-anchor="middle">梯度回到主干；解码器不更新</text>
+<path d="M1100 615V650H238V690" class="edge"/>
+<path d="M1100 650H657V690" class="edge"/>
+<path d="M1100 650H1117V690" class="edge"/>
+<text x="55" y="865" class="body" text-anchor="start">Lpre = Ltok + Llat + Lphy；三层目标并行训练，不是三段推理。</text>
+<text x="55" y="904" class="small" text-anchor="start">动作层的“physical”是动作重建监督，不包含仿真器、接触求解或碰撞保证。</text>
+<text x="55" y="939" class="small" text-anchor="start">连续特征预测只作为训练监督；最终生成仍需先预测离散 ID，再查码本解码。</text>
+<rect x="25" y="995" width="1350" height="475" rx="14" fill="#f7fafc" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="48" y="1034" class="section" text-anchor="start">C  监督微调：按数据集分别适配；文本保持可见，动作按 UTC 构造 mask</text>
+<rect x="55" y="1065" width="315" height="115" rx="12" fill="#e8f4ee" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="212.5" y="1096" class="head" text-anchor="middle">UTC 训练状态</text>
+<text x="212.5" y="1127" class="body" text-anchor="middle">四分之一网格 → 二分之一网格</text>
+<text x="212.5" y="1155" class="body" text-anchor="middle">→ 全时间位置；与推理对应</text>
+<rect x="425" y="1065" width="420" height="115" rx="12" fill="#e7f1ff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="635.0" y="1096" class="head" text-anchor="middle">MoP：三码本向量的门控融合</text>
+<text x="635.0" y="1127" class="body" text-anchor="middle">各部位 FC 映射 + softmax 门控</text>
+<text x="635.0" y="1155" class="body" text-anchor="middle">E = gb·Eb + gl·El + gr·Er</text>
+<rect x="900" y="1065" width="440" height="115" rx="12" fill="#e7f1ff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="1120.0" y="1096" class="head" text-anchor="middle">已预训练的双向 MDLM</text>
+<text x="1120.0" y="1127" class="body" text-anchor="middle">完整文本 + 当前动作嵌入</text>
+<text x="1120.0" y="1155" class="body" text-anchor="middle">整个语言主干继续微调</text>
+<path d="M370 1123H425" class="edge"/>
+<path d="M845 1123H900" class="edge"/>
+<path d="M1170 965V1015H1190V1065" class="dash"/>
+<text x="55" y="1228" class="head" text-anchor="start">MoP 内部：</text>
+<rect x="55" y="1250" width="305" height="115" rx="12" fill="#fff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="207.5" y="1281" class="head" text-anchor="middle">身体 / 左手 / 右手 code</text>
+<text x="207.5" y="1312" class="body" text-anchor="middle">来自已训练且冻结的码本</text>
+<text x="207.5" y="1340" class="body" text-anchor="middle">mask 等特殊位置回退平均</text>
+<rect x="420" y="1250" width="390" height="115" rx="12" fill="#e7f1ff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="615.0" y="1281" class="head" text-anchor="middle">三路投影 + 门控网络</text>
+<text x="615.0" y="1312" class="body" text-anchor="middle">三个部位全部参与，不做 Top-1</text>
+<text x="615.0" y="1340" class="body" text-anchor="middle">门控加权的是输入特征</text>
+<rect x="870" y="1250" width="470" height="115" rx="12" fill="#fff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="1105.0" y="1281" class="head" text-anchor="middle">融合后的单个时间位置嵌入</text>
+<text x="1105.0" y="1312" class="body" text-anchor="middle">送入同一 Transformer</text>
+<text x="1105.0" y="1340" class="body" text-anchor="middle">输出三路 token 分布</text>
+<path d="M360 1307H420" class="edge"/>
+<path d="M810 1307H870" class="edge"/>
+<text x="55" y="1412" class="body" text-anchor="start">Lsft = Ltok + 0.5·(Llat + Lphy)；连续监督保留，VQ 编解码器仍冻结。</text>
+<text x="55" y="1446" class="small" text-anchor="start">共享预训练 → 三套数据集微调权重，不是一个最终模型零样本覆盖全部手语。</text>
+<rect x="25" y="1500" width="1350" height="650" rx="14" fill="#f7fafc" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="48" y="1539" class="section" text-anchor="start">D  推理：整段文本条件下迭代解掩码，最后解码成连续动作</text>
+<rect x="55" y="1568" width="285" height="100" rx="12" fill="#fff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="197.5" y="1599" class="head" text-anchor="middle">完整书面句子</text>
+<text x="197.5" y="1630" class="body" text-anchor="middle">Qwen 文本嵌入</text>
+<text x="197.5" y="1658" class="body" text-anchor="middle">不需要输入 gloss</text>
+<rect x="400" y="1568" width="375" height="100" rx="12" fill="#e8f4ee" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="587.5" y="1599" class="head" text-anchor="middle">初始化三路全 mask</text>
+<text x="587.5" y="1630" class="body" text-anchor="middle">最多 100 个动作时间位置</text>
+<text x="587.5" y="1658" class="body" text-anchor="middle">文本始终可见</text>
+<rect x="835" y="1568" width="505" height="100" rx="12" fill="#e7f1ff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="1087.5" y="1599" class="head" text-anchor="middle">MoP + 双向 MDLM</text>
+<text x="1087.5" y="1630" class="body" text-anchor="middle">共享上下文 → 三路 token 预测</text>
+<text x="1087.5" y="1658" class="body" text-anchor="middle">同步选择身体与双手的时间位置</text>
+<path d="M340 1618H400" class="edge"/>
+<path d="M775 1618H835" class="edge"/>
+<rect x="55" y="1735" width="340" height="140" rx="12" fill="#fff7e8" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="225.0" y="1766" class="head" text-anchor="middle">UTC 受限的置信度选择</text>
+<text x="225.0" y="1797" class="body" text-anchor="middle">先 {0,4,8,…}</text>
+<text x="225.0" y="1825" class="body" text-anchor="middle">再补 {2,6,10,…}</text>
+<text x="225.0" y="1853" class="body" text-anchor="middle">最后补奇数位置</text>
+<rect x="460" y="1735" width="420" height="140" rx="12" fill="#e8f4ee" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="670.0" y="1766" class="head" text-anchor="middle">保留已生成位置并继续填空</text>
+<text x="670.0" y="1797" class="body" text-anchor="middle">默认 25 轮；同一位置三路同步</text>
+<text x="670.0" y="1825" class="body" text-anchor="middle">t=0.75 / 0.5 为内部检查点</text>
+<text x="670.0" y="1853" class="body" text-anchor="middle">不是用户给定的动作关键帧</text>
+<rect x="945" y="1735" width="395" height="140" rx="12" fill="#fff" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="1142.5" y="1766" class="head" text-anchor="middle">三路 ID + EOS 截断</text>
+<text x="1142.5" y="1797" class="body" text-anchor="middle">身体首个 EOS 决定共同长度</text>
+<text x="1142.5" y="1825" class="body" text-anchor="middle">当前源码的截断规则</text>
+<text x="1142.5" y="1853" class="body" text-anchor="middle">后续位置不进入动作解码</text>
+<path d="M1085 1668V1700H225V1735" class="edge"/>
+<path d="M395 1805H460" class="edge"/>
+<path d="M880 1805H945" class="edge"/>
+<path d="M670 1875V1903H1370V1618H1340" class="edge"/>
+<text x="700" y="1929" class="small" text-anchor="start">未结束时：返回预测下一批位置</text>
+<rect x="55" y="1970" width="340" height="115" rx="12" fill="#e8f4ee" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="225.0" y="2001" class="head" text-anchor="middle">三路离散 token</text>
+<text x="225.0" y="2032" class="body" text-anchor="middle">身体 / 左手 / 右手</text>
+<text x="225.0" y="2060" class="body" text-anchor="middle">恢复后的动作时间序列</text>
+<rect x="460" y="1970" width="420" height="115" rx="12" fill="#edf4ed" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="670.0" y="2001" class="head" text-anchor="middle">冻结 VQ-VAE 码本与解码器</text>
+<text x="670.0" y="2032" class="body" text-anchor="middle">按 ID 查向量 → 三路连续解码</text>
+<text x="670.0" y="2060" class="body" text-anchor="middle">4 倍时间上采样并拼接</text>
+<rect x="945" y="1970" width="395" height="115" rx="12" fill="#e8f4ee" stroke="#c5d6e2" stroke-width="1.5"/>
+<text x="1142.5" y="2001" class="head" text-anchor="middle">连续手语动作参数</text>
+<text x="1142.5" y="2032" class="body" text-anchor="middle">T′×133 → SMPL-X 显示</text>
+<text x="1142.5" y="2060" class="body" text-anchor="middle">不是直接输出写实 RGB 视频</text>
+<path d="M1140 1875V1945H225V1970" class="edge"/>
+<path d="M395 2028H460" class="edge"/>
+<path d="M880 2028H945" class="edge"/>
+<text x="55" y="2125" class="small" text-anchor="start">SiCLIP、SiBLEU、DTW-JPE 用于离线评测，不作为推理模块。</text>
+<text x="40" y="2195" class="small" text-anchor="start">依据：作者项目页 15 页更新稿，图2–4、算法1、式1–10；代码 071828e。</text>
+<text x="40" y="2232" class="small" text-anchor="start">UTC 的网格决定填空顺序；它不提供语义事件时间、精确手部目标或动作执行保证。</text>
+<text x="40" y="2269" class="small" text-anchor="start">图中蓝色为可训练模块、绿色为表示/冻结资源、浅橙色为监督或选择策略。</text>
+</svg>

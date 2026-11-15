@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2220" viewBox="0 0 1400 2220" role="img" aria-labelledby="title desc">
+<title id="title">DiMo完整架构：RVQ动作token、三任务mask、双向BERT、渐进生成与GRPO后训练</title>
+<desc id="desc">区分连续运动解码与动作token预测头，渐进提交仅更新当前mask位置，GRPO单独作为后训练。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#496477"/></marker><marker id="grad" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#a16943"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei",Arial,sans-serif;fill:#213b4e}.title{font-size:30px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:22px;font-weight:700}.body{font-size:20px}.small{font-size:18px}.edge{fill:none;stroke:#496477;stroke-width:2.5;marker-end:url(#arrow)}.gradient{fill:none;stroke:#a16943;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#grad)}</style>
+<rect width="1400" height="2220" fill="white"/>
+<text x="38" y="48" class="title" text-anchor="start">DiMo：共享掩码预测器连接文字、动作与局部补全</text>
+<text x="40" y="84" class="small" text-anchor="start">教学重绘 · arXiv 2026 · 蓝：学习模块；绿：表示/输出；橙：推理选择或后训练；虚线：参数更新</text>
+<rect x="25" y="115" width="1350" height="455" rx="14" fill="#f7fafc" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="48" y="153" class="section" text-anchor="start">A  训练数据与任务选择：可见条件决定预测方向</text>
+<rect x="55" y="185" width="300" height="105" rx="11" fill="#eef6e9" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="205.0" y="216" class="head" text-anchor="middle">配对文字 x</text>
+<text x="205.0" y="247" class="body" text-anchor="middle">BERT tokenizer</text>
+<text x="205.0" y="276" class="body" text-anchor="middle">文字 token</text>
+<rect x="1030" y="185" width="315" height="105" rx="11" fill="#edf4ff" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="1187.5" y="216" class="head" text-anchor="middle">配对连续动作 M</text>
+<text x="1187.5" y="247" class="body" text-anchor="middle">RVQ 编码 / 量化</text>
+<text x="1187.5" y="276" class="body" text-anchor="middle">时间压缩 r = 4</text>
+<rect x="1030" y="345" width="315" height="105" rx="11" fill="#e8f4ee" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="1187.5" y="376" class="head" text-anchor="middle">动作 token z</text>
+<text x="1187.5" y="407" class="body" text-anchor="middle">⌊T/4⌋ × 6 层</text>
+<text x="1187.5" y="436" class="body" text-anchor="middle">每层独立码本 1024 项</text>
+<path d="M1187 290V345" class="edge"/>
+<rect x="420" y="195" width="550" height="255" rx="11" fill="#fff5e4" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="695.0" y="226" class="head" text-anchor="middle">任务调度 + 随机掩码</text>
+<text x="695.0" y="257" class="body" text-anchor="middle">T2M：文字可见，恢复动作空位</text>
+<text x="695.0" y="286" class="body" text-anchor="middle">M2T：动作可见，恢复文字空位</text>
+<text x="695.0" y="315" class="body" text-anchor="middle">M2M：忽略文字，补全局部动作</text>
+<text x="695.0" y="344" class="body" text-anchor="middle">默认任务比例 8 : 1 : 1</text>
+<text x="695.0" y="373" class="body" text-anchor="middle">每样本抽取 u，再以概率 u 遮住目标</text>
+<path d="M355 237H420" class="edge"/>
+<path d="M1030 397H970" class="edge"/>
+<text x="55" y="500" class="body" text-anchor="start">RVQ 的 6 层是残差层级，不是 6 个身体部位；编号需经动作解码器恢复连续运动。</text>
+<text x="55" y="536" class="small" text-anchor="start">训练监督：只在被 mask 的目标位置计算交叉熵；M2M 不使用文字，但完整系统仍用配对数据。</text>
+<rect x="25" y="600" width="1350" height="565" rx="14" fill="#f7fafc" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="48" y="638" class="section" text-anchor="start">B  共享双向主干与两类输出：预测 token 和解码运动是不同步骤</text>
+<rect x="55" y="670" width="300" height="105" rx="11" fill="#eef6e9" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="205.0" y="701" class="head" text-anchor="middle">文字输入</text>
+<text x="205.0" y="732" class="body" text-anchor="middle">可见 token / [MASK]</text>
+<text x="205.0" y="761" class="body" text-anchor="middle">文字嵌入 + 位置</text>
+<rect x="1030" y="670" width="315" height="105" rx="11" fill="#edf4ff" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="1187.5" y="701" class="head" text-anchor="middle">动作输入</text>
+<text x="1187.5" y="732" class="body" text-anchor="middle">6 层嵌入 + 轻量编码器</text>
+<text x="1187.5" y="761" class="body" text-anchor="middle">可学习融合 + 位置</text>
+<rect x="450" y="810" width="500" height="110" rx="11" fill="#e6f0ff" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="700.0" y="841" class="head" text-anchor="middle">共享双向 BERT 编码器</text>
+<text x="700.0" y="872" class="body" text-anchor="middle">融合文字与动作上下文</text>
+<text x="700.0" y="901" class="body" text-anchor="middle">隐藏宽度 1024；论文报告 16 层</text>
+<path d="M205 775V865H450" class="edge"/>
+<path d="M1187 775V865H950" class="edge"/>
+<rect x="55" y="1010" width="300" height="105" rx="11" fill="#eef6e9" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="205.0" y="1041" class="head" text-anchor="middle">语言预测头</text>
+<text x="205.0" y="1072" class="body" text-anchor="middle">文字词表 logits</text>
+<text x="205.0" y="1101" class="body" text-anchor="middle">→ 描述 token → 文字</text>
+<rect x="1030" y="1010" width="315" height="105" rx="11" fill="#edf4ff" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="1187.5" y="1041" class="head" text-anchor="middle">6 层动作预测头</text>
+<text x="1187.5" y="1072" class="body" text-anchor="middle">各层并行输出 logits</text>
+<text x="1187.5" y="1101" class="body" text-anchor="middle">→ 残差动作编号</text>
+<rect x="450" y="1010" width="500" height="105" rx="11" fill="#e8f4ee" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="700.0" y="1041" class="head" text-anchor="middle">RVQ 查表与动作解码器</text>
+<text x="700.0" y="1072" class="body" text-anchor="middle">组合多层量化表示</text>
+<text x="700.0" y="1101" class="body" text-anchor="middle">→ 连续骨架运动</text>
+<path d="M560 920V965H205V1010" class="edge"/>
+<path d="M840 920V965H1187V1010" class="edge"/>
+<path d="M1030 1062H950" class="edge"/>
+<text x="55" y="1145" class="small" text-anchor="start">同一主干复用三类任务；文字与动作保留专用接口。RVQ 编码/解码与动作 token 预测头不可混称。</text>
+<rect x="25" y="1195" width="1350" height="405" rx="14" fill="#f7fafc" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="48" y="1233" class="section" text-anchor="start">C  推理循环：只提交当前空位中最有把握的预测</text>
+<rect x="55" y="1280" width="255" height="120" rx="11" fill="#e8f4ee" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="182.5" y="1311" class="head" text-anchor="middle">目标 token 网格</text>
+<text x="182.5" y="1342" class="body" text-anchor="middle">全 mask / 部分 mask</text>
+<text x="182.5" y="1371" class="body" text-anchor="middle">保留给定条件</text>
+<rect x="365" y="1280" width="275" height="120" rx="11" fill="#e6f0ff" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="502.5" y="1311" class="head" text-anchor="middle">调用共享预测器 B</text>
+<text x="502.5" y="1342" class="body" text-anchor="middle">并行预测当前空位</text>
+<text x="502.5" y="1371" class="body" text-anchor="middle">按任务选择输出头</text>
+<rect x="695" y="1280" width="285" height="120" rx="11" fill="#fff5e4" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="837.5" y="1311" class="head" text-anchor="middle">置信度排序</text>
+<text x="837.5" y="1342" class="body" text-anchor="middle">c = 最大类别概率</text>
+<text x="837.5" y="1371" class="body" text-anchor="middle">选择 top-kₛ 空位</text>
+<rect x="1035" y="1280" width="310" height="120" rx="11" fill="#e8f4ee" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="1190.0" y="1311" class="head" text-anchor="middle">提交 argmax token</text>
+<text x="1190.0" y="1342" class="body" text-anchor="middle">其余位置继续为 mask</text>
+<text x="1190.0" y="1371" class="body" text-anchor="middle">得到更完整的上下文</text>
+<path d="M310 1340H365" class="edge"/>
+<path d="M640 1340H695" class="edge"/>
+<path d="M980 1340H1035" class="edge"/>
+<path d="M1190 1400V1465H182V1400" class="edge"/>
+<text x="420" y="1450" class="body" text-anchor="start">仍有 mask → 进入下一轮；默认 T2M 20 轮 / M2T 30 轮</text>
+<text x="55" y="1510" class="body" text-anchor="start">全部提交后：动作经 RVQ 解码；文字经 tokenizer 还原。CFG 默认 scale = 3。</text>
+<text x="55" y="1555" class="small" text-anchor="start">算法1没有自动重掩已接受 token；主动再次遮住片段可发起修订，不能视作默认逐轮回滚。</text>
+<rect x="25" y="1630" width="1350" height="480" rx="14" fill="#f7fafc" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="48" y="1668" class="section" text-anchor="start">D  可选 GRPO 后训练：生成候选 → 代理奖励 → 组内比较 → 更新策略</text>
+<rect x="55" y="1715" width="290" height="120" rx="11" fill="#fff5e4" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="200.0" y="1746" class="head" text-anchor="middle">当前 DiMo 策略</text>
+<text x="200.0" y="1777" class="body" text-anchor="middle">同一文字 / 动作条件</text>
+<text x="200.0" y="1806" class="body" text-anchor="middle">产生一组候选输出</text>
+<rect x="410" y="1715" width="570" height="180" rx="11" fill="#edf4ff" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="695.0" y="1746" class="head" text-anchor="middle">按任务计算奖励</text>
+<text x="695.0" y="1777" class="body" text-anchor="middle">T2M：动作 → 冻结 M2T 分支 → 伪描述</text>
+<text x="695.0" y="1806" class="body" text-anchor="middle">CLIP 比较伪描述与参考文字</text>
+<text x="695.0" y="1835" class="body" text-anchor="middle">M2T：动词重合 + 文字相似度 / 长度惩罚</text>
+<text x="695.0" y="1864" class="body" text-anchor="middle">奖励器提供代理分数，不是物理验收</text>
+<rect x="1045" y="1715" width="300" height="180" rx="11" fill="#fff5e4" stroke="#c6d6e1" stroke-width="1.5"/>
+<text x="1195.0" y="1746" class="head" text-anchor="middle">GRPO 参数更新</text>
+<text x="1195.0" y="1777" class="body" text-anchor="middle">组内标准化优势</text>
+<text x="1195.0" y="1806" class="body" text-anchor="middle">裁剪比率 ε = 0.1</text>
+<text x="1195.0" y="1835" class="body" text-anchor="middle">KL β = 0.004</text>
+<text x="1195.0" y="1864" class="body" text-anchor="middle">冻结参考策略作约束</text>
+<path d="M345 1775H410" class="edge"/>
+<path d="M980 1805H1045" class="edge"/>
+<path d="M1195 1895V1960H200V1835" class="gradient"/>
+<text x="410" y="1945" class="body" text-anchor="start">更新生成模型参数；不同于 C 中仅填入当前样本 token</text>
+<text x="55" y="2020" class="body" text-anchor="start">后训练不要求在每次生成时再次运行；Self M2T 奖励仍可能继承描述分支的盲点。</text>
+<text x="55" y="2065" class="small" text-anchor="start">图中固定的是奖励 / 参考分支；未把未披露的 tokenizer 训练或冻结细节当成已核实配置。</text>
+<text x="40" y="2155" class="small" text-anchor="start">依据：DiMo arXiv:2602.04188v2，图2、§3、附录A算法1；完整18页论文与附录。</text>
+<text x="40" y="2193" class="small" text-anchor="start">本图为方法教学示意，非作者原图或模型运行结果；mask 保留不直接等于连续运动的几何保持保证。</text>
+</svg>
