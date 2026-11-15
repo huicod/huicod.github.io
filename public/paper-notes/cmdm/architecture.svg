@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2380" viewBox="0 0 1400 2380" role="img" aria-labelledby="title desc">
+<title id="title">CMDM：语义对齐的因果动作表示与错开去噪的流式生成</title>
+<desc id="desc">分四区解释因果VAE训练、独立噪声级的因果扩散训练、文本条件下的动作生成，以及逐位置错开的FSS调度。Part-TMR只提供训练监督，连续动作由因果解码器恢复。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#496477"/></marker><marker id="darrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8Z" fill="#9a6a3e"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei",Arial,sans-serif;fill:#20394b}.title{font-size:30px;font-weight:700}.section{font-size:24px;font-weight:700}.head{font-size:22px;font-weight:700}.body{font-size:20px}.small{font-size:18px}.edge{fill:none;stroke:#496477;stroke-width:2.4;marker-end:url(#arrow)}.dash{fill:none;stroke:#9a6a3e;stroke-width:2.4;stroke-dasharray:7 5;marker-end:url(#darrow)}</style>
+<rect width="1400" height="2380" fill="white"/>
+<text x="40" y="48" class="title" text-anchor="start">CMDM：让未来动作在过去尚未完全去噪时就开始生成</text>
+<text x="40" y="82" class="small" text-anchor="start">教学重绘 · CVPR 2026 · 按论文逐 latent 位置解释；蓝：学习模块，绿：表示 / 输出，橙：监督 / 调度</text>
+<rect x="25" y="110" width="1350" height="430" rx="15" fill="#f7fafc" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="48" y="148" class="section" text-anchor="start">A  表示训练：连续动作压缩为因果 latent，并对齐动作—语言语义</text>
+<rect x="55" y="185" width="250" height="115" rx="12" fill="#ffffff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="180.0" y="216" class="head" text-anchor="middle">真实动作 x</text>
+<text x="180.0" y="247" class="body" text-anchor="middle">HumanML3D：20 FPS</text>
+<text x="180.0" y="275" class="body" text-anchor="middle">连续骨架特征</text>
+<rect x="365" y="185" width="260" height="115" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="495.0" y="216" class="head" text-anchor="middle">因果编码器 Eφ</text>
+<text x="495.0" y="247" class="body" text-anchor="middle">左侧填充卷积 + ResNet</text>
+<text x="495.0" y="275" class="body" text-anchor="middle">时间压缩 4 倍</text>
+<rect x="685" y="185" width="285" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="827.5" y="216" class="head" text-anchor="middle">连续 latent z</text>
+<text x="827.5" y="247" class="body" text-anchor="middle">T/4 个位置 × 64 维</text>
+<text x="827.5" y="275" class="body" text-anchor="middle">不是离散码本 ID</text>
+<rect x="1030" y="185" width="310" height="115" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1185.0" y="216" class="head" text-anchor="middle">因果解码器 Dψ</text>
+<text x="1185.0" y="247" class="body" text-anchor="middle">只依赖当前与过去 latent</text>
+<text x="1185.0" y="275" class="body" text-anchor="middle">时间上采样 4 倍</text>
+<path d="M305 242H365" class="edge"/>
+<path d="M625 242H685" class="edge"/>
+<path d="M970 242H1030" class="edge"/>
+<rect x="365" y="365" width="260" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="495.0" y="396" class="head" text-anchor="middle">冻结 Part-TMR 教师</text>
+<text x="495.0" y="427" class="body" text-anchor="middle">经改造、重训练的动作端</text>
+<text x="495.0" y="455" class="body" text-anchor="middle">提供逐时刻语义特征</text>
+<rect x="685" y="365" width="285" height="115" rx="12" fill="#fff5e5" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="827.5" y="396" class="head" text-anchor="middle">语义投影 + 对齐损失</text>
+<text x="827.5" y="427" class="body" text-anchor="middle">对应特征的余弦相似度</text>
+<text x="827.5" y="455" class="body" text-anchor="middle">特征间关系的相似度</text>
+<rect x="1030" y="365" width="310" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1185.0" y="396" class="head" text-anchor="middle">重建动作 x̂</text>
+<text x="1185.0" y="427" class="body" text-anchor="middle">重建误差：对照真实动作</text>
+<text x="1185.0" y="455" class="body" text-anchor="middle">另对 latent 施加 KL 正则</text>
+<path d="M180 300V422H365" class="edge"/>
+<path d="M625 422H685" class="dash"/>
+<path d="M827 300V365" class="edge"/>
+<path d="M1185 300V365" class="edge"/>
+<text x="55" y="519" class="small" text-anchor="start">Part-TMR 只在这一阶段提供监督；生成新动作时，无需输入真实动作或运行该教师。</text>
+<rect x="25" y="570" width="1350" height="470" rx="15" fill="#f7fafc" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="48" y="608" class="section" text-anchor="start">B  生成器训练：各 latent 位置独立加噪，学习带噪历史下的因果去噪</text>
+<rect x="55" y="650" width="300" height="140" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="205.0" y="681" class="head" text-anchor="middle">配对动作 → 冻结 Eφ</text>
+<text x="205.0" y="712" class="body" text-anchor="middle">编码得到干净 latent z</text>
+<text x="205.0" y="740" class="body" text-anchor="middle">一 latent 对应 4 个原动作帧</text>
+<text x="205.0" y="768" class="body" text-anchor="middle">编码器不随本阶段更新</text>
+<rect x="415" y="650" width="325" height="140" rx="12" fill="#fff5e5" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="577.5" y="681" class="head" text-anchor="middle">Causal Diffusion Forcing</text>
+<text x="577.5" y="712" class="body" text-anchor="middle">每个位置独立采样 kₜ 与噪声</text>
+<text x="577.5" y="740" class="body" text-anchor="middle">同一序列可有不同噪声级</text>
+<text x="577.5" y="768" class="body" text-anchor="middle">提供带噪 z̃ 与时间条件</text>
+<rect x="800" y="650" width="540" height="140" rx="12" fill="#e9f1ff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1070.0" y="681" class="head" text-anchor="middle">Causal-DiT：8 层 × 512 维 / 4 头</text>
+<text x="1070.0" y="712" class="body" text-anchor="middle">因果自注意力：只看 ≤ t 的动作位置</text>
+<text x="1070.0" y="740" class="body" text-anchor="middle">文本交叉注意力；AdaLN 注入 kₜ；RoPE</text>
+<text x="1070.0" y="768" class="body" text-anchor="middle">并行计算训练预测，不读取未来动作</text>
+<path d="M355 720H415" class="edge"/>
+<path d="M740 720H800" class="edge"/>
+<rect x="55" y="860" width="300" height="110" rx="12" fill="#ffffff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="205.0" y="891" class="head" text-anchor="middle">配对文字</text>
+<text x="205.0" y="922" class="body" text-anchor="middle">完整动作描述</text>
+<text x="205.0" y="950" class="body" text-anchor="middle">10% 条件丢弃用于 CFG</text>
+<rect x="415" y="860" width="325" height="110" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="577.5" y="891" class="head" text-anchor="middle">冻结 DistilBERT</text>
+<text x="577.5" y="922" class="body" text-anchor="middle">输出词级文本特征 c</text>
+<text x="577.5" y="950" class="body" text-anchor="middle">文本条件可整体可见</text>
+<rect x="800" y="860" width="540" height="110" rx="12" fill="#fff5e5" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1070.0" y="891" class="head" text-anchor="middle">去噪目标与参数更新</text>
+<text x="1070.0" y="922" class="body" text-anchor="middle">用已知噪声目标监督 Causal-DiT</text>
+<text x="1070.0" y="950" class="body" text-anchor="middle">论文以噪声预测表述；实际 FM 实现见正文</text>
+<path d="M355 915H415" class="edge"/>
+<path d="M740 915H770V820H1050V790" class="edge"/>
+<path d="M1200 790V860" class="dash"/>
+<text x="55" y="1010" class="small" text-anchor="start">“因果”限制动作时间轴；不表示文字必须逐词到达，也不表示模型已获得物理因果关系。</text>
+<rect x="25" y="1070" width="1350" height="480" rx="15" fill="#f7fafc" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="48" y="1108" class="section" text-anchor="start">C  推理主线：文本 + 时长 → 错开去噪 → 干净前缀 → 连续动作</text>
+<rect x="55" y="1150" width="290" height="115" rx="12" fill="#ffffff" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="200.0" y="1181" class="head" text-anchor="middle">文字与目标时长</text>
+<text x="200.0" y="1212" class="body" text-anchor="middle">DistilBERT → 文本 c</text>
+<text x="200.0" y="1240" class="body" text-anchor="middle">指定动作长度 / 分段长度</text>
+<rect x="405" y="1150" width="290" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="550.0" y="1181" class="head" text-anchor="middle">初始化连续高斯噪声</text>
+<text x="550.0" y="1212" class="body" text-anchor="middle">各位置尚未确定</text>
+<text x="550.0" y="1240" class="body" text-anchor="middle">已有生成历史作为前缀</text>
+<rect x="755" y="1150" width="585" height="115" rx="12" fill="#fff5e5" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1047.5" y="1181" class="head" text-anchor="middle">FSS 调度 + 已训练 Causal-DiT</text>
+<text x="1047.5" y="1212" class="body" text-anchor="middle">过去噪声较低，未来噪声较高；重复更新活跃位置</text>
+<text x="1047.5" y="1240" class="body" text-anchor="middle">主设置 K=50、L=2；推理 CFG=3.0</text>
+<path d="M345 1208H405" class="edge"/>
+<path d="M695 1208H755" class="edge" style="stroke-width:3.2"/>
+<text x="375" y="1192" class="small" text-anchor="middle">时长</text>
+<text x="725" y="1192" class="small" text-anchor="middle">z̃</text>
+<path d="M200 1265V1305H725V1235H755" class="edge"/>
+<text x="460" y="1293" class="small" text-anchor="start">文本特征 c</text>
+<rect x="55" y="1350" width="290" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="200.0" y="1381" class="head" text-anchor="middle">连续骨架动作</text>
+<text x="200.0" y="1412" class="body" text-anchor="middle">恢复位置 / 旋转等特征</text>
+<text x="200.0" y="1440" class="body" text-anchor="middle">供后续动画显示或使用</text>
+<rect x="405" y="1350" width="290" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="550.0" y="1381" class="head" text-anchor="middle">冻结因果解码器 Dψ</text>
+<text x="550.0" y="1412" class="body" text-anchor="middle">用已干净 latent 前缀解码</text>
+<text x="550.0" y="1440" class="body" text-anchor="middle">4 倍恢复原动作时间分辨率</text>
+<rect x="755" y="1350" width="585" height="115" rx="12" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="1047.5" y="1381" class="head" text-anchor="middle">达到零噪声的前缀可交付</text>
+<text x="1047.5" y="1412" class="body" text-anchor="middle">后续位置继续去噪，不等待整段全部完成</text>
+<text x="1047.5" y="1440" class="body" text-anchor="middle">下一文本段继续使用已有动作历史</text>
+<path d="M1050 1265V1350" class="edge"/>
+<path d="M755 1408H695" class="edge"/>
+<path d="M405 1408H345" class="edge"/>
+<path d="M1340 1408H1360V1128H1050V1150" class="dash"/>
+<text x="55" y="1517" class="small" text-anchor="start">这是论文描述的流式生成机制；当前公开 demo 按预给定文本和时长生成整段，再统一解码导出。</text>
+<rect x="25" y="1580" width="1350" height="570" rx="15" fill="#f7fafc" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="48" y="1618" class="section" text-anchor="start">D  FSS 如何错开：同一轮中，早期位置更接近干净动作</text>
+<text x="60" y="1660" class="head" text-anchor="start">缩小示意：K=6、L=2</text>
+<text x="60" y="1692" class="body" text-anchor="start">每行是一个调度检查点</text>
+<text x="60" y="1723" class="small" text-anchor="start">省略中间采样步，不是实测速率</text>
+<text x="505.0" y="1667" class="body" text-anchor="middle">位置 1</text>
+<text x="635.0" y="1667" class="body" text-anchor="middle">位置 2</text>
+<text x="765.0" y="1667" class="body" text-anchor="middle">位置 3</text>
+<rect x="440" y="1690" width="122" height="40" rx="6" fill="#ef9a9a" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="501.0" y="1720" class="head" text-anchor="middle">6</text>
+<rect x="570" y="1690" width="122" height="40" rx="6" fill="#ef9a9a" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="631.0" y="1720" class="head" text-anchor="middle">6</text>
+<rect x="700" y="1690" width="122" height="40" rx="6" fill="#ef9a9a" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="761.0" y="1720" class="head" text-anchor="middle">6</text>
+<rect x="440" y="1738" width="122" height="40" rx="6" fill="#f5baba" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="501.0" y="1768" class="head" text-anchor="middle">4</text>
+<rect x="570" y="1738" width="122" height="40" rx="6" fill="#ef9a9a" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="631.0" y="1768" class="head" text-anchor="middle">6</text>
+<rect x="700" y="1738" width="122" height="40" rx="6" fill="#ef9a9a" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="761.0" y="1768" class="head" text-anchor="middle">6</text>
+<rect x="440" y="1786" width="122" height="40" rx="6" fill="#fbdada" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="501.0" y="1816" class="head" text-anchor="middle">2</text>
+<rect x="570" y="1786" width="122" height="40" rx="6" fill="#f5baba" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="631.0" y="1816" class="head" text-anchor="middle">4</text>
+<rect x="700" y="1786" width="122" height="40" rx="6" fill="#ef9a9a" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="761.0" y="1816" class="head" text-anchor="middle">6</text>
+<rect x="440" y="1834" width="122" height="40" rx="6" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="501.0" y="1864" class="head" text-anchor="middle">0</text>
+<rect x="570" y="1834" width="122" height="40" rx="6" fill="#fbdada" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="631.0" y="1864" class="head" text-anchor="middle">2</text>
+<rect x="700" y="1834" width="122" height="40" rx="6" fill="#f5baba" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="761.0" y="1864" class="head" text-anchor="middle">4</text>
+<rect x="440" y="1882" width="122" height="40" rx="6" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="501.0" y="1912" class="head" text-anchor="middle">0</text>
+<rect x="570" y="1882" width="122" height="40" rx="6" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="631.0" y="1912" class="head" text-anchor="middle">0</text>
+<rect x="700" y="1882" width="122" height="40" rx="6" fill="#fbdada" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="761.0" y="1912" class="head" text-anchor="middle">2</text>
+<rect x="440" y="1930" width="122" height="40" rx="6" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="501.0" y="1960" class="head" text-anchor="middle">0</text>
+<rect x="570" y="1930" width="122" height="40" rx="6" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="631.0" y="1960" class="head" text-anchor="middle">0</text>
+<rect x="700" y="1930" width="122" height="40" rx="6" fill="#e9f5ed" stroke="#c4d6e1" stroke-width="1.5"/>
+<text x="761.0" y="1960" class="head" text-anchor="middle">0</text>
+<text x="900" y="1675" class="head" text-anchor="start">传统 AR：前一个位置完全去噪后</text>
+<text x="900" y="1707" class="body" text-anchor="start">再从头生成下一个位置。</text>
+<text x="900" y="1775" class="head" text-anchor="start">FSS：前一个位置只去掉部分噪声，</text>
+<text x="900" y="1807" class="body" text-anchor="start">下一个位置就开始参与更新。</text>
+<text x="900" y="1875" class="body" text-anchor="start">绿色 0：该位置已经完成；</text>
+<text x="900" y="1907" class="body" text-anchor="start">红色越深：待去除的噪声越多。</text>
+<text x="60" y="2010" class="small" text-anchor="start">表中的“位置”是 latent 时间位置，不是单个骨架帧；20 FPS 数据中 1 latent 对应 4 帧。</text>
+<text x="60" y="2050" class="body" text-anchor="start">A100 上论文报告：首个 4 帧约 220 ms，之后每 4 帧约 30 ms；30 ms 不是首帧延迟。</text>
+<text x="60" y="2090" class="small" text-anchor="start">加速来自去噪过程的重叠与调度；不等于每个位置只做两步去噪，也不保证无限长序列无漂移。</text>
+<text x="40" y="2200" class="small" text-anchor="start">依据：CVPR 2026 原图 2、式 1–13、补充算法 1–2；数字调度表是为理解式 13 绘制的缩小示意。</text>
+<text x="40" y="2240" class="small" text-anchor="start">实现边界：公开代码 5900a8a 默认每块 3 个 latent、块内可互看并共享噪声级；详见正文版本说明。</text>
+<text x="40" y="2280" class="small" text-anchor="start">本图按论文逐位置形式讲解，不把当前整段导出脚本标为已实现的逐帧在线播放接口。</text>
+<text x="40" y="2320" class="small" text-anchor="start">实线：表示流向；虚线：训练监督或推理迭代。教学重绘，非作者原图或本次模型运行结果。</text>
+</svg>
