@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1600" viewBox="0 0 1200 1600" role="img" aria-labelledby="title desc">
+<title id="title">DeMoGen：组合式训练与概念生成的完整框架</title>
+<desc id="desc">训练以完整动作的噪声为监督。冻结VAE编码动作，冻结CLIP编码整体或分解文本。EXP、OSS、SC是三种可选条件构造方式。latent-aware平均多个概念的去噪预测，semantic-aware在交叉注意力层平均。推理从噪声组合生成或单独生成概念，再由冻结VAE解码，不包含任意源动作的反演保证。</desc>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#315b83"/></marker>
+  <marker id="orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#bb7133"/></marker>
+  <style>
+    text{font-family:"Microsoft YaHei","Noto Sans SC",Arial,sans-serif;fill:#19344e}
+    .title{font-size:30px;font-weight:700}.subtitle{font-size:19px;fill:#526778}.section{font-size:24px;font-weight:700}.label{font-size:21px;font-weight:700}.body{font-size:20px}.small{font-size:18px;fill:#526778}
+    .panel{fill:#f6f9fc;stroke:#cad7e3;stroke-width:2}.node{fill:white;stroke:#90aac0;stroke-width:2}.condition{fill:#edf5e9;stroke:#85a772;stroke-width:2}.train{fill:#fff4e7;stroke:#d5a36e;stroke-width:2}.out{fill:#eaf3fb;stroke:#7099bb;stroke-width:2}
+    .flow{fill:none;stroke:#315b83;stroke-width:2.5;marker-end:url(#arrow)}.supervision{fill:none;stroke:#bb7133;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#orange)}
+  </style>
+</defs>
+<rect width="1200" height="1600" fill="#fff"/>
+<text x="40" y="48" class="title">DeMoGen：让多个概念共同解释一个完整动作</text>
+<text x="40" y="79" class="subtitle">CVPR 2026 正式版 · 平均聚合（1/K） · 中文教学示意</text>
+
+<rect x="25" y="104" width="1150" height="540" rx="16" class="panel"/>
+<text x="48" y="143" class="section">A · 训练数据与概念条件：没有单概念动作真值</text>
+<rect x="48" y="166" width="260" height="88" rx="10" class="node"/>
+<text x="68" y="199" class="label">完整真实动作 x</text><text x="68" y="229" class="body">配对整体文字描述</text>
+<path d="M308 210 H348" class="flow"/>
+<rect x="352" y="166" width="240" height="88" rx="10" class="node"/>
+<text x="372" y="199" class="label">骨架感知VAE编码器</text><text x="372" y="229" class="body">复用SALAD · 冻结</text>
+<path d="M592 210 H638" class="flow"/>
+<rect x="642" y="166" width="248" height="88" rx="10" class="node"/>
+<text x="662" y="199" class="label">连续latent z + 噪声 ε</text><text x="662" y="229" class="body">随机扩散步 t → zₜ</text>
+<path d="M890 210 H936" class="flow"/>
+<rect x="940" y="166" width="210" height="88" rx="10" class="out"/>
+<text x="960" y="199" class="label">共享带噪动作 zₜ</text><text x="960" y="229" class="body">送入所有概念分支</text>
+
+<rect x="48" y="284" width="260" height="108" rx="10" class="condition"/>
+<text x="68" y="317" class="label">整体文字 / 分解文字</text>
+<text x="68" y="348" class="body">EXP、SC：GPT-4.1分句</text>
+<text x="68" y="378" class="small">分句仅提供文字监督</text>
+<path d="M308 338 H348" class="flow"/>
+<rect x="352" y="284" width="240" height="108" rx="10" class="condition"/>
+<text x="372" y="317" class="label">冻结CLIP文本编码器</text><text x="372" y="348" class="body">词级特征 · Lc = 77</text><text x="372" y="378" class="small">保留token轴与特征维</text>
+<path d="M592 338 H638" class="flow"/>
+<rect x="642" y="284" width="508" height="108" rx="10" class="condition"/>
+<text x="662" y="317" class="label">三种可选变体 → K个概念条件 C = {cₖ}</text>
+<text x="662" y="348" class="body">默认 K = 2；每支可以覆盖全身与整个时间段</text>
+<text x="662" y="378" class="small">概念不是固定身体部位，也不是带时间戳的动作程序</text>
+
+<rect x="48" y="418" width="350" height="150" rx="10" class="condition"/>
+<text x="68" y="451" class="label">EXP · 指定分句</text>
+<text x="68" y="483" class="body">每句编码直接作为一组概念条件</text>
+<text x="68" y="515" class="body">训练70%样本改用完整描述</text>
+<text x="68" y="547" class="small">单句生成：复制文字填入K个槽</text>
+<rect x="424" y="418" width="350" height="150" rx="10" class="condition"/>
+<text x="444" y="451" class="label">OSS · 特征切分</text>
+<text x="444" y="483" class="body">整体文本沿特征维切K份 → MLP</text>
+<text x="444" y="515" class="body">正交损失，减少分支重复</text>
+<text x="444" y="547" class="small">不需要额外分句；仍用配对文本</text>
+<rect x="800" y="418" width="350" height="150" rx="10" class="condition"/>
+<text x="820" y="451" class="label">SC · 特征切分 + 语义对齐</text>
+<text x="820" y="483" class="body">切分后由两层Transformer映射</text>
+<text x="820" y="515" class="body">对齐分句嵌入 + 正交损失</text>
+<text x="820" y="547" class="small">分句仅作训练监督，推理用整句</text>
+<text x="48" y="609" class="body">动作latent：时间降采样4倍 × 7个身体节点 × 每节点32维；概念文字特征另走条件支路。</text>
+
+<path d="M1046 254 V270 H1162 V662 H795 V686" class="flow"/>
+<path d="M223 568 V585 H38 V664 H405 V686" class="flow"/>
+<path d="M599 568 V585 H223 M975 568 V585 H599" fill="none" stroke="#315b83" stroke-width="2.5"/>
+<text x="824" y="686" class="small">zₜ、t</text><text x="434" y="686" class="small">概念条件 C</text>
+
+<rect x="25" y="692" width="1150" height="420" rx="16" class="panel"/>
+<text x="48" y="731" class="section">B · 组合式训练：聚合位置二选一，监督目标相同</text>
+<rect x="48" y="754" width="530" height="166" rx="10" class="out"/>
+<text x="68" y="788" class="label">Latent-aware：聚合完整去噪预测</text>
+<text x="68" y="822" class="body">同一个 zₜ → 共享去噪器分别接收 c₁ … cK</text>
+<text x="68" y="854" class="body">εθ(zₜ,c₁,t) … εθ(zₜ,cK,t)</text>
+<text x="68" y="891" class="label">ε̂ = (1/K) Σ εθ(zₜ,cₖ,t)</text>
+<rect x="620" y="754" width="530" height="166" rx="10" class="out"/>
+<text x="640" y="788" class="label">Semantic-aware：聚合条件注意力</text>
+<text x="640" y="822" class="body">同一动作查询，K组概念key/value并行计算</text>
+<text x="640" y="854" class="body">DCA = (1/K) Σ CA(zₜ,cₖ)</text>
+<text x="640" y="891" class="label">注入去噪器 → 输出整体 ε̂</text>
+<path d="M313 920 V943 H510 V970" class="flow"/>
+<path d="M885 920 V943 H690 V970" class="flow"/>
+<rect x="394" y="974" width="412" height="94" rx="10" class="train"/>
+<text x="415" y="1010" class="label">MSE(ε, ε̂)：完整动作的噪声监督</text>
+<text x="415" y="1041" class="body">只更新去噪器与概念映射模块</text>
+<path d="M260 1020 H388" class="supervision"/><text x="48" y="1027" class="body">已知噪声 ε</text>
+<path d="M1030 1020 H812" class="supervision"/>
+<text x="846" y="1000" class="small">OSS / SC附加正交损失</text>
+<text x="846" y="1055" class="small">SC另加分句嵌入对齐</text>
+
+<rect x="25" y="1146" width="1150" height="354" rx="16" class="panel"/>
+<text x="48" y="1185" class="section">C · 推理：从噪声采样，再解码为连续动作</text>
+<rect x="48" y="1212" width="270" height="170" rx="10" class="condition"/>
+<text x="68" y="1247" class="label">文字 → 概念条件</text>
+<text x="68" y="1280" class="body">EXP：指定若干分句</text>
+<text x="68" y="1312" class="body">OSS / SC：一条整体描述</text>
+<text x="68" y="1351" class="small">可保留、交换或组合条件</text>
+<path d="M318 1297 H356" class="flow"/>
+<rect x="360" y="1212" width="340" height="170" rx="10" class="out"/>
+<text x="380" y="1247" class="label">高斯噪声 + 概念条件</text>
+<text x="380" y="1280" class="body">组合：共享zₜ，平均各概念预测</text>
+<text x="380" y="1312" class="body">分解：每个cₖ单独从噪声采样</text>
+<text x="380" y="1351" class="small">50个去噪步 → 完整 / 各概念latent</text>
+<path d="M700 1297 H738" class="flow"/>
+<rect x="742" y="1212" width="190" height="170" rx="10" class="node"/>
+<text x="762" y="1260" class="label">冻结VAE解码器</text>
+<text x="762" y="1304" class="body">latent → 骨架</text>
+<text x="762" y="1346" class="small">恢复连续动作表示</text>
+<path d="M932 1297 H968" class="flow"/>
+<rect x="972" y="1212" width="178" height="170" rx="10" class="out"/>
+<text x="992" y="1258" class="label">连续动作输出</text>
+<text x="992" y="1301" class="body">整体动作</text>
+<text x="992" y="1338" class="body">或单概念动作</text>
+<text x="48" y="1424" class="body">概念分解 ≠ 将原骨架逐帧切开再相加；官方采样算法没有提供任意源动作的反演步骤。</text>
+<text x="48" y="1460" class="small">未宣称未改身体部位逐帧保持、指定时间精确执行或接触约束硬满足；这些需要另行验证。</text>
+
+<path d="M48 1540 H115" class="flow"/><text x="132" y="1547" class="body">数据 / 条件流</text>
+<path d="M340 1540 H407" class="supervision"/><text x="424" y="1547" class="body">训练监督</text>
+<text x="630" y="1547" class="small">来源：正式正文图2、式3–4；补充§1算法1–2</text>
+<text x="48" y="1580" class="small">架构按论文绘制；公开代码本次只做静态核查，未运行训练或生成。</text>
+</svg>

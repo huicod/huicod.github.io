@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1170" viewBox="0 0 1200 1170" role="img" aria-labelledby="title desc"><title id="title">Motion Programs · 从二维轨迹到可执行几何程序</title><desc id="desc">视频经已有姿态估计提取二维关键点，拟合静止直线圆弧并共同分段，形成具体程序；可选抽象归纳得到概率循环；编辑与执行后产生新关键点，分别用于插帧和视频预测。下游图像网络单独训练。</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#395d77"/></marker><marker id="training" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#b87629"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#203748}.title{font-size:29px;font-weight:700}.section{font-size:23px;font-weight:700}.name{font-size:23px;font-weight:700}.body{font-size:20px}.label{font-size:18px;fill:#516579}.small{font-size:18px}.flow{fill:none;stroke:#395d77;stroke-width:2.5;marker-end:url(#arrow)}.train{fill:none;stroke:#b87629;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#training)}</style><rect width="1200" height="1170" fill="#fff"/><text x="30" y="43" class="title">Motion Programs · 从二维轨迹到可执行几何程序</text>
+<rect x="20" y="875" width="1160" height="225" rx="15" fill="#fff5e8" stroke="#d0dde6"/>
+<rect x="20" y="610" width="1160" height="232" rx="15" fill="#edf8f3" stroke="#d0dde6"/>
+<rect x="20" y="340" width="1160" height="220" rx="15" fill="#edf5fb" stroke="#d0dde6"/>
+<rect x="20" y="78" width="1160" height="210" rx="15" fill="#edf5fb" stroke="#d0dde6"/>
+<text x="42" y="110" class="section">① 观测与具体程序归纳 · 每个输入视频单独拟合</text>
+<g><rect x="40" y="135" width="230" height="126" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="57" y="168" class="name">视频 / 姿态估计</text>
+<text x="57" y="200" class="body">已有 AlphaPose 等</text>
+<text x="57" y="227" class="body">二维关节轨迹</text>
+</g>
+<g><rect x="330" y="135" width="380" height="126" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="347" y="168" class="name">候选原语拟合 + 动态规划</text>
+<text x="347" y="200" class="body">静止 / 直线 / 圆弧，选拟合误差</text>
+<text x="347" y="227" class="body">多关节误差求和，共享时间分段</text>
+</g>
+<g><rect x="770" y="135" width="390" height="126" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="787" y="168" class="name">Concrete Motion Program</text>
+<text x="787" y="200" class="body">每个关节一串曲线参数</text>
+<text x="787" y="227" class="body">含空间参数、速度和持续时间</text>
+</g>
+<polyline points="270,197 330,197" class="flow"/>
+<text x="274" y="182" class="label">关键点</text>
+<polyline points="710,197 770,197" class="flow"/>
+<text x="716" y="182" class="label">程序</text>
+<polyline points="960,261 960,315 12,315 12,465 40,465" class="flow"/>
+<text x="340" y="308" class="label">把具体程序提升到抽象层（可选）</text>
+<text x="42" y="372" class="section">② 抽象归纳 · 以重复子序列组织动作</text>
+<g><rect x="40" y="398" width="270" height="135" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="57" y="431" class="name">统一原语表示</text>
+<text x="57" y="463" class="body">起点 / 中点 / 终点</text>
+<text x="57" y="490" class="body">三组二维坐标 + 时长</text>
+</g>
+<g><rect x="370" y="398" width="360" height="135" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="387" y="431" class="name">候选循环搜索</text>
+<text x="387" y="463" class="body">按循环位置分组，拟合高斯</text>
+<text x="387" y="490" class="body">协方差阈值 + 扩大重复窗口</text>
+</g>
+<g><rect x="790" y="398" width="370" height="135" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="807" y="431" class="name">Abstract Motion Program</text>
+<text x="807" y="463" class="body">概率原语 + for 循环</text>
+<text x="807" y="490" class="body">循环次数 / 参数分布 / 时长分布</text>
+</g>
+<polyline points="310,465 370,465" class="flow"/>
+<text x="314" y="450" class="label">可比较</text>
+<polyline points="730,465 790,465" class="flow"/>
+<text x="738" y="450" class="label">重复</text>
+<polyline points="975,533 975,585 12,585 12,742 40,742" class="flow"/>
+<text x="42" y="642" class="section">③ 用户编辑与执行 · 产生连续二维关键点</text>
+<g><rect x="40" y="670" width="310" height="145" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="57" y="703" class="name">编辑程序</text>
+<text x="57" y="735" class="body">修改时长、曲线参数或次数</text>
+<text x="57" y="762" class="body">具体程序也可直接执行</text>
+</g>
+<g><rect x="410" y="670" width="360" height="145" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="427" y="703" class="name">执行器</text>
+<text x="427" y="735" class="body">抽象程序：采样点与时长</text>
+<text x="427" y="762" class="body">重新拟合具体曲线，再逐时采样</text>
+<text x="427" y="789" class="body">具体程序：直接逐时采样</text>
+</g>
+<g><rect x="830" y="670" width="330" height="145" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="847" y="703" class="name">新关键点序列</text>
+<text x="847" y="735" class="body">更密集的插值姿态</text>
+<text x="847" y="762" class="body">或继续重复的未来姿态</text>
+</g>
+<polyline points="350,742 410,742" class="flow"/>
+<text x="360" y="726" class="label">指令</text>
+<polyline points="770,742 830,742" class="flow"/>
+<text x="779" y="726" class="label">坐标</text>
+<polyline points="1160,230 1188,230 1188,655 390,655 390,715 410,715" class="flow"/>
+<text x="800" y="648" class="label">具体程序直接执行支路</text>
+<text x="42" y="907" class="section">④ 下游视频输出 · 网络需要单独训练</text>
+<g><rect x="40" y="937" width="530" height="136" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="57" y="970" class="name">插帧：改造后的 SepConv</text>
+<text x="57" y="1002" class="body">左右图像 + 输入骨架 + 程序目标骨架</text>
+<text x="57" y="1029" class="body">训练时用真实目标姿态；测试时用程序姿态</text>
+</g>
+<g><rect x="640" y="937" width="520" height="136" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="657" y="970" class="name">未来视频：Everybody Dance Now</text>
+<text x="657" y="1002" class="body">预测骨架 → 人物视频</text>
+<text x="657" y="1029" class="body">外观生成不由几何程序独自完成</text>
+</g>
+<polyline points="995,815 995,855 12,855 12,1005 40,1005" class="flow"/>
+<polyline points="995,855 900,855 900,937" class="flow"/>
+<text x="35" y="1132" class="small">实线：表示 / 控制流。原语和循环是解析归纳；姿态估计与图像网络包含已有或单独训练的神经模型。</text><text x="35" y="1158" class="small">依据 CVPR 2021 图1、3、4 与 §3–4 教学重绘；输出为二维轨迹 / 视频，不含三维物理约束。</text></svg>

@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1450" viewBox="0 0 1200 1450" role="img" aria-labelledby="title desc"><title id="title">PMC · 从样条原语到语义概念，再到组合生成</title><desc id="desc">弱标注视频被转成样条原语，原语与转移编码形成交错特征经局部循环网络和CTC识别定位；训练对齐得到的实例经过滤拟合高斯。用户编辑概念顺序次数或样条参数，采样拼接执行后得到二维动作和视频。</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#395d77"/></marker><marker id="training" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#b87629"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#203748}.title{font-size:29px;font-weight:700}.section{font-size:23px;font-weight:700}.name{font-size:23px;font-weight:700}.body{font-size:20px}.label{font-size:18px;fill:#516579}.small{font-size:18px}.flow{fill:none;stroke:#395d77;stroke-width:2.5;marker-end:url(#arrow)}.train{fill:none;stroke:#b87629;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#training)}</style><rect width="1200" height="1450" fill="#fff"/><text x="30" y="43" class="title">PMC · 从样条原语到语义概念，再到组合生成</text>
+<rect x="20" y="1120" width="1160" height="248" rx="15" fill="#edf8f3" stroke="#d0dde6"/>
+<rect x="20" y="860" width="1160" height="230" rx="15" fill="#fff5e8" stroke="#d0dde6"/>
+<rect x="20" y="635" width="1160" height="195" rx="15" fill="#fff5e8" stroke="#d0dde6"/>
+<rect x="20" y="345" width="1160" height="260" rx="15" fill="#edf5fb" stroke="#d0dde6"/>
+<rect x="20" y="78" width="1160" height="214" rx="15" fill="#edf5fb" stroke="#d0dde6"/>
+<text x="42" y="110" class="section">① 几何预处理 · 从观测视频提取紧凑原语</text>
+<g><rect x="40" y="140" width="280" height="125" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="57" y="173" class="name">视频 + 已有姿态估计</text>
+<text x="57" y="205" class="body">二维关节坐标随时间变化</text>
+<text x="57" y="232" class="body">固定机位、单人健身视频</text>
+</g>
+<g><rect x="390" y="140" width="360" height="125" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="407" y="173" class="name">三次样条拟合 + 时间分段</text>
+<text x="407" y="205" class="body">动态规划权衡拟合误差与数量</text>
+<text x="407" y="232" class="body">每关节 x(t)、y(t) 与时长</text>
+</g>
+<g><rect x="820" y="140" width="340" height="125" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="837" y="173" class="name">K 个样条原语</text>
+<text x="837" y="205" class="body">参数化轨迹，可直接执行</text>
+<text x="837" y="232" class="body">不是语义词，也不是离散码本</text>
+</g>
+<polyline points="320,202 390,202" class="flow"/>
+<text x="326" y="186" class="label">关键点</text>
+<polyline points="750,202 820,202" class="flow"/>
+<text x="764" y="186" class="label">参数</text>
+<polyline points="990,265 990,320 12,320 12,490 40,490" class="flow"/>
+<text x="42" y="377" class="section">② 概念识别与定位 · 训练与新视频使用相同编码路径</text>
+<g><rect x="40" y="408" width="320" height="164" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="57" y="441" class="name">两类编码器交错排列</text>
+<text x="57" y="473" class="body">m-MLP：每个原语</text>
+<text x="57" y="500" class="body">t-MLP：每对相邻原语</text>
+<text x="57" y="527" class="body">合计 2K−1 个特征位置</text>
+</g>
+<g><rect x="430" y="408" width="310" height="164" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="447" y="441" class="name">局部 LSTM / GRU</text>
+<text x="447" y="473" class="body">窗口内整合上下文</text>
+<text x="447" y="500" class="body">输出概念标签或 blank</text>
+<text x="447" y="527" class="body">正文使用窗口 13</text>
+</g>
+<g><rect x="810" y="408" width="350" height="164" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="827" y="441" class="name">CTC 式推断与对齐</text>
+<text x="827" y="473" class="body">合并连续同名标签，删除 blank</text>
+<text x="827" y="500" class="body">保留同一动作的多次重复</text>
+<text x="827" y="527" class="body">输出：概念顺序 + 单次时间区间</text>
+</g>
+<polyline points="360,492 430,492" class="flow"/>
+<text x="375" y="476" class="label">特征</text>
+<polyline points="740,492 810,492" class="flow"/>
+<text x="755" y="476" class="label">分布</text>
+<text x="42" y="667" class="section">③ 训练监督 · 人工命名与少量实例，不是无监督概念发现</text>
+<g><rect x="40" y="690" width="520" height="112" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="57" y="723" class="name">重复范围 + 三次单独实例</text>
+<text x="57" y="755" class="body">概念名、整段起止、3 次起止</text>
+<text x="57" y="782" class="body">由平均周期估计总重复次数</text>
+</g>
+<g><rect x="640" y="690" width="520" height="112" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="657" y="723" class="name">L_CTC + λ₁ L_P + λ₂ L_T</text>
+<text x="657" y="755" class="body">原语类别与转移伪标签辅助训练</text>
+<text x="657" y="782" class="body">后期关掉两项辅助损失</text>
+</g>
+<polyline points="560,745 640,745" class="train"/>
+<text x="580" y="730" class="label">监督</text>
+<polyline points="900,690 900,620 590,620 590,572" class="train"/>
+<text x="42" y="892" class="section">④ 离线概念生成器构建 · 利用训练集中的预测对齐</text>
+<g><rect x="40" y="920" width="300" height="140" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="57" y="953" class="name">单次概念实例集合</text>
+<text x="57" y="985" class="body">描述模型从训练视频中定位</text>
+<text x="57" y="1012" class="body">每类包含多次真实执行</text>
+</g>
+<g><rect x="410" y="920" width="350" height="140" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="427" y="953" class="name">两步筛选</text>
+<text x="427" y="985" class="body">仅保留众数原语长度</text>
+<text x="427" y="1012" class="body">与标注实例相似，阈值 F=8</text>
+</g>
+<g><rect x="830" y="920" width="330" height="140" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="847" y="953" class="name">各原语位置的高斯</text>
+<text x="847" y="985" class="body">按概念、原语位置拟合</text>
+<text x="847" y="1012" class="body">默认 cov_f = 0.01</text>
+</g>
+<polyline points="340,991 410,991" class="flow"/>
+<text x="354" y="975" class="label">实例</text>
+<polyline points="760,991 830,991" class="flow"/>
+<text x="774" y="975" class="label">参数</text>
+<polyline points="1160,520 1188,520 1188,845 12,845 12,991 40,991" class="flow"/>
+<text x="42" y="1152" class="section">⑤ 用户描述 / 编辑 → 连续动作与视频</text>
+<g><rect x="40" y="1183" width="320" height="153" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="57" y="1216" class="name">已知概念顺序与次数</text>
+<text x="57" y="1248" class="body">增加 / 删除 / 替换概念</text>
+<text x="57" y="1275" class="body">也可修改单段样条参数</text>
+</g>
+<g><rect x="430" y="1183" width="370" height="153" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="447" y="1216" class="name">采样 → 拼接 → 执行</text>
+<text x="447" y="1248" class="body">每个概念依次采样原语参数</text>
+<text x="447" y="1275" class="body">下一段起姿态接上一段末姿态</text>
+<text x="447" y="1302" class="body">执行样条得到二维关键点</text>
+</g>
+<g><rect x="870" y="1183" width="290" height="153" rx="10" fill="#fff" stroke="#9eb6c8" stroke-width="1.5"/><text x="887" y="1216" class="name">独立视频渲染器</text>
+<text x="887" y="1248" class="body">骨架到人物 GAN</text>
+<text x="887" y="1275" class="body">输出人物视频</text>
+<text x="887" y="1302" class="body">渲染器另行训练</text>
+</g>
+<polyline points="360,1258 430,1258" class="flow"/>
+<text x="374" y="1242" class="label">程序</text>
+<polyline points="800,1258 870,1258" class="flow"/>
+<text x="814" y="1242" class="label">姿态</text>
+<polyline points="995,1060 995,1105 815,1105 815,1210 800,1210" class="train"/>
+<text x="635" y="1113" class="label">拟合好的概念分布</text>
+<text x="35" y="1400" class="small">实线：推断 / 执行数据流；橙色虚线：训练监督或离线得到的生成分布。描述生成器与视频渲染器分开。</text><text x="35" y="1428" class="small">依据 CVPR 2022 图1、4、5 和补充 §1–2 教学重绘；只验证六类二维健身动作，未提供通用三维物理保证。</text></svg>

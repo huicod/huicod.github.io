@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2250" viewBox="0 0 1200 2250" role="img" aria-labelledby="title desc">
+<title id="title">Neural Motion Stitching：图规划时间，神经网络生成连续过渡</title>
+<desc id="desc">离线CVQ-VAE学习簇，动捕相邻块建立转移图。推理把两个边界片段映射到簇，A*搜索决定中间状态和长度，解码代表片段形成guide，与挖空中间的原始两端拼接输入Transformer，生成过渡与目标根变换。底部单列用真值簇顺序监督的训练流程。</desc>
+<defs><marker id="arrow" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#526d80"/></marker><marker id="orange" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0L9 4L0 8Z" fill="#aa7438"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei",Arial,sans-serif;fill:#20394b}.title{font-size:29px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:23px;font-weight:700}.body{font-size:21px}.small{font-size:19px}.edge{fill:none;stroke:#526d80;stroke-width:2.6;marker-end:url(#arrow)}.dash{fill:none;stroke:#aa7438;stroke-width:2.5;stroke-dasharray:8 5;marker-end:url(#orange)}</style>
+<rect width="1200" height="2250" fill="#fff"/>
+<text x="30" y="45" class="title" text-anchor="start">NMS：先规划中间运动状态与时长，再生成连续过渡</text>
+<text x="30" y="80" class="small" text-anchor="start">SIGGRAPH Asia 2026 · 教学示意 · 实线：数据流  /  橙色虚线：离线模型、图或监督</text>
+<rect x="25" y="105" width="1150" height="410" rx="12" fill="#f7fafc" stroke="#bdceda" stroke-width="1.5"/>
+<text x="48" y="145" class="section" text-anchor="start">A  离线准备：从连续动捕学习离散运动簇和转移关系</text>
+<rect x="55" y="180" width="300" height="125" rx="12" fill="#fff" stroke="#bdceda" stroke-width="1.5"/>
+<text x="205.0" y="212" class="head" text-anchor="middle">动捕序列 → 短运动块</text>
+<text x="205.0" y="244" class="body" text-anchor="middle">60 FPS；每块16帧</text>
+<text x="205.0" y="272" class="body" text-anchor="middle">9个关键关节 + 根运动</text>
+<rect x="415" y="180" width="340" height="125" rx="12" fill="#fff" stroke="#bdceda" stroke-width="1.5"/>
+<text x="585.0" y="212" class="head" text-anchor="middle">CVQ-VAE聚类学习</text>
+<text x="585.0" y="244" class="body" text-anchor="middle">编码 → 64维码 → 解码</text>
+<text x="585.0" y="272" class="body" text-anchor="middle">重建、世界位置、VQ、对比</text>
+<rect x="815" y="180" width="330" height="125" rx="12" fill="#eaf5ee" stroke="#bdceda" stroke-width="1.5"/>
+<text x="980.0" y="212" class="head" text-anchor="middle">2048个运动簇</text>
+<text x="980.0" y="244" class="body" text-anchor="middle">码本 + 各簇代表片段</text>
+<text x="980.0" y="272" class="body" text-anchor="middle">代表片段保留块内动态</text>
+<path d="M355 242H415" class="edge"/>
+<path d="M755 242H815" class="edge"/>
+<rect x="55" y="355" width="300" height="110" rx="12" fill="#fff" stroke="#bdceda" stroke-width="1.5"/>
+<text x="205.0" y="387" class="head" text-anchor="middle">真实相邻块分簇</text>
+<text x="205.0" y="419" class="body" text-anchor="middle">不重叠窗口得到 u → v</text>
+<text x="205.0" y="447" class="body" text-anchor="middle">无需人工动作类别</text>
+<rect x="415" y="355" width="340" height="110" rx="12" fill="#eaf5ee" stroke="#bdceda" stroke-width="1.5"/>
+<text x="585.0" y="387" class="head" text-anchor="middle">有向簇转移图</text>
+<text x="585.0" y="419" class="body" text-anchor="middle">边记录训练数据的接续关系</text>
+<text x="585.0" y="447" class="body" text-anchor="middle">代价：码距离 + 根边界差</text>
+<path d="M205 305V355" class="edge"/>
+<path d="M355 410H415" class="edge"/>
+<path d="M980 305V330H205V355" class="dash"/>
+<text x="815" y="392" class="small" text-anchor="start">簇ID不是可读动作词。</text>
+<text x="815" y="422" class="small" text-anchor="start">图边不提供物理可行保证。</text>
+<rect x="25" y="550" width="1150" height="1235" rx="12" fill="#f7fafc" stroke="#bdceda" stroke-width="1.5"/>
+<text x="48" y="590" class="section" text-anchor="start">B  推理：输入两段动画 → 搜索变长路径 → 生成并拼接</text>
+<rect x="55" y="625" width="310" height="110" rx="12" fill="#fff" stroke="#bdceda" stroke-width="1.5"/>
+<text x="210.0" y="657" class="head" text-anchor="middle">第一段边界块 A</text>
+<text x="210.0" y="689" class="body" text-anchor="middle">原始17帧 → 16帧运动特征</text>
+<text x="210.0" y="717" class="body" text-anchor="middle">额外一帧用于计算位移</text>
+<rect x="415" y="625" width="310" height="110" rx="12" fill="#fff" stroke="#bdceda" stroke-width="1.5"/>
+<text x="570.0" y="657" class="head" text-anchor="middle">第二段边界块 B</text>
+<text x="570.0" y="689" class="body" text-anchor="middle">原始17帧 → 16帧运动特征</text>
+<text x="570.0" y="717" class="body" text-anchor="middle">世界根变换可重新定位</text>
+<rect x="815" y="625" width="330" height="110" rx="12" fill="#fff3e4" stroke="#bdceda" stroke-width="1.5"/>
+<text x="980.0" y="657" class="head" text-anchor="middle">可选：地面方向向量</text>
+<text x="980.0" y="689" class="body" text-anchor="middle">加入搜索代价的软偏好</text>
+<text x="980.0" y="717" class="body" text-anchor="middle">固定方向不等于精确终点</text>
+<rect x="180" y="790" width="550" height="110" rx="12" fill="#fff" stroke="#bdceda" stroke-width="1.5"/>
+<text x="455.0" y="822" class="head" text-anchor="middle">两端映射为起终簇 kA、kB</text>
+<text x="455.0" y="854" class="body" text-anchor="middle">余弦最近3码 → 逐块根轨迹复核</text>
+<text x="455.0" y="882" class="body" text-anchor="middle">从候选中选择根位置误差最小者</text>
+<path d="M210 735V763H340V790" class="edge"/>
+<path d="M570 735V790" class="edge"/>
+<path d="M55 680H45V1120H650V1150" class="edge"/>
+<path d="M725 680H780V1120H845V1150" class="edge"/>
+<text x="820" y="1110" class="small" text-anchor="start">原始A / B：完整姿态旁路</text>
+<rect x="180" y="965" width="550" height="125" rx="12" fill="#eaf1ff" stroke="#bdceda" stroke-width="1.5"/>
+<text x="455.0" y="997" class="head" text-anchor="middle">A*搜索簇序列 m</text>
+<text x="455.0" y="1029" class="body" text-anchor="middle">码差 + 根高度 / 朝向 / 位移差</text>
+<text x="455.0" y="1057" class="body" text-anchor="middle">通常 N 个节点 → 总长 T = 16N</text>
+<path d="M455 900V965" class="edge"/>
+<text x="475" y="938" class="small" text-anchor="start">起终节点</text>
+<path d="M980 735V1028H730" class="edge"/>
+<text x="862" y="1007" class="small" text-anchor="start">方向代价</text>
+<path d="M585 465V535H30V1028H180" class="dash"/>
+<text x="45" y="1004" class="small" text-anchor="start">离线图</text>
+<path d="M1145 242H1162V845H730" class="dash"/>
+<text x="990" y="815" class="small" text-anchor="middle">离线码本 / 编码器</text>
+<rect x="55" y="1150" width="515" height="150" rx="12" fill="#eaf5ee" stroke="#bdceda" stroke-width="1.5"/>
+<text x="312.5" y="1182" class="head" text-anchor="middle">Guide：粗运动路线 Sg</text>
+<text x="312.5" y="1214" class="body" text-anchor="middle">解码中间簇的9关节代表片段</text>
+<text x="312.5" y="1242" class="body" text-anchor="middle">逐块按根变换对齐；两端用真实输入</text>
+<text x="312.5" y="1270" class="body" text-anchor="middle">直接相连时仍插值一个16帧过渡块</text>
+<rect x="630" y="1150" width="515" height="150" rx="12" fill="#fff" stroke="#bdceda" stroke-width="1.5"/>
+<text x="887.5" y="1182" class="head" text-anchor="middle">Target：高分辨率两端 Xtgt</text>
+<text x="887.5" y="1214" class="body" text-anchor="middle">22关节；A + 中间全零 + 对齐后的B</text>
+<text x="887.5" y="1242" class="body" text-anchor="middle">B初始根位置来自guide</text>
+<text x="887.5" y="1270" class="body" text-anchor="middle">这里的target不含中间帧真值</text>
+<path d="M455 1090V1120H310V1150" class="edge"/>
+<path d="M570 1220H630" class="edge"/>
+<text x="586" y="1199" class="small" text-anchor="middle">根</text>
+<rect x="255" y="1360" width="690" height="125" rx="12" fill="#eaf1ff" stroke="#bdceda" stroke-width="1.5"/>
+<text x="600.0" y="1392" class="head" text-anchor="middle">U = [Xtgt, Sg] → Transformer encoder</text>
+<text x="600.0" y="1424" class="body" text-anchor="middle">6层 / 8头 / 隐藏维512 / 相对位置编码</text>
+<text x="600.0" y="1452" class="body" text-anchor="middle">一次前向预测过渡帧 + 16维根destination</text>
+<path d="M310 1300V1330H455V1360" class="edge"/>
+<path d="M887 1300V1330H745V1360" class="edge"/>
+<path d="M1145 1250H1162V1600H945" class="edge"/>
+<text x="1145" y="1515" class="small" text-anchor="end">原两端</text>
+<rect x="255" y="1545" width="690" height="115" rx="12" fill="#eaf5ee" stroke="#bdceda" stroke-width="1.5"/>
+<text x="600.0" y="1577" class="head" text-anchor="middle">拼接完整22关节动作</text>
+<text x="600.0" y="1609" class="body" text-anchor="middle">原A + 生成过渡 + 根据destination重新定位的原B</text>
+<text x="600.0" y="1637" class="body" text-anchor="middle">主要生成中间帧；可选惯性混合独立启用</text>
+<path d="M600 1485V1545" class="edge"/>
+<text x="618" y="1522" class="small" text-anchor="start">连续姿态与根变换</text>
+<text x="55" y="1710" class="body" text-anchor="start">长度是16帧块的离散倍数；方向条件是软引导，未求解任意关节、物体接触或动力学约束。</text>
+<text x="55" y="1750" class="body" text-anchor="start">固定输入与搜索权重时路线确定；原B的局部动作保留，但其世界位置与朝向可改变。</text>
+<rect x="25" y="1820" width="1150" height="395" rx="12" fill="#fffaf1" stroke="#bdceda" stroke-width="1.5"/>
+<text x="48" y="1860" class="section" text-anchor="start">C  生成器训练：真值中间序列提供监督，训练不先执行A*</text>
+<rect x="55" y="1900" width="330" height="140" rx="12" fill="#fff" stroke="#bdceda" stroke-width="1.5"/>
+<text x="220.0" y="1932" class="head" text-anchor="middle">真值动捕窗口</text>
+<text x="220.0" y="1964" class="body" text-anchor="middle">3–8块：48–128帧</text>
+<text x="220.0" y="1992" class="body" text-anchor="middle">真值逐块分簇形成guide</text>
+<text x="220.0" y="2020" class="body" text-anchor="middle">两端保留，中间置零形成target</text>
+<rect x="445" y="1900" width="330" height="140" rx="12" fill="#fff3e4" stroke="#bdceda" stroke-width="1.5"/>
+<text x="610.0" y="1932" class="head" text-anchor="middle">Transformer训练</text>
+<text x="610.0" y="1964" class="body" text-anchor="middle">L1过渡 + FK世界位置</text>
+<text x="610.0" y="1992" class="body" text-anchor="middle">destination根终点监督</text>
+<text x="610.0" y="2020" class="body" text-anchor="middle">对抗损失改善接缝与脚滑</text>
+<rect x="835" y="1900" width="310" height="140" rx="12" fill="#fff3e4" stroke="#bdceda" stroke-width="1.5"/>
+<text x="990.0" y="1932" class="head" text-anchor="middle">位移判别器（仅训练）</text>
+<text x="990.0" y="1964" class="body" text-anchor="middle">9关键关节 + 头部</text>
+<text x="990.0" y="1992" class="body" text-anchor="middle">重新切块跨越原块边界</text>
+<text x="990.0" y="2020" class="body" text-anchor="middle">LSGAN + R1正则</text>
+<path d="M385 1970H445" class="dash"/>
+<path d="M835 1970H775" class="dash"/>
+<text x="55" y="2090" class="body" text-anchor="start">生成器学习：有粗路线和真实两端时，如何恢复高质量连续过渡。</text>
+<text x="55" y="2130" class="body" text-anchor="start">推理差异：路线来自A*搜索，可能偏离训练中的真值路径，因此仍会有稀有姿态与接触失败。</text>
+<text x="55" y="2180" class="small" text-anchor="start">来源：正文图2、4–8，§3–6；附录A–C。未运行模型，图不是实际执行记录。</text>
+</svg>
