@@ -1,5 +1,6 @@
 import { getCollection } from "astro:content";
 import createSlug from "../../lib/createSlug";
+import { getPaperFacets } from "../../data/paper-taxonomy";
 
 export async function GET() {
   const posts = (await getCollection("blog"))
@@ -11,6 +12,7 @@ export async function GET() {
     description: post.data.description,
     tags: post.data.tags ?? [],
     badge: post.data.badge ?? "",
+    facets: getPaperFacets(post.slug),
     url: "/blog/" + createSlug(post.data.title, post.slug) + "/",
   }))), { headers: { "Content-Type": "application/json; charset=utf-8" } });
 }

@@ -1,0 +1,2902 @@
+{
+  "action-motifs-paper-notes": {
+    "topics": [
+      "representation",
+      "understanding",
+      "editing"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "actionplan-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "time",
+      "streaming"
+    ]
+  },
+  "affectgpt-paper-notes": {
+    "topics": [
+      "other"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": []
+  },
+  "affectgpt-r1-paper-notes": {
+    "topics": [
+      "other"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": []
+  },
+  "ais-paper-notes": {
+    "topics": [
+      "editing",
+      "character"
+    ],
+    "methods": [],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "amuse-paper-notes": {
+    "topics": [
+      "gesture",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "anymo-paper-notes": {
+    "topics": [
+      "generation",
+      "gesture",
+      "dance",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "space"
+    ]
+  },
+  "anytop-paper-notes": {
+    "topics": [
+      "character",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "ardy-paper-notes": {
+    "topics": [
+      "character",
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts",
+      "streaming"
+    ]
+  },
+  "armflow-paper-notes": {
+    "topics": [
+      "generation",
+      "character"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "interaction",
+      "streaming"
+    ]
+  },
+  "autokeyframe-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "character"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "bimogen-paper-notes": {
+    "topics": [
+      "generation",
+      "understanding",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens",
+      "diffusion",
+      "language"
+    ],
+    "controls": []
+  },
+  "bimotion-paper-notes": {
+    "topics": [
+      "representation",
+      "character",
+      "generation"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": []
+  },
+  "casa-paper-notes": {
+    "topics": [
+      "understanding"
+    ],
+    "methods": [
+      "retrieval"
+    ],
+    "controls": []
+  },
+  "categorical-codebook-matching-paper-notes": {
+    "topics": [
+      "character",
+      "representation"
+    ],
+    "methods": [
+      "tokens",
+      "retrieval"
+    ],
+    "controls": [
+      "space",
+      "parts",
+      "streaming"
+    ]
+  },
+  "cmdm-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "streaming"
+    ]
+  },
+  "como-paper-notes": {
+    "topics": [
+      "representation",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "tokens",
+      "language"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts",
+      "style"
+    ]
+  },
+  "condmdi-paper-notes": {
+    "topics": [
+      "editing",
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "cont-gest-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [],
+    "controls": [
+      "space",
+      "style",
+      "time"
+    ]
+  },
+  "control-operators-paper-notes": {
+    "topics": [
+      "character"
+    ],
+    "methods": [
+      "flow",
+      "retrieval"
+    ],
+    "controls": [
+      "space",
+      "style",
+      "interaction",
+      "streaming"
+    ]
+  },
+  "coordspeaker-paper-notes": {
+    "topics": [
+      "gesture",
+      "generation",
+      "multimodal"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "cot-pose-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "ctrlcomo-paper-notes": {
+    "topics": [
+      "gesture",
+      "representation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "cursor-codex-notes": {
+    "topics": [
+      "other"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "curvecodec2-paper-notes": {
+    "topics": [
+      "representation",
+      "character"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "customdance-paper-notes": {
+    "topics": [
+      "dance",
+      "editing"
+    ],
+    "methods": [
+      "retrieval",
+      "diffusion",
+      "language"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "dancechat-paper-notes": {
+    "topics": [
+      "dance"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "dancecrafter-paper-notes": {
+    "topics": [
+      "dance",
+      "understanding",
+      "representation"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": []
+  },
+  "dancemosaic-paper-notes": {
+    "topics": [
+      "dance",
+      "editing",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "dart-paper-notes": {
+    "topics": [
+      "generation",
+      "character",
+      "representation"
+    ],
+    "methods": [
+      "diffusion",
+      "physics"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "streaming"
+    ]
+  },
+  "decoupling-contact-paper-notes": {
+    "topics": [
+      "editing"
+    ],
+    "methods": [],
+    "controls": [
+      "time",
+      "space",
+      "style"
+    ]
+  },
+  "deep-motion-warping-paper-notes": {
+    "topics": [
+      "editing",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts",
+      "style"
+    ]
+  },
+  "deepphase-paper-notes": {
+    "topics": [
+      "representation",
+      "character"
+    ],
+    "methods": [
+      "phase-frequency",
+      "retrieval"
+    ],
+    "controls": [
+      "space",
+      "style",
+      "streaming"
+    ]
+  },
+  "demo-paper-notes": {
+    "topics": [
+      "understanding"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": []
+  },
+  "demogen-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "didiffges-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "diffusionphase-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "dimo-paper-notes": {
+    "topics": [
+      "generation",
+      "understanding",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens",
+      "diffusion",
+      "language"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "dimot-paper-notes": {
+    "topics": [
+      "representation",
+      "generation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "flow"
+    ],
+    "controls": []
+  },
+  "discoforcing-paper-notes": {
+    "topics": [
+      "dance",
+      "character"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": [
+      "streaming"
+    ]
+  },
+  "discord-paper-notes": {
+    "topics": [
+      "representation",
+      "generation"
+    ],
+    "methods": [
+      "tokens",
+      "flow"
+    ],
+    "controls": []
+  },
+  "dmp-paper-notes": {
+    "topics": [
+      "representation",
+      "character"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "streaming"
+    ]
+  },
+  "dualtrack-paper-notes": {
+    "topics": [
+      "gesture",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens",
+      "language"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "duetgen-paper-notes": {
+    "topics": [
+      "dance",
+      "representation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "interaction"
+    ]
+  },
+  "duogesture-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "dyadit-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "tokens",
+      "diffusion"
+    ],
+    "controls": [
+      "interaction",
+      "style"
+    ]
+  },
+  "dynmask-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "echo-conversational-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": [
+      "interaction",
+      "style"
+    ]
+  },
+  "echoavatar-paper-notes": {
+    "topics": [
+      "gesture",
+      "dance",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens",
+      "language",
+      "flow"
+    ],
+    "controls": [
+      "streaming"
+    ]
+  },
+  "edit-flows-paper-notes": {
+    "topics": [
+      "other"
+    ],
+    "methods": [
+      "flow",
+      "language"
+    ],
+    "controls": []
+  },
+  "elma-paper-notes": {
+    "topics": [
+      "understanding",
+      "generation"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "emotiefflib-library-notes": {
+    "topics": [
+      "other"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "emotion-llama-paper-notes": {
+    "topics": [
+      "other"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": []
+  },
+  "event-t2m-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "exact-paper-notes": {
+    "topics": [
+      "representation",
+      "understanding",
+      "character"
+    ],
+    "methods": [
+      "language",
+      "physics"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "ffmt-paper-notes": {
+    "topics": [
+      "dance",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "figmo-paper-notes": {
+    "topics": [
+      "understanding"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": []
+  },
+  "finemogen-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion",
+      "language"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "finemola-paper-notes": {
+    "topics": [
+      "understanding"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": []
+  },
+  "fld-paper-notes": {
+    "topics": [
+      "representation",
+      "character"
+    ],
+    "methods": [
+      "phase-frequency",
+      "physics"
+    ],
+    "controls": [
+      "streaming"
+    ]
+  },
+  "flowerdance-paper-notes": {
+    "topics": [
+      "dance",
+      "editing"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts",
+      "style"
+    ]
+  },
+  "frankenmotion-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "understanding"
+    ],
+    "methods": [
+      "diffusion",
+      "language"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "free-t2m-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "freetalker-paper-notes": {
+    "topics": [
+      "gesture",
+      "generation",
+      "multimodal"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "freqmo-paper-notes": {
+    "topics": [
+      "representation",
+      "generation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "tokens",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "funphase-paper-notes": {
+    "topics": [
+      "representation",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "parts",
+      "style"
+    ]
+  },
+  "ganimator-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "character"
+    ],
+    "methods": [],
+    "controls": [
+      "space",
+      "style",
+      "streaming"
+    ]
+  },
+  "gem-paper-notes": {
+    "topics": [
+      "generation",
+      "dance",
+      "video",
+      "multimodal"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "genmm-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "character"
+    ],
+    "methods": [
+      "retrieval"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "genmostyle-paper-notes": {
+    "topics": [
+      "editing",
+      "representation"
+    ],
+    "methods": [],
+    "controls": [
+      "style"
+    ]
+  },
+  "gesgpt-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "language",
+      "retrieval"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "gesturediffuclip-paper-notes": {
+    "topics": [
+      "gesture",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "style",
+      "parts"
+    ]
+  },
+  "gesturefar-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "streaming"
+    ]
+  },
+  "gesturehydra-paper-notes": {
+    "topics": [
+      "gesture",
+      "editing"
+    ],
+    "methods": [
+      "diffusion",
+      "retrieval"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "style"
+    ]
+  },
+  "gesturelsm-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "tokens",
+      "flow"
+    ],
+    "controls": []
+  },
+  "globaldiff-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "graph-structured-video-paper-notes": {
+    "topics": [
+      "video"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "interaction"
+    ]
+  },
+  "graphmotion-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "graphvid-paper-notes": {
+    "topics": [
+      "video"
+    ],
+    "methods": [
+      "flow",
+      "language"
+    ],
+    "controls": [
+      "interaction"
+    ]
+  },
+  "grw-paper-notes": {
+    "topics": [
+      "gesture",
+      "understanding"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "hmvlm-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "understanding",
+      "video"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "hologest-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "humanmac-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "hyperlora-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "keta-paper-notes": {
+    "topics": [
+      "generation",
+      "understanding"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "keymotion-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "kinematic-frequency-motion-paper-notes": {
+    "topics": [
+      "editing",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "kinematic-phrases-paper-notes": {
+    "topics": [
+      "representation",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "kinmo-paper-notes": {
+    "topics": [
+      "understanding",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "space",
+      "parts"
+    ]
+  },
+  "l2cds-paper-notes": {
+    "topics": [
+      "representation",
+      "character"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "labandancer-paper-notes": {
+    "topics": [
+      "dance",
+      "character",
+      "representation"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "lact-motion-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "lamp-motion-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "understanding"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "lamp-video-paper-notes": {
+    "topics": [
+      "video"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "language-of-motion-paper-notes": {
+    "topics": [
+      "multimodal",
+      "gesture",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "parts",
+      "style"
+    ]
+  },
+  "latentft-paper-notes": {
+    "topics": [
+      "other"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "livelyspeaker-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "lmm-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "gesture",
+      "dance"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "lmr-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "tokens",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "local-motion-phases-paper-notes": {
+    "topics": [
+      "character",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": [
+      "space",
+      "style",
+      "interaction",
+      "streaming"
+    ]
+  },
+  "lodge-paper-notes": {
+    "topics": [
+      "dance",
+      "representation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "style"
+    ]
+  },
+  "lodge-plus-plus-paper-notes": {
+    "topics": [
+      "dance",
+      "representation"
+    ],
+    "methods": [
+      "tokens",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "style"
+    ]
+  },
+  "lrcm-paper-notes": {
+    "topics": [
+      "dance"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "style"
+    ]
+  },
+  "m3gpt-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "dance",
+      "understanding"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "madis-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "language",
+      "tokens",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "mate-paper-notes": {
+    "topics": [
+      "understanding",
+      "generation"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "meco-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "language",
+      "tokens",
+      "retrieval"
+    ],
+    "controls": [
+      "parts",
+      "style"
+    ]
+  },
+  "meo-paper-notes": {
+    "topics": [
+      "editing"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "mg-motionllm-paper-notes": {
+    "topics": [
+      "generation",
+      "understanding",
+      "editing",
+      "multimodal"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "miburi-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "streaming"
+    ]
+  },
+  "mic-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion",
+      "physics"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts",
+      "interaction"
+    ]
+  },
+  "mobius-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "understanding",
+      "editing"
+    ],
+    "methods": [
+      "language",
+      "flow"
+    ],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "mocha-paper-notes": {
+    "topics": [
+      "character",
+      "editing"
+    ],
+    "methods": [
+      "retrieval"
+    ],
+    "controls": [
+      "style",
+      "streaming"
+    ]
+  },
+  "moco-paper-notes": {
+    "topics": [
+      "multimodal",
+      "gesture",
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "modularphase-paper-notes": {
+    "topics": [
+      "editing",
+      "representation",
+      "generation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion",
+      "flow"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "momask-paper-notes": {
+    "topics": [
+      "generation",
+      "representation",
+      "editing"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "momaskpp-paper-notes": {
+    "topics": [
+      "generation",
+      "representation",
+      "understanding"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
+  },
+  "momug-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "understanding",
+      "editing"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "mosat-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "motion-anything-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "dance"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
+  },
+  "motion-omni-paper-notes": {
+    "topics": [
+      "gesture",
+      "multimodal"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "motion-primitive-discovery-paper-notes": {
+    "topics": [
+      "representation",
+      "understanding"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "motion-programs-paper-notes": {
+    "topics": [
+      "representation",
+      "video",
+      "editing"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "motion-puzzle-paper-notes": {
+    "topics": [
+      "editing"
+    ],
+    "methods": [],
+    "controls": [
+      "parts",
+      "style"
+    ]
+  },
+  "motion-r1-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "motion2motion-paper-notes": {
+    "topics": [
+      "character",
+      "editing"
+    ],
+    "methods": [
+      "retrieval"
+    ],
+    "controls": []
+  },
+  "motionbind-paper-notes": {
+    "topics": [
+      "multimodal",
+      "understanding",
+      "generation"
+    ],
+    "methods": [
+      "retrieval",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "motionclr-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "style"
+    ]
+  },
+  "motioncraft-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "gesture",
+      "dance"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "motiongpt3-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "understanding"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "motionhiflow-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": []
+  },
+  "motionlab-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts",
+      "style"
+    ]
+  },
+  "motionmerge-paper-notes": {
+    "topics": [
+      "editing",
+      "generation",
+      "understanding"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "motionmillion-paper-notes": {
+    "topics": [
+      "generation",
+      "understanding",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "motionpyramid-paper-notes": {
+    "topics": [
+      "representation",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "phase-frequency",
+      "tokens",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "style"
+    ]
+  },
+  "motionspaceflow-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "motionstreamer-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "streaming"
+    ]
+  },
+  "motionupg-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "gesture",
+      "dance"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "parts"
+    ]
+  },
+  "motionwavelet-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "motivdance-paper-notes": {
+    "topics": [
+      "dance",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "motok-paper-notes": {
+    "topics": [
+      "representation",
+      "generation"
+    ],
+    "methods": [
+      "tokens",
+      "diffusion"
+    ],
+    "controls": [
+      "space"
+    ]
+  },
+  "mscot-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "interaction"
+    ]
+  },
+  "multi-level-diffusion-paper-notes": {
+    "topics": [
+      "editing",
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "multiact-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "ncp-paper-notes": {
+    "topics": [
+      "character",
+      "representation"
+    ],
+    "methods": [
+      "tokens",
+      "physics"
+    ],
+    "controls": [
+      "interaction",
+      "space"
+    ]
+  },
+  "nemf-paper-notes": {
+    "topics": [
+      "representation",
+      "generation",
+      "editing"
+    ],
+    "methods": [],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "neural-animation-layering-paper-notes": {
+    "topics": [
+      "character",
+      "editing"
+    ],
+    "methods": [],
+    "controls": [
+      "space",
+      "parts",
+      "interaction",
+      "streaming"
+    ]
+  },
+  "neural-codec-paper-notes": {
+    "topics": [
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": []
+  },
+  "neural-motion-stitching-paper-notes": {
+    "topics": [
+      "editing",
+      "character"
+    ],
+    "methods": [
+      "tokens",
+      "retrieval"
+    ],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "neus-v-paper-notes": {
+    "topics": [
+      "video"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": []
+  },
+  "opendance-paper-notes": {
+    "topics": [
+      "dance",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "style"
+    ]
+  },
+  "partphase-paper-notes": {
+    "topics": [
+      "editing",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts",
+      "style"
+    ]
+  },
+  "paspa-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "personagest-paper-notes": {
+    "topics": [
+      "gesture",
+      "representation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "parts",
+      "style"
+    ]
+  },
+  "pgr2m-paper-notes": {
+    "topics": [
+      "representation",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "phasebetweener-paper-notes": {
+    "topics": [
+      "editing",
+      "character",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "style"
+    ]
+  },
+  "phasedance-paper-notes": {
+    "topics": [
+      "dance",
+      "understanding",
+      "editing",
+      "multimodal"
+    ],
+    "methods": [
+      "phase-frequency",
+      "tokens",
+      "language"
+    ],
+    "controls": [
+      "time",
+      "style"
+    ]
+  },
+  "phasor-paper-notes": {
+    "topics": [
+      "representation",
+      "character",
+      "understanding"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": []
+  },
+  "physdrift-paper-notes": {
+    "topics": [
+      "gesture",
+      "character"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "pixelumm-paper-notes": {
+    "topics": [
+      "video"
+    ],
+    "methods": [
+      "flow",
+      "language"
+    ],
+    "controls": []
+  },
+  "plt-paper-notes": {
+    "topics": [
+      "character",
+      "representation"
+    ],
+    "methods": [
+      "tokens",
+      "physics"
+    ],
+    "controls": [
+      "space",
+      "parts"
+    ]
+  },
+  "post1": {
+    "topics": [
+      "other"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "post2": {
+    "topics": [
+      "other"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "post3": {
+    "topics": [
+      "other"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "pro-motion-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "progmogen-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "time",
+      "interaction"
+    ]
+  },
+  "programmatic-motion-concepts-paper-notes": {
+    "topics": [
+      "understanding",
+      "representation",
+      "editing"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "projflow-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "space",
+      "time"
+    ]
+  },
+  "promp-paper-notes": {
+    "topics": [
+      "representation",
+      "character"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": [
+      "space",
+      "time",
+      "parts"
+    ]
+  },
+  "puppeteer-paper-notes": {
+    "topics": [
+      "gesture",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "interaction",
+      "time"
+    ]
+  },
+  "pyramotion-paper-notes": {
+    "topics": [
+      "gesture",
+      "representation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
+  },
+  "qpart-paper-notes": {
+    "topics": [
+      "other"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": []
+  },
+  "qpgesture-paper-notes": {
+    "topics": [
+      "gesture",
+      "editing"
+    ],
+    "methods": [
+      "tokens",
+      "retrieval",
+      "phase-frequency"
+    ],
+    "controls": [
+      "space"
+    ]
+  },
+  "r1-omni-paper-notes": {
+    "topics": [
+      "other"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": []
+  },
+  "raft-consensus-reading-notes": {
+    "topics": [
+      "other"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "rag-gesture-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "retrieval",
+      "diffusion",
+      "language"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "rdla-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "streaming",
+      "time"
+    ]
+  },
+  "rhythmic-gesticulator-paper-notes": {
+    "topics": [
+      "gesture",
+      "representation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "rsmt-paper-notes": {
+    "topics": [
+      "editing",
+      "character",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "style",
+      "streaming"
+    ]
+  },
+  "salad-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "scalemogen-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "representation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "seeg-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "semantic-gesticulator-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "language",
+      "retrieval",
+      "tokens"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "semantic-motion-anchors-paper-notes": {
+    "topics": [
+      "understanding",
+      "gesture"
+    ],
+    "methods": [
+      "retrieval",
+      "language",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "semantic-styles-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "style",
+      "time",
+      "space"
+    ]
+  },
+  "semconflow-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "flow",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "semges-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
+  },
+  "semoco-paper-notes": {
+    "topics": [
+      "representation",
+      "generation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
+  },
+  "semtalk-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
+  },
+  "sfd-paper-notes": {
+    "topics": [
+      "video"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": []
+  },
+  "siggesture-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "diffusion",
+      "retrieval",
+      "language"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "signature-paper-notes": {
+    "topics": [
+      "gesture",
+      "editing"
+    ],
+    "methods": [
+      "diffusion",
+      "retrieval",
+      "language"
+    ],
+    "controls": [
+      "time",
+      "parts",
+      "style"
+    ]
+  },
+  "singdance-paper-notes": {
+    "topics": [
+      "video",
+      "dance"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": []
+  },
+  "sinmdm-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion",
+      "phase-frequency"
+    ],
+    "controls": [
+      "time",
+      "parts",
+      "style"
+    ]
+  },
+  "skel-betweener-paper-notes": {
+    "topics": [
+      "editing",
+      "character"
+    ],
+    "methods": [],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "smd-paper-notes": {
+    "topics": [
+      "understanding",
+      "representation"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": []
+  },
+  "smdm-paper-notes": {
+    "topics": [
+      "generation",
+      "character",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "time"
+    ]
+  },
+  "smoodi-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "smoogpt-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "language",
+      "tokens",
+      "diffusion"
+    ],
+    "controls": [
+      "style",
+      "parts"
+    ]
+  },
+  "soscontrol-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion",
+      "phase-frequency"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "stmc-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
+  "stream-paper-notes": {
+    "topics": [
+      "dance",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "style"
+    ]
+  },
+  "streamtalk-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "flow",
+      "retrieval"
+    ],
+    "controls": [
+      "streaming",
+      "time"
+    ]
+  },
+  "stylemotif-paper-notes": {
+    "topics": [
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "diffusion",
+      "retrieval"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "stymo-paper-notes": {
+    "topics": [
+      "editing",
+      "character"
+    ],
+    "methods": [],
+    "controls": [
+      "style",
+      "parts",
+      "time"
+    ]
+  },
+  "superstar-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "streaming"
+    ]
+  },
+  "syntalker-paper-notes": {
+    "topics": [
+      "gesture",
+      "generation",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens",
+      "diffusion"
+    ],
+    "controls": [
+      "parts"
+    ]
+  },
+  "talkflow-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": []
+  },
+  "temudance-paper-notes": {
+    "topics": [
+      "dance"
+    ],
+    "methods": [
+      "diffusion",
+      "retrieval"
+    ],
+    "controls": []
+  },
+  "time-to-move-paper-notes": {
+    "topics": [
+      "video"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "time"
+    ]
+  },
+  "timelinecontrol-paper-notes": {
+    "topics": [
+      "generation",
+      "character"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "time",
+      "parts",
+      "space",
+      "streaming"
+    ]
+  },
+  "tm2d-paper-notes": {
+    "topics": [
+      "dance",
+      "generation",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "tmr-paper-notes": {
+    "topics": [
+      "understanding"
+    ],
+    "methods": [
+      "retrieval"
+    ],
+    "controls": []
+  },
+  "tppmg-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "trace-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "character"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "parts",
+      "space"
+    ]
+  },
+  "transphase-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "tsg-paper-notes": {
+    "topics": [
+      "video"
+    ],
+    "methods": [
+      "language",
+      "flow"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "u-mind-paper-notes": {
+    "topics": [
+      "gesture",
+      "generation",
+      "multimodal"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "umf-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "interaction"
+    ]
+  },
+  "umo-avatar-paper-notes": {
+    "topics": [
+      "gesture",
+      "multimodal"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "streaming"
+    ]
+  },
+  "umo-priors-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "multimodal"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "interaction"
+    ]
+  },
+  "unimask-m-paper-notes": {
+    "topics": [
+      "editing"
+    ],
+    "methods": [],
+    "controls": [
+      "time",
+      "space",
+      "parts"
+    ]
+  },
+  "unimo-cot-paper-notes": {
+    "topics": [
+      "generation",
+      "understanding",
+      "multimodal"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "unimotion-mtv-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "understanding",
+      "editing",
+      "video"
+    ],
+    "methods": [
+      "language",
+      "flow"
+    ],
+    "controls": []
+  },
+  "unimotion-paper-notes": {
+    "topics": [
+      "generation",
+      "understanding",
+      "editing",
+      "multimodal"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "unimumo-paper-notes": {
+    "topics": [
+      "dance",
+      "generation",
+      "understanding",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens",
+      "language"
+    ],
+    "controls": []
+  },
+  "versatilemotion-paper-notes": {
+    "topics": [
+      "generation",
+      "gesture",
+      "dance",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens",
+      "language"
+    ],
+    "controls": [
+      "interaction",
+      "time"
+    ]
+  },
+  "vibes-paper-notes": {
+    "topics": [
+      "gesture",
+      "generation",
+      "multimodal"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": []
+  },
+  "vimogen-paper-notes": {
+    "topics": [
+      "generation",
+      "video"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": []
+  },
+  "voxperformer-paper-notes": {
+    "topics": [
+      "gesture",
+      "dance",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens",
+      "retrieval",
+      "diffusion"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "vps-hysteria-bing-routing": {
+    "topics": [
+      "other"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "vq-style-paper-notes": {
+    "topics": [
+      "editing",
+      "representation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "walkthedog-paper-notes": {
+    "topics": [
+      "representation",
+      "character",
+      "editing"
+    ],
+    "methods": [
+      "phase-frequency",
+      "tokens",
+      "retrieval"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
+  "zero-shot-stl-paper-notes": {
+    "topics": [
+      "character"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space"
+    ]
+  },
+  "zeroeggs-paper-notes": {
+    "topics": [
+      "gesture",
+      "editing"
+    ],
+    "methods": [],
+    "controls": [
+      "style",
+      "space"
+    ]
+  },
+  "zomg-paper-notes": {
+    "topics": [
+      "understanding"
+    ],
+    "methods": [
+      "language",
+      "retrieval"
+    ],
+    "controls": []
+  }
+}

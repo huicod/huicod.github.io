@@ -5,14 +5,22 @@ import BlogSearch from "../../components/BlogSearch.astro";
 import BlogPagination from "../../components/BlogPagination.astro";
 import { getCollection } from "astro:content";
 import createSlug from "../../lib/createSlug"
+import { FACET_GROUPS, getPaperFacets } from "../../data/paper-taxonomy";
 
 export async function getStaticPaths({ paginate }) {
   const posts = (await getCollection("blog")).filter((post) => !post.data.draft);
   posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-  return paginate(posts, { pageSize: 10 });
+  const facetCounts = Object.fromEntries(FACET_GROUPS.map((group) => [
+    group.id,
+    Object.fromEntries(group.options.map((option) => [
+      option.id,
+      posts.filter((post) => getPaperFacets(post.slug)[group.id].includes(option.id)).length,
+    ])),
+  ]));
+  return paginate(posts, { pageSize: 10, props: { facetCounts } });
 }
 
-const { page } = Astro.props;
+const { page, facetCounts } = Astro.props;
 ---
 
 <BaseLayout title="Blog" sideBarActiveItemID="blog">
@@ -20,7 +28,7 @@ const { page } = Astro.props;
     <h1 class="text-3xl w-full font-bold">Blog</h1>
   </div>
 
-  <BlogSearch total={page.total} />
+  <BlogSearch total={page.total} facetCounts={facetCounts} />
   <div id="blog-listing">
 
   {

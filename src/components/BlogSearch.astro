@@ -1,6 +1,8 @@
 ---
 import BlogPagination from "./BlogPagination.astro";
-const { total } = Astro.props;
+import { FACET_GROUPS } from "../data/paper-taxonomy";
+const { total, facetCounts } = Astro.props;
+const topics = FACET_GROUPS[0];
 ---
 
 <blog-search data-total={total}>
@@ -15,6 +17,34 @@ const { total } = Astro.props;
     </button>
     <p id="blog-search-help" class="sr-only">搜索全部 {total} 篇文章的标题、摘要和标签；多个关键词用空格分隔。</p>
   </form>
+  <div class="filters" data-filters hidden>
+    <div class="topic-list" role="group" aria-label="按研究主题筛选">
+      <button type="button" class="topic" data-topic="" aria-pressed="true">全部 <span data-topic-count="">{total}</span></button>
+      {topics.options.map((option) => (
+        <button type="button" class="topic" data-topic={option.id} aria-pressed="false">
+          {option.label} <span data-topic-count={option.id}>{facetCounts?.topics?.[option.id] ?? 0}</span>
+        </button>
+      ))}
+    </div>
+    <div class="filter-tools">
+      <details class="advanced-filters" data-advanced>
+        <summary>方法与控制 <span data-active-count></span></summary>
+        <div class="advanced-fields">
+          {FACET_GROUPS.slice(1).map((group) => (
+            <label>
+              <span>{group.label}</span>
+              <select data-facet={group.id} aria-label={group.label}>
+                <option value="">全部{group.label}</option>
+                {group.options.map((option) => <option value={option.id} data-label={option.label}>{option.label}（{facetCounts?.[group.id]?.[option.id] ?? 0}）</option>)}
+              </select>
+            </label>
+          ))}
+        </div>
+      </details>
+      <button type="button" class="reset-filters" data-reset-filters hidden>清除筛选</button>
+    </div>
+    <p class="sr-only">同一篇文章可属于多个主题。主题、方法、控制条件与关键词取交集；未搜索时保持原时间顺序。</p>
+  </div>
   <noscript><p class="search-help">启用 JavaScript 后可搜索文章；下方列表和页码链接仍可直接浏览。</p></noscript>
   <section class="search-results" aria-label="搜索结果" hidden>
     <p data-status role="status" aria-live="polite" class="search-status"></p>
@@ -24,13 +54,23 @@ const { total } = Astro.props;
 </blog-search>
 
 <script>
-  type SearchPost = { title: string; description: string; tags: string[]; badge: string; url: string };
+  import { FACET_GROUPS, type FacetId, type PaperFacets } from "../data/paper-taxonomy";
+  type SearchPost = { title: string; description: string; tags: string[]; badge: string; url: string; facets: PaperFacets };
+  type Selection = Record<FacetId, string>;
   let indexPromise: Promise<SearchPost[]> | undefined;
   function loadIndex() {
-    return indexPromise ??= fetch("/blog/search-index.json")
+    return indexPromise ??= fetch("/blog/search-index.json?v=facets-1")
       .then((response) => {
         if (!response.ok) throw new Error("Search index unavailable");
-        return response.json() as Promise<SearchPost[]>;
+        return response.json();
+      }).then((posts: unknown) => {
+        if (!Array.isArray(posts) || !posts.every((post) =>
+          post && [post.title, post.description, post.url, post.badge].every((value) => typeof value === "string") &&
+          Array.isArray(post.tags) && post.tags.every((tag: unknown) => typeof tag === "string") &&
+          FACET_GROUPS.every((group) => Array.isArray(post.facets?.[group.id]) && post.facets[group.id].every((id: unknown) => typeof id === "string")))) {
+          throw new Error("Outdated or invalid search index");
+        }
+        return posts as SearchPost[];
       }).catch((error) => { indexPromise = undefined; throw error; });
   }
   const normalize = (text: string) => text.normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
@@ -51,21 +91,62 @@ const { total } = Astro.props;
       const pagination = this.querySelector<HTMLElement>("[data-pagination]")!;
       const select = pagination.querySelector<HTMLSelectElement>("[data-page-select]")!;
       const listing = document.getElementById("blog-listing")!;
+      const filters = this.querySelector<HTMLElement>("[data-filters]")!;
+      const advanced = this.querySelector<HTMLDetailsElement>("[data-advanced]")!;
+      const resetFilters = this.querySelector<HTMLButtonElement>("[data-reset-filters]")!;
+      let selected: Selection = { topics: "", methods: "", controls: "" };
       let request = 0;
       let composing = false;
+
+      const readSelection = (params: URLSearchParams) => Object.fromEntries(FACET_GROUPS.map((group) => {
+        const value = params.get(group.param) ?? "";
+        return [group.id, group.options.some((option) => option.id === value) ? value : ""];
+      })) as Selection;
+      const matchesFacets = (post: SearchPost, except?: FacetId) => FACET_GROUPS.every((group) =>
+        group.id === except || !selected[group.id] || post.facets?.[group.id]?.includes(selected[group.id]));
+      const syncControls = () => {
+        for (const button of this.querySelectorAll<HTMLButtonElement>("[data-topic]")) {
+          button.setAttribute("aria-pressed", String(button.dataset.topic === selected.topics));
+        }
+        for (const control of this.querySelectorAll<HTMLSelectElement>("[data-facet]")) {
+          control.value = selected[control.dataset.facet as FacetId];
+        }
+        resetFilters.hidden = !Object.values(selected).some(Boolean);
+        const moreCount = Number(Boolean(selected.methods)) + Number(Boolean(selected.controls));
+        this.querySelector("[data-active-count]")!.textContent = moreCount ? `（${moreCount}）` : "";
+      };
+      const updateCounts = (posts: SearchPost[]) => {
+        for (const group of FACET_GROUPS) {
+          const candidates = posts.filter((post) => matchesFacets(post, group.id));
+          const counts = new Map(group.options.map((option) => [option.id, candidates.filter((post) => post.facets?.[group.id]?.includes(option.id)).length]));
+          if (group.id === "topics") {
+            for (const count of this.querySelectorAll<HTMLElement>("[data-topic-count]")) {
+              count.textContent = String(count.dataset.topicCount ? counts.get(count.dataset.topicCount) ?? 0 : candidates.length);
+            }
+          } else {
+            for (const option of this.querySelectorAll<HTMLOptionElement>(`[data-facet="${group.id}"] option[data-label]`)) {
+              option.textContent = `${option.dataset.label}（${counts.get(option.value) ?? 0}）`;
+            }
+          }
+        }
+      };
 
       const queryUrl = (query: string, page: number) => {
         const url = new URL(location.href);
         url.hash = "";
         url.searchParams.delete("page");
-        if (query) {
-          url.searchParams.set("q", query);
-          if (page > 1) url.searchParams.set("page", String(page));
-        } else url.searchParams.delete("q");
+        if (query) url.searchParams.set("q", query);
+        else url.searchParams.delete("q");
+        for (const group of FACET_GROUPS) {
+          if (selected[group.id]) url.searchParams.set(group.param, selected[group.id]);
+          else url.searchParams.delete(group.param);
+        }
+        if ((query || Object.values(selected).some(Boolean)) && page > 1) url.searchParams.set("page", String(page));
         return url;
       };
       const syncUrl = (query: string, page: number) => {
-        history.replaceState(history.state, "", queryUrl(query, page));
+        const url = queryUrl(query, page);
+        if (url.href !== location.href) history.replaceState(history.state, "", url);
       };
       const make = (tag: string, text: string, className = "") => {
         const node = document.createElement(tag);
@@ -77,35 +158,47 @@ const { total } = Astro.props;
         const currentRequest = ++request;
         const query = rawQuery.trim().slice(0, 200);
         const terms = query.split(/\s+/).map(normalize).filter(Boolean);
+        const hasFacets = Object.values(selected).some(Boolean);
+        const active = terms.length > 0 || hasFacets;
+        syncControls();
         clear.hidden = !rawQuery;
-        listing.hidden = terms.length > 0;
-        section.hidden = terms.length === 0;
+        listing.hidden = active;
+        section.hidden = !active;
         pagination.hidden = true;
         results.replaceChildren();
-        if (!terms.length) {
+        if (!active) {
           this.removeAttribute("aria-busy");
           syncUrl("", 1);
+          // Reset counts after leaving search/filter mode without fetching on initial load.
+          if (indexPromise) {
+            try {
+              const posts = await indexPromise;
+              if (!signal.aborted && currentRequest === request) updateCounts(posts);
+            } catch { /* The normal static listing remains usable. */ }
+          }
           return;
         }
         syncUrl(query, requestedPage);
         this.setAttribute("aria-busy", "true");
-        status.textContent = "正在搜索全部文章…";
+        status.textContent = "正在查找文章…";
         try {
           const posts = await loadIndex();
           if (signal.aborted || currentRequest !== request) return;
-          const matches = posts.map((post) => {
+          const searched = posts.map((post) => {
             const title = normalize(post.title);
             const tags = normalize(post.tags.join(" "));
             const description = normalize(post.description);
             const score = terms.reduce((sum, term) => sum + (title.includes(term) ? 4 : tags.includes(term) ? 2 : 1), 0);
             return { post, score, matches: terms.every((term) => title.includes(term) || tags.includes(term) || description.includes(term)) };
-          }).filter((entry) => entry.matches).sort((a, b) => b.score - a.score);
+          }).filter((entry) => entry.matches);
+          updateCounts(searched.map((entry) => entry.post));
+          const matches = searched.filter((entry) => matchesFacets(entry.post)).sort((a, b) => b.score - a.score);
           const totalPages = Math.max(1, Math.ceil(matches.length / 10));
           const page = Math.min(totalPages, Math.max(1, Math.floor(requestedPage) || 1));
           syncUrl(query, page);
           status.textContent = matches.length
-            ? `找到 ${matches.length} 篇文章`
-            : `没有找到与“${query}”匹配的文章。试试更短的论文名或减少关键词。`;
+            ? terms.length ? `找到 ${matches.length} 篇文章` : `共 ${matches.length} 篇 · 按原时间顺序`
+            : hasFacets ? "这个组合暂无文章。试试减少筛选条件或清除关键词。" : `没有找到与“${query}”匹配的文章。试试更短的论文名或减少关键词。`;
           for (const { post } of matches.slice((page - 1) * 10, page * 10)) {
             const item = make("li", "", "search-result");
             const heading = document.createElement("h2");
@@ -141,11 +234,31 @@ const { total } = Astro.props;
           select.replaceChildren(...Array.from({ length: totalPages }, (_, i) => new Option(`第 ${i + 1} / ${totalPages} 页`, String(i + 1))));
           select.value = String(page);
         } catch {
-          if (!signal.aborted && currentRequest === request) status.textContent = "暂时无法加载搜索，请重新点击搜索，或清除关键词继续浏览列表。";
+          if (!signal.aborted && currentRequest === request) status.textContent = "暂时无法加载文章，请点击搜索重试，或清除筛选和关键词继续浏览。";
         } finally {
           if (!signal.aborted && currentRequest === request) this.removeAttribute("aria-busy");
         }
       };
+      filters.hidden = false;
+      this.querySelector(".topic-list")!.addEventListener("click", (event) => {
+        const button = (event.target as Element).closest<HTMLButtonElement>("[data-topic]");
+        if (!button) return;
+        clearTimeout(this.timer);
+        selected.topics = button.dataset.topic!;
+        render(input.value);
+      }, { signal });
+      for (const control of this.querySelectorAll<HTMLSelectElement>("[data-facet]")) {
+        control.addEventListener("change", () => {
+          clearTimeout(this.timer);
+          selected[control.dataset.facet as FacetId] = control.value;
+          render(input.value);
+        }, { signal });
+      }
+      resetFilters.addEventListener("click", () => {
+        clearTimeout(this.timer);
+        selected = { topics: "", methods: "", controls: "" };
+        render(input.value);
+      }, { signal });
       input.addEventListener("input", (event) => {
         clearTimeout(this.timer);
         if (composing || (event as InputEvent).isComposing) return;
@@ -175,7 +288,6 @@ const { total } = Astro.props;
         clearTimeout(this.timer);
         render(input.value, Number(select.value));
         this.scrollIntoView({ block: "start" });
-        input.focus({ preventScroll: true });
       }, { signal });
       pagination.addEventListener("click", (event) => {
         const link = (event.target as Element).closest<HTMLAnchorElement>("[data-search-page]");
@@ -185,11 +297,16 @@ const { total } = Astro.props;
         clearTimeout(this.timer);
         render(input.value, Number(link.dataset.searchPage));
         this.scrollIntoView({ block: "start" });
-        input.focus({ preventScroll: true });
       }, { signal });
-      const params = new URLSearchParams(location.search);
-      input.value = (params.get("q") ?? "").slice(0, 200);
-      render(input.value, Number(params.get("page")) || 1);
+      const restore = () => {
+        clearTimeout(this.timer);
+        const params = new URLSearchParams(location.search);
+        selected = readSelection(params);
+        input.value = (params.get("q") ?? "").slice(0, 200);
+        if (selected.methods || selected.controls) advanced.open = true;
+        render(input.value, Number(params.get("page")) || 1);
+      };
+      restore();
     }
     disconnectedCallback() {
       this.cleanup?.abort();
@@ -210,6 +327,27 @@ const { total } = Astro.props;
   .search-form button:hover { opacity: 1; background: oklch(var(--bc) / .05); }
   .search-form button:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
   .search-help { margin-top: .65rem; font-size: .875rem; opacity: .7; line-height: 1.6; }
+  .filters { margin-top: .85rem; }
+  .topic-list { display: flex; flex-wrap: wrap; gap: .3rem .35rem; }
+  .topic { padding: .35rem .6rem; border-radius: .4rem; font-size: .8125rem; line-height: 1.5; text-align: left; }
+  .topic span { margin-left: .18rem; font-size: .75rem; opacity: .55; font-variant-numeric: tabular-nums; }
+  .topic:hover { background: oklch(var(--bc) / .06); }
+  .topic[aria-pressed="true"] { background: oklch(var(--s) / .18); box-shadow: inset 0 0 0 1px oklch(var(--s) / .45); font-weight: 600; }
+  .topic:focus-visible, .reset-filters:focus-visible, summary:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+  .filter-tools { display: flex; align-items: start; gap: 1rem; margin-top: .55rem; }
+  .advanced-filters { flex: 1; min-width: 0; }
+  .advanced-filters summary { width: fit-content; cursor: pointer; font-size: .8125rem; opacity: .7; padding: .25rem .1rem; }
+  .advanced-fields { display: flex; flex-wrap: wrap; gap: .7rem 1rem; margin-top: .6rem; }
+  .advanced-fields label { display: flex; align-items: center; gap: .5rem; font-size: .8125rem; }
+  .advanced-fields label > span { opacity: .65; white-space: nowrap; }
+  .advanced-fields select { min-height: 2.25rem; min-width: 0; max-width: 100%; padding: .3rem .5rem; border: 1px solid oklch(var(--bc) / .2); border-radius: .4rem; background: transparent; color: inherit; font: inherit; }
+  .advanced-fields option { background: oklch(var(--b1)); color: oklch(var(--bc)); }
+  .reset-filters { padding: .25rem .1rem; font-size: .8125rem; opacity: .7; white-space: nowrap; text-decoration: underline; text-underline-offset: .2em; }
+  @media (max-width: 500px) {
+    .advanced-fields { display: grid; }
+    .advanced-fields label { display: grid; grid-template-columns: 5.5em minmax(0,1fr); }
+    .filter-tools { gap: .5rem; }
+  }
   .search-status { margin: 1.25rem 0 .5rem; font-size: .875rem; opacity: .7; overflow-wrap: anywhere; }
   .result-list { list-style: none; margin: 0; padding: 0; }
   .result-list :global(.search-result) { padding: 1.5rem .5rem; border-bottom: 1px solid oklch(var(--bc) / .15); overflow-wrap: anywhere; }
