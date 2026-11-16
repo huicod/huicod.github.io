@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="2520" viewBox="0 0 1440 2520" role="img" aria-labelledby="title desc">
+<title id="title">DynMask：从运动频谱描述符到复杂度感知的掩码动作生成</title>
+<desc id="desc">MSD由动作token嵌入的一阶时间差分和滑窗DCT计算。训练分支使用真实动作token，按动态复杂度与文本相关度选择掩码，并融合频谱相似度与注意力。推理从全掩码开始，迭代预测和更新MSD；完整模型另外调节采样温度与噪声。首轮MSD如何初始化原文未说明，图中保留该缺口，不使用真实未来动作。</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#365c7d"/></marker>
+<marker id="trainarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#b8772f"/></marker>
+<style>
+text{font-family:"Microsoft YaHei","Noto Sans SC",Arial,sans-serif;fill:#19344e}
+.title{font-size:31px;font-weight:700}.subtitle{font-size:20px;fill:#506b80}
+.section{font-size:27px;font-weight:700}.label{font-size:23px;font-weight:700}
+.body{font-size:21px}.small{font-size:19px;fill:#506b80}
+.panel{fill:#f6f9fc;stroke:#cad8e5;stroke-width:1.5}
+.node{fill:#fff;stroke:#95afc4;stroke-width:1.8}
+.training{fill:#fff5e8;stroke:#d8ad78;stroke-width:1.8}
+.condition{fill:#edf5ff;stroke:#7ba7ce;stroke-width:1.8}
+.output{fill:#eaf6ef;stroke:#83b397;stroke-width:1.8}
+.flow{fill:none;stroke:#365c7d;stroke-width:2.6;marker-end:url(#arrow)}
+.super{fill:none;stroke:#b8772f;stroke-width:2.6;stroke-dasharray:8 6;marker-end:url(#trainarrow)}
+</style></defs><rect width="1440" height="2520" fill="white"/>
+<text x="40" y="48" class="title">DynMask：让复杂片段获得更多重建关注</text>
+<text x="40" y="81" class="subtitle">依据 arXiv v1 图2、§3 与算法1–2重绘 · 教学示意，未运行模型</text>
+<rect x="25" y="110" width="1390" height="420" rx="12" class="panel"/>
+<text x="48" y="152" class="section">A  MSD：从 token 的变化中描述局部频谱形状</text>
+<g class="nodegroup"><rect x="50" y="185" width="300" height="130" rx="12" class="node"/>
+<text x="68" y="219" class="label">动作 token 嵌入</text>
+<text x="68" y="251" class="body">xₜ = Embed(zₜ)</text>
+<text x="68" y="280" class="body">训练：真值；推理：当前预测</text>
+</g>
+<g class="nodegroup"><rect x="400" y="185" width="300" height="130" rx="12" class="node"/>
+<text x="418" y="219" class="label">时间一阶差分</text>
+<text x="418" y="251" class="body">vₜ = xₜ − xₜ₋₁</text>
+<text x="418" y="280" class="body">不是物理关节速度</text>
+</g>
+<g class="nodegroup"><rect x="750" y="185" width="300" height="130" rx="12" class="node"/>
+<text x="768" y="219" class="label">滑窗 Type-II DCT</text>
+<text x="768" y="251" class="body">每个位置取长度 W 的窗口</text>
+<text x="768" y="280" class="body">逐特征沿时间维变换</text>
+</g>
+<g class="nodegroup"><rect x="1100" y="185" width="290" height="130" rx="12" class="node"/>
+<text x="1118" y="219" class="label">聚合并归一化</text>
+<text x="1118" y="251" class="body">跨特征维取 L2 范数</text>
+<text x="1118" y="280" class="body">频谱再做 L2 归一化</text>
+</g>
+<path d="M350 250H396" class="flow"/>
+<path d="M700 250H746" class="flow"/>
+<path d="M1050 250H1096" class="flow"/>
+<g class="nodegroup"><rect x="50" y="370" width="640" height="115" rx="12" class="condition"/>
+<text x="68" y="404" class="label">向量 φₜ：完整 MSD 频谱形状</text>
+<text x="68" y="436" class="body">供两位置的频谱相似度使用 → 注意力先验</text>
+</g>
+<g class="nodegroup"><rect x="750" y="370" width="640" height="115" rx="12" class="output"/>
+<text x="768" y="404" class="label">标量 Ω(t) = mean(φₜ)</text>
+<text x="768" y="436" class="body">局部动态复杂度代理 → 掩码与采样策略</text>
+</g>
+<path d="M1245 315V342H370V366" class="flow"/>
+<path d="M1245 342H1070V366" class="flow"/>
+<text x="50" y="516" class="small">归一化后的频谱形状不等于运动幅度，也不直接给出动作词、接触事件或精确节拍标签。</text>
+<rect x="25" y="560" width="1390" height="900" rx="12" class="panel"/>
+<text x="48" y="602" class="section">B  核心模型训练：重新分配监督位置，并调整时间信息交互</text>
+<g class="nodegroup"><rect x="50" y="650" width="300" height="130" rx="12" class="node"/>
+<text x="68" y="684" class="label">配对真实动作 M</text>
+<text x="68" y="716" class="body">运动序列与文字共同训练</text>
+<text x="68" y="745" class="body">未来运动只在训练可见</text>
+</g>
+<g class="nodegroup"><rect x="400" y="650" width="300" height="130" rx="12" class="node"/>
+<text x="418" y="684" class="label">VQ-VAE tokenizer</text>
+<text x="418" y="716" class="body">编码 + 最近邻量化</text>
+<text x="418" y="745" class="body">得到离散动作 token z</text>
+</g>
+<g class="nodegroup"><rect x="750" y="650" width="300" height="130" rx="12" class="node"/>
+<text x="768" y="684" class="label">token 与嵌入</text>
+<text x="768" y="716" class="body">原始 z 作为预测真值</text>
+<text x="768" y="745" class="body">xₜ 用于描述符和相关度</text>
+</g>
+<g class="nodegroup"><rect x="1100" y="650" width="290" height="130" rx="12" class="output"/>
+<text x="1118" y="684" class="label">复用 MSD 计算</text>
+<text x="1118" y="716" class="body">得到 φₜ 与 Ω(t)</text>
+<text x="1118" y="745" class="body">无额外学习的难度网络</text>
+</g>
+<path d="M350 715H396" class="flow"/>
+<path d="M700 715H746" class="flow"/>
+<path d="M1050 715H1096" class="flow"/>
+<g class="nodegroup"><rect x="50" y="850" width="300" height="130" rx="12" class="condition"/>
+<text x="68" y="884" class="label">配对文字 → 冻结 CLIP</text>
+<text x="68" y="916" class="body">得到文本条件 c</text>
+<text x="68" y="945" class="body">提供生成条件与相关度</text>
+</g>
+<g class="nodegroup"><rect x="400" y="850" width="650" height="180" rx="12" class="training"/>
+<text x="418" y="884" class="label">内容聚焦的双配额掩码选择</text>
+<text x="418" y="916" class="body">动态得分：z-score(Ω)；语义得分：cos(xₜ,c)</text>
+<text x="418" y="945" class="body">(1−λ)K 个偏向高复杂度，λK 个偏向高文本相关度</text>
+<text x="418" y="974" class="body">可扩展相邻位置；总掩码预算 K 仍按余弦日程</text>
+<text x="418" y="1003" class="body">选中位置接受掩码处理，并成为交叉熵监督目标</text>
+</g>
+<path d="M350 915H396" class="flow"/>
+<path d="M900 780V846" class="flow"/>
+<path d="M1245 780V825H1030V846" class="flow"/>
+<text x="1120" y="816" class="small">Ω 与 φ 分路</text>
+<g class="nodegroup"><rect x="750" y="1100" width="640" height="200" rx="12" class="condition"/>
+<text x="768" y="1134" class="label">可训练的 masked Transformer</text>
+<text x="768" y="1166" class="body">masked tokens + 文本条件 c</text>
+<text x="768" y="1195" class="body">学习的注意力 logits 与频谱相似度分别标准化</text>
+<text x="768" y="1224" class="body">按层混合后 softmax，再汇聚 value 特征</text>
+<text x="768" y="1253" class="body">频谱先验权重随层数衰减 → 预测 token 分布 p</text>
+</g>
+<path d="M900 1030V1096" class="flow"/>
+<path d="M1245 825V1096" class="flow"/>
+<text x="1120" y="1050" class="small">φᵢ、φⱼ → 频谱先验</text>
+<path d="M350 960H380V1080H710V1220H746" class="flow"/>
+<text x="450" y="1070" class="small">文本条件 c</text>
+<g class="nodegroup"><rect x="50" y="1120" width="600" height="130" rx="12" class="training"/>
+<text x="68" y="1154" class="label">只在所选位置计算交叉熵</text>
+<text x="68" y="1186" class="body">预测分布 p 对照原始 token 真值 z</text>
+<text x="68" y="1215" class="body">优化 masked Transformer；没有新增频谱损失</text>
+</g>
+<path d="M750 1190H654" class="flow"/>
+<path d="M900 780V805H35V1185H46" class="super"/>
+<text x="60" y="797" class="small">原始 token 真值支路</text>
+<text x="50" y="1370" class="small">核心模型 = 内容聚焦掩码 + 运动感知注意力。改变“遮哪里”，不是简单增加总遮罩量。</text>
+<text x="50" y="1405" class="small">训练顺序按算法1呈现；本文未给出全部实现细节，不能仅凭框图宣称训练—推理信息路径已验证。</text>
+<text x="50" y="1440" class="small">注意力：低频权重较高的谱距离 → 相似度；(1−αℓ)Â + αℓŜ → softmax，αℓ 随层数衰减。</text>
+<rect x="25" y="1490" width="1390" height="940" rx="12" class="panel"/>
+<text x="48" y="1532" class="section">C  完整模型推理：用当前预测估计复杂度，迭代生成动作</text>
+<g class="nodegroup"><rect x="50" y="1575" width="300" height="120" rx="12" class="condition"/>
+<text x="68" y="1609" class="label">用户文字 → 冻结 CLIP</text>
+<text x="68" y="1641" class="body">例如：走两步后转身踢腿</text>
+<text x="68" y="1670" class="body">产生文本条件 c</text>
+</g>
+<g class="nodegroup"><rect x="400" y="1575" width="300" height="120" rx="12" class="condition"/>
+<text x="418" y="1609" class="label">用户指定目标长度</text>
+<text x="418" y="1641" class="body">建立长度为 T 的 token 序列</text>
+<text x="418" y="1670" class="body">不是从 MSD 推断动作时长</text>
+</g>
+<g class="nodegroup"><rect x="750" y="1575" width="640" height="120" rx="12" class="training"/>
+<text x="768" y="1609" class="label">初始化：所有位置均为 [MASK]</text>
+<text x="768" y="1641" class="body">按算法2开始多轮迭代；首轮 MSD 的具体初始化未说明</text>
+<text x="768" y="1670" class="body">后续只依据当前预测更新，不能读取真实未来运动</text>
+</g>
+<path d="M700 1635H746" class="flow"/>
+<g class="nodegroup"><rect x="50" y="1775" width="300" height="145" rx="12" class="output"/>
+<text x="68" y="1809" class="label">当前预测 → 更新 MSD</text>
+<text x="68" y="1841" class="body">复用 A 中的计算链</text>
+<text x="68" y="1870" class="body">得到 φₜ 与 Ω(t)</text>
+<text x="68" y="1899" class="body">首轮机制保留为待核细节</text>
+</g>
+<g class="nodegroup"><rect x="400" y="1775" width="650" height="145" rx="12" class="condition"/>
+<text x="418" y="1809" class="label">复用训练好的 masked Transformer</text>
+<text x="418" y="1841" class="body">当前 token 状态 + 文本 c + 频谱相似度先验</text>
+<text x="418" y="1870" class="body">并行预测 token 分布 pₜ</text>
+<text x="418" y="1899" class="body">由 1−max(pₜ) 估计模型不确定性</text>
+</g>
+<path d="M350 1845H396" class="flow"/>
+<path d="M200 1695V1730H600V1771" class="flow"/>
+<text x="270" y="1720" class="small">c</text>
+<path d="M1070 1695V1845H1054" class="flow"/>
+<g class="nodegroup"><rect x="1100" y="1775" width="290" height="260" rx="12" class="training"/>
+<text x="1118" y="1809" class="label">可选：复杂度感知采样</text>
+<text x="1118" y="1841" class="body">完整模型额外启用</text>
+<text x="1118" y="1870" class="body">Ω + 不确定性 → bₜ</text>
+<text x="1118" y="1899" class="body">更复杂或更不确定：</text>
+<text x="1118" y="1928" class="body">提高该位置温度 / 噪声</text>
+<text x="1118" y="1957" class="body">较简单或较确定：</text>
+<text x="1118" y="1986" class="body">采样相对保守</text>
+</g>
+<path d="M1050 1875H1096" class="flow"/>
+<path d="M200 1920V1960H1080V1980H1096" class="flow"/>
+<text x="480" y="1950" class="small">Ω(t) 的复杂度信息</text>
+<g class="nodegroup"><rect x="750" y="2090" width="640" height="140" rx="12" class="output"/>
+<text x="768" y="2124" class="label">采样预测，保留高置信位置</text>
+<text x="768" y="2156" class="body">不确定位置在下一轮继续预测 / 重掩码</text>
+<text x="768" y="2185" class="body">反复细化直至迭代结束；核心模型使用常规采样</text>
+</g>
+<path d="M1245 2035V2086" class="flow"/>
+<g class="nodegroup"><rect x="400" y="2090" width="300" height="140" rx="12" class="node"/>
+<text x="418" y="2124" class="label">VQ-VAE decoder</text>
+<text x="418" y="2156" class="body">完整离散 token 序列</text>
+<text x="418" y="2185" class="body">解码为连续动作特征</text>
+</g>
+<g class="nodegroup"><rect x="50" y="2090" width="300" height="140" rx="12" class="output"/>
+<text x="68" y="2124" class="label">输出 3D 人体动作</text>
+<text x="68" y="2156" class="body">生成的连续运动序列</text>
+<text x="68" y="2185" class="body">并非可读的动作事件程序</text>
+</g>
+<path d="M750 2160H704" class="flow"/>
+<path d="M400 2160H354" class="flow"/>
+<path d="M900 2090V2050H35V1845H46" class="flow"/>
+<text x="250" y="2040" class="small">下一轮：当前预测更新 MSD，并再次生成 / 筛选 token</text>
+<text x="50" y="2300" class="small">重要缺口：全 [MASK] 时尚无有效动作预测，论文未解释首轮如何形成有效 MSD；此图不补造实现。</text>
+<text x="50" y="2335" class="small">MSD 是嵌入变化的局部频谱代理；注意力相似不等于相位同步，也没有保证接触、避碰或事件完成。</text>
+<text x="50" y="2370" class="small">实线：数据或条件流；橙色虚线：训练真值监督。图中流程依据论文描述，未经代码运行验证。</text>
+<text x="50" y="2405" class="small">来源：arXiv:2603.29655v1，图2、§3.1–3.6、式4–21及算法1–2。</text>
+<text x="50" y="2480" class="small">阅读顺序：先理解 A 中同一个 MSD 的两种输出，再分别沿 B 的训练与 C 的推理主线阅读。</text>
+</svg>
