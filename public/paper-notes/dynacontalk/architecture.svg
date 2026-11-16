@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1570" viewBox="0 0 1280 1570" role="img" aria-labelledby="title desc">
+<title id="title">DynaConTalk 完整架构教学示意</title>
+<desc id="desc">语音、转写和说话人身份经动态条件模块驱动独立身体手部与表情扩散。历史或姿态控制在相同噪声等级注入。逆小波恢复姿态和表情，根平移由姿态驱动BiGRU补充。训练真值监督单列在下方。</desc>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8" fill="none" stroke="#526377" stroke-width="1.5"/></marker><marker id="train" markerWidth="10" markerHeight="10" refX="9" refY="4" orient="auto"><path d="M0,0 L9,4 L0,8" fill="none" stroke="#b77525" stroke-width="1.5"/></marker><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#203249} .title{font-size:30px;font-weight:700}.h{font-size:24px;font-weight:700}.t{font-size:21px}.s{font-size:19px}.box{fill:white;stroke:#97acc3;stroke-width:1.6;rx:13}.blue{fill:#eaf2ff;stroke:#79a1d8}.purple{fill:#f3effe;stroke:#b5a0df}.green{fill:#e8f6ef;stroke:#7dbba0}.orange{fill:#fff4df;stroke:#d9af68}.a{fill:none;stroke:#526377;stroke-width:2.2;marker-end:url(#arrow)}.d{fill:none;stroke:#b77525;stroke-width:2.2;stroke-dasharray:7 5;marker-end:url(#train)}.panel{fill:#f8fafc;stroke:#d5dfeb;stroke-width:1.5;rx:20}</style></defs>
+<rect width="1280" height="1570" fill="#fff"/>
+<text x="40" y="48" class="title">DynaConTalk：在对齐的小波系数中生成与修补动作</text>
+<text x="40" y="82" class="t">教学重绘 · 据论文 §3、PDF 图2–4与公开实现；非模型运行结果</text>
+<rect x="30" y="108" width="1220" height="1200" class="panel"/>
+<text x="50" y="143" class="h">推理主线：语音条件 → 两个独立扩散分支 → 整人运动</text>
+<rect x="50" y="165" width="430" height="110" class="box blue"/>
+<text x="70" y="197" class="h">语音特征（预训练提取器复用）</text><text x="70" y="230" class="t">HuBERT 1024维；mel 128维</text><text x="70" y="259" class="t">节律3维 → 全部对齐到30 fps</text>
+<rect x="500" y="165" width="300" height="110" class="box blue"/>
+<text x="520" y="197" class="h">窗口转写与身份</text><text x="520" y="230" class="t">CLIP 512维文本广播</text><text x="520" y="259" class="t">speaker ＋ shape 10维</text>
+<rect x="840" y="165" width="390" height="110" class="box orange"/>
+<text x="860" y="197" class="h">可选控制（用户 / 历史）</text><text x="860" y="230" class="t">已提交历史；时间点＋目标姿态</text><text x="860" y="259" class="t">部位、强度、频带 / 参考动作</text>
+<path d="M265 275 V305" class="a"/><path d="M650 275 V305" class="a"/><path d="M1035 275 V305" class="a"/>
+<rect x="50" y="305" width="750" height="220" class="box blue"/>
+<text x="70" y="340" class="h">动态条件模块 DGN ＋ stage routing（可训练）</text>
+<text x="70" y="378" class="t">常驻基底：HuBERT ＋ 身份；残差：节律 / mel / 文本</text>
+<text x="70" y="412" class="t">独立 sigmoid 门 ← 当前带噪动作编码 ＋ 扩散时刻 t</text>
+<text x="70" y="446" class="t">每8帧 attention pooling → 各层条件、FiLM、proposal</text>
+<text x="70" y="480" class="t">节律另走逐帧旁路；身份另加到扩散时间 token</text>
+<text x="70" y="510" class="s">每个分支各自使用此接口；门控是软条件权重，不是事件执行器</text>
+<rect x="840" y="305" width="390" height="220" class="box orange"/>
+<text x="860" y="340" class="h">构造约束目标与掩码</text><text x="860" y="378" class="t">姿态：SLERP 平滑目标 → SWT</text><text x="860" y="412" class="t">mask = 时间 × 部位 × 频带</text><text x="860" y="446" class="t">历史 / 目标重新加噪至时刻 t</text><text x="860" y="480" class="t">style：另对参考统计量投影</text><text x="860" y="510" class="s">编辑使用专用身体模型；历史优先</text>
+<rect x="440" y="565" width="790" height="100" class="box orange"/>
+<text x="460" y="600" class="h">扩散采样循环：x̃ₜ = (1−m)·xₜ ＋ m·xᶜₜ</text><text x="460" y="635" class="t">噪声 / 半加噪基底 → 注入约束 → 去噪预测 x̂₀ → 更新 xₜ</text>
+<path d="M1035 525 V565" class="a"/><path d="M425 525 V548 H325 V730" class="a"/>
+<path d="M680 525 V548 H905 V730" class="a"/><text x="65" y="608" class="t">各层条件、逐帧节律</text><text x="65" y="639" class="t">及身份分别送入两支</text>
+<path d="M680 665 V696 H400 V730" class="a"/><path d="M1030 665 V696 H1000 V730" class="a"/>
+<text x="446" y="715" class="s">带噪系数＋t；body / face 分别采样</text>
+<rect x="50" y="730" width="560" height="220" class="box blue"/>
+<text x="70" y="767" class="h">身体 / 手部去噪器（可训练）</text><text x="70" y="804" class="t">N×55关节×4频带×6D → 关节/频带编码</text><text x="70" y="838" class="t">4层级：局部卷积 ＋ 8帧patch Transformer</text><text x="70" y="872" class="t">FiLM → signed proposal–consensus 更新</text><text x="70" y="906" class="t">4个频带输出头 → N×1320 小波系数</text><text x="70" y="936" class="s">speech-only / editable 为不同配置与检查点</text>
+<rect x="660" y="730" width="570" height="220" class="box purple"/>
+<text x="680" y="767" class="h">表情去噪器（独立训练）</text><text x="680" y="804" class="t">N×400 系数 → 线性投影，无关节token</text><text x="680" y="838" class="t">较轻的4层级卷积 / temporal Transformer</text><text x="680" y="872" class="t">同类动态条件与proposal–consensus接口</text><text x="680" y="906" class="t">4个频带输出头 → N×400 小波系数</text><text x="680" y="936" class="s">共同语音与身份；不画成 face → body 条件链</text>
+<path d="M330 950 V980" class="a"/><path d="M945 950 V980" class="a"/>
+<rect x="50" y="980" width="560" height="85" class="box green"/><text x="70" y="1014" class="h">反归一化 ＋ inverse SWT</text><text x="70" y="1047" class="t">N×330 → 55个关节旋转（含下颌等）</text>
+<rect x="660" y="980" width="570" height="85" class="box green"/><text x="680" y="1014" class="h">反归一化 ＋ inverse SWT</text><text x="680" y="1047" class="t">N×100 → FLAME / SMPL-X 表情系数</text>
+<path d="M330 1065 V1095" class="a"/><rect x="50" y="1095" width="560" height="95" class="box green"/><text x="70" y="1129" class="h">姿态驱动根平移 BiGRU（另训）</text><text x="70" y="1163" class="t">骨盆中心关节 / 速度 / yaw rate → 3D平移</text>
+<path d="M330 1190 V1220" class="a"/><path d="M945 1065 V1220" class="a"/>
+<path d="M610 1022 H636 V1220" class="a"/>
+<rect x="50" y="1220" width="1180" height="63" class="box green"/><text x="72" y="1259" class="h">SMPL-X 整人动画：身体与手部旋转 ＋ 表情 ＋ 根平移；窗口历史继续复用</text>
+<rect x="30" y="1330" width="1220" height="207" class="box orange"/>
+<text x="50" y="1368" class="h">训练支线（推理不需要真值整段动作）</text>
+<text x="50" y="1407" class="t">配对语音＋动作 → 3层 db6 SWT → 训练集归一化 → 加噪 → 上述去噪器</text>
+<text x="50" y="1442" class="t">x₀重建；身体另有FK位置、速度、边界损失；editable 另有合成关键姿态和足接触监督</text>
+<text x="50" y="1477" class="t">表情独立训练；门稀疏正则；根平移回归器另用动作与轨迹监督训练</text>
+<text x="50" y="1512" class="s">橙虚线：监督/训练；实线：推理表示流。约束注入不等于最终姿态误差为零或严格接触。</text>
+<path d="M1240 1360 H1263 V844 H1231" class="d"/>
+</svg>

@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1510" viewBox="0 0 1280 1510" role="img" aria-labelledby="title desc">
+  <title id="title">T2M Mamba：训练、共享去噪器与推理数据流</title>
+  <desc id="desc">当前噪声动作经连续投影后自动计算关键帧显著性与局部周期。相位加到动作特征，显著性调制双向Mamba写入，并与相位共同输入PDCAM。冻结CLIP提供文字条件，六层主干预测干净动作。训练使用真实动作监督，推理从噪声反复采样后恢复关节。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#335574"/></marker>
+    <marker id="green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#21826f"/></marker>
+    <marker id="orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#b76822"/></marker>
+    <style>
+      text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#18364c;font-size:24px}
+      .title{font-size:34px;font-weight:700}.section{font-size:27px;font-weight:700}.head{font-weight:700;font-size:25px}.small{font-size:21px}.tiny{font-size:19px}.muted{fill:#526779}.green{fill:#187562}.orange{fill:#a65619}
+      .panel{stroke:#c1cddb;stroke-width:2;fill:#f7fafc}.box{fill:white;stroke:#8ba5ba;stroke-width:2;rx:14}.cue{fill:#ebf7f0;stroke:#5ca590;stroke-width:2;rx:14}.model{fill:#e9effb;stroke:#7890c3;stroke-width:2;rx:14}.text{fill:#f1eafa;stroke:#a18bb9;stroke-width:2;rx:14}.train{fill:#fff5e8;stroke:#c89763;stroke-width:2;rx:14}
+      .flow{fill:none;stroke:#335574;stroke-width:3;marker-end:url(#arrow);stroke-linejoin:round}.cueflow{fill:none;stroke:#21826f;stroke-width:3;marker-end:url(#green);stroke-linejoin:round}.supervise{fill:none;stroke:#b76822;stroke-width:3;stroke-dasharray:9 7;marker-end:url(#orange)}
+    </style>
+  </defs>
+  <rect width="1280" height="1510" fill="#fff"/>
+  <text class="title" x="36" y="53">T2M Mamba：从内部运动线索到连续动作</text>
+  <text class="small muted" x="38" y="90">教学重绘 · 论文图1–3 / 式1–13 + 公开实现 · 实线：数据流　橙色虚线：训练监督</text>
+
+  <rect class="panel" x="30" y="115" width="1220" height="210" rx="20"/>
+  <text class="section" x="52" y="153">① 训练：真实动作提供加噪样本与监督目标</text>
+  <rect class="train" x="65" y="181" width="260" height="88"/>
+  <text class="head" text-anchor="middle" x="195" y="216">真实动作 x₀</text>
+  <text class="small" text-anchor="middle" x="195" y="249">成对文字 + 连续动作帧</text>
+  <rect class="train" x="390" y="181" width="265" height="88"/>
+  <text class="head" text-anchor="middle" x="522" y="216">抽取 t 与高斯噪声</text>
+  <text class="small" text-anchor="middle" x="522" y="249">按扩散计划给动作加噪</text>
+  <path class="flow" d="M325 225 H390"/>
+  <rect class="box" x="720" y="181" width="240" height="88"/>
+  <text class="head" text-anchor="middle" x="840" y="216">当前噪声动作 xₜ</text>
+  <text class="small" text-anchor="middle" x="840" y="249">送入下方共享去噪器</text>
+  <path class="flow" d="M655 225 H720"/>
+  <rect class="train" x="1010" y="181" width="195" height="88"/>
+  <text class="head" text-anchor="middle" x="1107" y="216">重建损失</text>
+  <text class="small" text-anchor="middle" x="1107" y="249">x̂₀ 对比 x₀</text>
+  <path class="supervise" d="M195 269 V295 H1107 V269"/>
+  <text class="tiny orange" x="575" y="288">仅训练：有效帧均方误差</text>
+
+  <rect class="panel" x="30" y="350" width="1220" height="850" rx="20"/>
+  <text class="section" x="52" y="391">② 共享去噪器：训练 / 每次采样前向都走这一条路径</text>
+  <rect class="box" x="70" y="430" width="360" height="90"/>
+  <text class="head" text-anchor="middle" x="250" y="467">当前动作 xₜ + 扩散步 t</text>
+  <text class="small" text-anchor="middle" x="250" y="500">每帧263维 / 251维连续向量</text>
+  <path class="flow" d="M250 520 V565"/>
+  <rect class="model" x="70" y="565" width="360" height="105"/>
+  <text class="head" text-anchor="middle" x="250" y="601">线性投影 + 位置编码</text>
+  <text class="small" text-anchor="middle" x="250" y="632">动作映射到512维</text>
+  <text class="small" text-anchor="middle" x="250" y="658">拼接扩散步编码；检测时排除它</text>
+  <path class="flow" d="M250 670 V740"/>
+  <text class="tiny muted" x="94" y="710">连续动作隐藏特征</text>
+
+  <rect class="cue" x="520" y="565" width="360" height="105"/>
+  <text class="head" text-anchor="middle" x="700" y="601">关键帧显著性估计</text>
+  <text class="small" text-anchor="middle" x="700" y="632">四段内DPC：密度 × 分离距离</text>
+  <text class="small" text-anchor="middle" x="700" y="658">输出：代表位置 + 权重 M</text>
+  <path class="flow" d="M430 618 H520"/>
+  <text class="tiny muted" x="536" y="548">当前特征；不读取真实动作标签</text>
+
+  <rect class="cue" x="520" y="740" width="360" height="105"/>
+  <text class="head" text-anchor="middle" x="700" y="776">局部周期估计</text>
+  <text class="small" text-anchor="middle" x="700" y="806">一维信号 → FFT自相关 → 判据</text>
+  <text class="small" text-anchor="middle" x="700" y="833">输出：角度 φ 与 [sinφ, cosφ]</text>
+  <path class="cueflow" d="M800 670 V740"/>
+  <text class="tiny green" x="674" y="708">关键帧划分区间</text>
+
+  <rect class="model" x="70" y="740" width="360" height="105"/>
+  <text class="head" text-anchor="middle" x="250" y="779">加入可学习相位投影</text>
+  <text class="small" text-anchor="middle" x="250" y="812">XΦ = X + ΦWφ</text>
+  <text class="tiny muted" text-anchor="middle" x="250" y="836">先验编码；不强制输出按周期重复</text>
+  <path class="cueflow" d="M520 795 H430"/>
+  <text class="small green" x="463" y="780">Φ</text>
+
+  <rect class="text" x="960" y="430" width="250" height="90"/>
+  <text class="head" text-anchor="middle" x="1085" y="467">用户文字</text>
+  <text class="small" text-anchor="middle" x="1085" y="500">“走几步，然后跳起”</text>
+  <path class="flow" d="M1085 520 V565"/>
+  <rect class="text" x="960" y="565" width="250" height="105"/>
+  <text class="head" text-anchor="middle" x="1085" y="602">冻结 CLIP + 投影</text>
+  <text class="small" text-anchor="middle" x="1085" y="634">发布实现：全局向量</text>
+  <text class="small" text-anchor="middle" x="1085" y="660">文本上下文长度为1</text>
+
+  <rect x="49" y="895" width="855" height="163" rx="18" fill="none" stroke="#8b9bb3" stroke-width="2" stroke-dasharray="8 6"/>
+  <text class="small muted" x="68" y="881">主干模块 × 6；本次前向复用同一组 M / φ</text>
+  <rect class="model" x="70" y="925" width="360" height="100"/>
+  <text class="head" text-anchor="middle" x="250" y="960">PSA-Mamba</text>
+  <text class="small" text-anchor="middle" x="250" y="991">双向状态扫描：Bₖ = B ⊙ M</text>
+  <text class="tiny muted" text-anchor="middle" x="250" y="1015">显著性调制当前帧写入历史状态</text>
+  <path class="flow" d="M250 845 V925"/>
+  <rect class="text" x="520" y="925" width="360" height="100"/>
+  <text class="head" text-anchor="middle" x="700" y="960">PDCAM</text>
+  <text class="small" text-anchor="middle" x="700" y="991">相位旋转Q + 显著性 + 差分融合</text>
+  <text class="tiny muted" text-anchor="middle" x="700" y="1015">单文本向量的退化边界见正文</text>
+  <path class="flow" d="M430 975 H520"/>
+  <path class="cueflow" d="M600 670 V695 H468 V960 H430"/>
+  <text class="small green" x="479" y="725">M</text>
+  <path class="cueflow" d="M610 670 V690 H918 V1042 H790 V1025"/>
+  <text class="small green" x="925" y="836">M</text>
+  <path class="cueflow" d="M700 845 V925"/>
+  <text class="small green" x="710" y="883">φ</text>
+  <path class="flow" d="M1085 670 V975 H880"/>
+  <text class="small muted" x="1100" y="830">文字条件</text>
+  <text class="tiny muted" x="954" y="1095">DPC / 自相关：无梯度</text>
+  <text class="tiny muted" x="954" y="1127">相位投影：可训练</text>
+  <text class="tiny muted" x="954" y="1159">没有外部关键帧接口</text>
+
+  <path class="flow" d="M700 1025 V1090"/>
+  <rect class="model" x="510" y="1090" width="380" height="82"/>
+  <text class="head" text-anchor="middle" x="700" y="1125">输出投影 → 干净动作预测 x̂₀</text>
+  <text class="small" text-anchor="middle" x="700" y="1157">恢复263 / 251维；不是VQ解码</text>
+  <path class="supervise" d="M890 1130 H1230 V225 H1205"/>
+
+  <rect class="panel" x="30" y="1225" width="1220" height="235" rx="20"/>
+  <text class="section" x="52" y="1267">③ 推理：文字 + 长度 + 随机种子 → 连续动作</text>
+  <rect class="box" x="65" y="1300" width="245" height="83"/>
+  <text class="head" text-anchor="middle" x="187" y="1335">高斯噪声 xT</text>
+  <text class="small" text-anchor="middle" x="187" y="1367">无真实动作 / 真实周期</text>
+  <path class="flow" d="M310 1342 H365"/>
+  <rect class="model" x="365" y="1300" width="290" height="83"/>
+  <text class="head" text-anchor="middle" x="510" y="1335">复用上方去噪器</text>
+  <text class="small" text-anchor="middle" x="510" y="1367">每次重估 M 与相位</text>
+  <path class="flow" d="M655 1342 H705"/>
+  <rect class="box" x="705" y="1300" width="210" height="83"/>
+  <text class="head" text-anchor="middle" x="810" y="1335">采样器更新</text>
+  <text class="small" text-anchor="middle" x="810" y="1367">得到下一步 xₜ</text>
+  <path class="flow" d="M915 1342 H965"/>
+  <rect class="cue" x="965" y="1300" width="245" height="83"/>
+  <text class="head" text-anchor="middle" x="1087" y="1335">最终动作特征</text>
+  <text class="small" text-anchor="middle" x="1087" y="1367">反标准化 → 关节坐标</text>
+  <path class="flow" d="M810 1383 V1425 H510 V1383"/>
+  <text class="small muted" x="65" y="1430">发布接口：1–196帧</text>
+  <text class="tiny muted" x="553" y="1450">论文：10步UniPC；发布默认：10步DPM-Solver</text>
+  <text class="tiny muted" x="40" y="1493">图中维度与实现路径来自代码快照；本文未运行模型。相位先验与显著性增益不提供硬性的事件、接触或目标保证。</text>
+</svg>

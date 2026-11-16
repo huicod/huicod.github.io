@@ -565,6 +565,23 @@
       "style"
     ]
   },
+  "dynacontalk-paper-notes": {
+    "topics": [
+      "gesture",
+      "editing",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "space",
+      "parts",
+      "style"
+    ]
+  },
   "dynmask-paper-notes": {
     "topics": [
       "generation"
@@ -972,6 +989,18 @@
     ],
     "methods": [],
     "controls": []
+  },
+  "hip-paper-notes": {
+    "topics": [
+      "gesture",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": [
+      "style"
+    ]
   },
   "hmvlm-paper-notes": {
     "topics": [
@@ -2539,6 +2568,16 @@
     "controls": [
       "parts"
     ]
+  },
+  "t2m-mamba-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "phase-frequency",
+      "diffusion"
+    ],
+    "controls": []
   },
   "talkflow-paper-notes": {
     "topics": [

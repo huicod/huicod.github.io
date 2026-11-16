@@ -3,7 +3,7 @@ title: "[NeurIPS2025] TransPhase：让相邻动作在去噪时一起决定怎样
 description: "沿着先走 2.4 秒、再坐下 3.6 秒的原文示例，看懂语义段与过渡段如何交换相位，并区分长序列、补间和平滑度的证据。"
 pubDate: "2026-11-02T16:20:00+08:00"
 badge: "Paper"
-tags: ["TransPhase", "Motion-Phase", "Motion-Diffusion", "Motion-Inbetweening", "Paper-Notes"]
+tags: ["TransPhase", "Compositional Phase Diffusion", "Motion-Phase", "Motion-Diffusion", "Motion-Inbetweening", "Paper-Notes"]
 ---
 
 <link rel="stylesheet" href="/paper-notes/paper-reading.css?v=20261026-batch" />

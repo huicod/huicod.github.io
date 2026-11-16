@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1570" viewBox="0 0 1440 1570" role="img" aria-labelledby="title desc">
+<title id="title">HIP：周期先验预训练与面部、身体、手部级联生成</title><desc id="desc">真实动作经卷积编码后分成FFT周期分支和非周期卷积分支，相加重建并产生周期伪标签。语音内容与情绪编码、文本、身份和情绪标签驱动面部预测，预测面部特征参与融合；身体先于手部生成，周期预测和专家网络提供运动增强，最后输出面部及上身动作。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#527085"/></marker><marker id="orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c77b30"/></marker><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#20384b} .title{font-size:36px;font-weight:700}.section{font-size:28px;font-weight:700}.head{font-size:25px;font-weight:700}.sub{font-size:22px;fill:#496173}.note{font-size:22px;fill:#805b31}.node{stroke:#7594a8;stroke-width:2;rx:15}.line{fill:none;stroke:#527085;stroke-width:3;marker-end:url(#arrow)}.train{fill:none;stroke:#c77b30;stroke-width:3;stroke-dasharray:10 7;marker-end:url(#orange)}</style></defs>
+<rect width="1440" height="1570" fill="#fff"/><text class="title" x="40" y="52">HIP：先学周期结构，再以面部 → 身体 → 手部生成</text>
+<rect x="24" y="82" width="1392" height="358" rx="22" fill="#fff8ed" stroke="#e5c69c" stroke-width="2"/>
+<text class="section" x="48" y="123">A · 仅训练：动作自编码与周期伪标签（可训练）</text>
+<rect class="node" x="50" y="210" width="245" height="96" fill="#fff"/><text class="head" x="72" y="248">真实身体＋手部动作</text><text class="sub" x="72" y="280">世界坐标系速度</text>
+<rect class="node" x="345" y="210" width="240" height="96" fill="#fff"/><text class="head" x="370" y="248">卷积编码 E_d</text><text class="sub" x="370" y="280">降维为时间特征 y</text>
+<rect class="node" x="645" y="158" width="300" height="93" fill="#eaf2ff"/><text class="head" x="667" y="194">FFT＋相位预测</text><text class="sub" x="667" y="229">A / F / B / S → 正弦潜变量</text>
+<rect class="node" x="645" y="306" width="300" height="85" fill="#f1ecff"/><text class="head" x="667" y="341">非周期卷积分支 E_np</text><text class="sub" x="667" y="373">保留瞬态与实例差异</text>
+<rect class="node" x="1005" y="243" width="300" height="100" fill="#fff"/><text class="head" x="1026" y="281">相加 → 卷积解码 D_bh</text><text class="sub" x="1026" y="315">动作重建＋速度损失</text>
+<path class="line" d="M295 258H345"/><path class="line" d="M585 258H615V205H645"/><path class="line" d="M615 258V348H645"/><path class="line" d="M945 205H975V273H1005"/><path class="line" d="M945 349H975V312H1005"/>
+<text class="note" x="1050" y="183">周期参数伪监督</text><text class="note" x="1050" y="215">用于训练下方预测器</text>
+<rect x="24" y="470" width="1392" height="1005" rx="22" fill="#f5f9fc" stroke="#c8d8e4" stroke-width="2"/>
+<text class="section" x="48" y="514">B · 语音条件生成：下图按论文组织；公开实现差异见正文</text>
+<rect class="node" x="50" y="550" width="245" height="86" fill="#fff"/><text class="head" x="75" y="585">语音波形</text><text class="sub" x="75" y="616">内容与情绪声学信息</text>
+<rect class="node" x="350" y="550" width="270" height="86" fill="#eaf2ff"/><text class="head" style="font-size:23px" x="368" y="585">双 Wav2vec 2.0 编码</text><text class="sub" x="368" y="616">论文：预训练并冻结</text>
+<rect class="node" x="50" y="696" width="245" height="100" fill="#fff"/><text class="head" style="font-size:22px" x="66" y="735">转录文本／说话者 ID</text><text class="sub" x="66" y="771">情绪标签（外部条件）</text>
+<rect class="node" x="350" y="696" width="270" height="100" fill="#eaf2ff"/><text class="head" x="374" y="735">条件编码与融合</text><text class="sub" x="374" y="771">映射后加入网络特征</text>
+<rect class="node" x="685" y="550" width="285" height="86" fill="#ffece5"/><text class="head" x="707" y="585">面部解码器 D_m</text><text class="sub" x="707" y="616">BiLSTM＋TCN＋全连接</text>
+<rect class="node" x="1045" y="550" width="290" height="86" fill="#ffece5"/><text class="head" x="1067" y="585">面部动画输出</text><text class="sub" x="1067" y="616">论文：52 维 blendshape</text>
+<rect class="node" x="1045" y="696" width="290" height="100" fill="#ffece5"/><text class="head" x="1067" y="735">提取预测面部特征</text><text class="sub" x="1067" y="771">不要求推理输入真实脸</text>
+<path class="line" d="M295 593H350"/><path class="line" d="M620 593H685"/><path class="line" d="M970 593H1045"/><path class="line" d="M295 746H350"/><path class="line" d="M620 746H650V617H685"/><path class="line" d="M1190 636V696"/>
+<rect class="node" x="565" y="858" width="400" height="90" fill="#e7f5f3"/><text class="head" x="590" y="894">上下文融合 E_fus：LSTM＋FC</text><text class="sub" x="590" y="927">语音＋预测面部＋文本／ID／情绪</text>
+<path class="line" d="M470 636V672H320V902H565"/><path class="line" d="M485 796V878H565"/><path class="line" d="M1190 796V902H965"/>
+<rect class="node" x="50" y="1030" width="300" height="90" fill="#f1ecff"/><text class="head" x="75" y="1066">身体生成器</text><text class="sub" x="75" y="1098">TCN＋FC → 27 维动作</text>
+<rect class="node" x="50" y="1210" width="300" height="90" fill="#f1ecff"/><text class="head" x="75" y="1246">手部生成器</text><text class="sub" x="75" y="1278">结合身体姿态 → 114 维</text>
+<path class="line" d="M660 948V985H200V1030"/><path class="line" d="M200 1120V1210"/><text class="sub" x="220" y="1178">身体引导手部</text><path class="line" d="M565 913H420V1255H350"/>
+<rect class="node" x="1020" y="1030" width="320" height="90" fill="#eaf2ff"/><text class="head" x="1045" y="1066">周期参数预测器</text><text class="sub" x="1045" y="1098">LSTM → 多帧 A / F / B / S</text>
+<rect class="node" x="1020" y="1210" width="320" height="90" fill="#eaf2ff"/><text class="head" x="1045" y="1246">门控＋专家网络</text><text class="sub" x="1045" y="1278">条件特征 → 周期运动增强</text>
+<path class="line" d="M865 948V985H1180V1030"/><path class="line" d="M1180 1120V1210"/><text class="sub" x="1200" y="1178">专家权重</text><path class="line" d="M965 913H985V1255H1020"/>
+<rect class="node" x="530" y="1350" width="420" height="92" fill="#e7f5f3"/><text class="head" x="555" y="1387">融合非周期动作与周期增强</text><text class="sub" x="555" y="1420">连续上身＋手部动作 → 角色动画</text>
+<path class="line" d="M350 1075H390V1396H530"/><path class="line" d="M200 1300V1396H530"/><path class="line" d="M1180 1300V1396H950"/>
+<path class="train" d="M795 158V140H1370V1080H1340"/>
+<text class="sub" x="48" y="1515">实线：条件或动作数据流　橙色虚线：仅训练的周期伪监督　颜色：面部／非周期／周期／融合</text>
+<text class="sub" x="48" y="1550">本站教学重绘，依据 arXiv v1 图 3、§III-B–D。面部损失及动作重建损失仅用于训练；非因果流式接口未验证。</text>
+</svg>
