@@ -12,6 +12,10 @@ tags: ["Control-Operators", "Character-Control", "Flow-Matching", "Motion-Matchi
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="http://127.0.0.1:8879/paper-library/control-operators/index.html">本机全文 HTML（需启动本地阅读器）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · SIGGRAPH Asia 2025</summary>
 
 **完整标题：** Control Operators for Interactive Character Animation。**作者：** Ruiyu Gou、Michiel van de Panne、Daniel Holden。**出处：** ACM Transactions on Graphics 44(6)，Article 231，20 页，SIGGRAPH Asia 2025；[DOI 10.1145/3763319](https://doi.org/10.1145/3763319)。

@@ -12,6 +12,10 @@ tags: ["UniMotion", "Motion-Text-Vision", "Text-to-Motion", "Motion-Editing", "U
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2603.22282v2">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · ECCV 2026</summary>
 
 论文：*UniMotion: A Unified Framework for Motion-Text-Vision Understanding and Generation*。作者：**Ziyi Wang、Xinshun Wang、Shuang Chen、Yang Cong、Mengyuan Liu**，来自北京大学、东华大学与华南理工大学。[官方项目][project]

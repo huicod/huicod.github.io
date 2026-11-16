@@ -12,6 +12,10 @@ tags: ["U-Mind", "Embodied-Agent", "Speech-Gesture", "Multimodal-Generation", "P
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2602.23739v1">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · CVPR 2026</summary>
 
 论文：*U-Mind: A Unified Framework for Real-Time Multimodal Interaction with Audiovisual Generation*。作者：**Xiang Deng、Feng Gao、Yong Zhang、Youxin Pang、Xu Xiaoming、Zhuoliang Kang、Xiaoming Wei、Yebin Liu**，清华大学与美团。正式收录于 **CVPR 2026，pp.10874–10886**，以[CVF出版记录][venue]为依据。

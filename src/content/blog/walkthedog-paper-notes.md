@@ -12,6 +12,10 @@ tags: ["WalkTheDog", "Phase-Manifold", "Cross-Morphology", "Motion-Alignment", "
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2407.18946v1">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · SIGGRAPH 2024 Conference Papers · 全文、补充与公开代码</summary>
 
 论文：*WalkTheDog: Cross-Morphology Motion Alignment via Phase Manifolds*。作者：**Peizhuo Li、Sebastian Starke、Yuting Ye、Olga Sorkine-Hornung**。正式发表于 **SIGGRAPH 2024 Conference Papers**，DOI：[10.1145/3641519.3657508][doi]；这是会议论文，不能与 TOG 期刊轨道混同。

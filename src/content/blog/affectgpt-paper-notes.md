@@ -6,6 +6,10 @@ badge: "Paper"
 tags: ["AffectGPT", "MLLM"]
 ---
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2501.16566v2">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 ## 01 论文信息
 
 - 论文题目：AffectGPT: A New Dataset, Model, and Benchmark for Emotion Understanding with Multimodal Large Language Models

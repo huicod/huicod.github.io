@@ -12,6 +12,10 @@ tags: ["Movement-Primitives", "Dynamical-Systems", "Robot-Learning", "Paper-Note
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="http://127.0.0.1:8879/paper-library/dmp/index.html">本机全文 HTML（需启动本地阅读器）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围</summary>
 
 **完整标题：** Dynamical Movement Primitives: Learning Attractor Models for Motor Behaviors。**作者：** Auke Jan Ijspeert、Jun Nakanishi、Heiko Hoffmann、Peter Pastor、Stefan Schaal。**出处：** *Neural Computation* 25(2)，328–373，2013。本文系统整理和扩展作者此前的DMP研究。**核查范围：** 爱丁堡大学存档的正式期刊版，含库封面共47页。方法与实验以原文为准，旧软件包与实机未运行。[正式DOI](https://doi.org/10.1162/NECO_a_00393)

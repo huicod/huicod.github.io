@@ -12,6 +12,10 @@ tags: ["CtrlCoMo", "CoHuMo", "Co-Speech-Gesture", "Motion-Control", "Paper-Notes
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="http://127.0.0.1:8879/paper-library/ctrlcomo/index.html">本机全文 HTML（需启动本地阅读器）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · ECCV 2026</summary>
 
 *CtrlCoMo: Controllable Co-speech Motion Generation with Gesture–Action Disentanglement*。作者 Xinghan Wang、Ming Zhou、Yanbo Zheng、Youjiang Xu、Yuan Zhang、Mingyuan Gao、Nan Zhuang、Yadong Mu，来自北京大学与字节跳动。正式发表于 ECCV 2026，LNCS 17063，pp. 258–277，DOI：10.1007/978-3-032-37211-6_15。研究领域：伴随语音的动作生成、多模态控制、分层动作表示。

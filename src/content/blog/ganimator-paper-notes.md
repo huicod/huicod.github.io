@@ -12,6 +12,10 @@ tags: ["GANimator", "Single-Motion-Synthesis", "Character-Animation", "Motion-Co
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2205.02625">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息 · SIGGRAPH 2022 / ACM Transactions on Graphics</summary>
 
 *GANimator: Neural Motion Synthesis from a Single Sequence*。作者为 Peizhuo Li、Kfir Aberman、Zihan Zhang、Rana Hanocka、Olga Sorkine-Hornung。发表于 *ACM Transactions on Graphics* 41(4)，Article 138，SIGGRAPH 2022，DOI 10.1145/3528223.3530157。以下依据 12 页正式稿、作者演示与公开实现。实验数值来自论文，本次未运行模型。[正式记录][doi] · [全文][paper] · [项目与逐项视频][demo] · [代码与预训练模型入口][repo]

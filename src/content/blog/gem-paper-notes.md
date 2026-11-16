@@ -12,6 +12,10 @@ tags: ["GEM", "GENMO", "Motion-Estimation", "Text-to-Motion", "Music-to-Dance", 
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2505.01425">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读版本 · ICCV 2025 Highlight</summary>
 
 正式题名为 *GENMO: A GENeralist Model for Human MOtion*，作者是 NVIDIA 的 Jiefeng Li、Jinkun Cao、Haotian Zhang、Davis Rempe、Jan Kautz、Umar Iqbal、Ye Yuan。论文发表于 ICCV 2025，第 11766–11776 页。项目随后将 GENMO 更名为 GEM，二者指同一项工作。本文表号和实验数值以 CVF 会议定稿及其补充材料为准，核查日期 2026-11-01。[CVF 书目][cvf] · [NVIDIA 项目页与更名说明][project]

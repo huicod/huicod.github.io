@@ -12,6 +12,10 @@ tags: ["DiffusionPhase", "Motion-Phase", "Text-to-Motion", "Long-Motion", "Paper
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2312.04036v1">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · arXiv 2023</summary>
 
 *DiffusionPhase: Motion Diffusion in Frequency Domain*。作者 Weilin Wan、Yiming Huang（共同一作）、Shutong Wu、Taku Komura、Wenping Wang、Dinesh Jayaraman、Lingjie Liu，来自香港大学、宾夕法尼亚大学及得克萨斯 A&M 大学。研究领域：文本到动作、周期动作表示、长序列生成与动作衔接。

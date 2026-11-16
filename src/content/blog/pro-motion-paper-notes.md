@@ -12,6 +12,10 @@ tags: ["pro-motion", "Text-to-Motion", "LLM-Planning", "Pose-Generation", "Paper
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2312.14828v1">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · ECCV 2024 · 正式全文与发布核查</summary>
 
 论文：*Plan, Posture and Go: Towards Open-Vocabulary Text-to-Motion Generation*。作者：**Jinpeng Liu、Wenxun Dai、Chunyu Wang、Yiji Cheng、Yansong Tang、Xin Tong**。正式出处：**ECCV 2024，pp. 445–463**，DOI：[10.1007/978-3-031-73383-3_26][venue]。研究领域：开放词汇文本到动作、姿态生成、关键姿态规划。

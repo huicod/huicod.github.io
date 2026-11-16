@@ -6,6 +6,10 @@ badge: "Paper"
 tags: ["Emotion-LLaMA", "MLLM"]
 ---
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2406.11161v2">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 这篇先记一下 [Emotion-LLaMA: Multimodal Emotion Recognition and Reasoning with Instruction Tuning](https://arxiv.org/abs/2406.11161)。我读它主要是因为最近在看多模态情绪识别，尤其是视频、音频、文本三路信息怎么被统一进一个 LLM 里。
 
 相关资料：

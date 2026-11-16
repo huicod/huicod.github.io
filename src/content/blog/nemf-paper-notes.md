@@ -12,6 +12,10 @@ tags: ["NeMF", "Neural-Motion-Field", "Motion-Prior", "Motion-Inbetweening", "Pa
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2206.03287v3">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · NeurIPS 2022 (Spotlight)</summary>
 
 **论文：** NeMF: Neural Motion Fields for Kinematic Animation。**作者：** Chengan He、Jun Saito、James Zachary、Holly Rushmeier、Yi Zhou。**出处：** NeurIPS 2022，作者项目标注 Spotlight；正式论文集 35 卷、4244–4256 页，[会议条目](https://proceedings.neurips.cc/paper_files/paper/2022/hash/1b3750390ca8b931fb9ca988647940cb-Abstract-Conference.html)，DOI 10.52202/068431-0307。本篇完整阅读正式主文 13 页及官方 ZIP 中的 8 页独立补充；arXiv 最新为 v3（2022-10-09），主要实验按正式版。代码核查日期为 2026-10-29，未运行模型。

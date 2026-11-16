@@ -6,6 +6,10 @@ badge: "Notes"
 tags: ["Raft", "Consensus"]
 ---
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="http://127.0.0.1:8879/paper-library/raft-consensus/index.html">本机全文 HTML（需启动本地阅读器）</a></p>
+<!-- fulltext-access:end -->
+
 参考文章：
 
 1. [The Raft Consensus Algorithm](https://raft.github.io/)

@@ -12,6 +12,10 @@ tags: ["Motion-In-Betweening", "Motion-Editing", "Phase", "Motion-Style", "Paper
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2503.08180v3">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读版本 · Pacific Graphics 2026</summary>
 
 *Towards Generative and Editable Motion In-Betweening Through Part-Wise Phase Representation*，作者为 Minyue Dai、Ke Fan、Bin Ji、Haoran Xu、Haoyu Zhao、Junting Dong、Jingbo Wang 和 Bo Dai。发表于 Pacific Graphics 2026，DOI 10.2312/pg.20261053。本文用作者项目名 MIB-BodyPartPhase 作简称，数字以 Eurographics 正式 10 页论文为准。2025 年 3 月首发的预印本题名使用 *Synthesized*，同年 8 月更新至 v3。两种题名对应同一项补间研究。[正式记录][venue] · [正式全文][pdf] · [arXiv 版本历史][arxiv] · [作者项目页][project]

@@ -12,6 +12,10 @@ tags: ["Movement-Primitives", "Probabilistic-Models", "Robot-Learning", "Paper-N
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="http://127.0.0.1:8879/paper-library/promp/index.html">本机全文 HTML（需启动本地阅读器）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围</summary>
 
 **完整标题：** Probabilistic Movement Primitives。**作者：** Alexandros Paraschos、Christian Daniel、Jan Peters、Gerhard Neumann。**出处：** Advances in Neural Information Processing Systems 26，会议当年名称为NIPS 2013。**核查范围：** 正式正文9页、独立补充4页，含数学推导、七连杆仿真与两项KUKA机械臂实验。正文与补充已核读，未运行实验。[正式会议条目](https://proceedings.neurips.cc/paper/2013/hash/e53a0a2978c28872a4505bdb51db06dc-Abstract.html)

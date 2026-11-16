@@ -12,6 +12,10 @@ tags: ["SinMDM", "Single-Motion-Synthesis", "Motion-Diffusion", "Motion-Editing"
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2302.05905">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息 · ICLR 2024 Spotlight</summary>
 
 *Single Motion Diffusion*。作者为 Sigal Raab、Inbal Leibovitch（共同一作）、Guy Tevet、Moab Arar、Amit H. Bermano 和 Daniel Cohen-Or，来自特拉维夫大学。本文依据 ICLR 2024 的 21 页正式版（含附录）、作者演示与公开代码解读。实验数值由作者报告，本次未运行训练或推理。[会议记录][venue] · [正式论文][paper] · [视频演示][demo] · [官方代码][code]

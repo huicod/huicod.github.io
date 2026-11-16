@@ -12,6 +12,10 @@ tags: ["STL", "Trajectory-Planning", "Diffusion", "Temporal-Logic", "Paper-Notes
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2501.13457v2">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · NeurIPS 2025</summary>
 
 **完整标题：** Zero-Shot Trajectory Planning for Signal Temporal Logic Tasks。**作者：** Ruijia Liu、Ancheng Hou、Xiao Yu、Xiang Yin。**出处：** NeurIPS 2025 主会，Advances in Neural Information Processing Systems 38；[正式会议条目](https://proceedings.nips.cc/paper_files/paper/2025/hash/bd18189308a4c45c7d71ca83acf3deaa-Abstract-Conference.html)，DOI 10.52202/085713-4345。

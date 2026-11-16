@@ -12,6 +12,10 @@ tags: ["anytop", "Character-Animation", "Paper-Notes"]
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2502.17327v2">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · SIGGRAPH 2025 · arXiv v2 含附录</summary>
 
 论文：**AnyTop: Character Animation Diffusion with Any Topology**。作者：Inbar Gat、Sigal Raab、Guy Tevet、Yuval Reshef、Amit H. Bermano、Daniel Cohen-Or；前两位为共同一作。正式发表于 SIGGRAPH 2025 Conference Papers，1–10 页，DOI：[10.1145/3721238.3730621](https://doi.org/10.1145/3721238.3730621)。本文阅读 [arXiv:2502.17327v2](https://arxiv.org/abs/2502.17327v2)（2025-06-05，12 页，含附录 A–D），引用表号和页码均按此版本。

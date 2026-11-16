@@ -6,6 +6,10 @@ badge: "Paper"
 tags: ["AffectGPT-R1", "RL"]
 ---
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2508.01318v3">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 ## 01 论文信息
 
 - 论文题目：AffectGPT-R1: Leveraging Reinforcement Learning for Open-Vocabulary Multimodal Emotion Recognition

@@ -12,6 +12,10 @@ tags: ["CurveCodec2", "Animation-Compression", "Entropy-Coding", "Skeleton-Agnos
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2610.04211v2">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · arXiv 2026</summary>
 
 *CurveCodec 2: Skeleton-Agnostic Animation Compression with a Learned Entropy Model*。作者 **Mingyi Shi、Huancheng Lin、Taku Komura**，来自香港大学。研究领域：骨骼动画压缩、率失真优化、跨骨架表示、学习熵模型。

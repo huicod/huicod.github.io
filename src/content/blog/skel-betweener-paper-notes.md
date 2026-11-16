@@ -12,6 +12,10 @@ tags: ["SKEL-Betweener", "Motion-Inbetweening", "Motion-Editing", "Character-Ani
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="http://127.0.0.1:8879/paper-library/skel-betweener/index.html">本机全文 HTML（需启动本地阅读器）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读版本 · SIGGRAPH Asia 2024</summary>
 
 *SKEL-Betweener: a Neural Motion Rig for Interactive Motion Authoring*，Dhruv Agrawal、Jakob Buhmann、Dominik Borer、Robert W. Sumner、Martin Guay，来自 ETH Zürich 与 DisneyResearch|Studios。发表于 *ACM Transactions on Graphics* 43(6)，Article 247，DOI 10.1145/3687941，并在 SIGGRAPH Asia 2024 Technical Papers 报告。本文按 Disney 作者稿核对图 1–7、表 1–3。项目页使用较早的展示标题 *Skel-inbetweening for Intuitive Neural Motion Authoring*，指同一项工作。[ACM 书目][doi] · [大会日程][venue] · [作者项目与演示][project] · [核读版本][paper]

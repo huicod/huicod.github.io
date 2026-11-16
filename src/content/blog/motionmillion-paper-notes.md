@@ -12,6 +12,10 @@ tags: ["MotionMillion", "Text-to-Motion", "Motion-Tokenizer", "Zero-Shot", "Pape
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2507.07095v1">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · ICCV 2025</summary>
 
 *Go to Zero: Towards Zero-shot Motion Generation with Million-scale Data*，作者 Ke Fan、Shunlin Lu、Minyue Dai、Runyi Yu、Lixing Xiao、Zhiyang Dou、Junting Dong、Lizhuang Ma、Jingbo Wang。发表于 ICCV 2025，第 13336–13348 页。MotionMillion 是数据集，MotionMillion-Eval 是评测提示集，正文另报告 1B、3B、7B 三种生成模型。以下基于正式主文 13 页、独立补充 6 页、作者公开代码与数据卡，核查日期为 2026-11-01。[CVF 会议页][cvf] · [主文][paper] · [补充][supp] · [作者项目页][project]

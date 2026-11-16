@@ -12,6 +12,10 @@ tags: ["CurveCodec", "Animation-Compression", "Motion-Representation", "Paper-No
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="/paper-notes/neural-codec/fulltext/">英文全文 HTML（自动转换，可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · SIGGRAPH Asia 2026 Conference Papers</summary>
 
 论文：*Neural Codec for Skeletal Animation Compression*。作者：**Mingyi Shi、Huancheng Lin、Xuelin Chen、Taku Komura**。正式身份：**SIGGRAPH Asia 2026 Conference Papers**，DOI [10.1145/3829340.3842192][doi]；[会议日程][schedule]确认收录，会议尚未举行。阅读作者提供的[11 页正式版式 PDF][paper]，并静态检查官方 v0.1.0 历史归档。核查日期：2026-10-29。

@@ -12,6 +12,10 @@ tags: ["MOCHA", "Motion-Style-Transfer", "Real-Time-Animation", "Context-Matchin
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2310.10079v1">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · SIGGRAPH Asia 2023 Conference Papers</summary>
 
 **论文：** MOCHA: Real-Time Motion Characterization via Context Matching。**作者：** Deok-Kyeong Jang、Yuting Ye、Jungdam Won、Sung-Hee Lee。**出处：** SIGGRAPH Asia 2023 Conference Papers，[正式 DOI](https://doi.org/10.1145/3610548.3618252)。本文完整阅读 [arXiv v1](https://arxiv.org/abs/2310.10079v1) 的 12 页文件，包含附录 A–D，并核查作者项目与公开实现；截至 2026 年 10 月 29 日，arXiv 页面只有这一版本。这里的 MOCHA 是动作角色化方法及其配套数据集，不是其他同名方法。

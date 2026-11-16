@@ -12,6 +12,10 @@ tags: ["LabanDancer", "Labanotation", "Motion-Control", "Dance", "Symbolic-Repre
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="http://127.0.0.1:8879/paper-library/labandancer/index.html">本机全文 HTML（需启动本地阅读器）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · VAST 2003</summary>
 
 完整题名：*Animating the Dance Archives*。**LabanDancer 是论文介绍的系统名称。** 作者：**Lars Wilke、Tom Calvert、Rhonda Ryman、Ilene Fox**。发表于 **The 4th International Symposium on Virtual Reality, Archaeology and Intelligent Cultural Heritage（VAST 2003）**，Eurographics Association。研究领域：舞蹈档案、拉班舞谱、符号解释、角色动画。[出版记录][record] · [用户提供的原文 PDF][paper]

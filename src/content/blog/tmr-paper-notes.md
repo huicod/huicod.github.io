@@ -12,6 +12,10 @@ tags: ["TMR", "Motion-Retrieval", "Motion-Understanding", "Contrastive-Learning"
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2305.00976v2">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · ICCV 2023</summary>
 
 完整题名为 *TMR: Text-to-Motion Retrieval Using Contrastive 3D Human Motion Synthesis*。作者为 Mathis Petrovich、Michael J. Black、Gül Varol，发表于 ICCV 2023，pp. 9488–9497。本文核对正式正文十页与七页补充，重点讨论已有动作搜文及文本搜动作。[会议条目][cvf] · [正式正文][paper] · [补充材料][sup] · [作者项目][project]。

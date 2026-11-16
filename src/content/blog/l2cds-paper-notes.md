@@ -12,6 +12,10 @@ tags: ["L2CDS", "Dynamical-Systems", "Cross-Morphology", "Latent-Dynamics", "Pap
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/1912.03015v3">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · L4DC 2020 · 正式全文与附录 A–D</summary>
 
 论文：*Learning to Correspond Dynamical Systems*。作者：**Nam Hee Kim、Zhaoming Xie、Michiel van de Panne**，University of British Columbia。正式发表于 **Learning for Dynamics and Control（L4DC 2020）**，PMLR 120，pp.105–117；正式出版页与论文 PDF 的内部页码不同，本文定位均使用 PDF 的 1–13 页。

@@ -12,6 +12,10 @@ tags: ["superstar", "Co-Speech-Gesture", "Paper-Notes"]
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2608.24909v1">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · ACM MM 2026 · 正文与附录</summary>
 
 论文：**Super Star: Towards Streaming Real-time Interactive Agents for Digital Humans**。作者：Wentao Jiang、Youchen Xie、Haidi Fan、Yajing Chen、Xin Wang、Ye Shi、Jingya Wang。作者项目与 arXiv 明确标注 ACM Multimedia 2026 录用；本文阅读 [arXiv:2608.24909v1](https://arxiv.org/abs/2608.24909)，共 16 页，包含补充材料 A–D。当前未核实正式 ACM DOI，PDF 中的会议、年份和 DOI 模板占位不作为出处依据。

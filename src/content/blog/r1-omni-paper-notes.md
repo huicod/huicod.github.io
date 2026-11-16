@@ -6,6 +6,10 @@ badge: "Paper"
 tags: ["R1-Omni", "RLVR"]
 ---
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2503.05379v2">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 ## 01 论文信息
 
 - 论文题目：R1-Omni: Explainable Omni-Multimodal Emotion Recognition with Reinforcement Learning

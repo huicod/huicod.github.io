@@ -12,6 +12,10 @@ tags: ["TPPMG", "Text-to-Motion", "Temporal-Planning", "Motion-Diffusion", "Pape
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://ijcai.org/proceedings/2026/197#fulltext">官方 HTML 全文（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读版本 · IJCAI 2026 主会</summary>
 
 *TPPMG: Temporal Planning-driven Progressive Motion Generation*。作者为清华大学的 Ruoyu Wang、Can Deng、Xinyi Li、Zhuo Li；前两位共同一作，Ruoyu Wang 为通讯作者。发表于 IJCAI 2026 Main Track，页码 1767–1775，DOI 10.24963/ijcai.2026/197。本文依据会议九页正式稿与原表 1–3；本次未定位到可核实的作者代码、权重或单独的实验附录，未运行模型。[会议记录][venue] · [正式论文][paper]

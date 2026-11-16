@@ -12,6 +12,10 @@ tags: ["Semantic Motion Anchors", "Co-Speech-Gesture", "Paper-Notes"]
 
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
+<!-- fulltext-access:start -->
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://arxiv.org/html/2605.30608v4">arXiv HTML（可翻译）</a></p>
+<!-- fulltext-access:end -->
+
 <details class="paper-meta"><summary>论文信息与阅读范围 · NeurIPS 2026 · 已录用 · arXiv v3</summary>
 
 论文信息：**Semantic Motion Anchors: Bridging Motion and Meaning in Co-Speech Gestures**。作者：Varsha Suresh、Mohammad Mahdi Abootorabi、Mohamed Salman、M. Hamza Mughal、Christian Theobalt、Ashwin Ram、Jürgen Steimle、Vera Demberg。**NeurIPS 2026 已录用**，已核对[会议官方目录](https://neurips.cc/Downloads/2026)及[作者主页](https://varsha33.github.io/)。本文阅读 [arXiv v3，2026-06-06](https://arxiv.org/abs/2605.30608v3)的完整 24 页，含技术附录。领域：伴随语音手势、跨模态检索、动作语义表示。关键词：Semantic Motion Anchors、RVQ-VAE、规则描述、对比学习、SEMANTIX。核查日期：2026-10-18；当前核查的作者与论文入口尚未提供可确认的官方实现、模型权重及 SEMANTIX 下载，以下为论文机制与实验解读，未运行模型。
