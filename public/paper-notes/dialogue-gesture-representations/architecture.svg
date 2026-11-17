@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1430" viewBox="0 0 1240 1430" role="img" aria-labelledby="title desc">
+<title id="title">对话共语手势表征：数据、对比训练与两种内在评估</title>
+<desc id="desc">人工划定的手势stroke产生一秒骨架窗与两秒语音窗。骨架原始窗和两种增强经共享ST-GCN与投影头得到128维向量，增强之间使用单模态损失，原始骨架与同窗语音使用跨模态损失。训练后骨架投影用于余弦相似度，投影前256维特征用于五个相似性探针。没有动作生成解码器。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#526779"/></marker><marker id="orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#bc7638"/></marker><style>text{font-family:'Microsoft YaHei','Noto Sans SC',sans-serif;fill:#213847;font-size:22px}.head{font-size:29px;font-weight:700}.section{font-size:24px;font-weight:700}.small{font-size:19px}.muted{fill:#526779}.box{fill:white;stroke:#a8becb;stroke-width:1.5}.skel{fill:#e7f1fa;stroke:#6c99b8;stroke-width:1.6}.audio{fill:#e7f4ee;stroke:#72a48c;stroke-width:1.6}.loss{fill:#fff0de;stroke:#c4965b;stroke-width:1.6}.line{fill:none;stroke:#526779;stroke-width:2.4;marker-end:url(#arrow)}.train{fill:none;stroke:#bc7638;stroke-width:2.4;stroke-dasharray:8 6;marker-end:url(#orange)}</style></defs>
+<rect width="1240" height="1430" fill="#f9fbfd" rx="24"/>
+<text x="42" y="49" class="head">对话手势的对比学习与内在评估</text>
+<text x="42" y="82" class="small muted">教学示意 · 依据原文 §3–6、图3；冻结设置注明来自公开代码</text>
+<rect x="25" y="105" width="1190" height="240" rx="18" fill="#eef2f6"/>
+<text x="45" y="139" class="section">① 数据构建：人工 stroke 边界用于取窗，形态标签不进入对比损失</text>
+<rect class="box" x="45" y="163" width="335" height="135" rx="13"/>
+<text x="65" y="194">19组荷兰语面对面对话</text><text x="65" y="226">38人 · 超过8小时</text><text x="65" y="258">4,949个人工分段 stroke</text>
+<rect class="skel" x="430" y="163" width="350" height="135" rx="13"/>
+<text x="450" y="194">1秒视觉窗 · 步长2帧</text><text x="450" y="226">与 stroke 重叠 &gt;50%</text><text x="450" y="258">MMPose → 27个上身/手关节</text>
+<rect class="audio" x="830" y="163" width="365" height="135" rx="13"/>
+<text x="850" y="194">同步2秒原始语音</text><text x="850" y="226">视觉窗前后各扩0.5秒</text><text x="850" y="258">保留共现关系，无需转写文字</text>
+<path class="line" d="M380 224 H430"/><path class="line" d="M780 224 H830"/>
+<text x="430" y="328" class="small muted">合计70,153组配对窗；不是70,153个独立手势或对话</text>
+<rect x="25" y="365" width="1190" height="625" rx="18" fill="#f1f7fb"/>
+<text x="45" y="402" class="section">② 对比训练：两种约束联合更新骨架表征</text>
+<rect class="skel" x="45" y="430" width="320" height="112" rx="13"/>
+<text x="65" y="464">骨架窗 Xᴳ：3 × T × 27</text><text x="65" y="497">原始窗 ＋ 两个随机增强视图</text><text x="65" y="525" class="small muted">坐标 x、y 与检测置信度</text>
+<rect class="skel" x="415" y="430" width="350" height="112" rx="13"/>
+<text x="435" y="464">共享 ST-GCN → hᴳ（256维）</text><text x="435" y="497">土耳其手语识别模型初始化</text><text x="435" y="525" class="small muted">本阶段继续训练骨架网络</text>
+<rect class="skel" x="815" y="430" width="380" height="112" rx="13"/>
+<text x="835" y="464">骨架投影头 gᴳ</text><text x="835" y="497">线性 → ReLU → 线性</text><text x="835" y="525" class="small muted">zᴳ：128维，用于对比损失</text>
+<path class="line" d="M365 485 H415"/><path class="line" d="M765 485 H815"/>
+<rect class="audio" x="45" y="582" width="320" height="120" rx="13"/>
+<text x="65" y="618">配对语音 xˢ</text><text x="65" y="650">wav2vec2 XLSR-300M</text><text x="65" y="682" class="small muted">24层输出；骨干冻结（代码）</text>
+<rect class="audio" x="415" y="582" width="350" height="120" rx="13"/>
+<text x="435" y="618">可学习层加权 ＋ 两层CNN</text><text x="435" y="650">聚合时间信息 → hˢ（128维）</text><text x="435" y="682" class="small muted">语音分支后端参与训练</text>
+<rect class="audio" x="815" y="582" width="380" height="120" rx="13"/>
+<text x="835" y="618">语音投影头 gˢ</text><text x="835" y="650">线性 → ReLU → 线性</text><text x="835" y="682" class="small muted">zˢ：128维，和骨架在同一空间</text>
+<path class="line" d="M365 643 H415"/><path class="line" d="M765 643 H815"/>
+<rect class="loss" x="45" y="750" width="530" height="120" rx="13"/>
+<text x="65" y="784">Lᵤₙᵢ：同一骨架的两种增强互相靠近</text><text x="65" y="817">正样本＝同一实例；负样本＝批内其他实例</text><text x="65" y="850" class="small muted">不使用“同一个所指对象”来指定正样本</text>
+<rect class="loss" x="625" y="750" width="570" height="120" rx="13"/>
+<text x="645" y="784">Lₘₘ：原始骨架与同窗语音双向对齐</text><text x="645" y="817">正样本＝同步配对；负样本＝批内错配</text><text x="645" y="850" class="small muted">骨架→语音、语音→骨架均计算对比损失</text>
+<path class="line" d="M1005 542 V563 H390 V725 H310 V750"/>
+<path class="line" d="M1180 542 H1204 V724 H1100 V750"/>
+<path class="line" d="M1005 702 V750"/>
+<rect class="loss" x="335" y="906" width="580" height="58" rx="13"/>
+<text x="372" y="945">联合目标 L꜀ₒ = ½ (Lᵤₙᵢ + Lₘₘ)</text>
+<path class="train" d="M310 870 V935 H335"/><path class="train" d="M910 870 V906"/>
+<rect x="25" y="1010" width="1190" height="350" rx="18" fill="#eff6f1"/>
+<text x="45" y="1048" class="section">③ 表征使用与评估：训练后的骨架网络复用，推理可不输入语音</text>
+<rect class="skel" x="45" y="1080" width="305" height="230" rx="13"/>
+<text x="65" y="1118">两个已分段手势 A、B</text><text x="65" y="1150">分别送入已训练 ST-GCN</text><text x="65" y="1182">取得 hᴳₐ、hᴳᵦ（各256维）</text><text x="65" y="1220" class="small muted">相似度分析使用投影后向量</text><text x="65" y="1250" class="small muted">probe 使用投影前向量</text><text x="65" y="1280" class="small muted">两条评估路径不能混同</text>
+<rect class="box" x="420" y="1080" width="340" height="100" rx="13"/>
+<text x="440" y="1118">复用投影头 → zᴳₐ、zᴳᵦ</text><text x="440" y="1150">cosine similarity ∈ [−1, 1]</text>
+<rect class="box" x="820" y="1080" width="375" height="100" rx="13"/>
+<text x="840" y="1118">相似度 / 相关性 / 分组统计</text><text x="840" y="1150" class="small muted">人工五维标签、说话人/所指/对话</text>
+<rect class="box" x="420" y="1210" width="340" height="100" rx="13"/>
+<text x="440" y="1248">两路32维 + ReLU → 拼接</text><text x="440" y="1280">每个属性独立训练二分类探针</text>
+<rect class="box" x="820" y="1210" width="375" height="100" rx="13"/>
+<text x="840" y="1248">五个“是否相似”的预测</text><text x="840" y="1280" class="small muted">用手、形状、位置、移动、旋转</text>
+<path class="line" d="M350 1130 H420"/><path class="line" d="M350 1260 H420"/><path class="line" d="M760 1130 H820"/><path class="line" d="M760 1260 H820"/>
+<text x="420" y="1341" class="small muted">probe 监督：419个人工编码手势对；不输出动作轨迹或可执行手势指令</text>
+<text x="43" y="1400" class="small muted">实线：数据与表示流　橙色虚线：损失汇合　蓝色：骨架　绿色：语音/评估　橙色：训练目标</text>
+</svg>

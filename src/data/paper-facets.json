@@ -429,6 +429,15 @@
     ],
     "controls": []
   },
+  "dialogue-gesture-representations-paper-notes": {
+    "topics": [
+      "gesture",
+      "understanding",
+      "representation"
+    ],
+    "methods": [],
+    "controls": []
+  },
   "didiffges-paper-notes": {
     "topics": [
       "gesture"
@@ -1050,6 +1059,17 @@
     "controls": [
       "style"
     ]
+  },
+  "jegal-paper-notes": {
+    "topics": [
+      "gesture",
+      "understanding",
+      "representation"
+    ],
+    "methods": [
+      "retrieval"
+    ],
+    "controls": []
   },
   "keta-paper-notes": {
     "topics": [

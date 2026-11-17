@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1510" viewBox="0 0 1120 1510" role="img" aria-labelledby="title desc">
+<title id="title">JEGAL：从视频、语音与文本学习手势关联，再完成三种理解任务</title>
+<desc id="desc">上方三路编码：遮脸RGB视频经冻结GestSync和可训练手势头输出逐帧向量，文本经XLM-R和文本头后按词聚合，语音经梅尔谱和CNN后按已知词边界聚合，两者拼接投影成词向量。中间训练通过全局片段对比和局部词手势耦合损失联合学习。下方复用编码器，分别输出检索排名、给定词的帧分数和候选说话人编号。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/></marker><marker id="orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#b45309"/></marker></defs>
+<style>text{font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;fill:#172c43;font-size:20px}.title{font-size:28px;font-weight:700}.section{font-size:23px;font-weight:700}.head{font-size:22px;font-weight:700}.small{font-size:18px}.box{stroke:#94a3b8;stroke-width:1.5;rx:12}.flow{fill:none;stroke:#334155;stroke-width:2.2;marker-end:url(#arrow)}.hint{fill:none;stroke:#b45309;stroke-width:2.2;stroke-dasharray:7 5;marker-end:url(#orange)}</style>
+<rect width="1120" height="1510" fill="#f8fafc"/>
+<text x="40" y="44" class="title">JEGAL：关联手势、语音与文字的联合表征</text>
+<rect x="30" y="75" width="1060" height="570" rx="18" fill="#eef4fb" stroke="#cbd5e1"/>
+<text x="50" y="108" class="section">① 共享编码：输入是 RGB 视频、文本与语音</text>
+
+<rect x="50" y="140" width="220" height="95" class="box" fill="#fff"/>
+<text x="70" y="172" class="head">手势 RGB 视频</text><text x="70" y="202">上身裁剪、遮去脸部</text><text x="70" y="226" class="small">25 fps · 270 × 480</text>
+<rect x="320" y="140" width="410" height="95" class="box" fill="#dceafa"/>
+<text x="340" y="171" class="head">GestSync 主干（冻结）</text><text x="340" y="201">1024维特征 → 投影 → 6层 Transformer</text><text x="340" y="225" class="small">可训练手势头 + 输出投影</text>
+<rect x="790" y="140" width="280" height="95" class="box" fill="#dceafa"/>
+<text x="810" y="178" class="head">逐帧手势向量 gᵀ</text><text x="810" y="211">T × 512</text>
+<path d="M270 188 H320" class="flow"/><path d="M730 188 H790" class="flow"/>
+
+<rect x="50" y="280" width="220" height="95" class="box" fill="#fff"/>
+<text x="70" y="316" class="head">文本转录</text><text x="70" y="348">子词序列 + 词对应表</text>
+<rect x="320" y="280" width="410" height="95" class="box" fill="#e5f3e5"/>
+<text x="340" y="311" class="head">XLM-R → 3层文本头</text><text x="340" y="342">投影到256维，按词平均子词</text><text x="340" y="366" class="small">输出 W × 256 的文本特征</text>
+<path d="M270 328 H320" class="flow"/>
+
+<rect x="50" y="420" width="220" height="95" class="box" fill="#fff"/>
+<text x="70" y="456" class="head">同步语音</text><text x="70" y="487">16 kHz · 梅尔谱</text>
+<rect x="320" y="420" width="410" height="95" class="box" fill="#f3e9fb"/>
+<text x="340" y="451" class="head">2D CNN → 语音帧特征</text><text x="340" y="481">按给定词起止时间平均池化</text><text x="340" y="506" class="small">输出 W × 256 的语音特征</text>
+<path d="M270 468 H320" class="flow"/>
+
+<rect x="790" y="320" width="280" height="180" class="box" fill="#f8e5d2"/>
+<text x="810" y="357" class="head">按词拼接 + 投影</text><text x="810" y="391">文本256 + 语音256</text><text x="810" y="429" class="head">逐词内容向量 cʷ</text><text x="810" y="463">W × 512</text><text x="810" y="488" class="small">缺失模态用零向量替代</text>
+<path d="M730 328 H760 V365 H790" class="flow"/><path d="M730 468 H760 V450 H790" class="flow"/>
+
+<rect x="50" y="550" width="300" height="70" class="box" fill="#fff4dc"/>
+<text x="68" y="578" class="head">语音词边界（外部输入）</text><text x="68" y="605" class="small">数据集提供 / WhisperX 预处理</text>
+<path d="M350 578 H525 V515" class="hint"/>
+<rect x="450" y="565" width="420" height="65" class="box" fill="#fff"/>
+<text x="470" y="592" class="head">两组特征：gᵀ 与 cʷ</text><text x="470" y="617" class="small">保留各自时间轴；此处不是模态拼接</text>
+<path d="M1070 188 H1080 V540 H660 V565" class="flow"/>
+<path d="M930 500 V540 H720 V565" class="flow"/>
+
+<rect x="30" y="680" width="1060" height="365" rx="18" fill="#fff8ed" stroke="#e9cdab"/>
+<text x="50" y="714" class="section">② 训练：只有片段配对，不提供“哪个词被比划”的标签</text>
+<path d="M660 630 V655 H780 V735 H275 V750" class="flow"/><path d="M780 735 H830 V750" class="flow"/>
+<rect x="60" y="750" width="430" height="90" class="box" fill="#fff"/>
+<text x="80" y="783" class="head">全局：分别平均池化</text><text x="80" y="816">视频帧 → 片段 g；内容词 → 片段 c</text>
+<rect x="60" y="870" width="430" height="80" class="box" fill="#fce2d5"/>
+<text x="80" y="901" class="head">全局片段对比损失 Lseq</text><text x="80" y="929">同源片段拉近，批内其他片段推远</text>
+<path d="M275 840 V870" class="flow"/>
+<rect x="600" y="750" width="460" height="90" class="box" fill="#fff"/>
+<text x="620" y="782" class="head">局部：词查询引导注意力池化</text><text x="620" y="815">词边界 ±10帧 → 每词手势向量 gʷ</text>
+<rect x="600" y="870" width="460" height="80" class="box" fill="#fce2d5"/>
+<text x="620" y="901" class="head">W × W 匹配 → max → mean</text><text x="620" y="929">片段分数进入局部对比损失 Lcouple</text>
+<path d="M830 840 V870" class="flow"/>
+<path d="M200 620 V640 H1105 V795 H1060" class="hint"/>
+<rect x="370" y="980" width="390" height="48" class="box" fill="#f8d5b1"/>
+<text x="389" y="1012" class="head">联合优化：β Lseq + (1−β) Lcouple</text>
+<path d="M275 950 V1004 H370" class="flow"/><path d="M830 950 V1004 H760" class="flow"/>
+
+<rect x="30" y="1080" width="1060" height="370" rx="18" fill="#edf7f2" stroke="#b8d7c8"/>
+<text x="50" y="1114" class="section">③ 推理：复用训练后的编码器与两组特征</text>
+<path d="M450 615 H415 V650 H15 V1140 H1075" class="hint"/>
+<path d="M200 1140 V1170" class="flow"/><path d="M560 1140 V1170" class="flow"/><path d="M920 1140 V1170" class="flow"/>
+<rect x="45" y="1170" width="310" height="145" class="box" fill="#fff"/>
+<text x="65" y="1203" class="head">跨模态检索</text><text x="65" y="1237">片段平均向量 g ↔ c</text><text x="65" y="1268">对候选库计算余弦相似度</text><text x="65" y="1298">按分数排序</text>
+<rect x="405" y="1170" width="310" height="145" class="box" fill="#fff"/>
+<text x="425" y="1203" class="head">给定词的手势定位</text><text x="425" y="1237">查询词 cʷᵢ ↔ 所有帧 gᵀ</text><text x="425" y="1268">词—帧分数与峰值 / 阈值</text><text x="425" y="1298">词来自已知转录</text>
+<rect x="765" y="1170" width="310" height="145" class="box" fill="#fff"/>
+<text x="785" y="1203" class="head">候选说话人选择</text><text x="785" y="1237">查询内容 c ↔ P段手势 gᵢ</text><text x="785" y="1268">取相似度最大的候选</text><text x="785" y="1298">P = 2 / 4 / 6</text>
+<path d="M200 1315 V1350" class="flow"/><path d="M560 1315 V1350" class="flow"/><path d="M920 1315 V1350" class="flow"/>
+<rect x="45" y="1350" width="310" height="65" class="box" fill="#d7ecdf"/><text x="65" y="1391" class="head">输出：候选片段排名</text>
+<rect x="405" y="1350" width="310" height="65" class="box" fill="#d7ecdf"/><text x="425" y="1391" class="head">输出：目标词的帧位置</text>
+<rect x="765" y="1350" width="310" height="65" class="box" fill="#d7ecdf"/><text x="785" y="1391" class="head">输出：候选说话人编号</text>
+<text x="40" y="1485" class="small">教学重绘 · 据正文图2、§3–4与公开接口 · 虚线：外部边界 / 表征复用；三种输出均不是动作序列</text>
+</svg>
