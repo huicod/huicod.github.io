@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="2310" viewBox="0 0 1240 2310" role="img" aria-labelledby="title desc">
+<title id="title">AnyAct：从角色视频的局部二维运动到可编辑人体动作</title>
+<desc id="desc">上半部为推理：参考视频经Qwen路由，选择动物关键点、人类关键点或人工点加跟踪；统一成十个槽位的二维局部轨迹与有效掩码。训练后的二维局部适配器同时读取文字、当前动作token和轨迹，逐层注入冻结的MoMask++，生成多尺度token并解码成人体动作。下半部为训练：由人类动捕合成三维局部、全局轨迹和增强二维条件，先训练三维局部与全局分支，再冻结三维局部分支训练二维局部与全局分支，使用基础损失、正交损失和三维对齐。默认推理不使用三维分支。末尾列出后续轨迹控制和编辑。</desc>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#425971"/></marker>
+  <marker id="learned" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#b76b1c"/></marker>
+</defs>
+<style>
+text{font-family:"Microsoft YaHei","Noto Sans SC",sans-serif;fill:#18314b;font-size:21px}.title{font-size:29px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:23px;font-weight:700}.small{font-size:19px}.muted{fill:#527089}.box{stroke:#9eb2c7;stroke-width:1.5;rx:12}.flow{fill:none;stroke:#425971;stroke-width:2.3;marker-end:url(#arrow)}.reuse{fill:none;stroke:#b76b1c;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#learned)}
+</style>
+<rect width="1240" height="2310" fill="#f8fafc"/>
+<text x="42" y="43" class="title">AnyAct：把角色视频的局部动态演成“人的动作”</text>
+<text x="42" y="75" class="small muted">教学示意 · 据论文§3、图3–4及公开实现；非作者原图，非运行结果</text>
+
+<rect x="30" y="100" width="1180" height="445" rx="20" fill="#edf5fc" stroke="#c7d9e9"/>
+<text x="55" y="135" class="section">① 视频前处理：按角色选择关键点提取路径</text>
+<rect x="60" y="160" width="350" height="80" class="box" fill="#fff"/>
+<text x="80" y="192" class="head">单目参考视频</text><text x="80" y="223">动物、类人角色或域外角色</text>
+<rect x="480" y="160" width="690" height="80" class="box" fill="#dceafb"/>
+<text x="500" y="192" class="head">Qwen3.5-9B：选择提取工具</text><text x="500" y="223">输出路由选择；不直接输出连续人体动作</text>
+<path d="M410 200H480" class="flow"/>
+<path d="M825 240V260H235V285" class="flow"/><path d="M620 260V285" class="flow"/><path d="M1005 260V285" class="flow"/><path d="M825 260H1005" fill="none" stroke="#425971" stroke-width="2.3"/>
+<rect x="60" y="285" width="350" height="105" class="box" fill="#fff"/>
+<text x="80" y="318" class="head">动物：ViTPose++</text><text x="80" y="350">AP-10K 关键点轨迹</text><text x="80" y="378" class="small">适配已覆盖的动物形态</text>
+<rect x="445" y="285" width="350" height="105" class="box" fill="#fff"/>
+<text x="465" y="318" class="head">类人：Sapiens</text><text x="465" y="350">COCO-17 关键点轨迹</text><text x="465" y="378" class="small">适配人形输入</text>
+<rect x="830" y="285" width="340" height="105" class="box" fill="#fff4e5"/>
+<text x="850" y="318" class="head">域外：人工点 + 跟踪</text><text x="850" y="350">选语义对应点 → CoTracker3</text><text x="850" y="378" class="small">需要人工介入，不是全自动</text>
+<path d="M235 390V410H620V435" class="flow"/><path d="M620 390V410" fill="none" stroke="#425971" stroke-width="2.3"/><path d="M1005 390V410H620" fill="none" stroke="#425971" stroke-width="2.3"/>
+<rect x="60" y="435" width="1110" height="85" class="box" fill="#dceafb"/>
+<text x="80" y="468" class="head">统一局部条件 J₂D：五个部位，最多十个点槽位</text>
+<text x="80" y="500">根点居中、L₂尺度归一化；缺失点补零 + valid mask；每槽为 (x, y, valid)</text>
+
+<rect x="30" y="580" width="1180" height="570" rx="20" fill="#eef7f2" stroke="#c3dbcc"/>
+<text x="55" y="615" class="section">② 默认推理：二维局部条件 + 简短文字 → 人体动作</text>
+<rect x="60" y="665" width="500" height="125" class="box" fill="#d9eddf"/>
+<text x="80" y="699" class="head">2D Local Adapter（已训练）</text><text x="80" y="730">轨迹编码 + 当前token与文字条件</text><text x="80" y="761">复制主干结构，逐层输出控制残差</text>
+<path d="M250 520V560H35V705H60" class="flow"/>
+<rect x="665" y="665" width="505" height="125" class="box" fill="#fff"/>
+<text x="685" y="699" class="head">文字条件 + 当前多尺度动作token</text><text x="685" y="730">短提示经 T5；动作序列从全MASK开始</text><text x="685" y="761">按置信度反复补全，文字/运动各有CFG</text>
+<path d="M665 727H560" class="flow"/>
+<path d="M310 790V850" class="flow"/><path d="M915 790V850" class="flow"/>
+<text x="80" y="830" class="small muted">逐层残差相加</text><text x="935" y="830" class="small muted">共享当前token状态</text>
+<rect x="60" y="850" width="1110" height="105" class="box" fill="#dceafb"/>
+<text x="80" y="886" class="head">冻结的 MoMask++：单一掩码 Transformer，联合预测多尺度token</text>
+<text x="80" y="920">局部条件通过适配器影响预测；不是把二维点硬投影到输出关节的约束求解器</text>
+<path d="M1170 900H1190V630H915V665" class="flow"/>
+<text x="1000" y="654" class="small muted">迭代补全</text>
+<path d="M310 955V1000" class="flow"/>
+<rect x="60" y="1000" width="510" height="100" class="box" fill="#fff"/>
+<text x="80" y="1034" class="head">共享码本 → 上采样求和 → 解码器</text><text x="80" y="1067">多尺度离散索引恢复为连续动作特征</text>
+<rect x="660" y="1000" width="510" height="100" class="box" fill="#d9eddf"/>
+<text x="680" y="1034" class="head">输出：连续三维人体动作</text><text x="680" y="1067">人体关节 / BVH，可作为动画编辑起点</text>
+<path d="M570 1050H660" class="flow"/>
+<text x="60" y="1130" class="small muted">默认生成只保留2D-LA；3D-LA教师与3D-GA全局分支均不作为推理输入。</text>
+
+<rect x="30" y="1190" width="1180" height="935" rx="20" fill="#fff7ea" stroke="#e8d3b1"/>
+<text x="55" y="1227" class="section">③ 训练：只用人类动捕构造条件配对，分两阶段学适配器</text>
+<rect x="60" y="1260" width="325" height="120" class="box" fill="#fff"/>
+<text x="80" y="1294" class="head">SnapMoGen</text><text x="80" y="1325">3D人体动作 + 文字</text><text x="80" y="1355" class="small">文字可经 Qwen3-8B 压缩</text>
+<rect x="425" y="1260" width="325" height="120" class="box" fill="#fff"/>
+<text x="445" y="1294" class="head">拆出训练条件</text><text x="445" y="1325">局部3D关节 J₃D</text><text x="445" y="1355">全局根轨迹 T</text>
+<rect x="790" y="1260" width="380" height="120" class="box" fill="#fff"/>
+<text x="810" y="1294" class="head">随机相机投影 → J₂D</text><text x="810" y="1325">选点、mask、归一化</text><text x="810" y="1355" class="small">肢长缩放 / 旋转 / 高斯扰动</text>
+<path d="M385 1320H425" class="flow"/><path d="M750 1320H790" class="flow"/>
+<path d="M580 1380V1400H320V1450" class="flow"/><path d="M980 1380V1450" class="flow"/>
+
+<rect x="50" y="1450" width="550" height="610" rx="16" fill="#fffdfa" stroke="#dfc6a2"/>
+<text x="75" y="1486" class="head">阶段1：学可靠的三维局部控制</text>
+<text x="75" y="1518" class="small muted">输入 J₃D、T；同时读取训练token与文字</text>
+<rect x="75" y="1550" width="225" height="95" class="box" fill="#d9eddf"/>
+<text x="95" y="1583" class="head">3D-LA</text><text x="95" y="1615">局部控制，可训练</text>
+<rect x="325" y="1550" width="250" height="95" class="box" fill="#e8e2f3"/>
+<text x="345" y="1583" class="head">3D-GA</text><text x="345" y="1615">根轨迹控制，可训练</text>
+<path d="M185 1645V1670H325V1690" class="flow"/><path d="M450 1645V1670H325" fill="none" stroke="#425971" stroke-width="2.3"/>
+<rect x="75" y="1690" width="500" height="85" class="box" fill="#dceafb"/>
+<text x="95" y="1723" class="head">两路残差相加 → 冻结 MoMask++</text><text x="95" y="1753">人体动作token提供生成监督</text>
+<path d="M325 1775V1810" class="flow"/>
+<rect x="75" y="1810" width="500" height="95" class="box" fill="#fbe6c8"/>
+<text x="95" y="1844" class="head">L₁ = Lbase + 0.01 Lₒ</text><text x="95" y="1875">Lₒ：全局 / 局部特征的平方余弦</text>
+<path d="M325 1905V1945" class="reuse"/>
+<rect x="75" y="1945" width="500" height="80" class="box" fill="#fff"/>
+<text x="95" y="1978" class="head">保留已学习的3D-LA结构知识</text><text x="95" y="2008">阶段2作为冻结的对齐教师</text>
+
+<rect x="640" y="1450" width="550" height="610" rx="16" fill="#fffdfa" stroke="#dfc6a2"/>
+<text x="665" y="1486" class="head">阶段2：把三维知识传给二维分支</text>
+<text x="665" y="1518" class="small muted">输入 J₂D、T；3D-LA仅提供训练监督</text>
+<rect x="665" y="1550" width="225" height="95" class="box" fill="#d9eddf"/>
+<text x="685" y="1583" class="head">2D-LA</text><text x="685" y="1615">二维局部，可训练</text>
+<rect x="915" y="1550" width="250" height="95" class="box" fill="#e8e2f3"/>
+<text x="935" y="1583" class="head">3D-GA</text><text x="935" y="1615">继续联合更新</text>
+<path d="M777 1645V1670H915V1690" class="flow"/><path d="M1040 1645V1670H915" fill="none" stroke="#425971" stroke-width="2.3"/>
+<rect x="665" y="1690" width="500" height="85" class="box" fill="#dceafb"/>
+<text x="685" y="1723" class="head">两路残差相加 → 冻结 MoMask++</text><text x="685" y="1753">仍用同一人类动作提供监督</text>
+<path d="M915 1775V1810" class="flow"/>
+<rect x="665" y="1810" width="500" height="95" class="box" fill="#fbe6c8"/>
+<text x="685" y="1844" class="head">L₂ = Lbase + 0.01 Lₒ + 10 L₃D</text><text x="685" y="1875">L₃D：2D-LA与3D-LA输出的L₂对齐</text>
+<rect x="665" y="1945" width="500" height="80" class="box" fill="#e9edf2"/>
+<text x="685" y="1978" class="head">冻结3D-LA教师 ← 同源 J₃D</text><text x="685" y="2008">仅训练期使用，输出对齐目标</text>
+<path d="M575 1985H665" class="reuse"/><path d="M915 1945V1905" class="reuse"/>
+<path d="M665 1595H620V2085H15V750H60" class="reuse"/>
+<text x="60" y="2105" class="small muted">橙色虚线：教师监督或已学参数复用；左侧长虚线把2D-LA训练结果连接到上方推理。</text>
+
+<rect x="30" y="2160" width="1180" height="100" rx="18" fill="#f0edf8" stroke="#d8cde8"/>
+<text x="55" y="2195" class="section">④ 后续应用（单独步骤）</text>
+<text x="55" y="2230">接入用户轨迹控制；编辑跳跃高度或手臂展开。不是默认推理必须输入的3D-GA。</text>
+<text x="42" y="2293" class="small muted">蓝色：冻结生成主干 / 局部表示　绿色：局部适配器　紫色：全局分支 / 后续编辑　实线：数据流</text>
+</svg>

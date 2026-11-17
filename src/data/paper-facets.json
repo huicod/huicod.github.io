@@ -62,6 +62,20 @@
       "style"
     ]
   },
+  "anyact-paper-notes": {
+    "topics": [
+      "generation",
+      "character",
+      "video"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "space",
+      "parts"
+    ]
+  },
   "anymo-paper-notes": {
     "topics": [
       "generation",
