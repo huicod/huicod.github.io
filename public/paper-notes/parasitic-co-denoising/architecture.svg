@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="2840" viewBox="0 0 1400 2840" role="img" aria-labelledby="title desc">
+<title id="title">Parasitic Co-Denoising：运动与冻结视频宿主同步去噪的完整架构</title>
+<desc id="desc">阶段一用成对视频和三维动作训练运动编码器、解码器与视频投影，冻结视频VAE。阶段二冻结所有阶段一模块和Wan宿主，只训练PMD、逐层适配器与时间相关融合模块。推理从相互独立的视频和动作噪声出发，共享从一到零的五十步噪声时间表。冻结Wan2.1的中间层经冻结输出头、可训练适配器和冻结投影，按时间加权融合，再由PMD的自注意力、视频交叉注意力、文本交叉注意力和前馈层预测运动速度场；最后运动解码器输出连续三维运动，视频VAE可输出配对视频。条件只从视频宿主传向动作，宿主不接收动作反馈。</desc>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#425971"/></marker>
+  <marker id="trainarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#b76b1c"/></marker>
+  <marker id="hookarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#a43c47"/></marker>
+</defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans SC",sans-serif;fill:#18314b;font-size:21px}.title{font-size:30px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:23px;font-weight:700}.small{font-size:19px}.tiny{font-size:18px}.muted{fill:#527089}.box{stroke:#9eb2c7;stroke-width:1.5;rx:12}.flow{fill:none;stroke:#425971;stroke-width:2.3;marker-end:url(#arrow)}.train{fill:none;stroke:#b76b1c;stroke-width:2.3;stroke-dasharray:8 6;marker-end:url(#trainarrow)}.hook{fill:none;stroke:#a43c47;stroke-width:2.6;marker-end:url(#hookarrow)}</style>
+<rect width="1400" height="2840" fill="#f8fafc"/>
+<text x="42" y="44" class="title">Parasitic Co-Denoising：沿视频模型的生成过程“解出”三维动作</text>
+<text x="42" y="78" class="small muted">教学重绘 · 据 arXiv:2610.03047v1 方法、图2及实现说明；非运行结果</text>
+
+<rect x="30" y="108" width="1340" height="550" rx="20" fill="#edf6ee" stroke="#c6dbc9"/>
+<text x="55" y="146" class="section">① Stage 1：先对齐运动 latent 与视频 latent 的低维投影</text>
+<text x="60" y="180">训练输入是成对视频 v 与动作 m；共享的是对齐空间 R^(T×d_z)，不是原始视频的全部空间维度。</text>
+<rect x="60" y="215" width="210" height="120" class="box" fill="#fff"/>
+<text x="80" y="254" class="head">配对视频 v</text><text x="80" y="290">含对应人体运动</text>
+<rect x="315" y="215" width="245" height="120" class="box" fill="#dceafb"/>
+<text x="335" y="254" class="head">Video VAE encoder</text><text x="335" y="289">预训练、冻结</text>
+<rect x="605" y="215" width="275" height="120" class="box" fill="#fff"/>
+<text x="625" y="254" class="head">干净视频 latent</text><text x="625" y="289">x′ᵛ₀：T_v × H × W × C</text>
+<rect x="925" y="215" width="410" height="120" class="box" fill="#fff0d9"/>
+<text x="945" y="248" class="head">投影 P_v（训练）→ xᵛ₀</text><text x="945" y="281">逐帧空间 CNN + 时间插值</text><text x="945" y="314" class="small">空间压缩，时间重采样至 T</text>
+<path d="M270 275H315" class="flow"/><path d="M560 275H605" class="flow"/><path d="M880 275H925" class="flow"/>
+<rect x="60" y="420" width="210" height="115" class="box" fill="#fff"/>
+<text x="80" y="458" class="head">三维动作 m</text><text x="80" y="493">运动学状态序列</text>
+<rect x="315" y="420" width="245" height="115" class="box" fill="#fff0d9"/>
+<text x="335" y="458" class="head">运动编码器 E_m</text><text x="335" y="493">Transformer · 训练</text>
+<rect x="605" y="420" width="275" height="115" class="box" fill="#fff"/>
+<text x="625" y="458" class="head">动作 latent xᵐ₀</text><text x="625" y="493">T × d_z</text>
+<rect x="925" y="420" width="410" height="115" class="box" fill="#fff0d9"/>
+<text x="945" y="458" class="head">运动解码器 D_m → 重建 m̂</text><text x="945" y="493">Transformer · 训练</text>
+<path d="M270 477H315" class="flow"/><path d="M560 477H605" class="flow"/><path d="M880 477H925" class="flow"/>
+<path d="M1130 335V375H742V420" class="train"/><text x="790" y="367" class="small" fill="#a65f18">L_align：两路 latent 对齐</text>
+<text x="60" y="583" class="head">L₁ = L_recon(m̂, m) + λ₁‖xᵐ₀ − xᵛ₀‖² + λ₂‖xᵐ₀‖²</text>
+<text x="60" y="620" class="small">重建保留动作信息；对齐约束两种表示；模长正则控制 latent 尺度。E_m、D_m、P_v 留给下一阶段。</text>
+
+<rect x="30" y="690" width="1340" height="300" rx="20" fill="#fff5e8" stroke="#e8cba5"/>
+<text x="55" y="729" class="section">② Stage 2 训练：同一个噪声时间 σ，分别对配对视频与动作加噪</text>
+<text x="60" y="772">x′ᵛσ = (1−σ)x′ᵛ₀ + σεᵛ；xᵐσ = (1−σ)xᵐ₀ + σεᵐ；σ ~ U[0,1]，εᵛ 与 εᵐ 独立。</text>
+<text x="60" y="812">冻结宿主在 x′ᵛσ 上前向，取同一 σ 的多层特征；PMD 从 xᵐσ 预测动作速度场 v̂ᵐσ。</text>
+<text x="60" y="855" class="head">L₂ = E ‖v̂ᵐσ − (εᵐ − xᵐ₀)‖²</text>
+<text x="60" y="898">冻结：Wan2.1 DiT、视频 VAE、文本编码器，以及全部 Stage 1 模块。</text>
+<text x="60" y="937">更新：PMD、逐层 adapters、融合 MLP。仍需配对动作监督；冻结视频宿主不等于无需训练。</text>
+<path d="M1130 535V672H1315V690" class="train"/>
+
+<rect x="30" y="1022" width="1340" height="1655" rx="20" fill="#edf5fc" stroke="#c7d9e9"/>
+<text x="55" y="1061" class="section">③ 推理：两路从独立高斯噪声开始，沿相同的50步 σ：1 → 0 同步推进</text>
+<text x="60" y="1101">文本 c 同时条件化宿主与 PMD；不预先提供视频，也不等待一段成品视频再做姿态估计。</text>
+
+<rect x="60" y="1140" width="530" height="110" class="box" fill="#fff"/>
+<text x="80" y="1177" class="head">视频起点 x′ᵛ₁ = εᵛ</text><text x="80" y="1213">宿主同时接收文本 c 与当前 σ</text>
+<rect x="800" y="1140" width="530" height="110" class="box" fill="#fff"/>
+<text x="820" y="1177" class="head">动作起点 xᵐ₁ = εᵐ</text><text x="820" y="1213">与 εᵛ 独立采样；共用时间表</text>
+<path d="M325 1250V1300" class="flow"/>
+
+<rect x="60" y="1300" width="530" height="195" class="box" fill="#dceafb"/>
+<text x="80" y="1337" class="head">Wan2.1-T2V-14B · 冻结宿主</text>
+<text x="80" y="1375">输入当前视频状态 x′ᵛσ，预测 v̂ᵛσ</text>
+<text x="80" y="1413">从40层中选5层，取中间特征 f_ℓ</text>
+<text x="80" y="1451" class="small">视频生成链保持原样，不接收动作侧反馈</text>
+
+<rect x="700" y="1300" width="630" height="85" class="box" fill="#dceafb"/>
+<text x="720" y="1335" class="head">宿主自身的 output head（冻结）</text>
+<text x="720" y="1366" class="small">每个 f_ℓ 映射到原始视频 latent 所在空间</text>
+<path d="M590 1343H700" class="hook"/><text x="601" y="1324" class="tiny" fill="#a43c47">hook</text>
+<rect x="700" y="1415" width="630" height="85" class="box" fill="#fff0d9"/>
+<text x="720" y="1450" class="head">逐层 adapter（Stage 2 训练）</text>
+<text x="720" y="1481" class="small">修正中间层分布与宿主最终输出头的失配</text>
+<path d="M1015 1385V1415" class="flow"/>
+<rect x="700" y="1530" width="630" height="85" class="box" fill="#d8ede4"/>
+<text x="720" y="1565" class="head">投影 P_v（Stage 1 复用、冻结）</text>
+<text x="720" y="1596" class="small">得到5路 f̂_ℓ ∈ R^(T×d_z)，与动作 latent 兼容</text>
+<path d="M1015 1500V1530" class="flow"/>
+<rect x="700" y="1645" width="630" height="135" class="box" fill="#fff0d9"/>
+<text x="720" y="1680" class="head">σ 自适应多层融合（训练）</text>
+<text x="720" y="1715">w(σ) = softmax(MLP(tσ))；KV_vid = Σ w_ℓ f̂_ℓ</text>
+<text x="720" y="1751" class="small">每个去噪步算一次，供全部 PMD blocks 共用</text>
+<path d="M1015 1615V1645" class="flow"/>
+
+<rect x="60" y="1560" width="530" height="120" class="box" fill="#fff"/>
+<text x="80" y="1598" class="head">按宿主速度更新视频状态</text>
+<text x="80" y="1634">x′ᵛσ → x′ᵛσ′，σ′ &lt; σ</text>
+<path d="M325 1495V1560" class="flow"/>
+<path d="M60 1620H43V1398H60" class="flow"/>
+<text x="80" y="1725" class="small muted">σ=0 后解码 ↓</text>
+<rect x="60" y="1780" width="530" height="100" class="box" fill="#dceafb"/>
+<text x="80" y="1818" class="head">Video VAE decoder（冻结）</text>
+<text x="80" y="1853" class="small">将最终 x′ᵛ₀ 解码为视频（需要视频输出时）</text>
+<path d="M325 1680V1780" class="flow"/>
+<rect x="60" y="1930" width="530" height="100" class="box" fill="#d8ede4"/>
+<text x="80" y="1968" class="head">配对视频 v</text><text x="80" y="2003">可与右侧三维动作一同输出</text>
+<path d="M325 1880V1930" class="flow"/>
+
+<rect x="700" y="1830" width="630" height="330" class="box" fill="#fff0d9"/>
+<text x="720" y="1867" class="head">PMD · 6 blocks，hidden dim 256</text>
+<text x="720" y="1903" class="small">xᵐσ 线性投影为 hidden h；每个 block 依次执行：</text>
+<rect x="735" y="1922" width="560" height="40" rx="7" fill="#fff" stroke="#c5b598"/>
+<text x="755" y="1949">Self-attention：沿动作时间交换信息</text>
+<rect x="735" y="1972" width="560" height="40" rx="7" fill="#fff" stroke="#c5b598"/>
+<text x="755" y="1999">Video cross-attention：读取 KV_vid</text>
+<rect x="735" y="2022" width="560" height="40" rx="7" fill="#fff" stroke="#c5b598"/>
+<text x="755" y="2049">Text cross-attention：读取 KV_txt</text>
+<rect x="735" y="2072" width="560" height="40" rx="7" fill="#fff" stroke="#c5b598"/>
+<text x="755" y="2099">FFN：逐位置更新</text>
+<text x="720" y="2142" class="small">各子模块以 σ-AdaLN 调节缩放、偏移和残差门控</text>
+<path d="M1015 1780V1830" class="flow"/>
+<path d="M1330 1195H1350V1875H1330" class="flow"/>
+
+<rect x="60" y="2110" width="530" height="140" class="box" fill="#f0ecf9"/>
+<text x="80" y="2147" class="head">同一文本 c → 冻结文本编码器</text>
+<text x="80" y="2184">T5 文本特征 KV_txt</text>
+<text x="80" y="2221" class="small">文本条件直接进入动作分支，不仅通过视频间接传递</text>
+<path d="M590 2180H650V2042H700" class="flow"/>
+<rect x="700" y="2210" width="630" height="110" class="box" fill="#fff"/>
+<text x="720" y="2248" class="head">预测 v̂ᵐσ，再更新 xᵐσ → xᵐσ′</text>
+<text x="720" y="2284">生成路径上的速度场，不是身体关节的物理速度</text>
+<path d="M1015 2160V2210" class="flow"/>
+<path d="M1330 2265H1363V1942H1330" class="flow"/>
+<rect x="700" y="2370" width="630" height="100" class="box" fill="#d8ede4"/>
+<text x="720" y="2408" class="head">D_m（Stage 1 复用、冻结）</text>
+<text x="720" y="2443">最终动作 latent xᵐ₀ → 连续三维运动 m</text>
+<path d="M1015 2320V2370" class="flow"/>
+<rect x="700" y="2520" width="630" height="95" class="box" fill="#d8ede4"/>
+<text x="720" y="2558" class="head">三维动作输出</text>
+<text x="720" y="2592">由运动学表示还原动作，可用于动画与评价</text>
+<path d="M1015 2470V2520" class="flow"/>
+<text x="60" y="2375" class="head">同步不等于同一份噪声</text>
+<text x="60" y="2415">两路共用 σ 与采样步，εᵛ ≠ εᵐ。</text>
+<text x="60" y="2455">视频特征单向条件化动作；</text>
+<text x="60" y="2495">没有把动作 latent 反馈给冻结视频宿主。</text>
+<text x="60" y="2550" class="small muted">只需动作时可省末端视频像素解码，</text>
+<text x="60" y="2585" class="small muted">不能省去每步视频 DiT 的生成与特征读取。</text>
+
+<text x="42" y="2724">蓝：预训练冻结模块　绿：对齐表示 / 阶段1复用　橙：相应训练阶段更新　红箭头：取宿主特征</text>
+<text x="42" y="2764" class="small">约19M指论文报告的可训练解码侧规模；系统仍依赖冻结的14B视频宿主，以及视频VAE、文本编码器与运动AE。</text>
+<text x="42" y="2801" class="small muted">共有视频—动作训练监督；本图不把“冻结宿主”解释为零训练，也不把配对生成解释为硬物理约束或精确时空控制。</text>
+</svg>
