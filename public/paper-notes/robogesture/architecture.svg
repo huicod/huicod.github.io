@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="2660" viewBox="0 0 1240 2660" role="img" aria-labelledby="title desc">
+<title id="title">RoboGesture：从流式语音到机器人共语手势的数据、训练与执行架构</title>
+<desc id="desc">上方为可选对话上游：人声经过ASR、LoRA语言模型与TTS产生回答语音。生成主线将当前一秒与历史两秒音频经冻结Mimi和语义声学对齐器处理，浅深音频特征用于交叉注意力，连续语义表征用于FiLM，历史动作延后注入DiT。条件流匹配积分产生每块三十帧四十一维关节角，再按论文经过MPC式每帧二次规划和低层控制器驱动G1加BrainCo双手。下方展示语义动作库、离线重定向过滤、半合成音频动作对以及两阶段训练。标明公开检查点五十四类、FiLM连续表征、发布stream命令整句预过滤的区别。</desc>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#425971"/></marker>
+  <marker id="trainarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#b76b1c"/></marker>
+</defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans SC",sans-serif;fill:#18314b;font-size:21px}.title{font-size:29px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:23px;font-weight:700}.small{font-size:19px}.muted{fill:#527089}.box{stroke:#9eb2c7;stroke-width:1.5;rx:12}.flow{fill:none;stroke:#425971;stroke-width:2.3;marker-end:url(#arrow)}.train{fill:none;stroke:#b76b1c;stroke-width:2.5;stroke-dasharray:8 6;marker-end:url(#trainarrow)}</style>
+<rect width="1240" height="2660" fill="#f8fafc"/>
+<text x="42" y="43" class="title">RoboGesture：让机器人“听语音、接语义、做手势”</text>
+<text x="42" y="76" class="small muted">教学重绘 · 据原文§3–4、图1及附录B–D；代码差异另标，非本次运行结果</text>
+
+<rect x="30" y="100" width="1180" height="185" rx="20" fill="#f0ecf9" stroke="#d5cbea"/>
+<text x="55" y="135" class="section">① 可选对话上游：动作模块收到的是机器人要说出的语音</text>
+<rect x="60" y="160" width="190" height="65" class="box" fill="#fff"/><text x="80" y="200" class="head">用户讲话</text>
+<rect x="290" y="160" width="150" height="65" class="box" fill="#fff"/><text x="315" y="200" class="head">ASR</text>
+<rect x="480" y="160" width="370" height="65" class="box" fill="#fff"/><text x="500" y="200" class="head">Qwen + LoRA：有语气的回答</text>
+<rect x="890" y="160" width="280" height="65" class="box" fill="#fff"/><text x="910" y="200" class="head">TTS：回答语音流</text>
+<path d="M250 192H290" class="flow"/><path d="M440 192H480" class="flow"/><path d="M850 192H890" class="flow"/>
+<text x="60" y="262" class="small">也可直接输入现成语音；上游文字用于对话与TTS，不直接充当动作生成器的手势计划。</text>
+
+<rect x="30" y="315" width="1180" height="875" rx="20" fill="#edf5fc" stroke="#c7d9e9"/>
+<text x="55" y="350" class="section">② 在线生成：多层音频条件 + 动作历史 → 连续关节角</text>
+<rect x="60" y="380" width="340" height="85" class="box" fill="#fff"/>
+<text x="80" y="413" class="head">当前1秒 + 历史2秒音频</text><text x="80" y="444">随可用音频形成生成窗口</text>
+<rect x="470" y="380" width="700" height="85" class="box" fill="#dceafb"/>
+<text x="490" y="413" class="head">Mimi 音频编解码器（预训练、冻结）</text><text x="490" y="444">首量化层偏语义，后续层补声学细节；它们仍是音频token</text>
+<path d="M1030 225V302H42V365H230V380" class="flow"/>
+<path d="M400 423H470" class="flow"/>
+<rect x="60" y="505" width="1110" height="85" class="box" fill="#d8ede4"/>
+<text x="80" y="538" class="head">分层 Semantic–Acoustic Aligner（已训练）</text><text x="80" y="569">Transformer 提取浅层节律与深层语义；辅助beat/分类监督来自下方训练区</text>
+<path d="M820 465V485H615V505" class="flow"/>
+<path d="M615 590V620H235V650" class="flow"/><path d="M615 620H620V650" class="flow"/><path d="M615 620H1005V650" class="flow"/>
+<rect x="60" y="650" width="350" height="110" class="box" fill="#fff"/>
+<text x="80" y="684" class="head">浅层连续特征</text><text x="80" y="717">声学变化、节奏线索</text><text x="80" y="746" class="small">强化初始DiT块的音频条件</text>
+<rect x="445" y="650" width="350" height="110" class="box" fill="#fff"/>
+<text x="465" y="684" class="head">深层时序特征</text><text x="465" y="717">局部语义与上下文</text><text x="465" y="746" class="small">交叉注意力的音频Key/Value</text>
+<rect x="830" y="650" width="340" height="110" class="box" fill="#fff"/>
+<text x="850" y="684" class="head">汇聚语义表征</text><text x="850" y="717">FiLM：缩放与平移调制</text><text x="850" y="746" class="small">公开实现用连续embedding</text>
+<rect x="60" y="825" width="350" height="120" class="box" fill="#f0ecf9"/>
+<text x="80" y="859" class="head">历史动作：前两块</text><text x="80" y="893">60帧 × 41维</text><text x="80" y="925" class="small">训练时15%概率屏蔽历史</text>
+<rect x="450" y="825" width="720" height="195" class="box" fill="#dceafb"/>
+<text x="470" y="860" class="head">DiT + 条件流匹配（CFM）</text>
+<text x="470" y="895">高斯M₀ / 当前Mτ + 流时间τ → 预测vθ(Mτ,τ,C)</text>
+<text x="470" y="930">早期块先读音频；后期块再读历史；语义FiLM调制</text>
+<text x="470" y="965">沿流时间积分，形成下一块关节角；逐块滚动生成</text>
+<text x="470" y="999" class="small">vθ 是生成路径的速度场，不是机器人电机的物理角速度。</text>
+<path d="M235 760V790H490V825" class="flow"/><path d="M620 760V825" class="flow"/><path d="M1005 760V825" class="flow"/>
+<path d="M410 880H450" class="flow"/>
+<rect x="450" y="1060" width="720" height="85" class="box" fill="#d8ede4"/>
+<text x="470" y="1093" class="head">生成动作块：30帧 × 41维关节角，30 fps</text><text x="470" y="1124">17维上身/手臂 + 24维双手；直接在机器人空间生成</text>
+<path d="M810 1020V1060" class="flow"/>
+<path d="M450 1105H235V945" class="flow"/>
+<text x="60" y="1170" class="small muted">左侧回路：生成结果供后续块作历史。论文为300类监督；公开部署检查点为54类，不能混用。</text>
+
+<rect x="30" y="1220" width="1180" height="365" rx="20" fill="#edf7ef" stroke="#b8d7c0"/>
+<text x="55" y="1255" class="section">③ 论文执行链：生成目标 → 几何约束过滤 → 机器人控制</text>
+<rect x="60" y="1300" width="710" height="170" class="box" fill="#fff"/>
+<text x="80" y="1335" class="head">MPC式逐帧QP：OSQP求解关节增量Δq</text>
+<text x="80" y="1370">约束：选定碰撞几何距离、关节范围与运动步幅</text>
+<text x="80" y="1404">目标：跟踪生成姿态，兼顾增量与时间平滑</text>
+<text x="80" y="1438" class="small">MuJoCo距离 / Jacobian → 线性化局部距离约束</text>
+<rect x="830" y="1300" width="340" height="170" class="box" fill="#d8ede4"/>
+<text x="850" y="1335" class="head">修正后的关节目标</text><text x="850" y="1370">低层PD / 手部驱动</text><text x="850" y="1404">G1 + BrainCo 双手</text><text x="850" y="1438" class="small">下肢由原生站立控制器维持</text>
+<path d="M810 1145V1204H42V1280H415V1300" class="flow"/><path d="M770 1385H830" class="flow"/>
+<text x="60" y="1510" class="small">过滤器限制所建模的自碰撞与关节运动；不是环境避障、全身动力学或任意场景安全证明。</text>
+<text x="60" y="1547" class="small">发布实现：先生成/过滤整句再播放；实机固定腰，发送14维臂关节与双手控制命令。</text>
+
+<rect x="30" y="1615" width="1180" height="430" rx="20" fill="#fff7eb" stroke="#e9cfaa"/>
+<text x="55" y="1650" class="section">④ 离线造数据：语义动作库 + 合成语音 + 机器人约束</text>
+<rect x="60" y="1690" width="330" height="120" class="box" fill="#fff"/>
+<text x="80" y="1723" class="head">300+类语义手势库</text><text x="80" y="1755">修订SeG、补录EgoGesture</text><text x="80" y="1787" class="small">新增场景；动捕与人工语义标注</text>
+<rect x="450" y="1690" width="330" height="120" class="box" fill="#fff"/>
+<text x="470" y="1723" class="head">人体 → 机器人动作</text><text x="470" y="1755">GMR + Dex-Retargeting</text><text x="470" y="1787" class="small">离线过滤；实机回放核查</text>
+<rect x="840" y="1690" width="330" height="120" class="box" fill="#fff"/>
+<text x="860" y="1723" class="head">LLM编场景、选手势</text><text x="860" y="1755">TTS语音 + 词时间戳</text><text x="860" y="1787" class="small">BEAT模型生成韵律动作</text>
+<path d="M390 1750H450" class="flow"/><path d="M780 1750H840" class="flow"/>
+<rect x="60" y="1855" width="710" height="145" class="box" fill="#fde8c9"/>
+<text x="80" y="1888" class="head">1000小时半合成语义音频–动作对</text>
+<text x="80" y="1920">语义动作提前关键词0.4秒，五次插值融合节拍</text>
+<text x="80" y="1952">最后再做MPC修正，生成训练标签与机器人动作</text>
+<text x="80" y="1982" class="small">提前量属于离线配对设计，不是在线系统提前听到未来词。</text>
+<rect x="830" y="1855" width="340" height="145" class="box" fill="#fde8c9"/>
+<text x="850" y="1888" class="head">BEAT约76小时</text><text x="850" y="1920">重定向至机器人空间</text><text x="850" y="1952">阶段2中按3倍采样</text><text x="850" y="1982" class="small">补充自然语音的韵律变化</text>
+<path d="M1005 1810V1832H415V1855" class="flow"/>
+
+<rect x="30" y="2075" width="1180" height="460" rx="20" fill="#fff7eb" stroke="#e9cfaa"/>
+<text x="55" y="2110" class="section">⑤ 两阶段训练：先学音频表示，再学响应音频的动作生成</text>
+<rect x="60" y="2160" width="530" height="300" class="box" fill="#fff"/>
+<text x="80" y="2195" class="head">阶段1：Aligner预训练；DiT不更新</text>
+<text x="80" y="2233">1000小时语义配对；Mimi保持冻结</text>
+<text x="80" y="2271">浅层beat head：速度幅值 + 音频onset</text>
+<text x="80" y="2309">深层semantic head：手势类别分类</text>
+<text x="80" y="2347">L₁ = λbeat · MSE + CE</text>
+<text x="80" y="2385" class="small">类别监督塑造语义表示，不是LLM在线输出动作。</text>
+<text x="80" y="2423" class="small">beat目标同时来自真实动作速度和语音起音。</text>
+<rect x="640" y="2160" width="530" height="300" class="box" fill="#fff"/>
+<text x="660" y="2195" class="head">阶段2：Aligner与DiT联合训练</text>
+<text x="660" y="2233">语义配对 + BEAT；15%屏蔽动作历史</text>
+<text x="660" y="2271">L₂ = 加权CFM + λkin Lkin + λsem CE</text>
+<text x="660" y="2309">手部权重4；语义帧权重5或10</text>
+<text x="660" y="2347">Lkin约束预测干净动作的相邻帧差分</text>
+<text x="660" y="2385" class="small">先音频、后历史的注入顺序抑制惯性捷径。</text>
+<text x="660" y="2423" class="small">仍依赖历史保持连续；不是完全消除历史影响。</text>
+<path d="M325 2000V2058H15V2140H325V2160" class="flow"/><path d="M505 2000V2032H1225V2140H905V2160" class="flow"/><path d="M1000 2000V2032" fill="none" stroke="#425971" stroke-width="2.3"/>
+<path d="M590 2310H640" class="train"/>
+<text x="60" y="2504" class="small muted">阶段1参数初始化阶段2；最终Aligner与DiT参数部署到上方主线。生成阶段不再检索语义动作库。</text>
+
+<text x="42" y="2580" class="small">蓝：音频/生成　绿：执行/已学习表示　紫：对话或历史　橙：数据/训练　实线：数据流　虚线：参数复用</text>
+<text x="42" y="2615" class="small muted">论文1秒动作块为30帧；约120 fps是生成吞吐量，不是端到端对话延迟或机器人控制频率。</text>
+</svg>

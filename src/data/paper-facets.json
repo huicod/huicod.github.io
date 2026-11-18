@@ -2248,6 +2248,18 @@
       "style"
     ]
   },
+  "robogesture-paper-notes": {
+    "topics": [
+      "gesture",
+      "character"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "streaming"
+    ]
+  },
   "rsmt-paper-notes": {
     "topics": [
       "editing",
