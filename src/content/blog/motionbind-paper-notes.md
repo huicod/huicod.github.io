@@ -12,7 +12,7 @@ tags: ["MotionBind", "Multimodal-Alignment", "Motion-Retrieval", "Latent-Diffusi
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
 <!-- fulltext-access:start -->
-<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://proceedings.neurips.cc/paper_files/paper/2025/file/b1762f00cbbcd8dd879ddcea41b04b91-Paper-Conference.pdf">原文 PDF</a></p>
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="/paper-notes/motionbind/fulltext/">HTML 阅读版（可翻译）</a> · <a href="https://proceedings.neurips.cc/paper_files/paper/2025/file/b1762f00cbbcd8dd879ddcea41b04b91-Paper-Conference.pdf">原文 PDF</a></p>
 <!-- fulltext-access:end -->
 
 完整英文阅读：[NeurIPS正式PDF，31页][paper] · [正式出版记录][venue] · [作者项目与演示][project] · [官方仓库][code]。

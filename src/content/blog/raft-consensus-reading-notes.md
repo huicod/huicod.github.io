@@ -7,7 +7,7 @@ tags: ["Raft", "Consensus"]
 ---
 
 <!-- fulltext-access:start -->
-<p class="fulltext-access"><strong>全文阅读：</strong><a href="https://raft.github.io/raft.pdf">原文 PDF</a></p>
+<p class="fulltext-access"><strong>全文阅读：</strong><a href="/paper-notes/raft-consensus/fulltext/">HTML 阅读版（可翻译）</a> · <a href="https://raft.github.io/raft.pdf">原文 PDF</a></p>
 <!-- fulltext-access:end -->
 
 参考文章：
