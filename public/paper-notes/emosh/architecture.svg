@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 1860" width="1240" height="1860" role="img" aria-labelledby="title desc" lang="zh-CN">
+<title id="title">EMOSH 人物视频动画架构</title>
+<desc id="desc">驱动视频提供姿态、表情和相机，参考图提供身体、头部形状和外观。跟踪器联合拟合 EHM 参数，重定向后绘制稠密网格和稀疏关键点。视频扩散模型将运动特征和参考外观结合，逐块生成视频。第一块的首帧和前一块的末五帧用于后续视频块。下部单列训练条件和监督。</desc>
+<defs>
+  <marker id="arrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4 L0 8 Z" fill="#48647a"/></marker>
+  <marker id="loopArrow" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L9 4 L0 8 Z" fill="#787099"/></marker>
+  <style>
+    text{font-family:"Microsoft YaHei", "Noto Sans CJK SC", sans-serif;fill:#172e40}
+    .title{font-size:38px;font-weight:700}
+    .sub{font-size:21px;fill:#526673}
+    .section{font-size:28px;font-weight:700}
+    .head{font-size:25px;font-weight:700}
+    .body{font-size:21px}
+    .small{font-size:18px;fill:#465f6c}
+    .ref{fill:#e9f0fc;stroke:#8ba8cc}
+    .motion{fill:#e7f5ef;stroke:#84b3a7}
+    .context{fill:#f0ebf7;stroke:#b3a1ca}
+    .train{fill:#fff2dd;stroke:#d7aa6b}
+    .neutral{fill:white;stroke:#b1c2cb}
+    .box{stroke-width:1.6}
+    .edge{fill:none;stroke:#48647a;stroke-width:2.5;marker-end:url(#arrow)}
+    .cycle{fill:none;stroke:#787099;stroke-width:2.5;stroke-dasharray:7 6;marker-end:url(#loopArrow)}
+  </style>
+</defs>
+<rect width="1240" height="1860" fill="#f7f9f9"/>
+<text x="44" y="67" class="title">EMOSH · 把驱动者的动作转移到参考人物</text>
+<text x="46" y="108" class="sub">论文设置　参考图像 + 驱动视频 → 可重定向的人体网格 → 逐块生成人物视频</text>
+
+<g id="tracking">
+  <rect x="25" y="143" width="1190" height="588" rx="18" fill="#f1f5f7" stroke="#d4dfe5"/>
+  <text x="46" y="192" class="section">跟踪与重定向</text>
+  <rect x="54" y="221" width="480" height="75" rx="12" class="ref box"/>
+  <text x="74" y="269" class="head">参考图像 · 需要保留外观的人物</text>
+  <rect x="584" y="221" width="595" height="75" rx="12" class="motion box"/>
+  <text x="604" y="269" class="head">驱动视频 · 提供动作与拍摄视角</text>
+  <path d="M294 297 V324" class="edge"/>
+  <path d="M881 297 V324" class="edge"/>
+  <rect x="54" y="327" width="480" height="176" rx="12" class="ref box"/>
+  <text x="74" y="367" class="head">估计参考人物形状</text>
+  <text x="74" y="407" class="body">βᵣ 身体形状、头部形状</text>
+  <text x="74" y="445" class="body">两组参数固定，用于所有驱动帧。</text>
+  <text x="74" y="480" class="small">原图另行编码为视频生成时的外观条件。</text>
+  <rect x="584" y="327" width="595" height="176" rx="12" class="motion box"/>
+  <text x="604" y="367" class="head">EMOSH-Tracker 联合拟合</text>
+  <text x="604" y="405" class="body">GVHMR / HaMeR / TEASER 初始化身、手、脸。</text>
+  <text x="604" y="441" class="body">结合 2D 观测、3D 手先验与时序平滑优化。</text>
+  <text x="604" y="477" class="small">按照手部可见性和头部朝向，减弱不可靠的观测。</text>
+  <path d="M294 503 V553" class="edge"/>
+  <path d="M881 503 V553" class="edge"/>
+  <rect x="54" y="555" width="1125" height="148" rx="12" class="neutral box"/>
+  <text x="74" y="595" class="head">在 EHM 网格上重组形状和运动</text>
+  <text x="74" y="635" class="body">参考人物的身体、头部形状 βᵣ + 驱动者逐帧姿态 θᵈ 和表情 ψᵈ → 目标网格 M。</text>
+  <text x="74" y="673" class="body">用驱动相机 Cᵈ 渲染。按首帧头部高度差平移整个网格序列，校正换体形后的构图。</text>
+</g>
+
+<g id="controls">
+  <path d="M294 703 V783" class="edge"/>
+  <rect x="54" y="786" width="540" height="185" rx="12" class="motion box"/>
+  <text x="74" y="828" class="head">运动 · 混合控制图</text>
+  <text x="74" y="866" class="body">T 姿态顶点坐标映射为固定 RGB，</text>
+  <text x="74" y="898" class="body">渲染稠密网格，再叠加局部语义顶点。</text>
+  <text x="74" y="939" class="small">网格给出身体轮廓，稀疏标记突出脸与手的细节。</text>
+  <rect x="641" y="786" width="538" height="185" rx="12" class="ref box"/>
+  <text x="661" y="828" class="head">外观 · 同一张参考图</text>
+  <text x="661" y="866" class="body">VAE 编码参考图像，得到外观潜变量 R。</text>
+  <text x="661" y="902" class="body">每个视频块均保留 R 作为身份条件。</text>
+  <text x="661" y="939" class="small">基座还通过交叉注意力读取图像与文本语义。</text>
+  <path d="M325 972 V1024" class="edge"/>
+  <path d="M910 972 V1024" class="edge"/>
+  <rect x="54" y="1027" width="540" height="188" rx="12" class="motion box"/>
+  <text x="74" y="1069" class="head">VAE + 运动嵌入层</text>
+  <text x="74" y="1110" class="body">压缩控制图，获得 16 通道潜特征。</text>
+  <text x="74" y="1147" class="body">投影至 5120 维，对齐 DiT 的输入。</text>
+  <text x="74" y="1184" class="small">运动特征按时间位置加到生成侧的表示。</text>
+  <rect x="641" y="1027" width="538" height="188" rx="12" class="context box"/>
+  <text x="661" y="1069" class="head">按时间拼接条件和待生成位置</text>
+  <text x="661" y="1108" class="body">首块　[R | 当前块噪声]</text>
+  <text x="661" y="1146" class="body">后续　[R | 空间锚 S | 历史 H | 当前块噪声]</text>
+  <text x="661" y="1184" class="small">已知图像上下文 mask = 1，生成区域 mask = 0。</text>
+  <path d="M325 1215 V1255 H460 V1281" class="edge"/>
+  <path d="M910 1215 V1255 H755 V1281" class="edge"/>
+</g>
+
+<g id="inference">
+  <rect x="54" y="1284" width="1125" height="125" rx="12" class="neutral box"/>
+  <text x="74" y="1325" class="head">Wan2.1-I2V-14B 架构的 DiT 逐块去噪</text>
+  <text x="74" y="1368" class="body">主序列融合运动嵌入，按条件预测视频潜变量的更新。DiT 用 Wan-Animate 权重初始化。</text>
+  <path d="M326 1409 V1461" class="edge"/>
+  <path d="M912 1409 V1461" class="edge"/>
+  <rect x="54" y="1464" width="540" height="116" rx="12" class="ref box"/>
+  <text x="74" y="1507" class="head">VAE 解码 → 人物 RGB 视频</text>
+  <text x="74" y="1548" class="body">按时间衔接生成块，得到完整动画。</text>
+  <rect x="641" y="1464" width="538" height="116" rx="12" class="context box"/>
+  <text x="661" y="1507" class="head">为后续块提供 S 和 H</text>
+  <text x="661" y="1548" class="body">S 固定为首块首帧，H 取前一块末五帧。</text>
+  <path d="M1179 1524 H1201 V1110 H1182" class="cycle"/>
+</g>
+
+<g id="training">
+  <rect x="25" y="1626" width="1190" height="194" rx="18" class="train box"/>
+  <text x="49" y="1673" class="section">训练 · 用视频监督生成器</text>
+  <text x="49" y="1714" class="body">同一视频取参考帧与目标片段。随机变换参考图，随机启用历史帧和辅助参考帧。</text>
+  <text x="49" y="1751" class="body">目标视频潜变量加噪后按最优传输路径做流匹配，损失排除参考潜变量。</text>
+  <text x="49" y="1788" class="body">训练 DiT 的 rank-32 LoRA 和运动嵌入层。跟踪器的逐例拟合在生成器训练之前完成。</text>
+</g>
+<text x="45" y="1848" class="small">依据原文图 2–3、§3 及附录 B–C 重绘。虚线表示进入后续视频块的条件。</text>
+</svg>

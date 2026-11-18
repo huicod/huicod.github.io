@@ -665,6 +665,19 @@
       "time"
     ]
   },
+  "emosh-paper-notes": {
+    "topics": [
+      "video"
+    ],
+    "methods": [
+      "diffusion",
+      "flow"
+    ],
+    "controls": [
+      "parts",
+      "time"
+    ]
+  },
   "emotiefflib-library-notes": {
     "topics": [
       "other"
