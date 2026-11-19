@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="1510" viewBox="0 0 1160 1510" role="img" aria-labelledby="title desc"><title id="title">ExMR 从单目视频恢复手足动作</title><desc id="desc">上方为冻结的输入提取，中部为初始全身估计及两条并行的肢端旋转修正路径。底部标出相机坐标输出、世界坐标演示和训练监督。</desc><defs><marker id="a" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#415970"/></marker><style>text{font-family:'Microsoft YaHei',Arial,sans-serif;fill:#20374a}.title{font-size:34px;font-weight:700}.h{font-size:26px;font-weight:700}.b{font-size:22px}.s{font-size:19px;fill:#3c5666}.arrow{stroke:#415970;stroke-width:2;fill:none;marker-end:url(#a)}</style></defs><rect width="1160" height="1510" fill="#f7f9fc"/>
+<text x="35" y="57" class="title">ExMR · 从同一段视频两次读取手足证据</text>
+<text x="35" y="93" class="s">推理沿实线向下。绿色表示足部路径，紫色表示手部路径，黄色为训练时的监督。</text>
+<rect x="35" y="122" width="1090" height="93" rx="14" fill="#eef3f7" stroke="#a9bdc7" stroke-width="1.4"/>
+<text x="54" y="162" class="h">单目视频 · 每个被跟踪的人单独处理</text>
+<text x="54" y="200" class="s">人体框、左右手裁剪、逐帧检测；基准与实际演示的裁剪框来源有别。</text>
+<path d="M580 215 V251" class="arrow"/>
+<rect x="35" y="254" width="1090" height="154" rx="14" fill="#e5eff7" stroke="#a9bdc7" stroke-width="1.4"/>
+<text x="54" y="294" class="h">提取每帧观测 · 预训练视觉网络冻结</text>
+<text x="54" y="332" class="s">SAM3D-Body 取一份 1024 维身体特征，HaMeR 从左右手各取一份 1024 维特征。</text>
+<text x="54" y="365" class="s">检测 17 个身体点 + 双脚各 3 个额外点；结合人体框的 3 个数及相邻相机旋转。</text>
+<text x="54" y="398" class="s">低置信度关键点置零，手裁剪缺失时用全黑图像经过 HaMeR。</text>
+<path d="M580 408 V444" class="arrow"/>
+<rect x="35" y="448" width="1090" height="140" rx="14" fill="#f6eddf" stroke="#a9bdc7" stroke-width="1.4"/>
+<text x="54" y="488" class="h">初始估计 · 12 层时间 Transformer，每帧一个 512 维 token</text>
+<text x="54" y="526" class="s">预测每帧 52 组 6D 旋转及相机平移，跨帧平均得到同一人物的 10 维形状。</text>
+<text x="54" y="559" class="s">由骨架层级将初始关节旋转转换到相机系，再分别送入两个精修器。</text>
+<path d="M580 588 V615 H300 V646" class="arrow"/>
+<path d="M580 588 V615 H865 V646" class="arrow"/>
+<rect x="35" y="654" width="535" height="246" rx="14" fill="#e2f2ea" stroke="#a9bdc7" stroke-width="1.4"/>
+<text x="54" y="694" class="h">FootMR · 双脚共同精修</text>
+<text x="54" y="732" class="s">重读每脚的踝、大趾、小趾、足跟 4 个点。</text>
+<text x="54" y="765" class="s">加入双膝与双踝相机系朝向，以及人体框。</text>
+<text x="54" y="798" class="s">每帧 256 维，6 层、4 头，自注意力窗 120 帧。</text>
+<text x="54" y="831" class="s">预测两踝共 2 × 6 维残差。</text>
+<text x="54" y="864" class="s">双膝为上下文，保留其初始姿态。</text>
+<rect x="590" y="654" width="535" height="246" rx="14" fill="#eee9f8" stroke="#a9bdc7" stroke-width="1.4"/>
+<text x="609" y="694" class="h">HandMR · 双手共同精修</text>
+<text x="609" y="732" class="s">重读原有的左、右 HaMeR 图像特征。</text>
+<text x="609" y="765" class="s">加入双肘腕相机系、手指父相对旋转及框。</text>
+<text x="609" y="798" class="s">每帧 512 维，6 层、4 头，自注意力窗 120 帧。</text>
+<text x="609" y="831" class="s">预测 2 肘 + 2 腕 + 30 指，共 204 维残差。</text>
+<text x="609" y="864" class="s">肘腕以相机为参照，手指以父关节为参照。</text>
+<path d="M300 900 V934" class="arrow"/>
+<path d="M865 900 V934" class="arrow"/>
+<rect x="35" y="940" width="1090" height="143" rx="14" fill="#f6eddf" stroke="#a9bdc7" stroke-width="1.4"/>
+<text x="54" y="980" class="h">在对应旋转空间加残差，再装回同一副 SMPL-X 骨架</text>
+<text x="54" y="1018" class="s">6D 加法 → 正交化为旋转矩阵。踝相对膝，肘相对肩，腕相对已经精修过的肘。</text>
+<text x="54" y="1051" class="s">手指保留父相对表示。其他关节沿用初值，身体形状与相机平移沿用初始估计。</text>
+<path d="M580 1083 V1104 H300 V1124" class="arrow"/>
+<path d="M580 1083 V1104 H865 V1124" class="arrow"/>
+<rect x="35" y="1131" width="535" height="132" rx="14" fill="#e8f3f1" stroke="#a9bdc7" stroke-width="1.4"/>
+<text x="54" y="1171" class="h">相机系输出 · 论文定量评估</text>
+<text x="54" y="1209" class="s">逐帧 SMPL-X 姿态、形状、平移 → 人体网格。</text>
+<text x="54" y="1242" class="s">评估手、足及躯体，不预测表情。</text>
+<rect x="590" y="1131" width="535" height="132" rx="14" fill="#eef2f7" stroke="#a9bdc7" stroke-width="1.4"/>
+<text x="609" y="1171" class="h">世界系输出 · 官方演示路径</text>
+<text x="609" y="1209" class="s">保留 GVHMR 的重力对齐恢复与后处理。</text>
+<text x="609" y="1242" class="s">论文的手足误差来自左侧相机系评估。</text>
+<rect x="35" y="1295" width="1090" height="174" rx="14" fill="#fff0d7" stroke="#a9bdc7" stroke-width="1.4"/>
+<text x="54" y="1335" class="h">训练 · 三个时间网络从头联合优化</text>
+<text x="54" y="1373" class="s">真实姿态、网格、2D 投影及时间差分提供监督。视觉特征预计算，精修前后都监督旋转。</text>
+<text x="54" y="1406" class="s">FootMR 训练用真值膝 + 预测踝；在测试中两者均来自估计器。足部单独做全局朝向增强。</text>
+<text x="54" y="1439" class="s">HandMR 使用预测肘腕指姿态，其梯度可回传初始估计器。缺少手部标注的样本遮蔽相应损失。</text>
+<text x="36" y="1496" class="s">据原文图 2、§III 与官方精修器重绘。图中尺寸省略批次和序列长度。</text>
+</svg>

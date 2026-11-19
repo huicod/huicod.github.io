@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1690" viewBox="0 0 1120 1690" role="img" aria-labelledby="title desc" lang="zh-CN"><title id="title">GVHMR 从单目视频恢复世界坐标人体运动</title><desc id="desc">四路视频特征输入时序网络。相机朝向和重力视图朝向共同决定水平航向变换，人体局部位移在首帧参照系累加。静止关节概率用于校正根平移和逆运动学。</desc><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#506171"/></marker></defs><style>text{font-family:'Microsoft YaHei','Noto Sans CJK SC',sans-serif;fill:#192e40}.heading{font-weight:bold}.sub{fill:#435868}</style><rect width="1120" height="1690" fill="#fafaf7"/>
+<text class="heading" x="38" y="57" font-size="34">GVHMR  |  从移动相机下的单人视频恢复三维运动</text>
+<text class="sub" x="38" y="94" font-size="21">SIGGRAPH Asia 2024　·　依据原文图 3–6 与公式 1–2 重绘</text>
+<rect x="40" y="124" width="1040" height="87" rx="12" fill="#fff" stroke="#acb9c0"/>
+<text class="heading" x="58" y="159" font-size="25">输入  ·  单目视频</text>
+<text class="sub" x="58" y="194" font-size="20">对同一个人逐帧提取特征。静态相机的相对旋转取单位矩阵。</text>
+<path d="M160 211 V245" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M426 211 V245" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M691 211 V245" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M956 211 V245" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="40" y="249" width="249" height="119" rx="12" fill="#e5eff9" stroke="#acb9c0"/>
+<text class="heading" x="58" y="284" font-size="25">人体框</text>
+<text class="sub" x="58" y="319" font-size="20">跟踪人物</text>
+<text class="sub" x="58" y="350" font-size="20">保留位置与尺度</text>
+<rect x="303" y="249" width="249" height="119" rx="12" fill="#e5eff9" stroke="#acb9c0"/>
+<text class="heading" x="321" y="284" font-size="25">二维关键点</text>
+<text class="sub" x="321" y="319" font-size="20">姿态与置信度</text>
+<text class="sub" x="321" y="350" font-size="20">按人体框归一化</text>
+<rect x="566" y="249" width="249" height="119" rx="12" fill="#e5eff9" stroke="#acb9c0"/>
+<text class="heading" x="584" y="284" font-size="25">图像特征</text>
+<text class="sub" x="584" y="319" font-size="20">冻结图像编码器</text>
+<text class="sub" x="584" y="350" font-size="20">保留外观与姿态线索</text>
+<rect x="829" y="249" width="249" height="119" rx="12" fill="#e5eff9" stroke="#acb9c0"/>
+<text class="heading" x="847" y="284" font-size="25">相机相对旋转</text>
+<text class="sub" x="847" y="319" font-size="20">论文使用 DPVO</text>
+<text class="sub" x="847" y="350" font-size="20">或陀螺仪旋转</text>
+<path d="M160 369 V400" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M426 369 V400" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M691 369 V400" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M956 369 V400" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="40" y="404" width="1040" height="111" rx="12" fill="#e5eff9" stroke="#acb9c0"/>
+<text class="heading" x="58" y="439" font-size="25">时序网络  ·  从视频证据预测每帧人体状态</text>
+<text class="sub" x="58" y="474" font-size="20">独立 MLP → 相加得每帧 512 维特征 → 12 层、8 头 Transformer → 多任务预测头。</text>
+<text class="sub" x="58" y="505" font-size="20">RoPE 编码帧间距离。推理限制注意力范围，同时利用前后帧。</text>
+<path d="M291 515 V551" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M824 515 V551" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="40" y="555" width="510" height="167" rx="12" fill="#e1f2e8" stroke="#acb9c0"/>
+<text class="heading" x="58" y="590" font-size="25">相机坐标分支</text>
+<text class="sub" x="58" y="625" font-size="20">预测局部关节姿态 θ、形状 β、相机根朝向 Γc</text>
+<text class="sub" x="58" y="656" font-size="20">及弱透视相机参数。结合原图相机几何，</text>
+<text class="sub" x="58" y="687" font-size="20">还原人体相对于相机的平移。</text>
+<rect x="568" y="555" width="512" height="167" rx="12" fill="#fff1d9" stroke="#acb9c0"/>
+<text class="heading" x="586" y="590" font-size="25">重力视图与运动分支</text>
+<text class="sub" x="586" y="625" font-size="20">预测根朝向 ΓGV、人体局部坐标下的根位移</text>
+<text class="sub" x="586" y="656" font-size="20">及手、脚跟、脚尖的静止概率。</text>
+<text class="sub" x="586" y="687" font-size="20">每帧各有一个由重力和视线定义的 GV 系。</text>
+<path d="M316 722 V754" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<path d="M820 722 V754" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="40" y="758" width="1040" height="165" rx="12" fill="#fff1d9" stroke="#acb9c0"/>
+<text class="heading" x="58" y="793" font-size="25">合并朝向  ·  两个预测共同确定相机与 GV 的旋转关系</text>
+<text class="sub" x="58" y="828" font-size="20">用 ΓGV × Γc⁻¹ 把相机视线变到 GV 系。结合输入的相机相对旋转，将相邻两帧视线</text>
+<text class="sub" x="58" y="859" font-size="20">投影至同一水平面，求出两套 GV 参照系之间绕重力轴的转角。</text>
+<text class="sub" x="58" y="890" font-size="20">相机静止时转角为零。不同帧的 GV 系均共享竖直方向。</text>
+<path d="M560 923 V955" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="40" y="959" width="1040" height="147" rx="12" fill="#fff1d9" stroke="#acb9c0"/>
+<text class="heading" x="58" y="994" font-size="25">恢复世界轨迹  ·  以首帧 GV 为共同参照</text>
+<text class="sub" x="58" y="1029" font-size="20">朝向：串联相邻 GV 的水平转角，把各帧根朝向转到首帧坐标系。</text>
+<text class="sub" x="58" y="1060" font-size="20">平移：每步局部根位移先按当时的世界根朝向旋转，再沿时间累加。</text>
+<text class="sub" x="58" y="1091" font-size="20">初始根平移设为零，水平航向与位移仍可能随时长出现误差。</text>
+<path d="M560 1106 V1138" fill="none" stroke="#506171" stroke-width="2.3" marker-end="url(#arr)"/>
+<rect x="40" y="1142" width="1040" height="110" rx="12" fill="#e1f2e8" stroke="#acb9c0"/>
+<text class="heading" x="58" y="1177" font-size="25">静止关节校正  ·  调整已恢复的世界运动</text>
+<text class="sub" x="58" y="1212" font-size="20">利用静止概率校正全局平移，再用 CCD 逆运动学修正局部姿态、减少脚滑。</text>
+<text class="sub" x="58" y="1243" font-size="20">最终得到相机与世界两套人体参数，可分别绘制画面对齐结果与地面轨迹。</text>
+<path d="M40 1300H1080" fill="none" stroke="#a2b0bb" stroke-dasharray="6 6"/>
+<text class="heading" x="40" y="1343" font-size="28">训练时怎样获得 GV 监督</text>
+<rect x="40" y="1366" width="510" height="194" rx="12" fill="#eeeaf7" stroke="#acb9c0"/>
+<text class="heading" x="58" y="1401" font-size="25">数据与坐标系</text>
+<text class="sub" x="58" y="1436" font-size="20">使用 AMASS、BEDLAM、H36M、3DPW。</text>
+<text class="sub" x="58" y="1467" font-size="20">由已知重力 g 和光轴 v 构建正交基。</text>
+<text class="sub" x="58" y="1498" font-size="20">y 沿 g，x 沿 y × v，z 沿 x × y。</text>
+<text class="sub" x="58" y="1529" font-size="20">将相机根朝向变换为 GV 根朝向标签。</text>
+<rect x="568" y="1366" width="512" height="194" rx="12" fill="#eeeaf7" stroke="#acb9c0"/>
+<text class="heading" x="586" y="1401" font-size="25">多任务损失</text>
+<text class="sub" x="586" y="1436" font-size="20">参数与轨迹回归、二维和三维关节及顶点</text>
+<text class="sub" x="586" y="1467" font-size="20">约束；静止概率以二元交叉熵训练。</text>
+<text class="sub" x="586" y="1498" font-size="20">AMASS 合成相机并使用零图像特征。</text>
+<text class="sub" x="586" y="1529" font-size="20">训练时每段 120 帧。</text>
+<text class="sub" x="40" y="1620" font-size="20">蓝：视频特征及网络　　黄：朝向与轨迹　　绿：人体输出及校正　　紫：训练监督</text>
+</svg>

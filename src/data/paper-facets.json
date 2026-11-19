@@ -351,6 +351,17 @@
     ],
     "controls": []
   },
+  "dancehmr-paper-notes": {
+    "topics": [
+      "video",
+      "understanding",
+      "dance"
+    ],
+    "methods": [],
+    "controls": [
+      "parts"
+    ]
+  },
   "dancemosaic-paper-notes": {
     "topics": [
       "dance",
@@ -665,6 +676,16 @@
       "time"
     ]
   },
+  "emergent-temporal-correspondences-paper-notes": {
+    "topics": [
+      "video",
+      "understanding"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
   "emosh-paper-notes": {
     "topics": [
       "video"
@@ -717,6 +738,16 @@
     "controls": [
       "time",
       "space",
+      "parts"
+    ]
+  },
+  "exmr-paper-notes": {
+    "topics": [
+      "video",
+      "representation"
+    ],
+    "methods": [],
+    "controls": [
       "parts"
     ]
   },
@@ -1022,6 +1053,14 @@
     "topics": [
       "gesture",
       "understanding"
+    ],
+    "methods": [],
+    "controls": []
+  },
+  "gvhmr-paper-notes": {
+    "topics": [
+      "video",
+      "representation"
     ],
     "methods": [],
     "controls": []

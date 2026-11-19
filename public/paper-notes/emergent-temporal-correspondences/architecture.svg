@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="1370" viewBox="0 0 1180 1370" role="img" aria-labelledby="title desc" lang="zh-CN"><title id="title">DiffTrack：如何读出跨帧匹配，再用于跟踪和生成</title><desc id="desc">提示词与固定种子进入冻结视频模型；独立跟踪器给出评测参照。分解匹配准确率、峰值和跨帧注意力总量后，为真实视频点跟踪和跨帧注意力引导选择层。</desc>
+<defs><marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L9 5 L0 10" fill="#344d63"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#193649}.title{font-size:33px;font-weight:bold}.section{font-size:24px;font-weight:bold}.label{font-size:21px;font-weight:bold}.line{font-size:18px}.edge{fill:none;stroke:#344d63;stroke-width:2.3;marker-end:url(#arrow)}.eval{stroke-dasharray:6 6}</style><rect width="1180" height="1370" fill="#f7f9fa"/><text class="title" x="40" y="60">DiffTrack · 在冻结的视频 DiT 中寻找同一个点</text>
+<rect x="26" y="91" width="1128" height="547" rx="16" fill="#edf3f8" stroke="#d0dae0"/>
+<text class="section" x="51" y="135">一　分析生成视频：用带参照的匹配实验选择层与去噪步</text>
+<rect x="52" y="159" width="506" height="108" rx="11" fill="#fff" stroke="#9aaebb"/><text x="69" y="193" class="label">提示词 + 固定随机种子</text>
+<text x="69" y="229" class="line">动物运动 / 静态场景与移动镜头；人工各选 50 段</text>
+<rect x="615" y="159" width="512" height="108" rx="11" fill="#fff" stroke="#9aaebb"/><text x="632" y="193" class="label">生成视频 + 首帧查询点</text>
+<text x="632" y="229" class="line">物体用 SAM 前景采点；场景用全图网格。</text>
+<path class="edge" d="M558 213 H609"/>
+<path class="edge" d="M305 267 V302"/>
+<path class="edge" d="M871 267 V302"/>
+<rect x="52" y="305" width="506" height="142" rx="11" fill="#d9ebf7" stroke="#9aaebb"/><text x="69" y="339" class="label">冻结 DiT · 逐层、逐去噪步读出</text>
+<text x="69" y="375" class="line">首帧 Q 与目标帧 K 比较；每个查询点</text>
+<text x="69" y="403" class="line">取目标帧最大匹配值的位置，得到二维轨迹。</text>
+<rect x="615" y="305" width="512" height="142" rx="11" fill="#fdf3d9" stroke="#9aaebb"/><text x="632" y="339" class="label">独立评测参照 · CoTracker</text>
+<text x="632" y="375" class="line">在已生成的 RGB 视频上估计点轨迹和可见性。</text>
+<text x="632" y="403" class="line">生成视频的参照来自跟踪器的预测。</text>
+<path class="edge" d="M305 447 V482"/>
+<path class="edge eval" d="M871 447 V482"/>
+<rect x="52" y="485" width="1075" height="127" rx="11" fill="#e2f0e8" stroke="#9aaebb"/><text x="69" y="519" class="label">比较层 × 去噪步：匹配准确率、置信度与跨帧注意力总量</text>
+<text x="69" y="555" class="line">第一项用可见参照点算 PCK。后两项读取原注意力矩阵的峰值与分配给其他帧的总权重。</text>
+<text x="69" y="583" class="line">点跟踪按准确率选层／步，CAG 按三个归一化指标的调和平均数选择干预层。</text>
+<rect x="26" y="672" width="1128" height="603" rx="16" fill="#eff6f2" stroke="#d0dae0"/>
+<text class="section" x="51" y="716">二　将选出的内部表示用于两项独立任务</text>
+<path class="edge" d="M522 612 V747"/>
+<path class="edge" d="M871 612 V657 H877 V747"/>
+<rect x="52" y="750" width="506" height="123" rx="11" fill="#daecf8" stroke="#9aaebb"/><text x="69" y="784" class="label">应用 A · 真实视频中的点跟踪</text>
+<text x="69" y="820" class="line">视频 + 首帧查询点；VAE 逐帧编码。</text>
+<text x="69" y="848" class="line">每个块都放入全局首帧，其余帧交错采样。</text>
+<rect x="615" y="750" width="512" height="123" rx="11" fill="#eee4f5" stroke="#9aaebb"/><text x="632" y="784" class="label">应用 B · 文本生成视频（CAG）</text>
+<text x="632" y="820" class="line">提示词与高斯噪声进入同一生成器。</text>
+<text x="632" y="848" class="line">每一步运行正常预测与扰动预测。</text>
+<path class="edge" d="M305 873 V909"/>
+<path class="edge" d="M871 873 V909"/>
+<rect x="52" y="912" width="506" height="137" rx="11" fill="#fff" stroke="#9aaebb"/><text x="69" y="946" class="label">同一选择层读取双向匹配</text>
+<text x="69" y="982" class="line">在晚期低噪声状态取 Q/K，合并正向与</text>
+<text x="69" y="1010" class="line">反向代价；对重叠帧先平均代价再求峰值。</text>
+<rect x="615" y="912" width="512" height="137" rx="11" fill="#fff" stroke="#9aaebb"/><text x="632" y="946" class="label">只扰动指定层的跨帧连接</text>
+<text x="632" y="982" class="line">扰动分支在 softmax 后清零跨帧权重，</text>
+<text x="632" y="1010" class="line">保留帧内与文本连接；计算两次预测的差。</text>
+<path class="edge" d="M305 1049 V1089"/>
+<path class="edge" d="M871 1049 V1089"/>
+<rect x="52" y="1092" width="506" height="140" rx="11" fill="#e2f0e8" stroke="#9aaebb"/><text x="69" y="1126" class="label">输出 · 每个点的二维图像轨迹</text>
+<text x="69" y="1162" class="line">各帧的候选位置由匹配代价给出。</text>
+<text x="69" y="1190" class="line">TAP-Vid 在标注点可见时检查像素误差。</text>
+<rect x="615" y="1092" width="512" height="140" rx="11" fill="#e2f0e8" stroke="#9aaebb"/><text x="632" y="1126" class="label">输出 · 经引导去噪的视频</text>
+<text x="632" y="1162" class="line">正常预测 + s ×（正常 − 扰动），迭代更新。</text>
+<text x="632" y="1190" class="line">VAE 解码 RGB 视频；评估主体、背景及运动。</text>
+<text class="line" x="45" y="1317">蓝色表示冻结模型的特征读取，浅黄为评测参照，紫色为生成引导。虚线仅传递评测信息。</text><text class="line" x="45" y="1347">据 NeurIPS 2025 正文 §3–5 与附录 C–D 绘制。</text></svg>

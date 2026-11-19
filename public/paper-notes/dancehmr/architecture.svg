@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1750" viewBox="0 0 1200 1750" role="img" aria-labelledby="title desc" lang="zh-CN"><title id="title">DanceHMR 单目视频全身运动恢复</title><desc id="desc">从冻结的身体和双手观测，到每帧手部残差融合、时序编码和相机及重力视图下的 SMPL-X，另画出近景数据增强、两阶段训练和可选根轨迹细化。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#50657a"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#23384c}.title{font-size:37px;font-weight:bold}.sect{font-size:26px;font-weight:bold;fill:#154e58}.head{font-size:24px;font-weight:bold}.body{font-size:20px}.edge{fill:none;stroke:#50657a;stroke-width:2.5;marker-end:url(#arrow)}.trainline{fill:none;stroke:#50657a;stroke-width:2.5;stroke-dasharray:9 6;marker-end:url(#arrow)}rect{stroke-width:1.6}.bg{fill:#fafbfd}.blue{fill:#ebf3fc;stroke:#9ab7d7}.green{fill:#e7f5ee;stroke:#94bda4}.white{fill:white;stroke:#a7bac9}.purple{fill:#f2edf9;stroke:#b7a4d2}.tan{fill:#fff2dd;stroke:#cfa967}</style><rect class="bg" width="1200" height="1750"/>
+<text x="36" y="64" class="title">DanceHMR · 从一段视频恢复连贯的身体与手指动作</text>
+<text x="36" y="107" class="body">据原文图 2 与公式 1–9 重绘。实线为推理，虚线为可选步骤和训练监督。</text>
+<rect x="40" y="145" width="1120" height="104" rx="12" class="white"/><text x="58" y="184" class="head">单目视频，T 帧</text><text x="58" y="222" class="body">每帧分别读取身体、左手、右手。三路使用同一帧时间索引。</text>
+<path d="M596 250 V273 H241 V311" class="edge"/>
+<path d="M596 250 V311" class="edge"/>
+<path d="M596 273 H985 V311" class="edge"/>
+<rect x="40" y="315" width="392" height="181" rx="12" class="blue"/><text x="58" y="354" class="head">身体观测</text><text x="58" y="392" class="body">HMR2.0 裁剪外观、ViTPose 关键点</text><text x="58" y="423" class="body">人体框的尺度和位置、相机角速度</text><text x="58" y="454" class="body">各项投影后相加，构成身体特征 zᵇ</text>
+<rect x="454" y="315" width="340" height="181" rx="12" class="green"/><text x="472" y="354" class="head">左手观测</text><text x="472" y="392" class="body">HaMeR 裁剪外观、RTMW 关键点</text><text x="472" y="423" class="body">手框的尺度和位置</text><text x="472" y="454" class="body">单独编码左手特征 zᴸ</text>
+<rect x="816" y="315" width="344" height="181" rx="12" class="green"/><text x="834" y="354" class="head">右手观测</text><text x="834" y="392" class="body">HaMeR 裁剪外观、RTMW 关键点</text><text x="834" y="423" class="body">手框的尺度和位置</text><text x="834" y="454" class="body">单独编码右手特征 zᴿ</text>
+<path d="M623 496 V536" class="edge"/>
+<path d="M988 496 V519 H948 V536" class="edge"/>
+<rect x="454" y="541" width="706" height="110" rx="12" class="green"/><text x="472" y="580" class="head">逐帧合并两手的局部证据</text><text x="472" y="618" class="body">拼接 [zᴸ, zᴿ]；用一个手部融合 MLP 映射到身体特征维度。</text>
+<path d="M235 496 V698" class="edge"/>
+<path d="M801 651 V698" class="edge"/>
+<rect x="40" y="703" width="1120" height="103" rx="12" class="purple"/><text x="58" y="742" class="head">逐帧残差相加，然后跨帧建模</text><text x="58" y="780" class="body">zₜ = zᵇₜ + MLP([zᴸₜ, zᴿₜ])　→　每帧一个融合特征，组成长度 T 的序列。</text>
+<path d="M600 806 V838" class="edge"/>
+<rect x="40" y="843" width="1120" height="118" rx="12" class="purple"/><text x="58" y="882" class="head">时序运动编码器</text><text x="58" y="920" class="body">相对时间注意力结合前后帧的身体、腕部与手指观测，长片段使用局部窗口（120 帧）。</text>
+<path d="M600 961 V996" class="edge"/>
+<rect x="40" y="1001" width="1120" height="113" rx="12" class="white"/><text x="58" y="1040" class="head">联合解码每一帧的 SMPL-X 与轨迹</text><text x="58" y="1078" class="body">身体及双手等 55 组姿态旋转、10 维形状，同时预测两类空间量及足部/腕部静止接触状态。</text>
+<path d="M600 1114 V1135 H320 V1156" class="edge"/>
+<path d="M600 1135 H876 V1156" class="edge"/>
+<rect x="40" y="1161" width="542" height="128" rx="12" class="blue"/><text x="58" y="1200" class="head">相机坐标输出</text><text x="58" y="1238" class="body">人体在当前相机中的朝向和平移。</text><text x="58" y="1269" class="body">结合姿态与形状，可把人体投影回画面。</text>
+<rect x="600" y="1161" width="560" height="128" rx="12" class="blue"/><text x="618" y="1200" class="head">重力视图与根运动</text><text x="618" y="1238" class="body">重力视图下的朝向、局部根速度。</text><text x="618" y="1269" class="body">支持恢复相机移动时的整体人体运动。</text>
+<path d="M884 1289 V1319" class="trainline"/>
+<rect x="600" y="1324" width="560" height="108" rx="12" class="white"/><text x="618" y="1363" class="head">可选的轨迹细化</text><text x="618" y="1401" class="body">结合静止接触、抑制抖动的约束，优化根速度。</text>
+<text x="42" y="1465" class="sect">训练阶段 · 仅更新时序重建网络</text>
+<rect x="40" y="1493" width="542" height="209" rx="12" class="tan"/><text x="58" y="1532" class="head">构造近景与部分手部观测</text><text x="58" y="1570" class="body">按头髋距离比例裁剪；全片共享扰动。</text><text x="58" y="1601" class="body">裁剪后重算手框，剔除过小或缺点的手。</text><text x="58" y="1632" class="body">身体与手部检测、视觉特征提取器冻结。</text>
+<rect x="600" y="1493" width="560" height="209" rx="12" class="tan"/><text x="618" y="1532" class="head">两阶段课程与监督</text><text x="618" y="1570" class="body">先混合数据训练 207k 步，再侧重手部 88k 步。</text><text x="618" y="1601" class="body">保留全身与时序监督，增强手指末端监督。</text><text x="618" y="1632" class="body">按可见性与置信度计算手部二维重投影误差。</text>
+<path d="M581 1595 H596" class="trainline"/>
+<text x="42" y="1734" class="body">输出为随时间变化的人体参数与网格。画面外的手形依靠上下文推断。</text>
+</svg>
