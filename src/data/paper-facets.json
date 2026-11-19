@@ -550,6 +550,17 @@
       "streaming"
     ]
   },
+  "dreamhmr-paper-notes": {
+    "topics": [
+      "video",
+      "representation"
+    ],
+    "methods": [
+      "diffusion",
+      "flow"
+    ],
+    "controls": []
+  },
   "dualtrack-paper-notes": {
     "topics": [
       "gesture",

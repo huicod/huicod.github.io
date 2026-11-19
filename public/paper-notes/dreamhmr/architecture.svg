@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 1440" width="1120" height="1440" role="img" aria-labelledby="title description" lang="zh-CN">
+<title id="title">DreamHMR 的两阶段训练与视频网格恢复路径</title>
+<desc id="description">作者先用完整人体渲染潜变量做流匹配，再用单次视频骨干前向得到四个部位和五十二个关节的上下文，按预测证据分数融合三乘三邻域，恢复相机坐标中的逐帧 SMPL-X 运动。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#59777b" stroke-width="1.7"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}path,line{stroke-linecap:round;stroke-linejoin:round}</style>
+<rect x="1" y="1" width="1118" height="1438" rx="19" fill="#f6faf9" stroke="#bcd0cf" stroke-width="1.5"/>
+<text x="39" y="62" font-size="42" font-weight="700" fill="#183844" text-anchor="start">DreamHMR</text>
+<text x="40" y="103" font-size="27" font-weight="400" fill="#183844" text-anchor="start">用视频生成骨干，从不完整画面恢复全身与双手</text>
+<rect x="24" y="128" width="1072" height="365" rx="17" fill="#ffffff" stroke="#c9dcda" stroke-width="1.5"/>
+<text x="47" y="166" font-size="18" font-weight="700" fill="#087b78" text-anchor="start">训练阶段一</text>
+<text x="182" y="168" font-size="26" font-weight="700" fill="#183844" text-anchor="start">让视频特征学会对齐人体表面</text>
+<rect x="50" y="185" width="575" height="177" rx="13" fill="#e5f4ef" stroke="#96c6ba" stroke-width="1.5"/>
+<text x="68" y="216" font-size="22" font-weight="700" fill="#087b78" text-anchor="start">由 SMPL-X 标注构造完整人体渲染</text>
+<circle cx="101" cy="249" r="10" fill="#257a8f" stroke="none" stroke-width="1.5"/>
+<path d="M101 262 l-3 28" fill="none" stroke="#087b78" stroke-width="12"/>
+<path d="M99 287 l-9 14 l-4 15" fill="none" stroke="#326086" stroke-width="7"/>
+<path d="M99 287 l12 13 l8 16" fill="none" stroke="#674a89" stroke-width="7"/>
+<path d="M101 264 l-13 13 l-13 4" fill="none" stroke="#63a7a5" stroke-width="6"/>
+<path d="M102 263 L116 255 L130 240" fill="none" stroke="#b98236" stroke-width="6"/>
+<circle cx="130" cy="240" r="4.5" fill="#d5544c" stroke="none" stroke-width="1.5"/>
+<circle cx="190" cy="249" r="10" fill="#257a8f" stroke="none" stroke-width="1.5"/>
+<path d="M190 262 l-3 28" fill="none" stroke="#087b78" stroke-width="12"/>
+<path d="M188 287 l-9 14 l-4 15" fill="none" stroke="#326086" stroke-width="7"/>
+<path d="M188 287 l12 13 l8 16" fill="none" stroke="#674a89" stroke-width="7"/>
+<path d="M190 264 l-13 13 l-13 4" fill="none" stroke="#63a7a5" stroke-width="6"/>
+<path d="M191 263 L205 255 L216 266" fill="none" stroke="#b98236" stroke-width="6"/>
+<circle cx="216" cy="266" r="4.5" fill="#d5544c" stroke="none" stroke-width="1.5"/>
+<text x="242" y="257" font-size="19" font-weight="400" fill="#183844" text-anchor="start">同一模板表面点保留同一底色。</text>
+<text x="242" y="287" font-size="19" font-weight="400" fill="#183844" text-anchor="start">姿态改变法线，从而改变明暗。</text>
+<text x="242" y="317" font-size="19" font-weight="400" fill="#183844" text-anchor="start">人体与源画面合成为监督视频。</text>
+<text x="70" y="344" font-size="16" font-weight="400" fill="#486470" text-anchor="start">示意：红点标记同一只手腕。</text>
+<rect x="655" y="185" width="414" height="177" rx="13" fill="#ecf3fb" stroke="#afc7de" stroke-width="1.5"/>
+<text x="674" y="216" font-size="22" font-weight="700" fill="#326086" text-anchor="start">来自观测的条件</text>
+<text x="674" y="254" font-size="20" font-weight="400" fill="#183844" text-anchor="start">冻结的 VAE 编码目标人物 RGB；</text>
+<text x="674" y="284" font-size="20" font-weight="400" fill="#183844" text-anchor="start">再提供观测区域掩码、人物框轨迹</text>
+<text x="674" y="314" font-size="20" font-weight="400" fill="#183844" text-anchor="start">及固定文本上下文。</text>
+<path d="M337 363 V391" fill="none" stroke="#59777b" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M862 363 V391" fill="none" stroke="#59777b" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="50" y="393" width="1019" height="75" rx="13" fill="#f1edf8" stroke="#c3b5d6" stroke-width="1.5"/>
+<text x="68" y="424" font-size="22" font-weight="700" fill="#674a89" text-anchor="start">条件流匹配训练视频 DiT</text>
+<text x="68" y="453" font-size="20" font-weight="400" fill="#183844" text-anchor="start">完整渲染由 VAE 编码为 z₀；将其与噪声 ε 插值，监督 DiT 预测速度 ε − z₀。</text>
+<path d="M550 494 V513" fill="none" stroke="#59777b" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="24" y="519" width="1072" height="572" rx="17" fill="#ffffff" stroke="#c9dcda" stroke-width="1.5"/>
+<text x="47" y="557" font-size="18" font-weight="700" fill="#087b78" text-anchor="start">阶段二 / 推理</text>
+<text x="182" y="559" font-size="26" font-weight="700" fill="#183844" text-anchor="start">从上下文定位各关节，再选择可信的局部特征</text>
+<rect x="49" y="578" width="1020" height="62" rx="13" fill="#ecf3fb" stroke="#afc7de" stroke-width="1.5"/>
+<text x="68" y="617" font-size="22" font-weight="700" fill="#326086" text-anchor="start">观测 RGB → 冻结 VAE → 已适配的 DiT 在 τ = 0 前向一次 → 取速度头前的时空特征</text>
+<path d="M550 641 V656 H282 V675" fill="none" stroke="#59777b" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M550 656 H804 V675" fill="none" stroke="#59777b" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="50" y="679" width="455" height="145" rx="13" fill="#e5f4ef" stroke="#96c6ba" stroke-width="1.5"/>
+<text x="68" y="716" font-size="23" font-weight="700" fill="#087b78" text-anchor="start">4 个部位查询</text>
+<text x="68" y="751" font-size="20" font-weight="400" fill="#183844" text-anchor="start">骨盆、其余身体、左手、右手各有一个</text>
+<text x="68" y="781" font-size="20" font-weight="400" fill="#183844" text-anchor="start">部位状态，汇总整段视频提供的线索。</text>
+<rect x="545" y="679" width="524" height="145" rx="13" fill="#f1edf8" stroke="#c3b5d6" stroke-width="1.5"/>
+<text x="563" y="716" font-size="23" font-weight="700" fill="#674a89" text-anchor="start">52 个关节查询</text>
+<text x="563" y="751" font-size="20" font-weight="400" fill="#183844" text-anchor="start">结合时空特征与部位状态，预测每个关节</text>
+<text x="563" y="781" font-size="20" font-weight="400" fill="#183844" text-anchor="start">在图像上的位置，用作局部采样中心。</text>
+<path d="M505 800 H543" fill="none" stroke="#59777b" stroke-width="2.2" marker-end="url(#arrow)"/>
+<path d="M804 825 V847" fill="none" stroke="#59777b" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="50" y="852" width="1019" height="151" rx="13" fill="#fbf6eb" stroke="#dbca9c" stroke-width="1.5"/>
+<text x="69" y="884" font-size="22" font-weight="700" fill="#86601d" text-anchor="start">在每个预测位置做 3 × 3 邻域采样</text>
+<rect x="74" y="903" width="21" height="21" rx="3" fill="#c6e5dd" stroke="#94afa6" stroke-width="1.5"/>
+<rect x="99" y="903" width="21" height="21" rx="3" fill="#c6e5dd" stroke="#94afa6" stroke-width="1.5"/>
+<rect x="124" y="903" width="21" height="21" rx="3" fill="#c6e5dd" stroke="#94afa6" stroke-width="1.5"/>
+<rect x="74" y="928" width="21" height="21" rx="3" fill="#c6e5dd" stroke="#94afa6" stroke-width="1.5"/>
+<rect x="99" y="928" width="21" height="21" rx="3" fill="#c6e5dd" stroke="#94afa6" stroke-width="1.5"/>
+<rect x="124" y="928" width="21" height="21" rx="3" fill="#e4e5df" stroke="#94afa6" stroke-width="1.5"/>
+<rect x="74" y="953" width="21" height="21" rx="3" fill="#c6e5dd" stroke="#94afa6" stroke-width="1.5"/>
+<rect x="99" y="953" width="21" height="21" rx="3" fill="#e4e5df" stroke="#94afa6" stroke-width="1.5"/>
+<rect x="124" y="953" width="21" height="21" rx="3" fill="#e4e5df" stroke="#94afa6" stroke-width="1.5"/>
+<circle cx="109" cy="939" r="4" fill="#087b78" stroke="none" stroke-width="1.5"/>
+<text x="169" y="921" font-size="20" font-weight="400" fill="#183844" text-anchor="start">对有效位置双线性采样并平均。</text>
+<text x="169" y="954" font-size="20" font-weight="400" fill="#183844" text-anchor="start">关节描述与局部特征共同预测证据分数 q。</text>
+<path d="M642 943 H688" fill="none" stroke="#59777b" stroke-width="2.2" marker-end="url(#arrow)"/>
+<text x="707" y="924" font-size="21" font-weight="700" fill="#183844" text-anchor="start">局部修正 = q × 投影后的特征</text>
+<text x="707" y="958" font-size="18" font-weight="400" fill="#486470" text-anchor="start">支持较弱时，局部修正随之减小。</text>
+<path d="M550 1004 V1020" fill="none" stroke="#59777b" stroke-width="2.2" marker-end="url(#arrow)"/>
+<text x="551" y="1048" font-size="24" font-weight="700" fill="#087b78" text-anchor="middle">按关节所属部位融合局部修正 → 更新 4 个部位状态</text>
+<text x="551" y="1077" font-size="17" font-weight="400" fill="#486470" text-anchor="middle">阶段二联合训练 DiT 和结构化解码器，冻结速度头。推理沿用同一特征路径和观测条件。</text>
+<path d="M550 1092 V1111" fill="none" stroke="#59777b" stroke-width="2.2" marker-end="url(#arrow)"/>
+<rect x="24" y="1117" width="1072" height="267" rx="17" fill="#ffffff" stroke="#c9dcda" stroke-width="1.5"/>
+<text x="47" y="1155" font-size="18" font-weight="700" fill="#087b78" text-anchor="start">参数输出</text>
+<text x="182" y="1157" font-size="26" font-weight="700" fill="#183844" text-anchor="start">把 21 个时间端点还原到原视频的 81 帧</text>
+<text x="51" y="1204" font-size="20" font-weight="400" fill="#183844" text-anchor="start">参数头预测根朝向、身体及双手的局部旋转、相机坐标下的骨盆位置，以及逐帧人物在场分数。</text>
+<text x="51" y="1240" font-size="20" font-weight="400" fill="#183844" text-anchor="start">按时间戳插值，再用时序残差模块细化。整段共享同一个 10 维体型。</text>
+<rect x="50" y="1268" width="1019" height="90" rx="13" fill="#edf2f1" stroke="#c3d5d1" stroke-width="1.5"/>
+<text x="68" y="1299" font-size="20" font-weight="700" fill="#087b78" text-anchor="start">阶段二的额外监督</text>
+<text x="68" y="1335" font-size="19" font-weight="400" fill="#183844" text-anchor="start">真实关节投影同时落在观测区和目标人物可见掩码内，才给予正证据标签；测试时由网络预测 q。</text>
+<text x="37" y="1419" font-size="17" font-weight="400" fill="#486470" text-anchor="start">据原文图 1–2、式 (1)–(11) 与附录 A 重绘。两阶段训练均冻结 VAE 和文本编码器。</text>
+</svg>
