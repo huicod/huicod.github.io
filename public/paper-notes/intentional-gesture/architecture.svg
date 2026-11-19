@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 1458" width="1040" height="1458" role="img" aria-labelledby="title desc" lang="zh-CN">
+<title id="title">Intentional-Gesture：从转录推断交际功能，再生成全身动作</title>
+<desc id="desc">上图比较训练和推理的意图标注，中图展示语音、文本与动作双塔对齐及多码本训练，下图展示节律与意图两路条件指导潜在动作生成与连续姿态解码。依据 arXiv v2 图2、图5与附录D。</desc>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}path{stroke-linecap:round;stroke-linejoin:round}</style>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#537379" stroke-width="1.7"/></marker></defs>
+<rect x="1" y="1" width="1038" height="1456" rx="18" fill="#f6f9f8" stroke="#bed1cb" stroke-width="1.6"/>
+<text x="37" y="58" fill="#183d42" font-size="40" font-weight="700">Intentional-Gesture</text>
+<text x="38" y="99" fill="#253f47" font-size="27" font-weight="400">一句话在做什么，怎样影响这一段手势？</text>
+<rect x="24" y="124" width="992" height="320" rx="12" fill="#fff" stroke="#b6cfca" stroke-width="1.6"/>
+<text x="46" y="169" fill="#193e48" font-size="27" font-weight="700">一　建立意图文本：可用的证据在训练与推理时不同</text>
+<rect x="48" y="196" width="544" height="91" rx="12" fill="#e8f3ef" stroke="#97beb0" stroke-width="1.6"/>
+<text x="65" y="228" fill="#214d4b" font-size="24" font-weight="700">训练样本</text>
+<text x="65" y="258" fill="#253f47" font-size="20" font-weight="400">句子、词时间戳、动作关键帧及运动描述</text>
+<rect x="48" y="312" width="544" height="91" rx="12" fill="#e6eff7" stroke="#a7bfd2" stroke-width="1.6"/>
+<text x="65" y="344" fill="#214d4b" font-size="24" font-weight="700">测试样本</text>
+<text x="65" y="374" fill="#253f47" font-size="20" font-weight="400">句子转录；生成前不读取目标动作或其关键帧</text>
+<path d="M 593 240 L 647 240" fill="none" stroke="#537379" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 593 357 L 647 357" fill="none" stroke="#537379" stroke-width="2.4" marker-end="url(#arrow)"/>
+<rect x="651" y="196" width="335" height="207" rx="12" fill="#faf2e2" stroke="#d7bf96" stroke-width="1.6"/>
+<text x="668" y="228" fill="#214d4b" font-size="24" font-weight="700">结构化标注</text>
+<text x="668" y="258" fill="#253f47" font-size="20" font-weight="400">推断强调、指示等功能</text>
+<text x="668" y="285" fill="#253f47" font-size="20" font-weight="400">产出句级意图描述</text>
+<text x="668" y="312" fill="#253f47" font-size="20" font-weight="400">训练候选由人工筛选</text>
+<rect x="24" y="468" width="992" height="453" rx="12" fill="#fff" stroke="#b6cfca" stroke-width="1.6"/>
+<text x="46" y="512" fill="#193e48" font-size="27" font-weight="700">二　训练两个可以复用的动作表示</text>
+<rect x="48" y="539" width="456" height="145" rx="12" fill="#e8f3ef" stroke="#97beb0" stroke-width="1.6"/>
+<text x="65" y="571" fill="#214d4b" font-size="24" font-weight="700">语音与语义编码</text>
+<text x="65" y="601" fill="#253f47" font-size="20" font-weight="400">声学节律取自 wav2vec2</text>
+<text x="65" y="628" fill="#253f47" font-size="20" font-weight="400">CTC 对齐的转录词查询意图文本</text>
+<text x="65" y="655" fill="#253f47" font-size="20" font-weight="400">把融合后的语义与语音特征拼接</text>
+<rect x="542" y="539" width="444" height="145" rx="12" fill="#eef0f8" stroke="#b6bdd5" stroke-width="1.6"/>
+<text x="559" y="571" fill="#214d4b" font-size="24" font-weight="700">动作编码</text>
+<text x="559" y="601" fill="#253f47" font-size="20" font-weight="400">真实动作经卷积和 Transformer</text>
+<text x="559" y="628" fill="#253f47" font-size="20" font-weight="400">得到局部与整段的动作特征</text>
+<text x="559" y="655" fill="#253f47" font-size="20" font-weight="400">高层逐时刻特征作语义教师</text>
+<path d="M 504 627 L 537 627" fill="none" stroke="#537379" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 541 646 L 508 646" fill="none" stroke="#537379" stroke-width="2.4" marker-end="url(#arrow)"/>
+<text x="53" y="717" fill="#253f47" font-size="21" font-weight="400">双塔对比学习：让配对的语音条件与动作在局部和整段尺度上靠近</text>
+<rect x="48" y="754" width="532" height="127" rx="12" fill="#e8f3ef" stroke="#97beb0" stroke-width="1.6"/>
+<text x="65" y="786" fill="#214d4b" font-size="24" font-weight="700">全身动作量化器</text>
+<text x="65" y="816" fill="#253f47" font-size="20" font-weight="400">一个全身编码器，把联合潜变量分块量化</text>
+<text x="65" y="843" fill="#253f47" font-size="20" font-weight="400">八个并行码本 → 拼接 → 动作解码器</text>
+<rect x="646" y="754" width="340" height="127" rx="12" fill="#faf2e2" stroke="#d7bf96" stroke-width="1.6"/>
+<text x="663" y="786" fill="#214d4b" font-size="24" font-weight="700">训练监督</text>
+<text x="663" y="816" fill="#253f47" font-size="20" font-weight="400">重建 + 量化 + 语义损失</text>
+<text x="663" y="843" fill="#253f47" font-size="20" font-weight="400">教师与量化特征逐时刻对齐</text>
+<path d="M 788 685 L 788 747" fill="none" stroke="#537379" stroke-width="2.4" marker-end="url(#arrow)" stroke-dasharray="5 5"/>
+<path d="M 646 814 L 586 814" fill="none" stroke="#537379" stroke-width="2.4" marker-end="url(#arrow)" stroke-dasharray="5 5"/>
+<rect x="24" y="945" width="992" height="469" rx="12" fill="#fff" stroke="#b6cfca" stroke-width="1.6"/>
+<text x="46" y="989" fill="#193e48" font-size="27" font-weight="700">三　用同一句话的两种线索生成动作</text>
+<rect x="48" y="1019" width="449" height="100" rx="12" fill="#e6eff7" stroke="#a7bfd2" stroke-width="1.6"/>
+<text x="65" y="1051" fill="#214d4b" font-size="24" font-weight="700">低层节律条件</text>
+<text x="65" y="1081" fill="#253f47" font-size="20" font-weight="400">从波形取得韵律和停顿</text>
+<rect x="539" y="1019" width="447" height="100" rx="12" fill="#faf2e2" stroke="#d7bf96" stroke-width="1.6"/>
+<text x="556" y="1051" fill="#214d4b" font-size="24" font-weight="700">高层意图条件</text>
+<text x="556" y="1081" fill="#253f47" font-size="20" font-weight="400">由语音、对齐转录和意图文本共同编码</text>
+<path d="M 271 1120 L 271 1153" fill="none" stroke="#537379" stroke-width="2.4" marker-end="url(#arrow)"/>
+<path d="M 761 1120 L 761 1153" fill="none" stroke="#537379" stroke-width="2.4" marker-end="url(#arrow)"/>
+<rect x="48" y="1156" width="938" height="103" rx="12" fill="#e8f3ef" stroke="#97beb0" stroke-width="1.6"/>
+<text x="65" y="1188" fill="#214d4b" font-size="24" font-weight="700">潜在动作生成器 · 八层 DiT</text>
+<text x="65" y="1218" fill="#253f47" font-size="20" font-weight="400">运动特征分别查询节律与意图，两次注意力的输出相加，再更新动作潜变量。</text>
+<path d="M 516 1260 L 516 1288" fill="none" stroke="#537379" stroke-width="2.4" marker-end="url(#arrow)"/>
+<rect x="48" y="1292" width="938" height="93" rx="12" fill="#eef0f8" stroke="#b6bdd5" stroke-width="1.6"/>
+<text x="65" y="1324" fill="#214d4b" font-size="24" font-weight="700">动作解码器 → 连续全身姿态序列</text>
+<text x="65" y="1354" fill="#253f47" font-size="20" font-weight="400">长段按滑窗生成，前一段的动作历史作为下一段的条件。</text>
+<text x="40" y="1442" fill="#253f47" font-size="18" font-weight="400">实线为数据或特征流，虚线为语义监督。依据 2025 年 arXiv v2 图 2、图 5 及附录 D。</text>
+</svg>

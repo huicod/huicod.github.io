@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1420" viewBox="0 0 1120 1420" lang="zh-CN" role="img" aria-labelledby="title desc">
+<title id="title">InteracTalker 原理：物体交互与共语手势怎样共用动作模型</title>
+<desc id="desc">分别训练交互和语音条件分支，逐层注入冻结的八层扩散主干。推理时分别估计无条件、单交互和单共语动作，利用单条件预测在线调整两个系数，共同生成连续的人体动作。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#52717d" stroke-width="1.7"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}path{stroke-linecap:round;stroke-linejoin:round}</style>
+<rect x="1" y="1" width="1118" height="1418" rx="22" fill="#f5f9fa" stroke="#b4c8ce" stroke-width="1.6"/>
+<text x="43" y="66" font-size="47" font-weight="700" fill="#203747" text-anchor="start">InteracTalker</text>
+<text x="44" y="109" font-size="29" font-weight="400" fill="#203747" text-anchor="start">同一个角色如何边说话，边走向椅子并坐下？</text>
+<rect x="26" y="137" width="1068" height="337" rx="18" fill="#fff" stroke="#c9d6dc" stroke-width="1.6"/>
+<text x="50" y="187" font-size="31" font-weight="700" fill="#203747" text-anchor="start">条件编码</text>
+<rect x="48" y="213" width="493" height="218" rx="18" fill="#eaf0fb" stroke="#becde7" stroke-width="1.6"/>
+<text x="70" y="259" font-size="32" font-weight="700" fill="#294c73" text-anchor="start">说话的内容与节奏</text>
+<text x="70" y="307" font-size="26" font-weight="400" fill="#203747" text-anchor="start">录音 → 音频特征</text>
+<text x="70" y="346" font-size="26" font-weight="400" fill="#203747" text-anchor="start">逐字转录 → 文本特征</text>
+<text x="70" y="394" font-size="25" font-weight="600" fill="#203747" text-anchor="start">拼接投影 → 共语分支（8 层）</text>
+<rect x="579" y="213" width="493" height="218" rx="18" fill="#e7f4ef" stroke="#b1cebf" stroke-width="1.6"/>
+<text x="601" y="259" font-size="32" font-weight="700" fill="#216053" text-anchor="start">人与椅子的空间关系</text>
+<text x="601" y="307" font-size="26" font-weight="400" fill="#203747" text-anchor="start">基准点 → 物体表面最近距离</text>
+<text x="601" y="346" font-size="25" font-weight="400" fill="#203747" text-anchor="start">基准点 → 当前带噪人体最近关节</text>
+<text x="601" y="394" font-size="25" font-weight="600" fill="#203747" text-anchor="start">MLP → 交互分支（8 层）</text>
+<path d="M290 432 V496" fill="none" stroke="#52717d" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M827 432 V496" fill="none" stroke="#52717d" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="26" y="501" width="1068" height="245" rx="18" fill="#fff" stroke="#c9d6dc" stroke-width="1.6"/>
+<text x="50" y="550" font-size="31" font-weight="700" fill="#203747" text-anchor="start">共用动作主干</text>
+<rect x="48" y="575" width="1024" height="139" rx="18" fill="#fdf5e6" stroke="#dfceaa" stroke-width="1.6"/>
+<text x="72" y="618" font-size="27" font-weight="700" fill="#664e2c" text-anchor="start">动作指令（CLIP）＋ 带噪动作 Xₜ ＋ 可选骨盆目标</text>
+<text x="72" y="658" font-size="26" font-weight="400" fill="#203747" text-anchor="start">各分支把每层的特征加到冻结的八层 MDM 对应位置。</text>
+<text x="72" y="695" font-size="24" font-weight="400" fill="#203747" text-anchor="start">同一份主干分别计算无条件、仅共语、仅交互的动作预测。</text>
+<path d="M553 747 V778" fill="none" stroke="#52717d" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="26" y="782" width="1068" height="339" rx="18" fill="#fff" stroke="#c9d6dc" stroke-width="1.6"/>
+<text x="50" y="832" font-size="31" font-weight="700" fill="#203747" text-anchor="start">每个去噪步怎样融合</text>
+<rect x="48" y="855" width="491" height="145" rx="18" fill="#edf2fa" stroke="#becde7" stroke-width="1.6"/>
+<text x="70" y="897" font-size="28" font-weight="700" fill="#294c73" text-anchor="start">共语修正量</text>
+<text x="70" y="939" font-size="25" font-weight="400" fill="#203747" text-anchor="start">仅共语预测 − 无条件预测</text>
+<text x="70" y="978" font-size="24" font-weight="400" fill="#203747" text-anchor="start">相对交互修正量做尺度归一</text>
+<rect x="579" y="855" width="493" height="145" rx="18" fill="#ecf5f0" stroke="#b1cebf" stroke-width="1.6"/>
+<text x="601" y="897" font-size="28" font-weight="700" fill="#216053" text-anchor="start">交互修正量</text>
+<text x="601" y="939" font-size="25" font-weight="400" fill="#203747" text-anchor="start">仅交互预测 − 无条件预测</text>
+<text x="601" y="978" font-size="24" font-weight="400" fill="#203747" text-anchor="start">保留目标物体与当前姿态信息</text>
+<path d="M293 1000 V1017 L550 1017 V1029" fill="none" stroke="#52717d" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M826 1000 V1017 H552" fill="none" stroke="#52717d" stroke-width="3"/>
+<text x="560" y="1064" font-size="28" font-weight="700" fill="#203747" text-anchor="middle">无条件预测 + 加权共语修正 + 加权交互修正</text>
+<text x="560" y="1100" font-size="24" font-weight="400" fill="#203747" text-anchor="middle">以两种单条件动作作参照，每步用梯度更新两个引导权重。</text>
+<path d="M552 1122 V1150" fill="none" stroke="#52717d" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="26" y="1154" width="1068" height="94" rx="18" fill="#eef1f7" stroke="#bccbd5" stroke-width="1.6"/>
+<text x="50" y="1195" font-size="29" font-weight="700" fill="#203747" text-anchor="start">输出整段全身动作</text>
+<text x="50" y="1230" font-size="23" font-weight="400" fill="#203747" text-anchor="start">每帧为 22 个关节的六维旋转和三维平移增量，共 135 维，可送入 SMPL。</text>
+<rect x="26" y="1270" width="1068" height="127" rx="18" fill="#fff" stroke="#c9d6dc" stroke-width="1.6"/>
+<text x="50" y="1311" font-size="28" font-weight="700" fill="#203747" text-anchor="start">训练分工</text>
+<text x="50" y="1348" font-size="24" font-weight="400" fill="#203747" text-anchor="start">HumanML3D＋SAMP 预训练主干 → 冻结；两支分别学习。</text>
+<text x="50" y="1381" font-size="23" font-weight="400" fill="#203747" text-anchor="start">语音支用 BEATX 重建动作，交互支用 SAMP 动作与对齐的 3D-FRONT 椅子。</text>
+</svg>

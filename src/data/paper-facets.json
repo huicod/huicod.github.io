@@ -1137,6 +1137,30 @@
       "style"
     ]
   },
+  "intentional-gesture-paper-notes": {
+    "topics": [
+      "gesture",
+      "representation"
+    ],
+    "methods": [
+      "tokens",
+      "language",
+      "flow"
+    ],
+    "controls": []
+  },
+  "interactalker-paper-notes": {
+    "topics": [
+      "gesture",
+      "multimodal"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "interaction"
+    ]
+  },
   "jca-paper-notes": {
     "topics": [
       "generation",
@@ -1431,6 +1455,18 @@
       "generation"
     ],
     "methods": [],
+    "controls": []
+  },
+  "mcm-paper-notes": {
+    "topics": [
+      "generation",
+      "gesture",
+      "dance",
+      "multimodal"
+    ],
+    "methods": [
+      "diffusion"
+    ],
     "controls": []
   },
   "meco-paper-notes": {
