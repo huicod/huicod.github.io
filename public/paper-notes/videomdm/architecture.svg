@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 1450" width="1220" height="1450" role="img" aria-labelledby="title desc" lang="zh-CN">
+<title id="title">VideoMDM 如何从单目视频训练三维动作扩散模型</title>
+<desc id="desc">训练先以提升器估计的三维动作预热，再把估计加噪，训练 MDM 在三维去噪。利用同一视频的二维关节和相机计算位置、速度和冗余表示对齐三项损失。推理可从噪声和文本生成全新动作，也可按观测的二维关键点逐步用射线引导三维提升。</desc>
+<defs><marker id="arrow" markerWidth="11" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 1 L 8 5 L 0 9 Z" fill="#425f6c"/></marker></defs>
+<style>
+text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#193744}
+.hero{font-size:36px;font-weight:700}
+.subtitle{font-size:21px;fill:#45606b}
+.section{font-size:27px;font-weight:700}
+.head{font-size:22px;font-weight:700}
+.body{font-size:19px}
+.small{font-size:17px;fill:#465f68}
+.foot{font-size:16px;fill:#48616b}
+.source{fill:#075c63}
+.prior{fill:#41418b}
+.loss{fill:#804816}
+.link{fill:none;stroke:#425f6c;stroke-width:2.2;stroke-linejoin:round}
+</style>
+<rect x="1" y="1" width="1218" height="1448" rx="21" fill="#f8faf9" stroke="#c3d4d6" stroke-width="1.6"/>
+<text x="42" y="59" class="hero">VideoMDM 如何从单目视频学习三维动作</text>
+<text x="44" y="98" class="subtitle">在三维空间去噪，用视频里的二维关节校正预测。训练后的先验可用于生成，也可用于三维提升。</text>
+<rect x="29" y="130" width="1162" height="328" rx="16" fill="#fff" stroke="#cfdddd" stroke-width="1.6"/>
+<text x="54" y="175" class="section">训练数据  ·  同一段动作提供两条信号</text>
+<g>
+<rect x="54" y="224" width="278" height="150" rx="13" fill="#e8f5f2" stroke="#91c3b6" stroke-width="1.6"/>
+<text x="72" y="258" class="head source">单目动作片段</text>
+<text x="72" y="292" class="body">真实视频取一个固定视角。</text>
+<text x="72" y="322" class="body">受控实验用合成投影。</text>
+</g>
+<path d="M 332 299 H 365 V 250 H 395" class="link" marker-end="url(#arrow)"/>
+<path d="M 365 299 V 368 H 395" class="link" marker-end="url(#arrow)"/>
+<g>
+<rect x="400" y="198" width="360" height="100" rx="13" fill="#e8f5f2" stroke="#91c3b6" stroke-width="1.6"/>
+<text x="418" y="232" class="head source">二维观测 y</text>
+<text x="418" y="266" class="body">逐帧提取或投影出二维关节。</text>
+</g>
+<g>
+<rect x="400" y="320" width="360" height="100" rx="13" fill="#e8f5f2" stroke="#91c3b6" stroke-width="1.6"/>
+<text x="418" y="354" class="head source">近似三维动作</text>
+<text x="418" y="388" class="body">预训练提升器估计关节与轨迹。</text>
+</g>
+<path d="M 760 248 H 790" class="link" marker-end="url(#arrow)"/>
+<path d="M 760 369 H 790" class="link" marker-end="url(#arrow)"/>
+<g>
+<rect x="794" y="198" width="371" height="100" rx="13" fill="#e8f5f2" stroke="#91c3b6" stroke-width="1.6"/>
+<text x="812" y="232" class="head source">保留二维监督</text>
+<text x="812" y="266" class="body">保存 y 及相机投影参数 Π。</text>
+</g>
+<g>
+<rect x="794" y="320" width="371" height="100" rx="13" fill="#eeedfc" stroke="#aaa7d4" stroke-width="1.6"/>
+<text x="812" y="354" class="head prior">准备三维输入</text>
+<text x="812" y="388" class="body">转换成 MDM 的动作表示。</text>
+</g>
+<text x="58" y="442" class="small">Fit3D 用 RTMPose 提取二维关节，WHAM 直接从 RGB 估计三维动作。缺少相机外参时可用 PnP 估计。</text>
+<rect x="29" y="477" width="1162" height="550" rx="16" fill="#fff" stroke="#cfdddd" stroke-width="1.6"/>
+<text x="54" y="522" class="section">扩散训练  ·  三维分支产生预测，二维分支给出校正信号</text>
+<text x="56" y="559" class="small">先在提升器估出的动作上预热，再按下图训练。Fit3D 实验从已训练的模型开始微调。</text>
+<g>
+<rect x="54" y="596" width="322" height="133" rx="13" fill="#eeedfc" stroke="#aaa7d4" stroke-width="1.6"/>
+<text x="72" y="630" class="head prior">近似三维动作加噪</text>
+<text x="72" y="664" class="body">高噪声步直接去噪。低噪声步</text>
+<text x="72" y="694" class="body">从更高噪声出发，经短程 DDIM。</text>
+</g>
+<g>
+<rect x="417" y="596" width="320" height="133" rx="13" fill="#eeedfc" stroke="#aaa7d4" stroke-width="1.6"/>
+<text x="435" y="630" class="head prior">MDM 三维去噪器</text>
+<text x="435" y="664" class="body">输入带噪动作与时间步 t。</text>
+<text x="435" y="694" class="body">文生动作任务再输入文本条件。</text>
+</g>
+<g>
+<rect x="778" y="596" width="386" height="133" rx="13" fill="#eeedfc" stroke="#aaa7d4" stroke-width="1.6"/>
+<text x="796" y="630" class="head prior">预测干净的动作表示</text>
+<text x="796" y="664" class="body">一组通道给出根运动与关节位置，</text>
+<text x="796" y="694" class="body">另一组预测旋转、关节速度与足接触。</text>
+</g>
+<path d="M 376 662 H 413" class="link" marker-end="url(#arrow)"/>
+<path d="M 737 662 H 774" class="link" marker-end="url(#arrow)"/>
+<path d="M 975 729 V 755 H 212 V 783" class="link" marker-end="url(#arrow)"/>
+<path d="M 593 755 V 783" class="link" marker-end="url(#arrow)"/>
+<path d="M 975 755 V 783" class="link" marker-end="url(#arrow)"/>
+<g>
+<rect x="54" y="787" width="322" height="155" rx="13" fill="#fff4df" stroke="#ddc397" stroke-width="1.6"/>
+<text x="72" y="821" class="head loss">二维位置损失</text>
+<text x="72" y="855" class="body">用 Π 投影预测关节，与 y 比较。</text>
+<text x="72" y="885" class="body">残差乘预测深度 d，再平方。</text>
+<text x="72" y="915" class="body">屏蔽深度过小的关节。</text>
+</g>
+<g>
+<rect x="417" y="787" width="320" height="155" rx="13" fill="#fff4df" stroke="#ddc397" stroke-width="1.6"/>
+<text x="435" y="821" class="head loss">二维速度损失</text>
+<text x="435" y="855" class="body">对投影与观测分别做相邻帧差分，</text>
+<text x="435" y="885" class="body">比较两组二维位移，</text>
+<text x="435" y="915" class="body">使用同一套深度权重。</text>
+</g>
+<g>
+<rect x="778" y="787" width="386" height="155" rx="13" fill="#fff4df" stroke="#ddc397" stroke-width="1.6"/>
+<text x="796" y="821" class="head loss">动作表示对齐损失</text>
+<text x="796" y="855" class="body">把预测关节移到观测射线的最近点。</text>
+<text x="796" y="885" class="body">从校正后的动作导出冗余通道目标，</text>
+<text x="796" y="915" class="body">停止目标梯度，再与预测通道比较。</text>
+</g>
+<path d="M 212 942 V 965 H 975 V 942" class="link"/>
+<path d="M 593 942 V 978" class="link" marker-end="url(#arrow)"/>
+<text x="415" y="1004" class="head loss">三项损失加权求和，更新去噪器参数 θ。</text>
+<rect x="29" y="1047" width="1162" height="345" rx="16" fill="#fff" stroke="#cfdddd" stroke-width="1.6"/>
+<text x="54" y="1092" class="section">推理  ·  同一个去噪器，两种输入方式</text>
+<g>
+<rect x="54" y="1120" width="540" height="234" rx="13" fill="#eeedfc" stroke="#aaa7d4" stroke-width="1.6"/>
+<text x="72" y="1154" class="head prior">生成新的三维动作</text>
+<text x="72" y="1188" class="body">输入  ·  高斯噪声，可附动作文本。</text>
+<text x="72" y="1218" class="body">采样  ·  去噪器反复更新带噪动作。</text>
+<text x="72" y="1248" class="body">输出  ·  一段新生成的三维人体动作。</text>
+<text x="72" y="1278" class="body">NBA 实验采用无条件采样。</text>
+</g>
+<g>
+<rect x="624" y="1120" width="540" height="234" rx="13" fill="#e8f5f2" stroke="#91c3b6" stroke-width="1.6"/>
+<text x="642" y="1154" class="head source">把给定二维轨迹提升为三维动作</text>
+<text x="642" y="1188" class="body">输入  ·  高斯噪声、观测的二维关节 y、相机 Π。</text>
+<text x="642" y="1218" class="body">采样  ·  每个 DDPM 步先预测干净三维关节，</text>
+<text x="642" y="1248" class="body">再将关节移到对应的观测射线上，进入下一步。</text>
+<text x="642" y="1278" class="body">输出  ·  与观测对应的一种三维动作估计。</text>
+</g>
+<text x="47" y="1425" class="foot">据作者会议版 §3、§4 与附录 B、H、L 重绘。射线限定关节在图像中的位置，单视图深度仍有多种可能。</text>
+</svg>

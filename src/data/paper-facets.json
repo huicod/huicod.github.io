@@ -2953,6 +2953,16 @@
     ],
     "controls": []
   },
+  "videomdm-paper-notes": {
+    "topics": [
+      "generation",
+      "video"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
   "vimogen-paper-notes": {
     "topics": [
       "generation",
