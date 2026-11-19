@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 1405" width="1120" height="1405" role="img" aria-labelledby="title desc" lang="zh-CN"><title id="title">Superman 如何以同一套动作词元连接视频与三维骨架</title><desc id="desc">先把同一动作的图像和几何特征对齐到配对码本，再让多模态语言模型根据视频、历史骨架或两端骨架预测动作词元，解码成三维姿态。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8.4" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L8.4 5 L1 9" fill="none" stroke="#55747b" stroke-width="1.8"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}path,polyline,line{stroke-linecap:round;stroke-linejoin:round}</style>
+<rect x="1" y="1" width="1118" height="1403" rx="20" fill="#f7faf9" stroke="#bcd0cf" stroke-width="1.5"/>
+<text x="40" y="62" font-size="42" font-weight="700" fill="#183844" text-anchor="start">Superman</text>
+<text x="40" y="104" font-size="27" font-weight="400" fill="#183844" text-anchor="start">同一套离散动作词元，怎样连接视频和三维骨架</text>
+<rect x="24" y="136" width="1072" height="501" rx="16" fill="#ffffff" stroke="#cbdcda" stroke-width="1.5"/>
+<text x="48" y="175" font-size="18" font-weight="700" fill="#087b78" text-anchor="start">阶段一</text>
+<text x="174" y="177" font-size="27" font-weight="700" fill="#183844" text-anchor="start">学习视觉与骨架共同索引的动作词表</text>
+<g class="card">
+<rect x="50" y="206" width="489" height="130" rx="12" fill="#eaf1fb" stroke="#b1c6da" stroke-width="1.5"/>
+<text x="66" y="239" font-size="23" font-weight="700" fill="#305e8c" text-anchor="start">同一段动作的视频</text>
+<text x="66" y="269" font-size="20" font-weight="400" fill="#183844" text-anchor="start">图像骨干先提取特征。VSA 以二维关节为</text>
+<text x="66" y="298" font-size="20" font-weight="400" fill="#183844" text-anchor="start">参考，学习从其附近哪些位置采样。</text>
+</g>
+<g class="card">
+<rect x="579" y="206" width="491" height="130" rx="12" fill="#e6f5ef" stroke="#9bcabb" stroke-width="1.5"/>
+<text x="595" y="239" font-size="23" font-weight="700" fill="#087b78" text-anchor="start">逐帧配对的三维骨架</text>
+<text x="595" y="269" font-size="20" font-weight="400" fill="#183844" text-anchor="start">将三维坐标排列为时间 × 关节网格，</text>
+<text x="595" y="298" font-size="20" font-weight="400" fill="#183844" text-anchor="start">二维卷积编码局部的时空几何。</text>
+</g>
+<path d="M294 336 V365 H551" fill="none" stroke="#55747b" stroke-width="2.5"/>
+<path d="M824 336 V365 H552 V389" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="52" y="395" width="1018" height="160" rx="12" fill="#f1edf8" stroke="#c3b1d7" stroke-width="1.5"/>
+<text x="68" y="430" font-size="23" font-weight="700" fill="#664a89" text-anchor="start">时间下采样后查找配对码本</text>
+<text x="68" y="465" font-size="20" font-weight="400" fill="#183844" text-anchor="start">对每个时间窗口，把视觉距离和骨架距离相加，</text>
+<text x="68" y="494" font-size="20" font-weight="400" fill="#183844" text-anchor="start">选择总距离最小的一行，得到离散索引 k。</text>
+<text x="677" y="432" font-size="17" font-weight="700" fill="#476570" text-anchor="start">同一索引</text>
+<text x="787" y="432" font-size="17" font-weight="700" fill="#305e8c" text-anchor="start">视觉原型</text>
+<text x="929" y="432" font-size="17" font-weight="700" fill="#087b78" text-anchor="start">骨架原型</text>
+<text x="714" y="455" font-size="17" font-weight="700" fill="#664a89" text-anchor="middle">…</text>
+<text x="826" y="455" font-size="17" font-weight="700" fill="#305e8c" text-anchor="middle">…</text>
+<text x="971" y="455" font-size="17" font-weight="700" fill="#087b78" text-anchor="middle">…</text>
+<rect x="661" y="466" width="374" height="25" rx="5" fill="#ffffff" stroke="#a895bc" stroke-width="1.4"/>
+<text x="714" y="483" font-size="17" font-weight="700" fill="#664a89" text-anchor="middle">k</text>
+<text x="826" y="483" font-size="17" font-weight="700" fill="#305e8c" text-anchor="middle">vₖ</text>
+<text x="971" y="483" font-size="17" font-weight="700" fill="#087b78" text-anchor="middle">sₖ</text>
+<text x="714" y="511" font-size="17" font-weight="700" fill="#664a89" text-anchor="middle">…</text>
+<text x="826" y="511" font-size="17" font-weight="700" fill="#305e8c" text-anchor="middle">…</text>
+<text x="971" y="511" font-size="17" font-weight="700" fill="#087b78" text-anchor="middle">…</text>
+<path d="M557 555 V575" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="560" y="607" font-size="22" font-weight="700" fill="#183844" text-anchor="middle">取对应的骨架原型 → 上采样并解码 → 用原始三维姿态监督重建</text>
+<rect x="24" y="659" width="1072" height="600" rx="16" fill="#ffffff" stroke="#cbdcda" stroke-width="1.5"/>
+<text x="48" y="698" font-size="18" font-weight="700" fill="#087b78" text-anchor="start">阶段二</text>
+<text x="174" y="700" font-size="27" font-weight="700" fill="#183844" text-anchor="start">按任务组织输入，由同一个多模态模型续写词元</text>
+<rect x="52" y="731" width="704" height="82" rx="10" fill="#eaf1fb" stroke="#b1c6da" stroke-width="1.5"/>
+<text x="69" y="763" font-size="22" font-weight="700" fill="#305e8c" text-anchor="start">视频姿态估计</text>
+<text x="282" y="763" font-size="20" font-weight="700" fill="#183844" text-anchor="start">整段 RGB</text>
+<text x="69" y="794" font-size="19" font-weight="400" fill="#183844" text-anchor="start">可选 MAFT 用二维关节辅助视觉注意力。</text>
+<path d="M756 772 H786" fill="none" stroke="#55747b" stroke-width="2"/>
+<rect x="52" y="834" width="704" height="82" rx="10" fill="#e6f5ef" stroke="#9bcabb" stroke-width="1.5"/>
+<text x="69" y="866" font-size="22" font-weight="700" fill="#087b78" text-anchor="start">骨架动作预测</text>
+<text x="282" y="866" font-size="20" font-weight="700" fill="#183844" text-anchor="start">过去的三维姿态</text>
+<text x="69" y="897" font-size="19" font-weight="400" fill="#183844" text-anchor="start">将观测前缀编码为骨架词元，预测后续。</text>
+<path d="M756 875 H786" fill="none" stroke="#55747b" stroke-width="2"/>
+<rect x="52" y="937" width="704" height="82" rx="10" fill="#e6f5ef" stroke="#9bcabb" stroke-width="1.5"/>
+<text x="69" y="969" font-size="22" font-weight="700" fill="#087b78" text-anchor="start">骨架运动补间</text>
+<text x="282" y="969" font-size="20" font-weight="700" fill="#183844" text-anchor="start">起点和终点姿态</text>
+<text x="69" y="1000" font-size="19" font-weight="400" fill="#183844" text-anchor="start">把两端姿态编码为骨架词元，补写中段。</text>
+<path d="M756 978 H786" fill="none" stroke="#55747b" stroke-width="2"/>
+<path d="M786 772 V978" fill="none" stroke="#55747b" stroke-width="2"/>
+<path d="M786 877 H808" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="812" y="776" width="257" height="205" rx="12" fill="#f1edf8" stroke="#c3b1d7" stroke-width="1.5"/>
+<text x="940" y="818" font-size="22" font-weight="700" fill="#664a89" text-anchor="middle">Qwen2.5-VL-7B</text>
+<text x="831" y="858" font-size="19" font-weight="400" fill="#183844" text-anchor="start">按任务指令阅读输入，</text>
+<text x="831" y="888" font-size="19" font-weight="400" fill="#183844" text-anchor="start">逐个预测动作词元。</text>
+<text x="831" y="918" font-size="19" font-weight="400" fill="#183844" text-anchor="start">训练时对目标词元</text>
+<text x="831" y="948" font-size="19" font-weight="400" fill="#183844" text-anchor="start">计算交叉熵。</text>
+<path d="M940 981 V1067 H821" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="192" y="1034" width="626" height="67" rx="10" fill="#f1edf8" stroke="#c3b1d7" stroke-width="1.5"/>
+<text x="505" y="1076" font-size="22" font-weight="700" fill="#664a89" text-anchor="middle">输出索引序列  k₁, k₂, …  →  查询骨架原型</text>
+<path d="M505 1101 V1137" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="87" y="1140" width="941" height="68" rx="12" fill="#e6f5ef" stroke="#9bcabb" stroke-width="1.5"/>
+<text x="558" y="1182" font-size="24" font-weight="700" fill="#087b78" text-anchor="middle">共享的骨架解码器  →  逐帧连续三维关节坐标</text>
+<text x="51" y="1235" font-size="19" font-weight="400" fill="#476570" text-anchor="start">预测与补间只给骨架，两项任务均关闭视觉增强分支。</text>
+<rect x="25" y="1284" width="1070" height="66" rx="12" fill="#ffffff" stroke="#cbdcda" stroke-width="1.5"/>
+<text x="51" y="1326" font-size="20" font-weight="400" fill="#476570" text-anchor="start">词元是码本索引。它汇集短时视觉与几何特征，可通过骨架原型还原为动作。</text>
+<text x="35" y="1381" font-size="17" font-weight="400" fill="#476570" text-anchor="start">依据论文图 2–3、§3 与补充材料绘制。模型名称按论文实验版本标注。</text>
+</svg>

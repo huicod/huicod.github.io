@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 1295" width="1120" height="1295" role="img" aria-labelledby="title desc" lang="zh-CN"><title id="title">UniEgoMotion 如何从眼前画面推断佩戴者的动作</title><desc id="desc">训练用第一人称画面和头戴设备轨迹给动作扩散模型提供条件。推理时按已观测的时段选择重建、预测或单图生成。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8.4" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L8.4 5 L1 9" fill="none" stroke="#55747b" stroke-width="1.8"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}path,polyline,line{stroke-linecap:round;stroke-linejoin:round}</style>
+<rect x="1" y="1" width="1118" height="1293" rx="20" fill="#f7faf9" stroke="#bcd0cf" stroke-width="1.5"/>
+<text x="40" y="62" font-size="42" font-weight="700" fill="#183844" text-anchor="start">UniEgoMotion</text>
+<text x="40" y="104" font-size="27" font-weight="400" fill="#183844" text-anchor="start">从头戴相机看见的场景，推断戴相机的人怎样动</text>
+<rect x="24" y="136" width="1072" height="276" rx="16" fill="#ffffff" stroke="#cbdcda" stroke-width="1.5"/>
+<text x="48" y="175" font-size="18" font-weight="700" fill="#087b78" text-anchor="start">动作表示</text>
+<text x="174" y="177" font-size="27" font-weight="700" fill="#183844" text-anchor="start">用头部在地面的投影建立每帧坐标系</text>
+<text x="52" y="230" font-size="21" font-weight="400" fill="#183844" text-anchor="start">外部多机位协助拟合 SMPL-X，得到训练用动作。</text>
+<text x="52" y="267" font-size="21" font-weight="400" fill="#183844" text-anchor="start">将头部投到地面，保留平面位置和朝向，</text>
+<text x="52" y="304" font-size="21" font-weight="400" fill="#183844" text-anchor="start">逐帧记录地面参考系的变化，以及身体各关节</text>
+<text x="52" y="341" font-size="21" font-weight="400" fill="#183844" text-anchor="start">在该参考系中的姿态。</text>
+<path d="M649 361 L979 361 L1021 330" fill="none" stroke="#b0c6c2" stroke-width="2"/>
+<path d="M772 241 L772 355" fill="none" stroke="#087b78" stroke-width="2" stroke-dasharray="4 6"/>
+<circle cx="772" cy="224" r="16" fill="#e6f5ef" stroke="#087b78" stroke-width="2"/>
+<path d="M771 243 L760 265 L763 299 M761 259 L738 275 L715 260 M762 260 L797 270 L817 250 M763 299 L742 324 L724 351 M763 299 L791 327 L814 351" fill="none" stroke="#183844" stroke-width="5"/>
+<circle cx="772" cy="358" r="5" fill="#087b78" stroke="none" stroke-width="2"/>
+<path d="M772 358 L866 358" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M772 358 L808 328" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="845" y="224" font-size="20" font-weight="700" fill="#087b78" text-anchor="start">头部</text>
+<path d="M839 219 L792 219" fill="none" stroke="#087b78" stroke-width="1.6"/>
+<text x="845" y="325" font-size="19" font-weight="700" fill="#476570" text-anchor="start">地面参考系</text>
+<text x="696" y="389" font-size="17" font-weight="400" fill="#476570" text-anchor="start">示意  ·  脚下的原点随头部移动</text>
+<rect x="24" y="434" width="1072" height="380" rx="16" fill="#ffffff" stroke="#cbdcda" stroke-width="1.5"/>
+<text x="48" y="473" font-size="18" font-weight="700" fill="#087b78" text-anchor="start">扩散训练</text>
+<text x="174" y="475" font-size="27" font-weight="700" fill="#183844" text-anchor="start">设备轨迹和图像从两个不同的位置进入去噪器</text>
+<g class="card">
+<rect x="50" y="503" width="320" height="109" rx="12" fill="#f1edf8" stroke="#c3b1d7" stroke-width="1.5"/>
+<text x="66" y="536" font-size="23" font-weight="700" fill="#664a89" text-anchor="start">加噪的动作序列</text>
+<text x="66" y="566" font-size="20" font-weight="400" fill="#183844" text-anchor="start">逐帧投影到隐空间</text>
+</g>
+<g class="card">
+<rect x="400" y="503" width="305" height="109" rx="12" fill="#e6f5ef" stroke="#9bcabb" stroke-width="1.5"/>
+<text x="416" y="536" font-size="23" font-weight="700" fill="#087b78" text-anchor="start">设备的 6 自由度轨迹</text>
+<text x="416" y="566" font-size="20" font-weight="400" fill="#183844" text-anchor="start">逐帧做线性投影</text>
+</g>
+<g class="card">
+<rect x="735" y="503" width="335" height="109" rx="12" fill="#eaf1fb" stroke="#b1c6da" stroke-width="1.5"/>
+<text x="751" y="536" font-size="23" font-weight="700" fill="#305e8c" text-anchor="start">第一人称 RGB</text>
+<text x="751" y="566" font-size="20" font-weight="400" fill="#183844" text-anchor="start">冻结 DINOv2，训练投影层</text>
+</g>
+<path d="M215 612 V639 H376" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M551 612 V639 H415" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<circle cx="396" cy="639" r="14" fill="#ffffff" stroke="#55747b" stroke-width="2"/>
+<text x="396" y="646" font-size="24" font-weight="700" fill="#55747b" text-anchor="middle">+</text>
+<path d="M396 654 V678" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M900 612 V678" fill="none" stroke="#55747b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="920" y="650" font-size="18" font-weight="400" fill="#305e8c" text-anchor="start">交叉注意力</text>
+<rect x="92" y="683" width="946" height="62" rx="10" fill="#f1edf8" stroke="#bdabd0" stroke-width="1.5"/>
+<text x="565" y="722" font-size="23" font-weight="700" fill="#664a89" text-anchor="middle">Transformer 解码器  ·  结合扩散时间步，逐帧预测干净动作</text>
+<text x="52" y="783" font-size="20" font-weight="400" fill="#476570" text-anchor="start">训练时随机遮蔽观测条件，缺失位置由可学习的掩码填充。模型通过与干净动作比较来学习去噪。</text>
+<rect x="24" y="837" width="1072" height="388" rx="16" fill="#ffffff" stroke="#cbdcda" stroke-width="1.5"/>
+<text x="48" y="876" font-size="18" font-weight="700" fill="#087b78" text-anchor="start">任务切换</text>
+<text x="174" y="878" font-size="27" font-weight="700" fill="#183844" text-anchor="start">同一个去噪器，输入的可见时段决定输出</text>
+<text x="52" y="929" font-size="18" font-weight="400" fill="#476570" text-anchor="start">每格代表一段时间</text>
+<rect x="310" y="913" width="17" height="17" rx="3" fill="#087b78" stroke="none" stroke-width="1.5"/>
+<text x="337" y="929" font-size="18" font-weight="400" fill="#476570" text-anchor="start">已观测</text>
+<rect x="447" y="913" width="17" height="17" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1.5"/>
+<text x="474" y="929" font-size="18" font-weight="400" fill="#476570" text-anchor="start">掩码</text>
+<text x="62" y="977" font-size="20" font-weight="700" fill="#183844" text-anchor="start">推理任务</text>
+<text x="244" y="977" font-size="20" font-weight="700" fill="#183844" text-anchor="start">画面</text>
+<text x="472" y="977" font-size="20" font-weight="700" fill="#183844" text-anchor="start">设备轨迹</text>
+<text x="700" y="977" font-size="20" font-weight="700" fill="#183844" text-anchor="start">输出的三维全身动作</text>
+<path d="M53 994 H1064" fill="none" stroke="#dce6e3" stroke-width="1"/>
+<text x="62" y="1024" font-size="23" font-weight="700" fill="#183844" text-anchor="start">重建</text>
+<rect x="244" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="265" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="286" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="307" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="328" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="349" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="370" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="391" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="472" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="493" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="514" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="535" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="556" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="577" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="598" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="619" y="1006" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<text x="700" y="1024" font-size="21" font-weight="400" fill="#183844" text-anchor="start">恢复相同时间段。</text>
+<path d="M53 1052 H1064" fill="none" stroke="#dce6e3" stroke-width="1"/>
+<text x="62" y="1082" font-size="23" font-weight="700" fill="#183844" text-anchor="start">预测</text>
+<rect x="244" y="1064" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="265" y="1064" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="286" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="307" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="328" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="349" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="370" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="391" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="472" y="1064" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="493" y="1064" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="514" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="535" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="556" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="577" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="598" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="619" y="1064" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<text x="700" y="1082" font-size="21" font-weight="400" fill="#183844" text-anchor="start">根据过去观测，预测后续动作。</text>
+<path d="M53 1110 H1064" fill="none" stroke="#dce6e3" stroke-width="1"/>
+<text x="62" y="1140" font-size="23" font-weight="700" fill="#183844" text-anchor="start">生成</text>
+<rect x="244" y="1122" width="17" height="19" rx="3" fill="#087b78" stroke="#087b78" stroke-width="1"/>
+<rect x="265" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="286" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="307" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="328" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="349" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="370" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="391" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="472" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="493" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="514" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="535" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="556" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="577" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="598" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<rect x="619" y="1122" width="17" height="19" rx="3" fill="#edf1ef" stroke="#a7bab6" stroke-width="1"/>
+<text x="700" y="1140" font-size="21" font-weight="400" fill="#183844" text-anchor="start">由首图采样一条可能的动作。</text>
+<text x="52" y="1192" font-size="20" font-weight="400" fill="#476570" text-anchor="start">预测还有一种可选的补全方式：先重建已观测动作，再在每个反向扩散步固定该前缀。</text>
+<text x="36" y="1268" font-size="17" font-weight="400" fill="#476570" text-anchor="start">依据论文图 2、图 7、§3 与附录 D/F 绘制。时间格表示可见范围，生成行的第一格仅表示一张图。</text>
+</svg>

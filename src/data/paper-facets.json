@@ -2652,6 +2652,20 @@
       "time"
     ]
   },
+  "superman-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "video",
+      "multimodal",
+      "representation"
+    ],
+    "methods": [
+      "tokens",
+      "language"
+    ],
+    "controls": []
+  },
   "superstar-paper-notes": {
     "topics": [
       "gesture"
@@ -2859,6 +2873,18 @@
       "time",
       "space",
       "interaction"
+    ]
+  },
+  "uniegomotion-paper-notes": {
+    "topics": [
+      "generation",
+      "video"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space"
     ]
   },
   "unimask-m-paper-notes": {
