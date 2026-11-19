@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1630" viewBox="0 0 1080 1630" role="img" aria-labelledby="title desc" lang="zh-CN">
+<title id="title">LaMoGen 从语言指令到连续三维动作的架构</title>
+<desc id="desc">推理时先从训练库检索动作说明和概念示例，请语言模型编排带时长的事件，再按二十帧每秒展开。细节生成器读取文字和概念条件，预测一百五十八维完整符号码，码本与动作解码器产生连续姿态。下方单列训练所用的动作检测、码本重建和符号监督。</desc>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}path{stroke-linecap:round;stroke-linejoin:round}</style>
+<defs><marker id="end" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="strokeWidth" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1 L8 5 L1 9" stroke="#5a777c" stroke-width="1.5" fill="none"/></marker></defs>
+<rect x="1" y="1" width="1078" height="1628" rx="17" fill="#f6f9fa" stroke="#c0cfd3" stroke-width="1.6"/>
+<text x="39" y="61" fill="#19394b" font-size="46" font-weight="700" text-anchor="start">LaMoGen</text>
+<text x="40" y="108" fill="#19394b" font-size="29" font-weight="400" text-anchor="start">一句动作指令怎样变成能播放的三维姿态？</text>
+<rect x="23" y="132" width="1034" height="355" rx="16" fill="white" stroke="#c4d3d7" stroke-width="1.6"/>
+<text x="47" y="176" fill="#19394b" font-size="30" font-weight="700" text-anchor="start">语言模型先编排可读的动作事件</text>
+<rect x="46" y="201" width="389" height="111" rx="13" fill="#e9f1f8" stroke="#bfd0df" stroke-width="1.6"/>
+<text x="66" y="239" fill="#2b5c83" font-size="25" font-weight="700" text-anchor="start">用户指令</text>
+<text x="66" y="281" fill="#19394b" font-size="22" font-weight="400" text-anchor="start">例如“返回前抬起左手”。</text>
+<rect x="454" y="201" width="577" height="111" rx="13" fill="#e7f3ee" stroke="#b9d4cb" stroke-width="1.6"/>
+<text x="474" y="239" fill="#17665d" font-size="25" font-weight="700" text-anchor="start">从训练库检索相似说明</text>
+<text x="474" y="281" fill="#19394b" font-size="22" font-weight="400" text-anchor="start">CLIP 匹配文本，取前 K 个说明与概念计划。</text>
+<path d="M200 313 V337 H427 V348" stroke="#5a777c" fill="none" stroke-width="2.7" marker-end="url(#end)"/>
+<path d="M739 313 V337 H652 V348" stroke="#5a777c" fill="none" stroke-width="2.7" marker-end="url(#end)"/>
+<rect x="46" y="354" width="985" height="113" rx="13" fill="#f3eef8" stroke="#cfc2dd" stroke-width="1.6"/>
+<text x="67" y="392" fill="#624b7a" font-size="25" font-weight="700" text-anchor="start">LLM 参考示例生成计划，也可按用户要求改写原计划</text>
+<text x="67" y="436" fill="#19394b" font-size="22" font-weight="400" text-anchor="start">分别写出支撑脚、左手和右手的事件。每个事件指定部位、动作含义和时长。</text>
+<path d="M538 488 V511" stroke="#5a777c" fill="none" stroke-width="2.7" marker-end="url(#end)"/>
+<rect x="23" y="516" width="1034" height="314" rx="16" fill="white" stroke="#c4d3d7" stroke-width="1.6"/>
+<text x="47" y="560" fill="#19394b" font-size="30" font-weight="700" text-anchor="start">解析器把事件展开成逐帧概念条件</text>
+<text x="50" y="601" fill="#19394b" font-size="22" font-weight="400" text-anchor="start">以左手这条轨道为例，解析器用固定词表识别语义，把秒数按 20 帧/秒展开。</text>
+<rect x="50" y="630" width="485" height="90" rx="7" fill="#e7f3ee" stroke="#a9cdc3" stroke-width="1.6"/>
+<rect x="535" y="630" width="173" height="90" rx="7" fill="#dcecf7" stroke="#a9c7da" stroke-width="1.6"/>
+<rect x="708" y="630" width="312" height="90" rx="7" fill="#f2ecf8" stroke="#cabdd8" stroke-width="1.6"/>
+<text x="293" y="665" fill="#17665d" font-size="24" font-weight="700" text-anchor="middle">低位保持</text>
+<text x="293" y="700" fill="#19394b" font-size="21" font-weight="400" text-anchor="middle">1.4 秒 · 28 帧</text>
+<text x="622" y="665" fill="#2b5c83" font-size="24" font-weight="700" text-anchor="middle">上抬</text>
+<text x="622" y="700" fill="#19394b" font-size="20" font-weight="400" text-anchor="middle">0.5 秒 · 10 帧</text>
+<text x="864" y="665" fill="#624b7a" font-size="24" font-weight="700" text-anchor="middle">高位保持</text>
+<text x="864" y="700" fill="#19394b" font-size="21" font-weight="400" text-anchor="middle">0.9 秒 · 18 帧</text>
+<text x="50" y="765" fill="#19394b" font-size="23" font-weight="400" text-anchor="start">三段共 56 帧。此时已知各段何时发生，肘部每帧弯多少还留给下一步。</text>
+<text x="50" y="803" fill="#4a626d" font-size="20" font-weight="400" text-anchor="start">时间条按帧数比例绘制，取自补充材料图 13 的左手编辑示例。</text>
+<path d="M538 831 V854" stroke="#5a777c" fill="none" stroke-width="2.7" marker-end="url(#end)"/>
+<rect x="23" y="860" width="1034" height="456" rx="16" fill="white" stroke="#c4d3d7" stroke-width="1.6"/>
+<text x="47" y="904" fill="#19394b" font-size="30" font-weight="700" text-anchor="start">从逐帧符号到连续动作</text>
+<rect x="46" y="927" width="986" height="108" rx="13" fill="#edf3fa" stroke="#b8ccd9" stroke-width="1.6"/>
+<text x="67" y="963" fill="#2b5c83" font-size="25" font-weight="700" text-anchor="start">文字特征 + 逐帧概念条件 → 运动学细节生成器</text>
+<text x="67" y="1006" fill="#19394b" font-size="22" font-weight="400" text-anchor="start">因果 Transformer 预测完整属性，包含概念以及朝向、弯曲和运动力度等细节。</text>
+<path d="M538 1037 V1064" stroke="#5a777c" fill="none" stroke-width="2.7" marker-end="url(#end)"/>
+<rect x="46" y="1069" width="986" height="89" rx="13" fill="#e9f3ee" stroke="#b6d0c7" stroke-width="1.6"/>
+<text x="67" y="1104" fill="#17665d" font-size="25" font-weight="700" text-anchor="start">每帧一条 158 维属性向量</text>
+<text x="67" y="1139" fill="#19394b" font-size="22" font-weight="400" text-anchor="start">同一帧可激活多个符号。查 158 × 512 码本，将激活项的嵌入相加。</text>
+<path d="M538 1159 V1186" stroke="#5a777c" fill="none" stroke-width="2.7" marker-end="url(#end)"/>
+<rect x="46" y="1192" width="986" height="100" rx="13" fill="#f9f1e3" stroke="#d7c4a3" stroke-width="1.6"/>
+<text x="67" y="1230" fill="#865526" font-size="25" font-weight="700" text-anchor="start">动作解码器 → 连续运动学特征 → 三维关节轨迹</text>
+<text x="67" y="1270" fill="#19394b" font-size="22" font-weight="400" text-anchor="start">位置编码与八层 Transformer 处理整段特征，在线性输出层恢复逐帧动作。</text>
+<rect x="23" y="1344" width="1034" height="264" rx="16" fill="white" stroke="#c4d3d7" stroke-width="1.6"/>
+<text x="47" y="1388" fill="#19394b" font-size="30" font-weight="700" text-anchor="start">训练时，符号监督来自已知三维动作</text>
+<text x="49" y="1423" fill="#19394b" font-size="22" font-weight="400" text-anchor="start">按部位区分运动与停顿，提取方向、高低、关节弯曲等属性，再按区间聚合。</text>
+<rect x="47" y="1454" width="472" height="129" rx="13" fill="#edf5f0" stroke="#c4d5cd" stroke-width="1.6"/>
+<text x="65" y="1487" fill="#17665d" font-size="24" font-weight="700" text-anchor="start">训练细节生成器</text>
+<text x="65" y="1525" fill="#19394b" font-size="21" font-weight="400" text-anchor="start">隐藏细节并随机遮盖概念条件。</text>
+<text x="65" y="1560" fill="#19394b" font-size="21" font-weight="400" text-anchor="start">用完整属性码监督逐帧预测。</text>
+<rect x="535" y="1454" width="497" height="129" rx="13" fill="#fbf5e9" stroke="#ddd0b7" stroke-width="1.6"/>
+<text x="554" y="1487" fill="#865526" font-size="24" font-weight="700" text-anchor="start">训练码本和动作解码器</text>
+<text x="554" y="1525" fill="#19394b" font-size="21" font-weight="400" text-anchor="start">将检测得到的符号码解码为动作。</text>
+<text x="554" y="1560" fill="#19394b" font-size="21" font-weight="400" text-anchor="start">以姿态与速度的重建误差训练两者。</text>
+</svg>

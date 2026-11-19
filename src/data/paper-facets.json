@@ -1284,6 +1284,22 @@
     ],
     "controls": []
   },
+  "lamogen-paper-notes": {
+    "topics": [
+      "generation",
+      "representation",
+      "editing"
+    ],
+    "methods": [
+      "language",
+      "tokens",
+      "retrieval"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
   "lamp-motion-paper-notes": {
     "topics": [
       "multimodal",
