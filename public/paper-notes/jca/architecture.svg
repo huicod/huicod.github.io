@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 1450" width="1120" height="1450" role="img" aria-labelledby="title desc" lang="zh-CN">
+<title id="title">Joints, Camera, Action! 骨架动作与视频联合生成架构</title>
+<desc id="desc">给定文本、任意拓扑的角色骨架和可选参考图像，骨架图编码器给出关节描述。视频流与骨架动作流在配对层交换特征并联合去噪。关节定位头从视频预测二维位置，再结合生成的三维关节为整段视频拟合静态透视相机。图中另列两路预训练、配对联合训练以及已知单模态的采样方式。</desc>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}path,line{stroke-linecap:round;stroke-linejoin:round}</style>
+<defs><marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="#607b7f" stroke-width="1.6"/></marker></defs>
+<rect x="1" y="1" width="1118" height="1448" rx="18" fill="#f6faf9" stroke="#bcd0cf" stroke-width="1.5"/>
+<text x="40" y="64" font-size="41" fill="#193945" font-weight="700" text-anchor="start">Joints, Camera, Action!</text>
+<text x="41" y="106" font-size="27" fill="#193945" font-weight="400" text-anchor="start">同一段表演如何生成骨架动作、视频和拍摄相机？</text>
+<rect x="22" y="132" width="1076" height="240" rx="16" fill="#ffffff" stroke="#c4d6d4" stroke-width="1.5"/>
+<text x="47" y="172" font-size="27" fill="#193945" font-weight="700" text-anchor="start">输入与骨架编码</text>
+<rect x="47" y="192" width="654" height="151" rx="13" fill="#e4f3ee" stroke="#a6cfc0" stroke-width="1.5"/>
+<path d="M91.0 264.0 L118.56 260.82" fill="none" stroke="#066f69" stroke-width="2.7560000000000002"/>
+<path d="M118.56 260.82 L139.76 250.22" fill="none" stroke="#066f69" stroke-width="2.7560000000000002"/>
+<path d="M139.76 250.22 L154.6 253.4" fill="none" stroke="#066f69" stroke-width="2.7560000000000002"/>
+<path d="M118.56 260.82 L115.38 278.84" fill="none" stroke="#066f69" stroke-width="2.7560000000000002"/>
+<path d="M115.38 278.84 L123.86 289.44" fill="none" stroke="#066f69" stroke-width="2.7560000000000002"/>
+<path d="M91.0 264.0 L92.06 279.9" fill="none" stroke="#066f69" stroke-width="2.7560000000000002"/>
+<path d="M92.06 279.9 L82.52 294.74" fill="none" stroke="#066f69" stroke-width="2.7560000000000002"/>
+<path d="M91.0 264.0 L78.28 259.76" fill="none" stroke="#066f69" stroke-width="2.7560000000000002"/>
+<path d="M78.28 259.76 L70.86 250.22" fill="none" stroke="#066f69" stroke-width="2.7560000000000002"/>
+<circle cx="91.0" cy="264.0" r="3.2860000000000005" fill="#066f69"/>
+<circle cx="118.56" cy="260.82" r="3.2860000000000005" fill="#066f69"/>
+<circle cx="139.76" cy="250.22" r="3.2860000000000005" fill="#066f69"/>
+<circle cx="154.6" cy="253.4" r="3.2860000000000005" fill="#c16c38"/>
+<circle cx="115.38" cy="278.84" r="3.2860000000000005" fill="#066f69"/>
+<circle cx="123.86" cy="289.44" r="3.2860000000000005" fill="#066f69"/>
+<circle cx="92.06" cy="279.9" r="3.2860000000000005" fill="#066f69"/>
+<circle cx="82.52" cy="294.74" r="3.2860000000000005" fill="#066f69"/>
+<circle cx="78.28" cy="259.76" r="3.2860000000000005" fill="#066f69"/>
+<circle cx="70.86" cy="250.22" r="3.2860000000000005" fill="#066f69"/>
+<text x="191" y="226" font-size="23" fill="#066f69" font-weight="700" text-anchor="start">任意树形骨架</text>
+<text x="191" y="263" font-size="20" fill="#193945" font-weight="400" text-anchor="start">关节名、静止姿势、父子骨骼、节点类型</text>
+<text x="191" y="301" font-size="20" fill="#193945" font-weight="400" text-anchor="start">沿骨骼传播 → 全关节注意力 → 每关节描述 D</text>
+<rect x="720" y="192" width="353" height="151" rx="13" fill="#eaf2fa" stroke="#b7ccdd" stroke-width="1.5"/>
+<text x="741" y="226" font-size="23" fill="#315d84" font-weight="700" text-anchor="start">条件</text>
+<text x="741" y="263" font-size="20" fill="#193945" font-weight="400" text-anchor="start">文本描述所需动作与场景</text>
+<text x="741" y="301" font-size="20" fill="#193945" font-weight="400" text-anchor="start">可选参考图及图中关节位置</text>
+<path d="M365 344 V385" fill="none" stroke="#607b7f" stroke-width="2.4" marker-end="url(#tip)"/>
+<path d="M895 344 V385" fill="none" stroke="#607b7f" stroke-width="2.4" marker-end="url(#tip)"/>
+<rect x="22" y="389" width="1076" height="392" rx="16" fill="#ffffff" stroke="#c4d6d4" stroke-width="1.5"/>
+<text x="47" y="429" font-size="27" fill="#193945" font-weight="700" text-anchor="start">联合采样 · 两条流同时去噪</text>
+<rect x="48" y="454" width="390" height="224" rx="13" fill="#e4f3ee" stroke="#a6cfc0" stroke-width="1.5"/>
+<text x="68" y="491" font-size="24" fill="#066f69" font-weight="700" text-anchor="start">骨架动作流</text>
+<text x="68" y="531" font-size="20" fill="#193945" font-weight="400" text-anchor="start">每帧每关节一个动作 token</text>
+<text x="68" y="569" font-size="20" fill="#193945" font-weight="400" text-anchor="start">旋转、位置及帧间变化共 18 维</text>
+<text x="68" y="608" font-size="20" fill="#193945" font-weight="400" text-anchor="start">跨时空注意力 + 帧内骨架图注意力</text>
+<text x="68" y="647" font-size="20" fill="#193945" font-weight="400" text-anchor="start">每个动作块都读入关节描述 D</text>
+<rect x="682" y="454" width="390" height="224" rx="13" fill="#f1edf8" stroke="#cbbadc" stroke-width="1.5"/>
+<text x="703" y="491" font-size="24" fill="#644588" font-weight="700" text-anchor="start">视频流</text>
+<text x="703" y="531" font-size="22" fill="#193945" font-weight="400" text-anchor="start">Wan2.2 I2V-A14B</text>
+<text x="703" y="569" font-size="20" fill="#193945" font-weight="400" text-anchor="start">在压缩的视频潜变量上去噪</text>
+<text x="703" y="608" font-size="20" fill="#193945" font-weight="400" text-anchor="start">配对的视频块读取动作特征</text>
+<text x="703" y="647" font-size="20" fill="#193945" font-weight="400" text-anchor="start">解码潜变量得到连续画面</text>
+<text x="560" y="511" font-size="22" fill="#315d84" font-weight="700" text-anchor="middle">交叉注意力</text>
+<path d="M452 548 H668" fill="none" stroke="#607b7f" stroke-width="2.4" marker-end="url(#tip)"/>
+<path d="M668 584 H452" fill="none" stroke="#607b7f" stroke-width="2.4" marker-end="url(#tip)"/>
+<text x="560" y="629" font-size="20" fill="#4c626b" font-weight="400" text-anchor="middle">配对层双向交换</text>
+<text x="560" y="665" font-size="18" fill="#4c626b" font-weight="400" text-anchor="middle">输出投影零初始化</text>
+<text x="52" y="723" font-size="21" fill="#193945" font-weight="400" text-anchor="start">从两路噪声出发，同时更新动作与视频。跨模态引导用桥接开启和关闭时的速度差调节耦合。</text>
+<text x="52" y="757" font-size="20" fill="#4c626b" font-weight="400" text-anchor="start">给定其中一路完整信号时，也可据此生成另一路，例如由动作生成视频，或由视频恢复动作。</text>
+<rect x="22" y="801" width="1076" height="380" rx="16" fill="#ffffff" stroke="#c4d6d4" stroke-width="1.5"/>
+<text x="47" y="841" font-size="27" fill="#193945" font-weight="700" text-anchor="start">关节定位与相机拟合 · 用二维观测把两个输出对起来</text>
+<rect x="48" y="861" width="337" height="185" rx="13" fill="#e4f3ee" stroke="#a6cfc0" stroke-width="1.5"/>
+<text x="70" y="898" font-size="22" fill="#066f69" font-weight="700" text-anchor="start">① 三维动作</text>
+<path d="M140.0 947.0 L175.1 942.95" fill="none" stroke="#066f69" stroke-width="3.5100000000000002"/>
+<path d="M175.1 942.95 L202.1 929.45" fill="none" stroke="#066f69" stroke-width="3.5100000000000002"/>
+<path d="M202.1 929.45 L221.0 933.5" fill="none" stroke="#066f69" stroke-width="3.5100000000000002"/>
+<path d="M175.1 942.95 L171.05 965.9" fill="none" stroke="#066f69" stroke-width="3.5100000000000002"/>
+<path d="M171.05 965.9 L181.85 986.15" fill="none" stroke="#066f69" stroke-width="3.5100000000000002"/>
+<path d="M140.0 947.0 L141.35 967.25" fill="none" stroke="#066f69" stroke-width="3.5100000000000002"/>
+<path d="M141.35 967.25 L129.2 979.4" fill="none" stroke="#066f69" stroke-width="3.5100000000000002"/>
+<path d="M140.0 947.0 L123.8 941.6" fill="none" stroke="#066f69" stroke-width="3.5100000000000002"/>
+<path d="M123.8 941.6 L114.35 929.45" fill="none" stroke="#066f69" stroke-width="3.5100000000000002"/>
+<circle cx="140.0" cy="947.0" r="4.1850000000000005" fill="#066f69"/>
+<circle cx="175.1" cy="942.95" r="4.1850000000000005" fill="#066f69"/>
+<circle cx="202.1" cy="929.45" r="4.1850000000000005" fill="#066f69"/>
+<circle cx="221.0" cy="933.5" r="4.1850000000000005" fill="#c16c38"/>
+<circle cx="171.05" cy="965.9" r="4.1850000000000005" fill="#066f69"/>
+<circle cx="181.85" cy="986.15" r="4.1850000000000005" fill="#066f69"/>
+<circle cx="141.35" cy="967.25" r="4.1850000000000005" fill="#066f69"/>
+<circle cx="129.2" cy="979.4" r="4.1850000000000005" fill="#066f69"/>
+<circle cx="123.8" cy="941.6" r="4.1850000000000005" fill="#066f69"/>
+<circle cx="114.35" cy="929.45" r="4.1850000000000005" fill="#066f69"/>
+<text x="70" y="1020" font-size="20" fill="#193945" font-weight="400" text-anchor="start">取逐帧生成的三维关节位置</text>
+<rect x="401" y="861" width="671" height="185" rx="13" fill="#eaf2fa" stroke="#b7ccdd" stroke-width="1.5"/>
+<text x="421" y="898" font-size="22" fill="#315d84" font-weight="700" text-anchor="start">② 二维关节定位</text>
+<rect x="424" y="925" width="126" height="82" rx="3" fill="#f8fbfd" stroke="#b4c6cf" stroke-width="1.5"/>
+<path d="M449 928V1004" fill="none" stroke="#d9e5e9" stroke-width="1.3"/>
+<path d="M474 928V1004" fill="none" stroke="#d9e5e9" stroke-width="1.3"/>
+<path d="M499 928V1004" fill="none" stroke="#d9e5e9" stroke-width="1.3"/>
+<path d="M524 928V1004" fill="none" stroke="#d9e5e9" stroke-width="1.3"/>
+<path d="M427 944H547" fill="none" stroke="#d9e5e9" stroke-width="1.3"/>
+<path d="M427 965H547" fill="none" stroke="#d9e5e9" stroke-width="1.3"/>
+<path d="M427 986H547" fill="none" stroke="#d9e5e9" stroke-width="1.3"/>
+<path d="M466.0 961.0 L486.8 958.6" fill="none" stroke="#066f69" stroke-width="2.08"/>
+<path d="M486.8 958.6 L502.8 950.6" fill="none" stroke="#066f69" stroke-width="2.08"/>
+<path d="M502.8 950.6 L514.0 953.0" fill="none" stroke="#066f69" stroke-width="2.08"/>
+<path d="M486.8 958.6 L484.4 972.2" fill="none" stroke="#066f69" stroke-width="2.08"/>
+<path d="M484.4 972.2 L490.8 983.4" fill="none" stroke="#066f69" stroke-width="2.08"/>
+<path d="M466.0 961.0 L466.8 973.0" fill="none" stroke="#066f69" stroke-width="2.08"/>
+<path d="M466.8 973.0 L459.6 981.0" fill="none" stroke="#066f69" stroke-width="2.08"/>
+<path d="M466.0 961.0 L456.4 957.8" fill="none" stroke="#066f69" stroke-width="2.08"/>
+<path d="M456.4 957.8 L450.8 950.6" fill="none" stroke="#066f69" stroke-width="2.08"/>
+<circle cx="466.0" cy="961.0" r="2.4800000000000004" fill="#066f69"/>
+<circle cx="486.8" cy="958.6" r="2.4800000000000004" fill="#066f69"/>
+<circle cx="502.8" cy="950.6" r="2.4800000000000004" fill="#066f69"/>
+<circle cx="514.0" cy="953.0" r="2.4800000000000004" fill="#c16c38"/>
+<circle cx="484.4" cy="972.2" r="2.4800000000000004" fill="#066f69"/>
+<circle cx="490.8" cy="983.4" r="2.4800000000000004" fill="#066f69"/>
+<circle cx="466.8" cy="973.0" r="2.4800000000000004" fill="#066f69"/>
+<circle cx="459.6" cy="981.0" r="2.4800000000000004" fill="#066f69"/>
+<circle cx="456.4" cy="957.8" r="2.4800000000000004" fill="#066f69"/>
+<circle cx="450.8" cy="950.6" r="2.4800000000000004" fill="#066f69"/>
+<text x="568" y="952" font-size="20" fill="#193945" font-weight="400" text-anchor="start">用动作关节特征查询视频图块</text>
+<text x="568" y="988" font-size="20" fill="#193945" font-weight="400" text-anchor="start">用注意力权重对图块坐标加权求和</text>
+<path d="M215 1048 V1068 H455 V1082" fill="none" stroke="#607b7f" stroke-width="2.4" marker-end="url(#tip)"/>
+<path d="M737 1048 V1068 H665 V1082" fill="none" stroke="#607b7f" stroke-width="2.4" marker-end="url(#tip)"/>
+<rect x="49" y="1085" width="1023" height="76" rx="13" fill="#fbf4e7" stroke="#d8c8a6" stroke-width="1.5"/>
+<text x="70" y="1115" font-size="22" fill="#73572c" font-weight="700" text-anchor="start">③ 每段视频拟合一台静态透视相机</text>
+<text x="70" y="1145" font-size="20" fill="#193945" font-weight="400" text-anchor="start">跨帧匹配三维关节与二维位置，优化重投影误差，求旋转、平移和焦距。</text>
+<rect x="22" y="1201" width="1076" height="219" rx="16" fill="#ffffff" stroke="#c4d6d4" stroke-width="1.5"/>
+<text x="47" y="1241" font-size="27" fill="#193945" font-weight="700" text-anchor="start">训练方式</text>
+<rect x="47" y="1263" width="431" height="130" rx="13" fill="#ffffff" stroke="#c4d6d4" stroke-width="1.5"/>
+<text x="69" y="1298" font-size="22" fill="#066f69" font-weight="700" text-anchor="start">分开准备两条流</text>
+<text x="69" y="1335" font-size="20" fill="#193945" font-weight="400" text-anchor="start">动作数据预训练骨架编码器和动作网络</text>
+<text x="69" y="1371" font-size="20" fill="#193945" font-weight="400" text-anchor="start">预训练视频骨干通过 LoRA 适配</text>
+<path d="M488 1328 H548" fill="none" stroke="#607b7f" stroke-width="2.4" marker-end="url(#tip)"/>
+<rect x="559" y="1263" width="512" height="130" rx="13" fill="#ffffff" stroke="#c4d6d4" stroke-width="1.5"/>
+<text x="580" y="1298" font-size="22" fill="#644588" font-weight="700" text-anchor="start">配对的视频与三维动作联合训练</text>
+<text x="580" y="1335" font-size="20" fill="#193945" font-weight="400" text-anchor="start">更新动作流、骨架编码器、双向桥与定位头</text>
+<text x="580" y="1371" font-size="20" fill="#193945" font-weight="400" text-anchor="start">视频侧更新 LoRA，基础权重保持冻结</text>
+</svg>

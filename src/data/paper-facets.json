@@ -1137,6 +1137,22 @@
       "style"
     ]
   },
+  "jca-paper-notes": {
+    "topics": [
+      "generation",
+      "video",
+      "character",
+      "multimodal"
+    ],
+    "methods": [
+      "diffusion",
+      "flow"
+    ],
+    "controls": [
+      "space",
+      "interaction"
+    ]
+  },
   "jegal-paper-notes": {
     "topics": [
       "gesture",
