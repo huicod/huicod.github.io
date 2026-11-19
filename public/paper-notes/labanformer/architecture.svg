@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="970" viewBox="0 0 880 970" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">LabanFormer 如何把动捕帧转写成舞步符号</title>
+  <desc id="desc">骨架图注意力提取逐帧运动特征。编码器读取整段动作，解码器读取已有的符号前缀，通过交叉注意力输出下一个支撑步。图底部给出论文图十四中的四个步子。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L8,4.5 L0,9" fill="none" stroke="#315f69" stroke-width="2"/></marker>
+    <style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#15343f}.title{font-weight:700;font-size:32px}.head{font-weight:700;font-size:24px}.body{font-size:19px}.small{font-size:17px}.path{stroke:#315f69;stroke-width:2.6;fill:none;stroke-linejoin:round;marker-end:url(#arrow)}.observed{fill:#edf6f4;stroke:#a6ccc3}.symbol{fill:#fff1d9;stroke:#dec699}.out{fill:#f3f3fa;stroke:#c9c9df}</style>
+  </defs>
+  <rect width="880" height="970" fill="#fcfbf7" rx="20"/>
+  <text x="36" y="55" class="title">从数百帧骨架，到几步支撑动作</text>
+  <text x="36" y="91" class="body">绿色支路读取动捕，黄色支路读取已写出的谱。两者在解码器汇合。</text>
+  <g stroke-width="1.5">
+    <rect class="observed" x="35" y="128" width="464" height="125" rx="13"/>
+    <rect class="observed" x="35" y="286" width="464" height="156" rx="13"/>
+    <rect class="observed" x="35" y="476" width="464" height="125" rx="13"/>
+    <rect class="symbol" x="540" y="286" width="305" height="156" rx="13"/>
+    <rect class="symbol" x="540" y="476" width="305" height="125" rx="13"/>
+    <rect class="out" x="133" y="654" width="619" height="133" rx="13"/>
+    <rect class="out" x="35" y="840" width="810" height="106" rx="13"/>
+  </g>
+  <text x="57" y="165" class="head">动捕输入 · L 帧 BVH</text>
+  <text x="57" y="202" class="body">按骨架层级求 3D 坐标，归一化位置与朝向。</text>
+  <text x="57" y="232" class="body">每帧 26 关节 × 3 坐标，共 78 个数。</text>
+  <path class="path" d="M267 253 V283"/>
+  <text x="57" y="323" class="head">MS-GAT · 空间关系</text>
+  <text x="57" y="358" class="body">分别在一跳、两跳骨架邻域计算注意力。</text>
+  <text x="57" y="388" class="body">按权重汇合各邻域，再拼接不同尺度。</text>
+  <text x="57" y="418" class="small">输出仍然是每帧一个特征，长度保持为 L。</text>
+  <path class="path" d="M267 442 V473"/>
+  <text x="57" y="512" class="head">动作端 GRPE → 编码器</text>
+  <text x="57" y="547" class="body">单向 GRU 编入此前动作的信息。</text>
+  <text x="57" y="577" class="body">10 层编码器关联整段中相隔较远的帧。</text>
+  <text x="562" y="323" class="head">符号前缀</text>
+  <text x="562" y="360" class="body">推理时从起始标记开始，</text>
+  <text x="562" y="391" class="body">逐个接上已预测的支撑步。</text>
+  <path class="path" d="M693 442 V473"/>
+  <text x="562" y="512" class="head">符号端 GRPE</text>
+  <text x="562" y="547" class="body">顺序编码当前谱的前缀。</text>
+  <text x="562" y="577" class="small">两端 GRPE 的权重分别学习。</text>
+  <path class="path" d="M267 601 V650"/><path class="path" d="M693 601 V650"/>
+  <text x="157" y="693" class="head">5 层解码器 → 下一步的符号</text>
+  <text x="157" y="730" class="body">掩码自注意力读取符号历史，交叉注意力读取编码后的动作。</text>
+  <text x="157" y="762" class="body">重复预测得到较短的事件序列，再写入左右支撑栏。</text>
+  <path class="path" d="M442 787 V836"/>
+  <text x="57" y="878" class="head">图 14 的四步</text>
+  <text x="57" y="917" class="body">左脚向前 → 右脚向前 → 左脚向右前 → 右脚向右前，四步均为中位。</text>
+</svg>

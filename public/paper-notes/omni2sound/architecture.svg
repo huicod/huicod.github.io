@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1228" viewBox="0 0 1000 1228" role="img" aria-labelledby="name desc" lang="zh-CN">
+<title id="name">Omni2Sound：从视频及文字到一条音轨</title><desc id="desc">区分训练时 SoundAtlas 数据制造、推理所需输入、语义和时序融合、波形解码、三阶段训练。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4L0 8Z" fill="#506b74"/></marker></defs>
+<rect width="1000" height="1228" fill="#f8faf8"/>
+<g font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+<text x="34" y="57" font-size="36" font-weight="700" fill="#182d3b">Omni2Sound  ·  语义、节拍与画外声</text>
+<text x="35" y="93" font-size="22" font-weight="400" fill="#465a64">输出始终是一条声音；训练数据构建和给新视频配音分别发生。</text>
+<text x="35" y="150" font-size="24" font-weight="700" fill="#1b6658">①  离线构建 SoundAtlas</text>
+<rect x="34" y="170" width="281" height="144" rx="13" fill="#fbf0dd" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="51" y="203" font-size="23" font-weight="700" fill="#8a5b26">音画打分</text>
+<text x="51" y="232" font-size="18" font-weight="400" fill="#182d3b">比较原视频和实录音轨。</text>
+<text x="51" y="256" font-size="18" font-weight="400" fill="#182d3b">高一致性保留画面线索，</text>
+<text x="51" y="280" font-size="18" font-weight="400" fill="#182d3b">中等只听，低一致性丢弃。</text>
+<rect x="360" y="170" width="282" height="144" rx="13" fill="#fbf0dd" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="377" y="203" font-size="23" font-weight="700" fill="#8a5b26">生成声音描述</text>
+<text x="377" y="232" font-size="18" font-weight="400" fill="#182d3b">高一致性先把画面写成文本。</text>
+<text x="377" y="256" font-size="18" font-weight="400" fill="#182d3b">Flash 听原音频，参考可选</text>
+<text x="377" y="280" font-size="18" font-weight="400" fill="#182d3b">画面提示；难例交给 Pro。</text>
+<rect x="688" y="170" width="278" height="144" rx="13" fill="#fbf0dd" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="705" y="203" font-size="23" font-weight="700" fill="#8a5b26">筛选训练样本</text>
+<text x="705" y="232" font-size="18" font-weight="400" fill="#182d3b">CLAP 检查文字与音轨，</text>
+<text x="705" y="256" font-size="18" font-weight="400" fill="#182d3b">有视觉提示时再核对三方。</text>
+<text x="705" y="280" font-size="18" font-weight="400" fill="#182d3b">产出约 47 万个三元组。</text>
+<path d="M315 240 H356" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M642 240 H684" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="35" y="380" font-size="24" font-weight="700" fill="#1b6658">②  给新样本配音</text>
+<rect x="34" y="402" width="441" height="99" rx="13" fill="#eaf4f8" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="51" y="435" font-size="23" font-weight="700" fill="#1d5771">可选文字</text>
+<text x="51" y="464" font-size="18" font-weight="400" fill="#182d3b">描述声源、环境，以及看不到的声音。</text>
+<rect x="526" y="402" width="440" height="99" rx="13" fill="#eaf4f8" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="543" y="435" font-size="23" font-weight="700" fill="#1d5771">可选视频</text>
+<text x="543" y="464" font-size="18" font-weight="400" fill="#182d3b">提供可见物体、动作与时间线索。</text>
+<rect x="34" y="557" width="441" height="127" rx="13" fill="#eaf4f8" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="51" y="590" font-size="23" font-weight="700" fill="#1d5771">语义通路 · 响什么</text>
+<text x="51" y="619" font-size="18" font-weight="400" fill="#182d3b">Flan-T5 文字 token 与 8 fps CLIP 视觉</text>
+<text x="51" y="643" font-size="18" font-weight="400" fill="#182d3b">特征按序列拼接；缺少哪一路就省略。</text>
+<rect x="526" y="557" width="440" height="127" rx="13" fill="#f1edf7" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="543" y="590" font-size="23" font-weight="700" fill="#68538a">时序通路 · 何时响</text>
+<text x="543" y="619" font-size="18" font-weight="400" fill="#182d3b">Synchformer 提取密集视觉时间特征。</text>
+<text x="543" y="643" font-size="18" font-weight="400" fill="#182d3b">有视频条件时向主干传递同步线索。</text>
+<path d="M220 501 V552" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M671 501 V524 H344 V552" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M800 501 V552" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="174" y="742" width="650" height="128" rx="13" fill="#e7f4ec" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="191" y="775" font-size="23" font-weight="700" fill="#1b6658">音频扩散 Transformer</text>
+<text x="191" y="804" font-size="18" font-weight="400" fill="#182d3b">交叉注意力接收语义条件，AdaLN 注入视觉时间特征。</text>
+<text x="191" y="828" font-size="18" font-weight="400" fill="#182d3b">从噪声逐步更新连续音频潜变量。</text>
+<path d="M257 684 V711 H348 V737" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M746 684 V711 H651 V737" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 870 V894" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="173" y="899" width="651" height="65" rx="13" fill="#e7f4ec" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="196" y="940" font-size="24" font-weight="700" fill="#1b6658">音频 VAE 解码器 → 16 kHz 单声道波形</text>
+<text x="35" y="1028" font-size="24" font-weight="700" fill="#1b6658">③  训练中逐步加入条件和例外</text>
+<rect x="34" y="1050" width="280" height="143" rx="13" fill="#fff" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="51" y="1083" font-size="23" font-weight="700" fill="#182d3b">S1 · 学会生成音频</text>
+<text x="51" y="1112" font-size="18" font-weight="400" fill="#182d3b">大量文字–音频对，</text>
+<text x="51" y="1136" font-size="18" font-weight="400" fill="#182d3b">学习从噪声还原音频潜变量。</text>
+<rect x="360" y="1050" width="282" height="143" rx="13" fill="#fff" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="377" y="1083" font-size="23" font-weight="700" fill="#182d3b">S2 · 交错训练三任务</text>
+<text x="377" y="1112" font-size="18" font-weight="400" fill="#182d3b">每个批次选一种输入，</text>
+<text x="377" y="1136" font-size="18" font-weight="400" fill="#182d3b">加入音画文对齐的三元组。</text>
+<rect x="688" y="1050" width="278" height="143" rx="13" fill="#fff" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="705" y="1083" font-size="23" font-weight="700" fill="#182d3b">S3 · 练习困难样本</text>
+<text x="705" y="1112" font-size="18" font-weight="400" fill="#182d3b">部分文字 token 丢弃；</text>
+<text x="705" y="1136" font-size="18" font-weight="400" fill="#182d3b">加入并描述画外声。</text>
+<path d="M315 1120 H356" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M642 1120 H684" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+</g></svg>

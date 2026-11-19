@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1030" width="960" height="1030" role="img" aria-labelledby="title desc"><title id="title">Modaliff：把不同模态排进一条去噪序列</title><desc id="desc">三种模态的原生特征经过投影按角色拼接，目标在共享网络中迭代更新，再由指定解码器生成；底部区分缺失配对与多条件训练。</desc>
+<defs><marker id="tip" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z" fill="#47736e"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#1c363a}.large{font-size:34px;font-weight:700}.section{font-size:24px;font-weight:700}.label{font-size:19px;font-weight:700}.body{font-size:17px}.small{font-size:15px;fill:#48616b}</style>
+<rect width="960" height="1030" rx="18" fill="#f9faf6"/>
+<text x="35" y="49" class="large">Modaliff · 同一个去噪器如何辨认任务</text>
+<text x="35" y="82" class="body">以图像＋声音生成文字为例　｜　形状为 token 数 × 每个 token 的维度</text>
+<path d="M36 104 H924" stroke="#d3dfd6" stroke-width="1"/>
+<text x="36" y="143" class="section">输入与目标的原生表示</text>
+<rect x="36" y="161" width="280" height="100" rx="12" fill="#e5f2ed" stroke="#a7c8b8" stroke-width="1.6"/>
+<text x="54" y="193" class="label">已知图像</text>
+<text x="54" y="222" class="body">CLIP 全局特征</text>
+<text x="54" y="247" class="body">1 × 768</text>
+<rect x="340" y="161" width="280" height="100" rx="12" fill="#e5f2ed" stroke="#a7c8b8" stroke-width="1.6"/>
+<text x="358" y="193" class="label">已知声音</text>
+<text x="358" y="222" class="body">CLAP，10 秒录音</text>
+<text x="358" y="247" class="body">1 × 512</text>
+<rect x="644" y="161" width="280" height="100" rx="12" fill="#f8f0d9" stroke="#d5c28f" stroke-width="1.6"/>
+<text x="662" y="193" class="label">待生成文字</text>
+<text x="662" y="222" class="body">初始高斯噪声</text>
+<text x="662" y="247" class="body">32 × 256</text>
+<path d="M176 261 V284 H472" stroke="#47736e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#tip)"/>
+<path d="M480 261 V306" stroke="#47736e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#tip)"/>
+<path d="M784 261 V284 H488" stroke="#47736e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#tip)"/>
+<rect x="110" y="310" width="740" height="101" rx="12" fill="#eaf1f7" stroke="#a9c2d5" stroke-width="1.6"/>
+<text x="128" y="342" class="label">按模态投影到 1024 维，拼成 34 个位置</text>
+<text x="128" y="371" class="body">1 个图像条件 ＋ 1 个声音条件 ＋ 32 个文字目标</text>
+<text x="128" y="396" class="body">每个位置附加角色、模态和扩散时刻；条件始终保持干净。</text>
+<path d="M480 411 V438" stroke="#47736e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#tip)"/>
+<rect x="110" y="441" width="740" height="121" rx="12" fill="#eaf1f7" stroke="#a9c2d5" stroke-width="1.6"/>
+<text x="128" y="473" class="label">共享扩散 Transformer · 24 层</text>
+<text x="128" y="502" class="body">条件查询仅在本段内计算；目标查询可读取条件。</text>
+<text x="128" y="527" class="body">角色位置编码保留段内顺序，逐 token AdaLN 调节各层运算。</text>
+<text x="128" y="552" class="body">输出文字段 → 投影回 32 × 256 → 用干净特征预测推进下一步。</text>
+<path d="M850 493 H909 V373 H854" stroke="#47736e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#tip)"/>
+<text x="860" y="462" class="small">迭代</text>
+<path d="M480 562 V591" stroke="#47736e" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#tip)"/>
+<rect x="110" y="594" width="740" height="91" rx="12" fill="#e5f2ed" stroke="#a7c8b8" stroke-width="1.6"/>
+<text x="128" y="626" class="label">选定目标解码器</text>
+<text x="128" y="655" class="body">本例为 Qwen3-1.7B → 文字；出图用 Stable unCLIP，出声用 AudioLDM-S。</text>
+<path d="M36 712 H924" stroke="#d3dfd6" stroke-width="1"/>
+<text x="36" y="751" class="section">训练怎样得到这些映射</text>
+<rect x="36" y="771" width="425" height="138" rx="12" fill="#fff" stroke="#ced9d5" stroke-width="1.6"/>
+<text x="54" y="803" class="label">有配对 / 缺配对</text>
+<text x="54" y="832" class="body">基础训练随机交换条件和目标。</text>
+<text x="54" y="857" class="body">缺少图声对时，用文字条件分支在同一</text>
+<text x="54" y="882" class="body">带噪目标上的预测教另一分支。</text>
+<rect x="482" y="771" width="442" height="138" rx="12" fill="#f8f0d9" stroke="#d5c28f" stroke-width="1.6"/>
+<text x="500" y="803" class="label">两个条件共同影响一个目标</text>
+<text x="500" y="832" class="body">采样时可加权合成单条件预测。另一条</text>
+<text x="500" y="857" class="body">路线用语言模型合写字幕：文字目标直接</text>
+<text x="500" y="882" class="body">监督，其他模态使用字幕教师并微调 LoRA。</text>
+<text x="36" y="956" class="body">输入模态固定的编码器和目标解码器承担细节转换；5.58 亿是可训练去噪器参数量。</text>
+<text x="36" y="995" class="small">教学示意　依据论文图 1、式 7–14 和 §4.1。</text>
+</svg>

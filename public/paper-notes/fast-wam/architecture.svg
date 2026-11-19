@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="1154" viewBox="0 0 920 1154" role="img" aria-labelledby="title desc"><title id="title">Fast-WAM 的联合训练和动作推理</title><desc id="desc">训练时以首帧和指令为条件，在未来视频和动作两个分支上预测速度。推理时视频专家只计算当前帧，动作专家利用缓存生成一段控制序列。</desc><defs><marker id="arrow" viewBox="0 0 10 10" markerWidth="7" markerHeight="7" refX="8" refY="5" orient="auto"><path d="M0,0 9,5 0,10z" fill="#526d7b"/></marker></defs><style>text{font-family:"Microsoft YaHei","Noto Sans SC",sans-serif;fill:#192c3d}.label{font-weight:700}.line{fill:none;stroke:#526d7b;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}</style><rect width="920" height="1154" rx="18" fill="#f9fbfc"/>
+<text x="34" y="58" font-size="36" class="label">同一个视频专家，训练与部署怎样分工？</text>
+<text x="35" y="97" font-size="22" class="">Fast-WAM  ·  观测首帧为两种预测提供共同条件</text>
+<text x="35" y="156" font-size="26" class="label">训练　从配对的机器人示范学习两种速度场</text>
+<rect x="33" y="181" width="258" height="109" rx="11" fill="#fff" stroke="#b8c8d0" stroke-width="1.5"/>
+<text x="48" y="213" font-size="22" class="label">任务语言</text>
+<text x="48" y="241" font-size="17" class="">T5 编码为语言特征</text>
+<text x="48" y="267" font-size="17" class="">各组都用交叉注意力读取</text>
+<rect x="331" y="181" width="258" height="109" rx="11" fill="#e8f4f2" stroke="#85b9b2" stroke-width="1.5"/>
+<text x="346" y="213" font-size="22" class="label">多相机当前观测</text>
+<text x="346" y="241" font-size="17" class="">拼接图像，经视频 VAE</text>
+<text x="346" y="267" font-size="17" class="">得到干净首帧 token</text>
+<rect x="629" y="181" width="258" height="109" rx="11" fill="#fbf3e5" stroke="#d4b888" stroke-width="1.5"/>
+<text x="644" y="213" font-size="22" class="label">示范中的未来与动作</text>
+<text x="644" y="241" font-size="17" class="">未来画面编码为 latent</text>
+<text x="644" y="267" font-size="17" class="">演示动作保留连续值</text>
+<path class="line" d="M460 291 V359" marker-end="url(#arrow)"/>
+<path class="line" d="M755 291 V315 H161 V359" marker-end="url(#arrow)"/>
+<path class="line" d="M755 315 V359" marker-end="url(#arrow)"/>
+<rect x="34" y="364" width="250" height="110" rx="11" fill="#fbf3e5" stroke="#d4b888" stroke-width="1.5"/>
+<text x="49" y="396" font-size="22" class="label">未来视频 token</text>
+<text x="49" y="424" font-size="17" class="">加噪后读首帧与视频组</text>
+<text x="49" y="450" font-size="17" class="">学习预测视频速度</text>
+<rect x="335" y="364" width="250" height="110" rx="11" fill="#e8f4f2" stroke="#85b9b2" stroke-width="1.5"/>
+<text x="350" y="396" font-size="22" class="label">干净首帧 token</text>
+<text x="350" y="424" font-size="17" class="">视频专家处理当前画面</text>
+<text x="350" y="450" font-size="17" class="">首帧组只读首帧组</text>
+<rect x="636" y="364" width="250" height="110" rx="11" fill="#edf0fa" stroke="#a4acd0" stroke-width="1.5"/>
+<text x="651" y="396" font-size="22" class="label">动作 token</text>
+<text x="651" y="424" font-size="17" class="">加噪后读首帧与动作组</text>
+<text x="651" y="450" font-size="17" class="">学习预测动作速度</text>
+<path class="line" d="M335 422 H287" marker-end="url(#arrow)"/>
+<path class="line" d="M585 422 H633" marker-end="url(#arrow)"/>
+<path class="line" d="M160 475 V547 H263" marker-end="url(#arrow)"/>
+<path class="line" d="M760 475 V547 H657" marker-end="url(#arrow)"/>
+<rect x="268" y="507" width="384" height="80" rx="11" fill="#fff" stroke="#b8c8d0" stroke-width="1.5"/>
+<text x="283" y="539" font-size="22" class="label">共同训练参数</text>
+<text x="283" y="567" font-size="17" class="">动作流匹配损失 + λ × 视频流匹配损失</text>
+<text x="38" y="627" font-size="26" class="label">部署　每次获取新观测后，重新计算以下流程</text>
+<rect x="40" y="661" width="384" height="88" rx="11" fill="#e8f4f2" stroke="#85b9b2" stroke-width="1.5"/>
+<text x="55" y="693" font-size="22" class="label">当前画面 → 首帧视觉 token</text>
+<text x="55" y="721" font-size="17" class="">多相机拼接，再由视频 VAE 编码。</text>
+<rect x="493" y="661" width="385" height="88" rx="11" fill="#fff" stroke="#b8c8d0" stroke-width="1.5"/>
+<text x="508" y="693" font-size="22" class="label">任务指令 → 语言上下文</text>
+<text x="508" y="721" font-size="17" class="">若配置本体状态，源码也可接入该条件。</text>
+<path class="line" d="M232 751 V776" marker-end="url(#arrow)"/>
+<rect x="40" y="779" width="384" height="93" rx="11" fill="#e8f4f2" stroke="#85b9b2" stroke-width="1.5"/>
+<text x="55" y="811" font-size="22" class="label">视频 DiT 前向一次</text>
+<text x="55" y="839" font-size="17" class="">提取当前场景表示，缓存各层的键和值。</text>
+<path class="line" d="M424 826 H488" marker-end="url(#arrow)"/>
+<path class="line" d="M686 750 V775" marker-end="url(#arrow)"/>
+<rect x="493" y="779" width="385" height="93" rx="11" fill="#edf0fa" stroke="#a4acd0" stroke-width="1.5"/>
+<text x="508" y="811" font-size="22" class="label">动作 DiT　迭代 10 步</text>
+<text x="508" y="839" font-size="17" class="">从动作噪声出发，各步复用视觉缓存。</text>
+<path class="line" d="M688 872 V905" marker-end="url(#arrow)"/>
+<rect x="493" y="912" width="385" height="89" rx="11" fill="#edf0fa" stroke="#a4acd0" stroke-width="1.5"/>
+<text x="508" y="944" font-size="22" class="label">输出接下来的 32 个动作</text>
+<text x="508" y="972" font-size="17" class="">把动作序列交给机器人控制系统。</text>
+<text x="43" y="932" font-size="21" class="label">省去的计算</text>
+<text x="43" y="965" font-size="18" class="">这一轮无需为未来画面分配噪声、</text>
+<text x="43" y="992" font-size="18" class="">迭代生成未来视频 latent 或解码图像。</text>
+<path d="M35 1041 H884" stroke="#bacbd1"/>
+<text x="38" y="1081" font-size="20" class="label">橙色为未来监督，绿色为当前视觉，蓝色为动作。</text>
+<text x="38" y="1118" font-size="17" class="">两条从首帧发出的箭头表示可读取的信息；未来视频和动作之间没有直接连边。</text>
+</svg>

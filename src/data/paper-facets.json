@@ -762,6 +762,11 @@
       "parts"
     ]
   },
+  "fast-wam-paper-notes": {
+    "topics": ["multimodal", "video"],
+    "methods": ["flow"],
+    "controls": []
+  },
   "ffmt-paper-notes": {
     "topics": [
       "dance",
@@ -1076,6 +1081,19 @@
     "methods": [],
     "controls": []
   },
+  "hand-labanotation-paper-notes": {
+    "topics": [
+      "representation",
+      "understanding",
+      "video"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "parts"
+    ]
+  },
   "hip-paper-notes": {
     "topics": [
       "gesture",
@@ -1272,6 +1290,19 @@
       "time",
       "space",
       "parts"
+    ]
+  },
+  "labanformer-paper-notes": {
+    "topics": [
+      "dance",
+      "understanding",
+      "representation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "time"
     ]
   },
   "lact-motion-paper-notes": {
@@ -1556,6 +1587,11 @@
       "interaction"
     ]
   },
+  "mjepa-paper-notes": {
+    "topics": ["multimodal", "understanding", "video"],
+    "methods": [],
+    "controls": []
+  },
   "mobius-paper-notes": {
     "topics": [
       "multimodal",
@@ -1599,6 +1635,11 @@
       "space",
       "parts"
     ]
+  },
+  "modaliff-paper-notes": {
+    "topics": ["multimodal", "video"],
+    "methods": ["tokens", "diffusion"],
+    "controls": []
   },
   "modularphase-paper-notes": {
     "topics": [
@@ -1981,6 +2022,11 @@
     ],
     "controls": []
   },
+  "munite-paper-notes": {
+    "topics": ["multimodal", "video"],
+    "methods": ["flow"],
+    "controls": []
+  },
   "ncp-paper-notes": {
     "topics": [
       "character",
@@ -2051,6 +2097,11 @@
       "language"
     ],
     "controls": []
+  },
+  "omni2sound-paper-notes": {
+    "topics": ["multimodal", "video"],
+    "methods": ["diffusion"],
+    "controls": ["time"]
   },
   "opendance-paper-notes": {
     "topics": [

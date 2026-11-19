@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1088" viewBox="0 0 960 1088" role="img" aria-labelledby="title desc" lang="zh-CN">
+<title id="title">Hand Labanotation：从多视角手部图像到可读的手部动作谱</title>
+<desc id="desc">上方展示如何从手部关键点建立二十个区域向量并生成训练标签。中间展示同一时刻多视角图像经主干和置信图两支，融合后由全局编码器预测每个区域的二十六类方向。下方解释如何把双手逐帧排成四十列的动作谱。</desc>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#183745}path{stroke-linejoin:round;stroke-linecap:round}.title{font-size:41px;font-weight:700}.sub{font-size:25px}.section{font-size:28px;font-weight:700}.head{font-size:23px;font-weight:700}.body{font-size:20px}.small{font-size:17px}.tag{font-size:17px;font-weight:700;fill:#376465}.label{font-size:16px;fill:#4c6270}.accent{fill:#166a63}.amber{fill:#835716}.line{stroke:#497779;stroke-width:2.4;fill:none}.arrow{stroke:#497779;stroke-width:2.4;fill:none;marker-end:url(#arrow)}</style>
+<defs><marker id="arrow" markerWidth="7" markerHeight="7" viewBox="0 0 10 10" refX="8" refY="5" orient="auto"><path d="M1,1 L8,5 L1,9" fill="none" stroke="#497779" stroke-width="1.6"/></marker></defs>
+<rect x="1" y="1" width="958" height="1086" rx="18" fill="#f5f8f8" stroke="#bdcdd0" stroke-width="1.5"/>
+<text x="34" y="56" class="title" text-anchor="start">Hand Labanotation</text>
+<text x="35" y="95" class="sub" text-anchor="start">多台相机看到同一只手，怎样合写一行手谱？</text>
+<rect x="22" y="120" width="916" height="258" rx="16" fill="#fffdf7" stroke="#dbcfac" stroke-width="1.5"/>
+<text x="44" y="161" class="section amber" text-anchor="start">训练标签如何得到</text>
+<rect x="44" y="183" width="380" height="111" rx="12" fill="#fff5dc" stroke="#e1cfa3" stroke-width="1.5"/>
+<text x="64" y="219" class="head" text-anchor="start">21 个关节点 → 20 个区域向量</text>
+<text x="64" y="252" class="body" text-anchor="start">以手腕为原点，沿手部结构取方向。</text>
+<text x="64" y="278" class="small" text-anchor="start">每个区域对应谱中的固定一列。</text>
+<path d="M 428 237 H 468" class="arrow"/>
+<rect x="476" y="183" width="439" height="111" rx="12" fill="#fff5dc" stroke="#e1cfa3" stroke-width="1.5"/>
+<text x="496" y="219" class="head" text-anchor="start">方向量化 → 每个区域一个符号</text>
+<text x="496" y="252" class="body" text-anchor="start">平面投影决定外形，高低决定纹理。</text>
+<text x="496" y="278" class="small" text-anchor="start">立方体的 8 个顶点、12 个棱中点、6 个面心。</text>
+<text x="44" y="330" class="body" text-anchor="start">HLD 标签由几何规则生成，关节信息残缺的帧由人工补标、核对。</text>
+<text x="44" y="358" class="small" text-anchor="start">训练时，分层交叉熵结合方向误判惩罚。误判到反方向的代价更大。</text>
+<rect x="22" y="397" width="916" height="435" rx="16" fill="#ffffff" stroke="#bdced0" stroke-width="1.5"/>
+<text x="44" y="439" class="section accent" text-anchor="start">MHLFormer 如何自动识谱</text>
+<text x="44" y="473" class="body" text-anchor="start">同一时刻，N 个视角各提供一张 RGB 手部图像</text>
+<path d="M 479 486 V 498 H 248 V 511" class="arrow"/>
+<path d="M 479 498 H 715 V 511" class="arrow"/>
+<rect x="44" y="519" width="409" height="116" rx="12" fill="#e9f3f5" stroke="#bdd5d9" stroke-width="1.5"/>
+<text x="64" y="554" class="head" text-anchor="start">图像主干与多视角编码器</text>
+<text x="64" y="585" class="body" text-anchor="start">CNN 将各视角图像变为特征序列。</text>
+<text x="64" y="613" class="small" text-anchor="start">视角内做自注意力，相邻视角做交叉注意力。</text>
+<rect x="506" y="519" width="409" height="116" rx="12" fill="#edf3fa" stroke="#c6d4e5" stroke-width="1.5"/>
+<text x="526" y="554" class="head" text-anchor="start">并行置信图分支</text>
+<text x="526" y="585" class="body" text-anchor="start">另一支 ResNet-50 估计各视角的置信图。</text>
+<text x="526" y="613" class="small" text-anchor="start">它为该视角的特征提供权重。</text>
+<path d="M 248 638 V 653 H 445" class="arrow"/>
+<path d="M 715 638 V 653 H 513" class="arrow"/>
+<text x="479" y="659" class="tag" text-anchor="middle">合并</text>
+<path d="M 479 669 V 678 H 248 V 687" class="arrow"/>
+<rect x="44" y="692" width="409" height="108" rx="12" fill="#e9f3f5" stroke="#bdd5d9" stroke-width="1.5"/>
+<text x="64" y="731" class="head" text-anchor="start">每个视角内加权</text>
+<text x="64" y="764" class="body" text-anchor="start">特征图与置信图做爱因斯坦积。</text>
+<path d="M 458 746 H 498" class="arrow"/>
+<rect x="506" y="692" width="409" height="108" rx="12" fill="#edf5f0" stroke="#bfd6c7" stroke-width="1.5"/>
+<text x="526" y="731" class="head" text-anchor="start">全局编码与分类</text>
+<text x="526" y="760" class="body" text-anchor="start">拼接各视角结果，用自注意力融合。</text>
+<text x="526" y="785" class="small" text-anchor="start">分类头为每个手部区域预测 26 类方向。</text>
+<path d="M 715 802 V 841" class="arrow"/>
+<rect x="22" y="851" width="916" height="186" rx="16" fill="#f3f8f6" stroke="#bdd2c9" stroke-width="1.5"/>
+<text x="44" y="894" class="section accent" text-anchor="start">一帧一行，时间向上</text>
+<text x="44" y="935" class="body" text-anchor="start">每只手 20 列，双手共 40 列。</text>
+<text x="44" y="966" class="body" text-anchor="start">跟着同一列向上读，就能看一个指节</text>
+<text x="44" y="994" class="body" text-anchor="start">的方向如何随时间变化。</text>
+<text x="551" y="898" class="tag" text-anchor="start">右手 20 列</text>
+<text x="736" y="898" class="tag" text-anchor="start">左手 20 列</text>
+<rect x="540" y="910" width="332" height="80" rx="0" fill="white" stroke="#a9bfb6" stroke-width="1.5"/>
+<path d="M618 911 h40 v78 h-40z" fill="#dceee5"/>
+<path d="M 578 910 v 80" stroke="#d4e1dc" stroke-width="1"/>
+<path d="M 618 910 v 80" stroke="#d4e1dc" stroke-width="1"/>
+<path d="M 658 910 v 80" stroke="#d4e1dc" stroke-width="1"/>
+<path d="M 706 910 v 80" stroke="#5c8874" stroke-width="2.2"/>
+<path d="M 748 910 v 80" stroke="#d4e1dc" stroke-width="1"/>
+<path d="M 790 910 v 80" stroke="#d4e1dc" stroke-width="1"/>
+<path d="M 830 910 v 80" stroke="#d4e1dc" stroke-width="1"/>
+<path d="M 540 936 h 332" stroke="#ccdcd4" stroke-width="1"/>
+<text x="525" y="931" class="label" text-anchor="end">帧 3</text>
+<text x="887" y="931" class="label" text-anchor="start">…</text>
+<path d="M 540 962 h 332" stroke="#ccdcd4" stroke-width="1"/>
+<text x="525" y="957" class="label" text-anchor="end">帧 2</text>
+<text x="887" y="957" class="label" text-anchor="start">…</text>
+<text x="525" y="983" class="label" text-anchor="end">帧 1</text>
+<text x="887" y="983" class="label" text-anchor="start">…</text>
+<path d="M 468 984 V 915" class="arrow"/>
+<path d="M629 978 h17 m-6 -5 6 5 -6 5" class="line"/>
+<path d="M629 952 h17 m-6 -5 6 5 -6 5" class="line"/>
+<path d="M630 930 l13 -13 m-8 0 h8 v8" class="line"/>
+<text x="541" y="1016" class="small" text-anchor="start">图中节选列，箭头示意该区域的方向变化。</text>
+<text x="32" y="1069" class="label" text-anchor="start">据原文图 2–6 与 §3.1–3.5 重绘。</text>
+</svg>

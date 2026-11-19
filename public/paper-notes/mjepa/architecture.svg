@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1161" viewBox="0 0 1000 1161" role="img" aria-labelledby="name desc" lang="zh-CN">
+<title id="name">MJEPA：同一编码器怎样从画面学习声音事件</title><desc id="desc">音频频谱和视频经各自投影，组成三种输入形式。在线分支看被遮挡的输入，EMA目标分支看全量输入。模态内在遮挡位置预测，模态间预测末层均值。最后用冻结主干做单模态或双模态分类。</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4L0 8Z" fill="#506b74"/></marker></defs>
+<rect width="1000" height="1161" fill="#f8faf8"/>
+<g font-family="Microsoft YaHei, Noto Sans CJK SC, Arial, sans-serif">
+<text x="35" y="57" font-size="36" font-weight="700" fill="#182d3b">MJEPA  ·  声音和画面怎样相互监督</text>
+<text x="36" y="94" font-size="22" font-weight="400" fill="#465a64">同一段视频产生三种输入；两类预测保留不同尺度的信息。</text>
+<text x="35" y="146" font-size="24" font-weight="700" fill="#1b6658">①  为同一段记录准备输入</text>
+<rect x="36" y="165" width="446" height="96" rx="13" fill="#eaf4f8" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="53" y="198" font-size="23" font-weight="700" fill="#1d5771">声音 A</text>
+<text x="53" y="227" font-size="18" font-weight="400" fill="#182d3b">10 秒音轨 → 对数梅尔频谱 → 二维卷积</text>
+<rect x="518" y="165" width="446" height="96" rx="13" fill="#eaf4f8" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="535" y="198" font-size="23" font-weight="700" fill="#1d5771">画面 V</text>
+<text x="535" y="227" font-size="18" font-weight="400" fill="#182d3b">视频 → 短时空块 → 三维卷积</text>
+<path d="M260 261 V276 H346 V291" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M740 261 V276 H654 V291" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="161" y="292" width="678" height="91" rx="13" fill="#fff" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="178" y="325" font-size="23" font-weight="700" fill="#182d3b">A  /  V  /  AV</text>
+<text x="178" y="354" font-size="18" font-weight="400" fill="#182d3b">加上各自的模态和位置编码；AV 拼接两路 token。</text>
+<text x="35" y="432" font-size="24" font-weight="700" fill="#1b6658">②  对同一段记录取两种视图</text>
+<path d="M500 383 V440 H288 V447" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 440 H730 V447" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="36" y="449" width="446" height="118" rx="13" fill="#eaf4f8" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="53" y="482" font-size="23" font-weight="700" fill="#1d5771">在线编码器 Eθ</text>
+<text x="53" y="511" font-size="18" font-weight="400" fill="#182d3b">只看可见块；共享同一套 ViT 权重。</text>
+<text x="53" y="535" font-size="18" font-weight="400" fill="#182d3b">输出中间层和末层 token。</text>
+<rect x="518" y="449" width="446" height="118" rx="13" fill="#f1edf7" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="535" y="482" font-size="23" font-weight="700" fill="#68538a">目标编码器 Ē</text>
+<text x="535" y="511" font-size="18" font-weight="400" fill="#182d3b">看完整输入；权重由在线主干 EMA 更新。</text>
+<text x="535" y="535" font-size="18" font-weight="400" fill="#182d3b">产生监督目标，停止梯度。</text>
+<text x="35" y="622" font-size="24" font-weight="700" fill="#1b6658">③  同一个片段，用两种方式做预测</text>
+<path d="M263 568 V586 H500 V630 H264 V637" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M742 568 V586 H500" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" stroke-dasharray="5 5"/>
+<path d="M500 630 H742 V637" fill="none" stroke="#506b74" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="36" y="639" width="448" height="170" rx="13" fill="#eaf4f8" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="53" y="672" font-size="23" font-weight="700" fill="#1d5771">三项模态内预测</text>
+<text x="53" y="701" font-size="18" font-weight="400" fill="#182d3b">A→A、V→V、AV→AV</text>
+<text x="53" y="725" font-size="18" font-weight="400" fill="#182d3b">多层可见特征＋可学习的缺块标记</text>
+<text x="53" y="749" font-size="18" font-weight="400" fill="#182d3b">经共享预测头，对准目标分支</text>
+<text x="53" y="773" font-size="18" font-weight="400" fill="#182d3b">在缺块位置的多层特征。</text>
+<rect x="517" y="639" width="447" height="170" rx="13" fill="#f1edf7" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="534" y="672" font-size="23" font-weight="700" fill="#68538a">六项跨模态预测</text>
+<text x="534" y="701" font-size="18" font-weight="400" fill="#182d3b">A↔V、A↔AV、V↔AV</text>
+<text x="534" y="725" font-size="18" font-weight="400" fill="#182d3b">对源和目标各自的末层 token 取均值。</text>
+<text x="534" y="749" font-size="18" font-weight="400" fill="#182d3b">源向量经相应方向的三层 MLP，</text>
+<text x="534" y="773" font-size="18" font-weight="400" fill="#182d3b">预测另一种输入的整段向量。</text>
+<path d="M261 809 V829 H386 V844" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M741 809 V829 H614 V844" fill="none" stroke="#506b74" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="164" y="846" width="672" height="88" rx="13" fill="#e7f4ec" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="181" y="879" font-size="23" font-weight="700" fill="#1b6658">联合训练</text>
+<text x="181" y="908" font-size="18" font-weight="400" fill="#182d3b">三项＋六项损失等权相加；纯视频数据只计算 V→V。</text>
+<text x="35" y="994" font-size="24" font-weight="700" fill="#1b6658">④  测试时只需当前可用的输入</text>
+<rect x="36" y="1015" width="928" height="108" rx="13" fill="#ecf4ef" stroke="#c4d0cf" stroke-width="1.5"/>
+<text x="57" y="1053" font-size="23" font-weight="700" fill="#1b6658">只有声音 → 音频投影 → 冻结的共享编码器 → 注意力分类头 → 事件得分</text>
+<text x="57" y="1090" font-size="19" font-weight="400" fill="#465a64">视频或音视频也可用于对应评估。分类阶段不要求把特征解码为波形。</text>
+</g></svg>
