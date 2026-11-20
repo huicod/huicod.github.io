@@ -2,7 +2,7 @@
 title: "[CVPR2026] LaMoGen：让语言模型编排动作谱，再把符号解码成三维动作"
 description: "用“返回前抬起左手”走通 LaMoGen。看 LabanLite 如何把部位、动作含义与秒数展开成 20 Hz 的符号条件，以及为什么写进计划的事件仍需要在生成动作上重新验证。"
 pubDate: "2026-11-19T17:05:00+08:00"
-updatedDate: "2026-11-19"
+updatedDate: "2026-11-20"
 badge: "Paper"
 tags: ["LaMoGen", "LabanLite", "Labanotation", "Text-to-Motion", "Symbolic Motion", "Motion Editing", "Paper-Notes"]
 ---
@@ -12,6 +12,8 @@ tags: ["LaMoGen", "LabanLite", "Labanotation", "Text-to-Motion", "Symbolic Motio
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
 [HTML 全文（含补充材料）][html] · [会议 PDF][pdf] · [正式补充 PDF][supp] · [作者演示][project] · [官方代码][repo]
+
+**同名论文导航。** 本页是 Jiang 等在 CVPR 2026 发表的 LabanLite 动作谱工作。Kim 等在 2025 年提出的另一篇 LaMoGen，通过扩散采样中的文本嵌入调节动作的力度、突缓与舒展程度。[阅读首尔大学的 LaMoGen](/blog/arxiv2025-lamogen/)
 
 <details class="paper-meta"><summary>论文信息与阅读范围 · CVPR 2026</summary>
 

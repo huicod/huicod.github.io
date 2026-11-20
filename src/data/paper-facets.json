@@ -1315,6 +1315,17 @@
     ],
     "controls": []
   },
+  "lamogen-effort-shape-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
   "lamogen-paper-notes": {
     "topics": [
       "generation",

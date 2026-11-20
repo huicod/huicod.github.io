@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="1180" viewBox="0 0 860 1180" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">LaMoGen 用两遍扩散采样调节动作表现力</title>
+  <desc id="desc">第一遍用原文字和固定初始噪声生成基线动作，从关节坐标得到四条时序曲线。以用户指定的系数缩放曲线得到目标。第二遍从同一噪声出发，在每个 DDIM 步预测干净动作，根据曲线偏差更新投影后的文本嵌入，再推进下一步；最后得到运动序列。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M2 1 L10 6 L2 11" fill="none" stroke="#477077" stroke-width="1.8"/></marker>
+    <marker id="amber" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M2 1 L10 6 L2 11" fill="none" stroke="#9d6529" stroke-width="1.8"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#173942}.title{font-size:32px;font-weight:700}.section{font-size:25px;font-weight:700}.head{font-size:22px;font-weight:700}.body{font-size:20px}.small{font-size:17px}.green{fill:#edf7f3;stroke:#a2c9bb}.gold{fill:#fff2d9;stroke:#dbbf8d}.box{fill:#fff;stroke:#bacccc}.flow{fill:none;stroke:#477077;stroke-width:2.4;stroke-linejoin:round;marker-end:url(#arrow)}.guide{fill:none;stroke:#9d6529;stroke-width:2.4;stroke-dasharray:7 5;stroke-linejoin:round;marker-end:url(#amber)}
+    </style>
+  </defs>
+  <rect width="860" height="1180" rx="18" fill="#f8faf7"/>
+  <text class="title" x="30" y="53">LaMoGen 如何让相同动作做得更有力？</text>
+  <text class="body" x="30" y="87">原文图 2 · 两遍共用初始噪声，风格引导发生在第二遍。</text>
+
+  <rect x="24" y="116" width="812" height="359" rx="16" fill="#f8fcfa" stroke="#b9d6cb"/>
+  <text class="section" x="45" y="156">第一遍：先量出原动作，再确定目标</text>
+  <rect class="green" x="44" y="178" width="367" height="103" rx="10"/>
+  <text class="head" x="61" y="212">动作文本 ＋ 初始噪声 z</text>
+  <text class="body" x="61" y="243">MotionDiffuse 以 DDIM 采样，</text>
+  <text class="body" x="61" y="268">得到仅由文本引导的基线动作。</text>
+  <rect class="gold" x="448" y="178" width="367" height="103" rx="10"/>
+  <text class="head" x="465" y="212">用户给出标签或四维系数 s</text>
+  <text class="body" x="465" y="243">例如只增强 Weight，</text>
+  <text class="body" x="465" y="268">取 s = (1.5, 1, 1, 1)。</text>
+  <path class="flow" d="M227 281 V311"/>
+  <rect class="green" x="44" y="314" width="367" height="133" rx="10"/>
+  <text class="head" x="61" y="348">从关节坐标计算四条基线曲线</text>
+  <text class="body" x="61" y="380">速度能量、加速度、加加速度、</text>
+  <text class="body" x="61" y="408">骨架包围盒体积；按帧记录。</text>
+  <text class="small" x="61" y="434">运动学差分使用高斯平滑。</text>
+  <path class="flow" d="M411 380 H445"/>
+  <path class="flow" d="M631 281 V311"/>
+  <rect class="gold" x="448" y="314" width="367" height="133" rx="10"/>
+  <text class="head" x="465" y="348">得到每一帧的四个目标值</text>
+  <text class="body" x="465" y="380">每个通道的基线曲线乘以对应系数。</text>
+  <text class="body" x="465" y="408">例：能量目标是该帧基线的 1.5 倍，</text>
+  <text class="small" x="465" y="434">其余三个通道的目标取原值。</text>
+
+  <rect x="24" y="502" width="812" height="482" rx="16" fill="#f4f7fa" stroke="#c3d1d9"/>
+  <text class="section" x="45" y="544">第二遍：在每个 DDIM 步里修正文本条件</text>
+  <text class="body" x="45" y="578">从同一 z 开始。动作模型的权重在整个过程中固定。</text>
+  <rect class="box" x="44" y="612" width="362" height="99" rx="10"/>
+  <text class="head" x="61" y="647">预测当前的干净动作</text>
+  <text class="body" x="61" y="680">用当前带噪动作、时间步和文本</text>
+  <text class="body" x="61" y="705">嵌入 e，估计去噪后的完整序列。</text>
+  <rect class="gold" x="448" y="612" width="367" height="99" rx="10"/>
+  <text class="head" x="465" y="647">比较预测曲线与目标曲线</text>
+  <text class="body" x="465" y="680">重算四个通道；偏差按第一遍的</text>
+  <text class="body" x="465" y="705">基线值加小常数归一化，再平方求和。</text>
+  <path class="flow" d="M406 662 H445"/>
+  <path class="guide" d="M728 447 V499 H810 V609"/>
+  <rect class="gold" x="448" y="755" width="367" height="106" rx="10"/>
+  <text class="head" x="465" y="791">沿损失梯度更新文本嵌入 e</text>
+  <text class="body" x="465" y="824">对投影后的嵌入做一次 Adam 更新，</text>
+  <text class="body" x="465" y="850">得到该步去噪所用的条件 e′。</text>
+  <path class="guide" d="M631 711 V752"/>
+  <rect class="box" x="44" y="755" width="362" height="106" rx="10"/>
+  <text class="head" x="61" y="791">带着更新后的条件前进一步</text>
+  <text class="body" x="61" y="824">使用 e′ 进行 DDIM 更新，得到</text>
+  <text class="body" x="61" y="850">下一时间步的带噪动作。</text>
+  <path class="flow" d="M448 807 H409"/>
+  <path class="flow" d="M72 755 V714"/>
+  <text class="small" x="90" y="740">按时间步重复</text>
+  <path class="flow" d="M225 861 V897"/>
+  <rect class="green" x="44" y="900" width="771" height="60" rx="10"/>
+  <text class="head" x="62" y="938">最后一步输出三维动作，按关节运动重新测量实际达到的幅度。</text>
+
+  <text class="section" x="32" y="1040">四条曲线各自测量什么？</text>
+  <text class="body" x="32" y="1081">Weight · 速度平方之和</text>
+  <text class="body" x="440" y="1081">Time · 加速度模之和</text>
+  <text class="body" x="32" y="1121">Flow · 加加速度模之和</text>
+  <text class="body" x="440" y="1121">Shape · 全身包围盒体积</text>
+  <text class="small" x="32" y="1160">据原文图 2、式 2–9 及附录表 4 绘制。实线为采样与数据流，虚线为目标与梯度。</text>
+</svg>
