@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1030" viewBox="0 0 900 1030" lang="zh-CN" role="img" aria-labelledby="title desc">
+  <title id="title">HESP 如何把一句“用右腿踢”变成动作？</title>
+  <desc id="desc">先用动捕学习带自适应高斯混合先验的连续动作表示和解码器。生成时，冻结的 CLIP 编码文本。去噪器融合当前时空潜变量、分层文本条件和跨模态原型记忆，预测扩散速度。DDIM 反复更新潜变量，最后解码为连续三维人体动作。</desc>
+  <defs>
+    <marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="#32655f" stroke-width="1.6"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#173b3c}
+      .title{font-size:32px;font-weight:700}.section{font-size:24px;font-weight:700}.head{font-size:21px;font-weight:700}.body{font-size:18px}.note{font-size:17px}
+      .arrow,.link,.loop{fill:none;stroke:#32655f;stroke-width:2.5;stroke-linejoin:round}.arrow,.loop{marker-end:url(#tip)}.loop{stroke-dasharray:7 5}
+      .card{fill:white;stroke:#a8c6bc;stroke-width:1.3}.warm{fill:#fffdf7;stroke:#d7b780;stroke-width:1.3}
+    </style>
+  </defs>
+  <rect width="900" height="1030" rx="18" fill="#fafbf8"/>
+  <text x="30" y="47" class="title">HESP 如何把一句“用右腿踢”变成动作？</text>
+  <text x="31" y="82" class="body">先学人体动作的连续表示，再用文本引导这个空间里的扩散生成。</text>
+
+  <rect x="18" y="106" width="864" height="262" rx="15" fill="#fff4df" stroke="#d7b780"/>
+  <text x="40" y="146" class="section">第一阶段　用动捕训练 AG-VAE</text>
+  <g>
+    <rect x="40" y="167" width="210" height="101" rx="10" class="warm"/>
+    <text x="57" y="201" class="head">真实动作与骨架</text>
+    <text x="57" y="233" class="body">各帧的关节姿态</text>
+    <rect x="276" y="167" width="267" height="101" rx="10" class="warm"/>
+    <text x="294" y="201" class="head">骨架与时间编码器</text>
+    <text x="294" y="233" class="body">得到连续的动作潜序列</text>
+    <rect x="570" y="167" width="287" height="101" rx="10" class="warm"/>
+    <text x="588" y="201" class="head">动作解码器</text>
+    <text x="588" y="233" class="body">从潜序列重建原始动作</text>
+    <path class="arrow" d="M250 218H272"/><path class="arrow" d="M543 218H566"/>
+  </g>
+  <text x="43" y="307" class="body">每个时刻在 10 个高斯分量上软分配，混合权重随骨架和时刻调整。</text>
+  <text x="43" y="338" class="body">训练同时优化动作重建、分量分配的 KL 和分量内连续分布的 KL。</text>
+
+  <rect x="18" y="386" width="864" height="585" rx="15" fill="#eef7f3" stroke="#a6c8bc"/>
+  <text x="40" y="427" class="section">第二阶段　学习文本条件去噪器，并用它生成动作</text>
+  <rect x="42" y="451" width="385" height="94" rx="10" class="card"/>
+  <text x="60" y="484" class="head">文本提示　“一个人用右腿踢”</text>
+  <text x="60" y="516" class="body">冻结的 CLIP 提供词级与句级特征</text>
+  <rect x="459" y="451" width="350" height="94" rx="10" class="card"/>
+  <text x="477" y="484" class="head">当前动作潜变量与扩散步</text>
+  <text x="477" y="516" class="body">从噪声开始，特征保留时间和关节轴</text>
+  <path class="link" d="M232 545V570H634V545"/>
+  <path class="arrow" d="M232 570V592"/><path class="arrow" d="M634 570V592"/>
+
+  <rect x="42" y="596" width="385" height="135" rx="10" class="card"/>
+  <text x="60" y="630" class="head">HCA　分层跨模态注意力</text>
+  <text x="60" y="662" class="body">句向量查询词，汇总提示里的动作细节</text>
+  <text x="60" y="692" class="body">各时刻的关节查询带时间信息的句特征</text>
+  <rect x="459" y="596" width="350" height="135" rx="10" class="card"/>
+  <text x="477" y="630" class="head">DCMM　跨模态记忆读取</text>
+  <text x="477" y="662" class="body">汇总运动与词特征，查询文本–动作原型</text>
+  <text x="477" y="692" class="body">按相似度加权读出，叠加到动作特征</text>
+  <path class="link" d="M232 731V747H634V731"/><path class="arrow" d="M433 747V764"/>
+
+  <rect x="42" y="768" width="767" height="83" rx="10" class="card"/>
+  <text x="60" y="799" class="head">特征门控与 SkipTransformer</text>
+  <text x="60" y="830" class="body">门控按词、按特征维融合运动和文本信息。去噪器预测当前扩散速度。</text>
+  <path class="loop" d="M809 809H843V502H813"/>
+  <path class="arrow" d="M425 851V876"/>
+  <rect x="42" y="880" width="767" height="66" rx="10" fill="#e1eff2" stroke="#9bb8bd"/>
+  <text x="60" y="921" class="head">DDIM 更新 50 步</text>
+  <path class="arrow" d="M254 913H289"/>
+  <text x="309" y="921" class="head">AG-VAE 解码器</text>
+  <path class="arrow" d="M496 913H531"/>
+  <text x="551" y="921" class="head">连续三维人体动作</text>
+  <text x="30" y="1006" class="note">按主文图 2、式 1–5 和补充材料算法 1 重绘。虚线表示采样时反复更新当前潜变量。</text>
+</svg>

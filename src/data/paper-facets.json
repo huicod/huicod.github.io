@@ -1109,6 +1109,16 @@
       "parts"
     ]
   },
+  "hesp-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
   "hip-paper-notes": {
     "topics": [
       "gesture",
