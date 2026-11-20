@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="998" viewBox="0 0 840 998" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">T2M-GPT 怎样从文字走到连续动作</title>
+  <desc id="desc">上半部是动作分词器训练，下半部是文本条件下的下一码训练与推理。区别在于训练可随机替换历史，推理只接收自己生成的编号。结束符不参与动作解码。</desc>
+  <defs>
+    <marker id="tip" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#346963"/></marker>
+    <style>
+      text { fill:#173738; font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif; }
+      .title { font-size:31px; font-weight:700;} .sub { font-size:18px; fill:#415b5b; }
+      .sec { font-size:23px; font-weight:700; } .head { font-size:20px; font-weight:700;}
+      .body {font-size:17px;} .small {font-size:16px; fill:#3d5658;}
+      .box {fill:#fff;stroke:#9ab5ac;stroke-width:1.4;}
+      .flow {fill:none;stroke:#346963;stroke-width:2.3;marker-end:url(#tip);}
+    </style>
+  </defs>
+  <rect width="840" height="998" rx="18" fill="#faf9f5"/>
+  <text x="30" y="44" class="title">一句话如何生成几秒钟的骨架动作？</text>
+  <text x="30" y="77" class="sub">T2M-GPT 的两阶段训练与生成路径</text>
+
+  <rect x="20" y="99" width="800" height="270" rx="15" fill="#eef5ed" stroke="#aac3a4"/>
+  <text x="43" y="138" class="sec">一　让离散编号能够还原连续动作</text>
+  <rect x="42" y="165" width="223" height="104" rx="9" class="box"/>
+  <text x="57" y="197" class="head">真实动作 → 编码器</text>
+  <text x="57" y="228" class="body">64 帧 × 263 维</text>
+  <text x="57" y="253" class="small">两次时间下采样</text>
+  <path d="M267 217 H295" class="flow"/>
+  <rect x="297" y="165" width="231" height="104" rx="9" class="box"/>
+  <text x="312" y="197" class="head">最近邻量化</text>
+  <text x="312" y="228" class="body">16 个向量 → 16 个编号</text>
+  <text x="312" y="253" class="small">码本含 512 个候选向量</text>
+  <path d="M530 217 H559" class="flow"/>
+  <rect x="561" y="165" width="233" height="104" rx="9" class="box"/>
+  <text x="576" y="197" class="head">查码本 → 解码器</text>
+  <text x="576" y="228" class="body">恢复 64 帧动作特征</text>
+  <text x="576" y="253" class="small">与原片段比较重建误差</text>
+  <text x="45" y="305" class="body">训练码本用指数移动平均更新原型，给长期闲置的条目重新分配特征。</text>
+  <text x="45" y="337" class="body">训练完固定这套映射，把动捕数据编码成监督下一阶段的目标序列。</text>
+
+  <rect x="20" y="387" width="800" height="322" rx="15" fill="#fff3df" stroke="#ddbe86"/>
+  <text x="43" y="428" class="sec">二　给定文字和历史编号，预测下一个编号</text>
+  <rect x="42" y="451" width="343" height="83" rx="9" class="box"/>
+  <text x="59" y="482" class="head">文字条件</text>
+  <text x="59" y="512" class="body">冻结 CLIP，将整句向量放到序列开头</text>
+  <rect x="404" y="451" width="390" height="83" rx="9" class="box"/>
+  <text x="421" y="482" class="head">动作前缀</text>
+  <text x="421" y="512" class="body">训练时按概率用随机编号替换历史位置</text>
+  <path d="M210 534 V550 H410 V570" class="flow"/>
+  <path d="M600 534 V550 H430 V570" class="flow"/>
+  <rect x="150" y="572" width="539" height="74" rx="9" class="box"/>
+  <text x="169" y="602" class="head">因果 Transformer</text>
+  <text x="169" y="631" class="body">对 512 个动作编号和一个结束符预测概率</text>
+  <text x="46" y="682" class="body">训练目标始终是真实下一码或结束符，随机替换只作用于模型看到的输入。</text>
+
+  <rect x="20" y="729" width="800" height="215" rx="15" fill="#eaf2f3" stroke="#a3bdc0"/>
+  <text x="43" y="769" class="sec">推理　从句子开始，把已生成的码送回模型</text>
+  <rect x="43" y="795" width="200" height="76" rx="9" class="box"/>
+  <text x="60" y="825" class="head">下一码预测</text>
+  <text x="60" y="852" class="small">有效编号加入历史</text>
+  <path d="M174 874 V888 H73 V873" class="flow"/>
+  <path d="M245 834 H282" class="flow"/>
+  <rect x="284" y="795" width="187" height="76" rx="9" class="box"/>
+  <text x="302" y="825" class="head">遇到结束符</text>
+  <text x="302" y="852" class="small">只保留动作编号</text>
+  <path d="M473 834 H510" class="flow"/>
+  <rect x="512" y="795" width="282" height="76" rx="9" class="box"/>
+  <text x="529" y="825" class="head">查码本并连续解码</text>
+  <text x="529" y="852" class="small">恢复动作特征和关节轨迹</text>
+  <text x="45" y="920" class="body">码长决定输出时长。默认设置下，16 个有效编号对应 64 帧。</text>
+  <text x="30" y="976" class="small">据 Zhang 等，CVPR 2023，图 2–3、正文 §3–4 与公开训练代码重绘。尺寸以 HumanML3D 为例。</text>
+</svg>

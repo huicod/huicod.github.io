@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 1010" role="img" aria-labelledby="title desc">
+  <title id="title">EnergyMoGen 怎样把“向前走”和“挥动双臂”合成一段动作</title>
+  <desc id="desc">先用骨架重建学习五个连续动作潜向量，用配对文本和加噪潜向量训练去噪器。推理时在同一噪声状态上分别组合概念的去噪预测、交叉注意力特征，以及完整句子的预测。三路加权得到一次更新，反复五十步后解码成人体动作。</desc>
+  <defs>
+    <marker id="tip" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0 0 L8 4 L0 8Z" fill="#375a63"/>
+    </marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",Arial,sans-serif;fill:#182e38}
+      .title{font-size:28px;font-weight:700}.section{font-size:21px;font-weight:700}
+      .head{font-size:18px;font-weight:700}.body{font-size:16px}.small{font-size:15px}
+      .flow{fill:none;stroke:#375a63;stroke-width:2;marker-end:url(#tip)}
+      .bus{fill:none;stroke:#66808a;stroke-width:2}
+    </style>
+  </defs>
+  <rect width="880" height="1010" rx="16" fill="#f9faf7"/>
+  <text x="31" y="45" class="title">EnergyMoGen 如何同时生成行走与挥手？</text>
+  <text x="32" y="78" class="body">每一步都让三个分支看同一份动作草稿，最后才把潜变量解码成骨架。</text>
+  <rect x="23" y="103" width="834" height="219" rx="14" fill="#fff4e4" stroke="#cfa46a"/>
+  <text x="44" y="139" class="section">训练　学习动作表示与文本条件去噪器</text>
+  <rect x="44" y="160" width="219" height="85" rx="8" fill="#fffcf7" stroke="#dfc7a3"/>
+  <text x="59" y="190" class="head">动作 VAE 编码器</text>
+  <text x="59" y="220" class="body">输入可变长骨架序列</text>
+  <path class="flow" d="M264 202H294"/>
+  <rect x="299" y="160" width="264" height="85" rx="8" fill="#fffcf7" stroke="#dfc7a3"/>
+  <text x="315" y="190" class="head">采样 5 × 256 连续潜变量</text>
+  <text x="315" y="220" class="body">由编码器预测均值与方差</text>
+  <path class="flow" d="M564 202H594"/>
+  <rect x="600" y="160" width="234" height="85" rx="8" fill="#fffcf7" stroke="#dfc7a3"/>
+  <text x="616" y="190" class="head">动作 VAE 解码器</text>
+  <text x="616" y="220" class="body">重建逐帧人体姿态</text>
+  <text x="47" y="280" class="body">在潜变量上加噪，再让 Transformer 根据扩散步与冻结的 CLIP 词特征预测噪声。</text>
+  <text x="47" y="305" class="small">动作潜向量表示整段序列，没有指定哪一个向量专管哪只手或哪一帧。</text>
+  <rect x="23" y="346" width="834" height="630" rx="14" fill="#edf4f1" stroke="#96b6ad"/>
+  <text x="44" y="383" class="section">生成　同一个去噪步内的三路计算</text>
+  <rect x="48" y="408" width="782" height="77" rx="8" fill="#fff" stroke="#a9c5bc"/>
+  <text x="65" y="438" class="head">当前潜变量 zₜ、扩散步 t、分开的概念提示及其合写句</text>
+  <text x="65" y="465" class="body">开始时是随机噪声。示例给出“向前走”“挥动双臂”和“向前走，同时挥动双臂”。</text>
+  <path class="bus" d="M440 485V505H171M440 505H705"/>
+  <path class="flow" d="M171 505V523"/><path class="flow" d="M440 505V523"/><path class="flow" d="M705 505V523"/>
+  <rect x="48" y="527" width="247" height="156" rx="8" fill="#fff" stroke="#a9c5bc"/>
+  <text x="63" y="558" class="head">潜变量层 · 各概念</text>
+  <text x="63" y="589" class="body">比较有条件与空条件的</text>
+  <text x="63" y="614" class="body">噪声预测，加权叠加</text>
+  <text x="63" y="639" class="body">各概念给出的方向。</text>
+  <text x="63" y="668" class="small">式 7–8　可抑制指定概念</text>
+  <rect x="314" y="527" width="248" height="156" rx="8" fill="#fff" stroke="#a9c5bc"/>
+  <text x="329" y="558" class="head">注意力层 · 各概念</text>
+  <text x="329" y="589" class="body">每层交叉注意力分别读取</text>
+  <text x="329" y="614" class="body">各提示，再加权混合输出</text>
+  <text x="329" y="639" class="body">特征，得到噪声预测。</text>
+  <text x="329" y="668" class="small">式 9　权重可正可负</text>
+  <rect x="581" y="527" width="249" height="156" rx="8" fill="#fff" stroke="#a9c5bc"/>
+  <text x="597" y="558" class="head">整句条件 · 概念关系</text>
+  <text x="597" y="589" class="body">直接以合写的句子为条件，</text>
+  <text x="597" y="614" class="body">估计同一潜变量的噪声。</text>
+  <text x="597" y="639" class="body">保留“同时”等关系词。</text>
+  <text x="597" y="668" class="small">单句任务也可独立评测</text>
+  <path class="bus" d="M171 683V701H705V683M440 683V701"/>
+  <path class="flow" d="M440 701V718"/>
+  <rect x="101" y="723" width="675" height="86" rx="8" fill="#dfeee8" stroke="#89ac9e"/>
+  <text x="119" y="756" class="head">协同能量融合 SEF　→　一次反向扩散更新</text>
+  <text x="119" y="787" class="body">按 0.1、0.7、0.2 合并三路噪声预测。权重取自 MTT 组合实验。</text>
+  <path class="flow" d="M777 766H840V446H833" stroke-dasharray="6 5"/>
+  <path class="flow" d="M439 809V837"/>
+  <rect x="101" y="842" width="675" height="73" rx="8" fill="#fff" stroke="#a9c5bc"/>
+  <text x="119" y="872" class="head">重复 50 步　→　VAE 解码　→　单人三维动作序列</text>
+  <text x="119" y="897" class="body">“走”与“挥手”是否同时出现，要在解码后的腿部与手部运动上检查。</text>
+  <text x="49" y="948" class="small">文字嵌入还可依据运动查询和正则项做小步更新（AGD，式 3–4）。</text>
+  <text x="31" y="997" class="small">据原文图 2、式 2–10、实现与消融设置重绘。</text>
+</svg>

@@ -741,6 +741,17 @@
     ],
     "controls": []
   },
+  "energymogen-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
   "event-t2m-paper-notes": {
     "topics": [
       "generation"
@@ -2882,6 +2893,17 @@
     "controls": [
       "parts"
     ]
+  },
+  "t2m-gpt-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "tokens",
+      "language"
+    ],
+    "controls": []
   },
   "t2m-mamba-paper-notes": {
     "topics": [
