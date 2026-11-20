@@ -1422,6 +1422,18 @@
     ],
     "controls": []
   },
+  "livegesture-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "streaming",
+      "parts"
+    ]
+  },
   "livelyspeaker-paper-notes": {
     "topics": [
       "gesture"

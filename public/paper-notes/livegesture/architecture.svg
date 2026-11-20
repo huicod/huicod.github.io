@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1138" viewBox="0 0 900 1138" lang="zh-CN" role="img" aria-labelledby="title desc">
+  <title id="title">LiveGesture：离线学习四区域动作码，在线逐步生成全身姿态</title>
+  <desc id="desc">上方为离线训练。双向编码器读取动捕，学习区域码本和因果解码器。下方为在线推理。音频特征和过去的区域动作码进入四个局部自回归专家。融合模块再次读取已到达的语音，并交换同一时刻的区域信息，生成四枚动作码。每个区域的解码器以因果方式恢复姿态，动作码作为下一步的历史。</desc>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#2d6e68" stroke-width="1.7"/></marker>
+    <marker id="gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#9a642d" stroke-width="1.7"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#183a43}
+      .title{font-size:32px;font-weight:700}.sub{font-size:19px}.section{font-size:25px;font-weight:700}.head{font-size:21px;font-weight:700}.small{font-size:17px}.label{font-size:19px;font-weight:600}
+      .off{fill:#fff4df;stroke:#d7b780}.on{fill:#eef8f4;stroke:#a6c8bc}.white{fill:#fff;stroke:#b9cdd0}.out{fill:#e6f1f5;stroke:#98b7c3}
+      .arrow{fill:none;stroke:#2d6e68;stroke-width:2.6;marker-end:url(#arr);stroke-linejoin:round}.feedback{fill:none;stroke:#9a642d;stroke-width:2.4;stroke-dasharray:7 5;marker-end:url(#gold);stroke-linejoin:round}
+    </style>
+  </defs>
+  <rect width="900" height="1138" rx="16" fill="#fafbf8"/>
+  <text x="30" y="49" class="title">LiveGesture 如何跟着已经到达的语音做手势？</text>
+  <text x="31" y="83" class="sub">动作词表在训练时建立。在线每推进一个时刻，四个身体区域各生成一个动作码。</text>
+
+  <rect x="23" y="111" width="854" height="260" rx="14" fill="#fffdf8" stroke="#ddcbb2"/>
+  <text x="42" y="149" class="section">离线训练 · 用动捕学会编解码，再训练自回归生成器</text>
+  <rect x="42" y="167" width="354" height="112" rx="9" class="off"/>
+  <text x="57" y="197" class="head">分区域训练动作自编码器</text>
+  <text x="57" y="226" class="sub">双向编码器读取完整动作片段；</text>
+  <text x="57" y="253" class="sub">因果解码器学习重建连续姿态。</text>
+  <path d="M396 221 H431" class="arrow"/>
+  <rect x="437" y="167" width="418" height="112" rx="9" class="off"/>
+  <text x="452" y="197" class="head">固定编解码器，学习区域码本与投影</text>
+  <text x="452" y="226" class="sub">每区 2,048 项；动作时间轴下采样 4 倍。</text>
+  <text x="452" y="253" class="sub">动捕由此变成四路对齐的训练目标。</text>
+  <text x="43" y="318" class="sub">先用真实历史训练四个区域专家，再固定专家，训练融合模块。</text>
+  <text x="43" y="346" class="sub">融合训练会遮掉低置信度动作码或某一区域的整段历史，以模拟历史预测出错。</text>
+
+  <rect x="23" y="391" width="854" height="672" rx="14" fill="#f8fcfb" stroke="#b7d1c8"/>
+  <text x="42" y="428" class="section">在线推理 · 时刻 t</text>
+  <rect x="52" y="451" width="395" height="114" rx="9" class="on"/>
+  <text x="69" y="482" class="head">截至 t 已到达的语音</text>
+  <text x="69" y="510" class="sub">log-mel → 仅左侧填充的因果卷积</text>
+  <text x="69" y="537" class="sub">→ 按动作码速率对齐；可附在线转录。</text>
+  <rect x="494" y="451" width="339" height="114" rx="9" class="off"/>
+  <text x="510" y="482" class="head">各区截至 t−1 的动作码</text>
+  <text x="510" y="510" class="sub">局部专家最多使用 32 个历史码。</text>
+  <text x="510" y="537" class="sub">每个专家读取自己区域的历史。</text>
+  <path d="M235 565 V590" class="arrow"/>
+  <path d="M662 565 V590" class="arrow"/>
+  <rect x="72" y="595" width="743" height="120" rx="10" class="white"/>
+  <text x="89" y="626" class="head">四个局部专家 xAR · 各自根据语音与历史预测区域状态</text>
+  <g class="label" text-anchor="middle">
+    <rect x="89" y="649" width="158" height="43" rx="6" class="on"/><text x="168" y="677">上半身</text>
+    <rect x="270" y="649" width="158" height="43" rx="6" class="on"/><text x="349" y="677">下半身</text>
+    <rect x="451" y="649" width="158" height="43" rx="6" class="on"/><text x="530" y="677">双手</text>
+    <rect x="632" y="649" width="158" height="43" rx="6" class="on"/><text x="711" y="677">面部</text>
+  </g>
+  <path d="M445 715 V741" class="arrow"/>
+  <path d="M52 525 H39 V802 H68" class="arrow"/>
+  <rect x="72" y="745" width="743" height="108" rx="10" class="on"/>
+  <text x="89" y="775" class="head">PILOR 对齐四组隐藏状态，xAR-Fuse 融合</text>
+  <text x="89" y="803" class="sub">同一时刻的区域间注意力 ＋ 只看历史的全局时间注意力（KV 缓存）</text>
+  <text x="89" y="829" class="sub">＋ 对已到达音频及可选转录的交叉注意力。</text>
+  <path d="M445 853 V881" class="arrow"/>
+  <rect x="72" y="886" width="743" height="65" rx="10" class="white"/>
+  <text x="89" y="925" class="head">四个区域分类头选出这一时刻的四枚 SVQ 动作码</text>
+  <path d="M815 916 H853 V510 H837" class="feedback"/>
+  <path d="M445 951 V977" class="arrow"/>
+  <rect x="72" y="981" width="743" height="63" rx="10" class="out"/>
+  <text x="90" y="1020" class="head">区域码本查表 → 因果解码 → 本次新增的连续 SMPL-X 全身姿态</text>
+  <text x="32" y="1095" class="small">据原文图 2、3 及附录 B 重绘。左侧实线将相同语音条件也送入融合层；右侧虚线为下一步回用的历史。</text>
+  <text x="32" y="1120" class="small">零前瞻指当前预测只读取当时已到达的信息；系统仍需接收当前音频块并计算。</text>
+</svg>
