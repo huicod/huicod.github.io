@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="1002" viewBox="0 0 920 1002" lang="zh-CN" role="img" aria-labelledby="title desc">
+<title id="title">DASKEL 的舞谱与骨架双向转换</title><desc id="desc">正向用运动学和约束校正生成关键姿态，逆向借助给定节拍从骨架位移恢复可行的舞谱。</desc><defs><marker id="green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="#176f68" stroke-width="1.6"/></marker><marker id="warm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="#9a571b" stroke-width="1.6"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}</style>
+<rect x="0" y="0" width="920" height="1002" rx="13" fill="#fbfbf7" stroke="none"/>
+<text x="30" y="50" fill="#183b44" font-size="32" font-weight="700">DASKEL 如何在舞谱与骨架之间双向转换？</text>
+<text x="32" y="83" fill="#183b44" font-size="20" font-weight="400">两条路径共用身体部位、相对运动与拍长之间的对应关系。</text>
+<rect x="25" y="108" width="428" height="680" rx="13" fill="#fff" stroke="#bbcec7"/>
+<rect x="467" y="108" width="428" height="680" rx="13" fill="#fff" stroke="#bbcec7"/>
+<text x="45" y="149" fill="#176f68" font-size="25" font-weight="700">正向 · Laban2Skel</text>
+<text x="487" y="149" fill="#176f68" font-size="25" font-weight="700">逆向 · Skel2Laban</text>
+<rect x="42" y="171" width="394" height="108" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="59" y="202" fill="#176f68" font-size="22" font-weight="700">舞谱与参考骨架</text><text x="59" y="232" fill="#183b44" font-size="19" font-weight="400">输入身体部位、方向或旋转、拍长。</text><text x="59" y="258" fill="#183b44" font-size="19" font-weight="400">词表含 27 种位移和 16 种旋转。</text>
+<path d="M240 279 L240 312" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<rect x="42" y="316" width="394" height="108" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="59" y="347" fill="#176f68" font-size="22" font-weight="700">由相对动作求目标</text><text x="59" y="377" fill="#183b44" font-size="19" font-weight="400">用正向运动学得到当前关节位置，</text><text x="59" y="403" fill="#183b44" font-size="19" font-weight="400">结合下肢支撑与重心确定目标。</text>
+<path d="M240 424 L240 456" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<rect x="42" y="460" width="394" height="137" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="59" y="491" fill="#176f68" font-size="22" font-weight="700">解出每拍的关节姿态</text><text x="59" y="521" fill="#183b44" font-size="19" font-weight="400">先用 FABRIK 做逆运动学。</text><text x="59" y="547" fill="#183b44" font-size="19" font-weight="400">遇到不可达或多解时，迭代修正</text><text x="59" y="573" fill="#183b44" font-size="19" font-weight="400">骨长和关节弯曲约束。</text>
+<path d="M240 597 L240 631" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<rect x="42" y="635" width="394" height="111" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="59" y="666" fill="#176f68" font-size="22" font-weight="700">在关键帧之间补全动作</text><text x="59" y="696" fill="#183b44" font-size="19" font-weight="400">在逐拍关键姿态间插值，</text><text x="59" y="722" fill="#183b44" font-size="19" font-weight="400">其中关节旋转使用四元数插值。</text>
+<rect x="484" y="171" width="394" height="108" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="501" y="202" fill="#176f68" font-size="22" font-weight="700">骨架序列与已知节拍</text><text x="501" y="232" fill="#183b44" font-size="19" font-weight="400">输入 BVH 动作及舞谱节拍先验。</text><text x="501" y="258" fill="#183b44" font-size="19" font-weight="400">每帧给定骨架层级上的姿态。</text>
+<path d="M682 279 L682 312" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<rect x="484" y="316" width="394" height="108" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="501" y="347" fill="#176f68" font-size="22" font-weight="700">按拍抽取相邻关键姿态</text><text x="501" y="377" fill="#183b44" font-size="19" font-weight="400">把相邻姿态换算到关节空间，</text><text x="501" y="403" fill="#183b44" font-size="19" font-weight="400">计算位移幅度与运动向量。</text>
+<path d="M682 424 L682 456" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<rect x="484" y="460" width="394" height="137" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="501" y="491" fill="#176f68" font-size="22" font-weight="700">确定主导部位与相对动作</text><text x="501" y="521" fill="#183b44" font-size="19" font-weight="400">考虑活动幅度、远近端优先级与</text><text x="501" y="547" fill="#183b44" font-size="19" font-weight="400">相邻关节运动向量的夹角，</text><text x="501" y="573" fill="#183b44" font-size="19" font-weight="400">再给动作分配离散符号。</text>
+<path d="M682 597 L682 631" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<rect x="484" y="635" width="394" height="111" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="501" y="666" fill="#176f68" font-size="22" font-weight="700">输出可编辑的数字谱</text><text x="501" y="696" fill="#183b44" font-size="19" font-weight="400">按部位与时值排列动作符号，</text><text x="501" y="722" fill="#183b44" font-size="19" font-weight="400">将结果渲染成舞谱。</text>
+<rect x="25" y="811" width="870" height="126" rx="13" fill="#fff3dc" stroke="#d5b383"/>
+<text x="44" y="846" fill="#9a571b" font-size="22" font-weight="700">舞谱记录的方向，为何还需要骨架求解？</text>
+<text x="44" y="881" fill="#183b44" font-size="18" font-weight="400">图 7 的最后一步要求左脚移到右脚的左后方。右脚已换过位置，目标的位置也随之改变。</text>
+<text x="44" y="910" fill="#183b44" font-size="18" font-weight="400">反过来看同一个骨架动作，有时可以用不同符号解释，逆向选择的是一种可行记谱。</text>
+<text x="32" y="977" fill="#183b44" font-size="17" font-weight="400">据论文图 2–4、7–8 及第 4 节重绘。</text>
+</svg>

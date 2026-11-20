@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="970" viewBox="0 0 920 970" lang="zh-CN" role="img" aria-labelledby="title desc">
+<title id="title">LabanLab 的舞谱翻译与动作预览</title><desc id="desc">谱面转结构化事件，Qwen-Max 结合译例生成多轨时间线，STMC 合成动作。</desc><defs><marker id="green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="#176f68" stroke-width="1.6"/></marker><marker id="warm" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="#9a571b" stroke-width="1.6"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif}</style>
+<rect x="0" y="0" width="920" height="970" rx="13" fill="#fbfbf7" stroke="none"/>
+<text x="30" y="50" fill="#183b44" font-size="32" font-weight="700">LabanLab 如何把一张舞谱变成可预览的动作？</text>
+<text x="32" y="83" fill="#183b44" font-size="20" font-weight="400">舞者编辑符号，语言模型翻译动作意图，扩散模型生成连续姿态。</text>
+<rect x="32" y="114" width="396" height="112" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="49" y="145" fill="#176f68" font-size="22" font-weight="700">编舞者在网页上排谱</text><text x="49" y="175" fill="#183b44" font-size="19" font-weight="400">选择拍号和速度，拖入方向或旋转符号。</text><text x="49" y="201" fill="#183b44" font-size="19" font-weight="400">列决定身体部位，符号的长度决定时值。</text>
+<rect x="482" y="114" width="406" height="112" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="499" y="145" fill="#176f68" font-size="22" font-weight="700">规则提取逐事件的字段</text><text x="499" y="175" fill="#183b44" font-size="19" font-weight="400">层位与方向，或旋向与角度；</text><text x="499" y="201" fill="#183b44" font-size="19" font-weight="400">起止时刻和身体部位来自谱面。</text>
+<path d="M428 170 L478 170" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<path d="M684 226 L684 266" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<rect x="32" y="268" width="396" height="115" rx="13" fill="#fff3dc" stroke="#d5b383"/><text x="49" y="299" fill="#9a571b" font-size="22" font-weight="700">翻译参考</text><text x="49" y="329" fill="#183b44" font-size="19" font-weight="400">检索“记谱文字—自然语言”配对示例，</text><text x="49" y="355" fill="#183b44" font-size="19" font-weight="400">为当前段落提供译例。</text>
+<rect x="482" y="268" width="406" height="115" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="499" y="299" fill="#176f68" font-size="22" font-weight="700">Qwen-Max 按上下文翻译</text><text x="499" y="329" fill="#183b44" font-size="19" font-weight="400">参考前后动作和各部位的配合，</text><text x="499" y="355" fill="#183b44" font-size="19" font-weight="400">把独立符号整理成带时间的自然语言。</text>
+<path d="M428 325 L478 325" fill="none" stroke="#9a571b" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#warm)" stroke-dasharray="7 5"/>
+<path d="M684 383 L684 417" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<rect x="32" y="420" width="856" height="236" rx="13" fill="#fff" stroke="#b9cfc7"/>
+<text x="50" y="456" fill="#176f68" font-size="24" font-weight="700">多轨时间线</text>
+<text x="50" y="488" fill="#183b44" font-size="19" font-weight="400">每条指令包含动作描述、开始与结束时间、身体区域。下方以图 6 的腿部轨为例。</text>
+<text x="52" y="541" fill="#183b44" font-size="18" font-weight="400">谱面逐拍标出的支撑侧</text>
+<text x="52" y="595" fill="#183b44" font-size="18" font-weight="400">翻译后的腿部条件</text>
+<rect x="320" y="560" width="496" height="50" rx="5" fill="#def2e9" stroke="#a0c8b8"/>
+<text x="455" y="592" fill="#176f68" font-size="20" font-weight="700">向前走四步 · legs</text>
+<text x="50" y="636" fill="#183b44" font-size="19" font-weight="400">其他可用轨道为脊柱、头、左臂、右臂；同一时段可安排多个部位。</text>
+<rect x="320" y="508" width="120" height="42" rx="5" fill="#ecf2f4" stroke="#cadee1"/>
+<text x="334" y="536" fill="#183b44" font-size="17" font-weight="400">0–1 秒 · 右</text>
+<rect x="444" y="508" width="120" height="42" rx="5" fill="#ecf2f4" stroke="#cadee1"/>
+<text x="458" y="536" fill="#183b44" font-size="17" font-weight="400">1–2 秒 · 左</text>
+<rect x="568" y="508" width="120" height="42" rx="5" fill="#ecf2f4" stroke="#cadee1"/>
+<text x="582" y="536" fill="#183b44" font-size="17" font-weight="400">2–3 秒 · 右</text>
+<rect x="692" y="508" width="120" height="42" rx="5" fill="#ecf2f4" stroke="#cadee1"/>
+<text x="706" y="536" fill="#183b44" font-size="17" font-weight="400">3–4 秒 · 左</text>
+<path d="M460 656 L460 684" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<rect x="32" y="688" width="856" height="92" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="49" y="719" fill="#176f68" font-size="22" font-weight="700">STMC 生成全身动作</text><text x="49" y="749" fill="#183b44" font-size="19" font-weight="400">分别对文本条件去噪，再按对应的时段和身体区域组合各路预测。</text>
+<path d="M460 780 L460 808" fill="none" stroke="#176f68" stroke-width="2.5" stroke-linejoin="round" marker-end="url(#green)"/>
+<rect x="32" y="812" width="856" height="92" rx="13" fill="#f0f8f5" stroke="#aaccc1"/><text x="49" y="843" fill="#176f68" font-size="22" font-weight="700">在网页预览，回到谱面修改</text><text x="49" y="873" fill="#183b44" font-size="19" font-weight="400">查看三维动画后可调整符号并再次生成。谱面可保存为 JSON，再导入编辑。</text>
+<text x="32" y="946" fill="#183b44" font-size="17" font-weight="400">据论文图 1、4、6 及第 3 节重绘；虚线表示译例输入。</text>
+</svg>

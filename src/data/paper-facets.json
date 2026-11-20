@@ -393,6 +393,21 @@
       "streaming"
     ]
   },
+  "daskel-paper-notes": {
+    "topics": [
+      "dance",
+      "representation",
+      "character"
+    ],
+    "methods": [
+      "physics"
+    ],
+    "controls": [
+      "time",
+      "parts",
+      "space"
+    ]
+  },
   "decoupling-contact-paper-notes": {
     "topics": [
       "editing"
@@ -1303,6 +1318,20 @@
     ],
     "controls": [
       "time"
+    ]
+  },
+  "labanlab-paper-notes": {
+    "topics": [
+      "dance",
+      "editing"
+    ],
+    "methods": [
+      "language",
+      "diffusion"
+    ],
+    "controls": [
+      "time",
+      "parts"
     ]
   },
   "lact-motion-paper-notes": {
