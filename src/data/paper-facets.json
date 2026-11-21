@@ -181,6 +181,14 @@
     ],
     "controls": []
   },
+  "case-paper-notes": {
+    "topics": [
+      "gesture",
+      "representation"
+    ],
+    "methods": [],
+    "controls": []
+  },
   "categorical-codebook-matching-paper-notes": {
     "topics": [
       "character",
@@ -249,6 +257,16 @@
       "style",
       "time"
     ]
+  },
+  "contextual-gesture-paper-notes": {
+    "topics": [
+      "gesture",
+      "video"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
   },
   "control-operators-paper-notes": {
     "topics": [
@@ -1897,6 +1915,17 @@
     ],
     "controls": []
   },
+  "motionbeat-paper-notes": {
+    "topics": [
+      "dance",
+      "understanding"
+    ],
+    "methods": [
+      "phase-frequency",
+      "retrieval"
+    ],
+    "controls": []
+  },
   "motionbind-paper-notes": {
     "topics": [
       "multimodal",
@@ -2614,6 +2643,18 @@
     "controls": [
       "streaming"
     ]
+  },
+  "roboperform-paper-notes": {
+    "topics": [
+      "gesture",
+      "dance",
+      "character"
+    ],
+    "methods": [
+      "diffusion",
+      "physics"
+    ],
+    "controls": []
   },
   "rsmt-paper-notes": {
     "topics": [

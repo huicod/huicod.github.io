@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1020" viewBox="0 0 900 1020" role="img" aria-labelledby="title desc">
+  <title id="title">CASE 如何让三维嘴唇监督语音编码器</title>
+  <desc id="desc">上部以五帧同步韩语及嘴部网格构成对比学习样本。下部将训练得到的纯音频分支与生成器原有的语音表示融合，并与人物模板共同驱动三维面部网格。色块分出两阶段。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1 9 5 0 9Z" fill="#356278"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#173948}
+      .title{font-size:29px;font-weight:bold}.section{font-size:22px;font-weight:bold}.name{font-size:19px;font-weight:bold}.copy{font-size:17px}.minor{font-size:15px;fill:#3b5963}
+      .card{fill:#fff;stroke:#9fb6bb;stroke-width:1.5}.arrow{fill:none;stroke:#356278;stroke-width:2.2;stroke-linejoin:round;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="900" height="1020" rx="16" fill="#fbfcfa"/>
+  <text x="36" y="48" class="title">CASE 的两次学习：先学唇形，再接入动画模型</text>
+  <text x="37" y="80" class="minor">同一条短语音，训练时与真实嘴部配对，生成时为已有语音特征补充局部发音线索。</text>
+  <rect x="25" y="106" width="850" height="399" rx="16" fill="#edf5f1" stroke="#aac6b6"/>
+  <text x="47" y="144" class="section">一　适配语音分支　·　同步韩语与三维嘴部片段</text>
+  <rect x="48" y="168" width="380" height="70" rx="10" class="card"/>
+  <text x="65" y="195" class="name">五帧局部语音</text><text x="65" y="220" class="copy">每帧对应一块 20 × 128 的滤波器组特征</text>
+  <rect x="473" y="168" width="379" height="70" rx="10" class="card"/>
+  <text x="490" y="195" class="name">同步的五帧嘴部网格</text><text x="490" y="220" class="copy">每帧嘴部 4,410 个顶点，采样率 30 fps</text>
+  <path d="M238 238V260" class="arrow"/><path d="M663 238V260" class="arrow"/>
+  <rect x="48" y="265" width="380" height="91" rx="10" class="card"/>
+  <text x="65" y="292" class="name">AV-SE 语音塔 → 语音投影头</text>
+  <text x="65" y="318" class="copy">更新末个 Transformer 块与输出归一化</text><text x="65" y="341" class="minor">其余语音层冻结；投影头可训练</text>
+  <rect x="473" y="265" width="379" height="91" rx="10" class="card"/>
+  <text x="490" y="292" class="name">唇部 VQ-VAE → 唇部投影头</text>
+  <text x="490" y="318" class="copy">取量化前的 1,024 维连续特征</text><text x="490" y="341" class="minor">唇部编码器冻结；投影头可训练</text>
+  <path d="M238 356V381" class="arrow"/><path d="M663 356V381" class="arrow"/>
+  <rect x="48" y="385" width="804" height="93" rx="10" fill="#d9ede4" stroke="#8cb8a3"/>
+  <text x="67" y="415" class="name">两侧各得一个 512 维片段向量</text>
+  <text x="67" y="442" class="copy">按发声掩码平均并归一化，双向 InfoNCE 在批内寻找同步片段。</text>
+  <text x="67" y="465" class="minor">五帧约 167 毫秒，训练样本至少三帧有声。几何监督到此结束。</text>
+  <rect x="25" y="530" width="850" height="465" rx="16" fill="#eff3f8" stroke="#aabfd0"/>
+  <text x="47" y="568" class="section">二　接入动画模型　·　新语音与人物面部模板</text>
+  <text x="49" y="599" class="minor">左、右两个冻结的语音编码器读取同一段音频；人物模板保留基线自己的通路。</text>
+  <rect x="48" y="620" width="380" height="82" rx="10" class="card"/>
+  <text x="65" y="650" class="name">基线原有语音编码器</text>
+  <text x="65" y="678" class="copy">wav2vec 2.0、XLSR-53 或 WavLM</text>
+  <rect x="473" y="620" width="379" height="82" rx="10" class="card"/>
+  <text x="490" y="650" class="name">适配后的 CASE 纯音频分支</text>
+  <text x="490" y="678" class="copy">每五帧一个 512 维向量，对齐主时间轴</text>
+  <path d="M238 702V740" class="arrow"/><path d="M663 702V740" class="arrow"/>
+  <text x="250" y="728" class="minor">Q 及残差</text><text x="675" y="728" class="minor">K、V</text>
+  <rect x="48" y="745" width="804" height="74" rx="10" fill="#e0ebf4" stroke="#91b1c8"/>
+  <text x="66" y="774" class="name">四头交叉注意力 + 残差相加</text>
+  <text x="66" y="800" class="copy">训练融合层。输出投影从零开始，初始融合特征与主分支完全相同。</text>
+  <path d="M240 819V846" class="arrow"/>
+  <rect x="48" y="850" width="409" height="78" rx="10" class="card"/>
+  <text x="65" y="880" class="name">原基线的动作解码器</text><text x="65" y="906" class="copy">沿用网络结构与训练目标</text>
+  <rect x="560" y="850" width="292" height="78" rx="10" class="card"/>
+  <text x="578" y="880" class="name">人物模板</text><text x="578" y="906" class="copy">经基线的模板条件通路</text>
+  <path d="M560 890H463" class="arrow"/>
+  <path d="M240 928V948" class="arrow"/>
+  <text x="66" y="975" class="name">输出　逐帧的三维面部网格，包括可比较的嘴唇顶点。</text>
+</svg>

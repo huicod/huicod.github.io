@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 1184" width="860" height="1184" role="img" aria-labelledby="t d">
+<title id="t">RoboPerform 的音频动作对齐、教师蒸馏和执行闭环</title><desc id="d">通过有动作配对的音频学习适配器，使用特权参考轨迹学教师，再用学生生成 G1 关节目标。</desc>
+<defs><marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4" viewBox="0 0 9 8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#3a5864"/></marker><marker id="gold" markerWidth="9" markerHeight="9" refX="7" refY="4" viewBox="0 0 9 8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#98632c"/></marker><style>text{font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;fill:#213843}.title{font-size:29px;font-weight:700}.intro{font-size:17px;fill:#465f6b}.head{font-size:23px;font-weight:700}.name{font-size:19px;font-weight:700}.body{font-size:15px}.tiny{font-size:14px;fill:#46616f}.edge,.signal{fill:none;stroke:#3a5864;stroke-width:2;stroke-linejoin:round;marker-end:url(#arr)}.signal{stroke-dasharray:6 5;stroke:#98632c;marker-end:url(#gold)}.white,.sun{fill:#fff;stroke:#acb8bc;stroke-width:1.2}.sun{fill:#fff8ea;stroke:#ccb68d}</style></defs>
+<rect width="860" height="1184" rx="16" fill="#fbfcf9"/>
+<text x="26" y="45" class="title" text-anchor="start">RoboPerform  ·  声音怎样变成 G1 的关节目标？</text>
+<text x="28" y="77" class="intro" text-anchor="start">实线传递特征、状态或关节目标。虚线只在训练时提供监督。</text>
+<rect x="18" y="103" width="824" height="314" rx="15" fill="#eff5f3" stroke="#aac5ba" stroke-width="1.3"/>
+<text x="39" y="140" class="head" text-anchor="start">学习声音与动作的对应关系</text>
+<rect x="40" y="165" width="226" height="102" rx="9" class="white"/>
+<text x="54" y="194" class="name" text-anchor="start">两类声音输入</text>
+<text x="54" y="218" class="body" text-anchor="start">音乐 · FineDance 特征</text>
+<text x="54" y="240" class="body" text-anchor="start">语音 · EMAGE 时序卷积</text>
+<rect x="321" y="165" width="226" height="102" rx="9" class="white"/>
+<text x="335" y="194" class="name" text-anchor="start">时序适配器</text>
+<text x="335" y="218" class="body" text-anchor="start">六层 Transformer</text>
+<text x="335" y="240" class="body" text-anchor="start">时间注意力聚合声音线索</text>
+<rect x="599" y="165" width="220" height="102" rx="9" class="white"/>
+<text x="613" y="194" class="name" text-anchor="start">音频风格序列</text>
+<text x="613" y="218" class="body" text-anchor="start">与该段动作对齐</text>
+<text x="613" y="240" class="body" text-anchor="start">随拍点或话语韵律变化</text>
+<path d="M266 216H316" class="edge"/>
+<path d="M547 216H594" class="edge"/>
+<rect x="40" y="308" width="226" height="80" rx="9" class="white"/>
+<text x="54" y="337" class="name" text-anchor="start">同段真实动作</text>
+<text x="54" y="361" class="body" text-anchor="start">提供配对时间片段</text>
+<rect x="321" y="308" width="226" height="80" rx="9" class="white"/>
+<text x="335" y="337" class="name" text-anchor="start">预训练动作 VAE</text>
+<text x="335" y="361" class="body" text-anchor="start">提取动作潜表示</text>
+<rect x="599" y="308" width="220" height="80" rx="9" class="sun"/>
+<text x="613" y="337" class="name" text-anchor="start">InfoNCE 对齐</text>
+<text x="613" y="361" class="body" text-anchor="start">同段为正，批内错配为负</text>
+<path d="M266 347H316" class="edge"/>
+<path d="M547 347H594" class="edge"/>
+<path d="M709 267V302" class="edge"/>
+<path d="M599 367H570V288H438V272" class="signal"/>
+<rect x="18" y="439" width="824" height="211" rx="15" fill="#f8f3eb" stroke="#d8bf98" stroke-width="1.3"/>
+<text x="39" y="476" class="head" text-anchor="start">学习跟踪参考动作，并把能力蒸馏到学生</text>
+<rect x="40" y="500" width="226" height="112" rx="9" class="white"/>
+<text x="54" y="529" class="name" text-anchor="start">仿真跟踪训练</text>
+<text x="54" y="553" class="body" text-anchor="start">参考动作与机器人状态</text>
+<text x="54" y="575" class="body" text-anchor="start">PPO 优化跟踪与平衡</text>
+<rect x="321" y="500" width="226" height="112" rx="9" class="white"/>
+<text x="335" y="529" class="name" text-anchor="start">ΔMoE 教师</text>
+<text x="335" y="553" class="body" text-anchor="start">四个专家逐级增加条件</text>
+<text x="335" y="575" class="body" text-anchor="start">融合相邻专家的动作差</text>
+<rect x="599" y="500" width="220" height="112" rx="9" class="sun"/>
+<text x="613" y="529" class="name" text-anchor="start">学生访问的状态</text>
+<text x="613" y="553" class="body" text-anchor="start">教师给出动作目标</text>
+<text x="613" y="575" class="body" text-anchor="start">监督扩散学生去噪</text>
+<path d="M266 556H316" class="edge"/>
+<path d="M547 556H594" class="signal"/>
+<rect x="18" y="672" width="824" height="452" rx="15" fill="#eef1f8" stroke="#b7bfd7" stroke-width="1.3"/>
+<text x="39" y="709" class="head" text-anchor="start">执行时反复进行的一个控制周期</text>
+<rect x="40" y="738" width="226" height="94" rx="9" class="white"/>
+<text x="54" y="767" class="name" text-anchor="start">固定任务内容</text>
+<text x="54" y="791" class="body" text-anchor="start">LaMP-T2M</text>
+<text x="54" y="813" class="body" text-anchor="start">任务选演讲或跳舞</text>
+<rect x="321" y="738" width="226" height="94" rx="9" class="white"/>
+<text x="335" y="767" class="name" text-anchor="start">音频风格</text>
+<text x="335" y="791" class="body" text-anchor="start">使用训练好的适配器</text>
+<text x="335" y="813" class="body" text-anchor="start">注入多个去噪层</text>
+<rect x="599" y="738" width="220" height="94" rx="9" class="white"/>
+<text x="613" y="767" class="name" text-anchor="start">本体状态历史</text>
+<text x="613" y="791" class="body" text-anchor="start">关节位置、速度</text>
+<text x="613" y="813" class="body" text-anchor="start">身体朝向等观测</text>
+<rect x="257" y="886" width="331" height="85" rx="9" class="white"/>
+<text x="271" y="915" class="name" text-anchor="start">扩散学生策略</text>
+<text x="271" y="939" class="body" text-anchor="start">两步 DDIM   ·   预测当前动作</text>
+<path d="M155 832V856H339V880" class="edge"/>
+<path d="M434 832V881" class="edge"/>
+<path d="M710 832V857H518V880" class="edge"/>
+<rect x="257" y="1010" width="331" height="78" rx="9" class="white"/>
+<text x="271" y="1039" class="name" text-anchor="start">G1 低层控制器与机器人</text>
+<text x="271" y="1063" class="body" text-anchor="start">按目标驱动关节，读回新状态</text>
+<path d="M423 971V1005" class="edge"/>
+<text x="437" y="996" class="tiny" text-anchor="start">23 维关节目标</text>
+<path d="M588 1050H766V837" class="edge"/>
+<text x="610" y="1038" class="tiny" text-anchor="start">下一周期反馈</text>
+<path d="M792 612H829V845H566V881" class="signal"/>
+<text x="28" y="1160" class="intro" text-anchor="start">依据原文图 2、图 3 与附录 §6–7 重绘。箭头表示信息流。</text>
+</svg>

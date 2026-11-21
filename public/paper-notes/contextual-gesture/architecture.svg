@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="1320" viewBox="0 0 940 1320" role="img" aria-labelledby="title desc" lang="zh-CN">
+<title id="title">Contextual Gesture 怎样把语音监督传递给手势和说话视频</title>
+<desc id="desc">第一步用对比损失训练语音—脸与语音—身体两路编码。第二步训练面部、身体两个动作量化器，从对齐过的动作教师蒸馏。第三步用预训练语音编码层与参考姿势生成动作码，解码出关键点。最后将参考图做薄板样条形变并用关键点连接的热图改善局部画面。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#587579" stroke-width="1.5"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203f44}.title{font-size:38px;font-weight:700}.subtitle{font-size:25px;fill:#385b60}.head{font-size:25px;font-weight:700}.label{font-size:22px;font-weight:700}.line{font-size:19px}.note{font-size:18px;fill:#36575b}.arrow{fill:none;stroke:#587579;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;marker-end:url(#arrow)}</style>
+<rect width="940" height="1320" rx="22" fill="#f5f8f7" stroke="#c6d5d1"/>
+<text x="35" y="53" class="title">Contextual Gesture</text>
+<text x="36" y="91" class="subtitle">语音学到的对应关系，如何进入动作码本和视频？</text>
+<rect x="24" y="119" width="892" height="325" rx="12" fill="#ffffff" stroke="#c1d2cf" stroke-width="1.5"/>
+<text x="44" y="158" class="head">训练 ①　让语音分别匹配面部动作与身体动作</text>
+<rect x="45" y="181" width="390" height="114" rx="11" fill="#e9f3ed" stroke="#9ebfaf" stroke-width="1.5"/>
+<text x="60" y="212" class="label">同一录音的条件特征</text>
+<text x="60" y="240" class="line">预提取 WavLM 1024 维，拼接 Mel 与节拍</text>
+<text x="60" y="265" class="line">正文另列转录的 RoBERTa 特征</text>
+<rect x="505" y="181" width="386" height="114" rx="11" fill="#e7f0f6" stroke="#aac6d6" stroke-width="1.5"/>
+<text x="520" y="212" class="label">两套语音投影分支</text>
+<text x="520" y="240" class="line">语音 → 配面部动作的两层 Transformer</text>
+<text x="520" y="265" class="line">语音 → 配身体动作的两层 Transformer</text>
+<path class="arrow" d="M 437 235 H 497"/>
+<rect x="45" y="318" width="390" height="102" rx="11" fill="#e9f3ed" stroke="#9ebfaf" stroke-width="1.5"/>
+<text x="60" y="349" class="label">同步视频与额外负例</text>
+<text x="60" y="377" class="line">脸部点、身体点各进动作编码器</text>
+<text x="60" y="402" class="line">WhisperX 切词，重排录音片段作负例</text>
+<rect x="505" y="318" width="386" height="102" rx="11" fill="#e7f0f6" stroke="#aac6d6" stroke-width="1.5"/>
+<text x="520" y="349" class="label">配对、池化与对比学习</text>
+<text x="520" y="377" class="line">用各自的真实动作配对，分支隐藏维 384</text>
+<text x="520" y="402" class="line">正配对相似，错配和错序样本分开</text>
+<path class="arrow" d="M 437 368 H 497"/>
+<path class="arrow" d="M 699 296 V 310"/>
+<rect x="24" y="463" width="892" height="237" rx="12" fill="#ffffff" stroke="#c1d2cf" stroke-width="1.5"/>
+<text x="44" y="502" class="head">训练 ②　把动作教师的时间信息蒸馏到量化器</text>
+<rect x="45" y="528" width="395" height="116" rx="11" fill="#e7f0f6" stroke="#aac6d6" stroke-width="1.5"/>
+<text x="60" y="559" class="label">已对齐的动作编码器</text>
+<text x="60" y="587" class="line">输入真实动作，输出逐帧教师特征</text>
+<text x="60" y="612" class="line">面部、身体各有一个教师</text>
+<rect x="505" y="528" width="386" height="116" rx="11" fill="#f9f0dc" stroke="#d4bf93" stroke-width="1.5"/>
+<text x="520" y="559" class="label">面部 RVQ 与身体 RVQ</text>
+<text x="520" y="587" class="line">每套六层，每层 1024 个码</text>
+<text x="520" y="612" class="line">重建动作，量化特征逐帧靠近教师</text>
+<path class="arrow" d="M 442 586 H 498"/>
+<text x="46" y="677" class="note">语音分支的对齐权重留给条件生成器。动作教师在此阶段提供监督。</text>
+<rect x="24" y="719" width="892" height="283" rx="12" fill="#ffffff" stroke="#c1d2cf" stroke-width="1.5"/>
+<text x="44" y="758" class="head">推理 ①　用语音与参考姿势预测两组动作编号</text>
+<rect x="45" y="782" width="391" height="91" rx="11" fill="#e9f3ed" stroke="#9ebfaf" stroke-width="1.5"/>
+<text x="60" y="813" class="label">用户输入</text>
+<text x="60" y="841" class="line">新语音、首帧动作、说话人身份</text>
+<rect x="505" y="782" width="386" height="91" rx="11" fill="#e7f0f6" stroke="#aac6d6" stroke-width="1.5"/>
+<text x="520" y="813" class="label">基础层手势生成器</text>
+<text x="520" y="841" class="line">语音作交叉注意力条件，身份经 AdaIN</text>
+<path class="arrow" d="M 438 829 H 497"/>
+<rect x="45" y="898" width="391" height="81" rx="11" fill="#f0eaf4" stroke="#c4b3cd" stroke-width="1.5"/>
+<text x="60" y="929" class="label">RVQ 解码为连续关键点</text>
+<text x="60" y="957" class="line">每帧 68 个脸部点与 48 个身体点</text>
+<rect x="505" y="898" width="386" height="81" rx="11" fill="#f9f0dc" stroke="#d4bf93" stroke-width="1.5"/>
+<text x="520" y="929" class="label">基础编号 → 残差编号</text>
+<text x="520" y="957" class="line">保留高置信预测，再逐层补细节</text>
+<path class="arrow" d="M 700 874 V 890"/>
+<path class="arrow" d="M 503 940 H 443"/>
+<rect x="24" y="1020" width="892" height="272" rx="12" fill="#ffffff" stroke="#c1d2cf" stroke-width="1.5"/>
+<text x="44" y="1059" class="head">推理 ②　让关键点驱动参考图像素</text>
+<rect x="45" y="1082" width="391" height="92" rx="11" fill="#e7f0f6" stroke="#aac6d6" stroke-width="1.5"/>
+<text x="60" y="1113" class="label">参考图 + 预测关键点</text>
+<text x="60" y="1141" class="line">薄板样条形变与遮挡处理，得到粗帧</text>
+<rect x="505" y="1082" width="386" height="92" rx="11" fill="#e7f0f6" stroke="#aac6d6" stroke-width="1.5"/>
+<text x="520" y="1113" class="label">关键点连接 → 边缘热图</text>
+<text x="520" y="1141" class="line">沿关节连接画线，学习线宽与结构</text>
+<rect x="270" y="1204" width="402" height="66" rx="11" fill="#f0eaf4" stroke="#c4b3cd" stroke-width="1.5"/>
+<text x="285" y="1235" class="label">细化网络 → 上半身说话视频</text>
+<text x="285" y="1263" class="line">恢复手部、肩部等区域的细节</text>
+<path class="arrow" d="M 241 1176 V 1188 H 394 V 1197"/>
+<path class="arrow" d="M 698 1176 V 1188 H 549 V 1197"/>
+</svg>

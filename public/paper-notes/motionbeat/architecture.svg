@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1170" viewBox="0 0 900 1170" role="img" aria-labelledby="title desc">
+  <title id="title">MotionBeat 怎样用舞蹈训练音乐编码器</title>
+  <desc id="desc">音乐与三维动作以同一节拍网格切片，经过分开的 Transformer 和投影头。音乐与动作通过节奏负例、逐拍起音与接触、小节重音与运动能量对齐训练。下游将音乐特征交给 EDGE 生成舞蹈，也可以用于检索。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 8 8" markerWidth="8" markerHeight="8" refX="7" refY="4" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#42616b"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#18343c}.title{font-size:30px;font-weight:700}.h{font-size:22px;font-weight:700}.n{font-size:19px;font-weight:700}.p{font-size:17px}.small{font-size:15px;fill:#435e66}.edge{fill:none;stroke:#42616b;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}.chip{fill:#fff;stroke:#acc2bf;stroke-width:1.4}
+    </style>
+  </defs>
+  <rect width="900" height="1170" rx="14" fill="#fbfcfa"/>
+  <text x="32" y="49" class="title">MotionBeat · 用舞步的时间训练音乐表示</text>
+  <text x="33" y="80" class="p">同一首歌、同一种舞，把脚步错开一拍，编码器还能听出差别吗？</text>
+
+  <rect x="25" y="107" width="850" height="301" rx="15" fill="#edf4f3" stroke="#9bbab5"/>
+  <text x="47" y="143" class="h">配对训练　按同一个拍点网格整理两路输入</text>
+  <rect x="49" y="164" width="382" height="78" rx="10" fill="#e0eff8" stroke="#98b6c9"/>
+  <text x="66" y="194" class="n">音乐　每拍一个 128 维输入</text>
+  <text x="66" y="223" class="p">128 频带 log-mel 在拍区间内取均值</text>
+  <rect x="469" y="164" width="382" height="78" rx="10" fill="#e8efd9" stroke="#a9bd93"/>
+  <text x="486" y="194" class="n">舞蹈　每拍一个动作输入</text>
+  <text x="486" y="223" class="p">3D 关节与 SMPL 运动学，配合接触线索</text>
+  <path d="M240 243V267" class="edge"/><path d="M660 243V267" class="edge"/>
+  <rect x="49" y="270" width="382" height="105" rx="10" class="chip"/>
+  <text x="66" y="300" class="n">音乐 Transformer</text>
+  <text x="66" y="329" class="p">Q / K 按小节相位旋转 → 自注意力</text>
+  <text x="66" y="355" class="small">6 层，隐藏宽度 512，8 个注意力头</text>
+  <rect x="469" y="270" width="382" height="105" rx="10" class="chip"/>
+  <text x="486" y="300" class="n">动作 Transformer</text>
+  <text x="486" y="329" class="p">相位旋转 → 接触引导注意力</text>
+  <text x="486" y="355" class="small">接触概率同时调节注意力分数与值向量</text>
+  <path d="M240 376V401H450M660 376V401H450V431" class="edge"/>
+
+  <rect x="25" y="437" width="850" height="337" rx="15" fill="#fbf3e8" stroke="#c9ac87"/>
+  <text x="47" y="473" class="h">两种损失分别回答“哪段舞相配”和“重音落在哪里”</text>
+  <rect x="49" y="496" width="382" height="187" rx="10" fill="#fffdf9" stroke="#c7b28e"/>
+  <text x="66" y="526" class="n">ECL · 片段配对</text>
+  <text x="66" y="558" class="p">两路投影头 → 同一 128 维空间</text>
+  <text x="66" y="586" class="p">正例为同步录制的音乐和动作</text>
+  <text x="66" y="616" class="p">负例含其他片段、近似 BPM 的舞段，</text>
+  <text x="66" y="644" class="p">以及原片段内错开 ±1 拍的配对。</text>
+  <rect x="469" y="496" width="382" height="187" rx="10" fill="#fffdf9" stroke="#c7b28e"/>
+  <text x="486" y="526" class="n">SRAL · 时间结构</text>
+  <text x="486" y="558" class="p">逐拍比较起音包络 ↔ 接触脉冲</text>
+  <text x="486" y="586" class="small">Soft-DTW 允许相邻拍之间的小幅偏移</text>
+  <text x="486" y="616" class="p">小节内比较重音分布 ↔ 动能分布</text>
+  <text x="486" y="644" class="small">EMD 衡量把质量挪到对应位置的代价</text>
+  <path d="M240 684V706H450M660 684V706H450V718" class="edge"/>
+  <text x="450" y="747" text-anchor="middle" class="n">联合优化　ECL + 0.2 × (0.9 × 逐拍损失 + 0.2 × 小节损失)</text>
+
+  <rect x="25" y="797" width="850" height="162" rx="15" fill="#f4f1ea" stroke="#cbbf9f"/>
+  <text x="47" y="832" class="h">示意　错开一拍的负例保留了音色、速度和舞者</text>
+  <text x="55" y="871" class="p">同一首歌的重音</text><text x="55" y="902" class="p">正确配对的落脚</text><text x="55" y="933" class="p">整体延迟一拍</text>
+  <g stroke="#c8bfae" stroke-width="1.5">
+    <path d="M285 865H819 M285 896H819 M285 927H819"/>
+    <path d="M315 853V940 M465 853V940 M615 853V940 M765 853V940" stroke-dasharray="3 5"/>
+  </g>
+  <g stroke="#2a778f" stroke-width="5" fill="none" stroke-linejoin="round"><path d="M444 865H453L465 847 477 865H488"/></g>
+  <g fill="#487b48"><circle cx="465" cy="896" r="8"/></g>
+  <g fill="#b76c35"><circle cx="615" cy="927" r="8"/></g>
+
+  <rect x="25" y="979" width="850" height="169" rx="15" fill="#efeef6" stroke="#b7b1c9"/>
+  <text x="47" y="1015" class="h">下游　单独使用音乐分支时，输入无需配对舞蹈</text>
+  <rect x="49" y="1034" width="194" height="64" rx="9" class="chip"/>
+  <text x="146" y="1073" text-anchor="middle" class="n">新音乐 → 拍点特征</text>
+  <path d="M245 1066H271" class="edge"/>
+  <rect x="277" y="1034" width="244" height="64" rx="9" class="chip"/>
+  <text x="399" y="1073" text-anchor="middle" class="n">学好的音乐编码器</text>
+  <path d="M523 1066H549" class="edge"/>
+  <rect x="555" y="1034" width="296" height="64" rx="9" class="chip"/>
+  <text x="703" y="1073" text-anchor="middle" class="n">EDGE 条件扩散 → 3D 舞蹈</text>
+  <text x="50" y="1128" class="small">检索时，两侧分别编码并比较候选。节拍、风格等识别任务则在音乐表示上训练预测头。</text>
+</svg>
