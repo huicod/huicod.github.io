@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1288" viewBox="0 0 900 1288" role="img" aria-labelledby="title desc">
+  <title id="title">MoRAE 怎样学习适合流匹配的动作表示？</title>
+  <desc id="desc">原题对应 v1。先从被遮挡的动作预测教师的干净特征，再把每帧 768 维特征压成 32 维，联合学习串联的特征解码器和动作解码器。冻结表示模型后，由文本条件下的 DiT 学习高斯噪声到动作潜变量的速度。生成时从噪声出发积分，将结果解码到动作。底部单列 v2 的关节遮挡、直接解码和采样设置。</desc>
+  <defs>
+    <marker id="tip" viewBox="0 0 8 8" refX="7" refY="4" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#365963"/></marker>
+    <marker id="back" viewBox="0 0 8 8" refX="7" refY="4" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#8d5727"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#17353b}
+      .title{font-weight:700;font-size:28px}
+      .subtitle{font-size:16px;fill:#446068}
+      .section{font-size:21px;font-weight:700}
+      .name{font-size:18px;font-weight:700}
+      .copy{font-size:16px}
+      .fine{font-size:15px;fill:#3f5760}
+      .formula{font-family:"Segoe UI","Microsoft YaHei",sans-serif;font-size:21px;fill:#184d56}
+      .node{fill:#fff;stroke:#a4b9b5;stroke-width:1.4}
+      .edge,.grad{fill:none;stroke:#365963;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#tip)}
+      .grad{stroke:#8d5727;stroke-dasharray:6 5;marker-end:url(#back)}
+    </style>
+  </defs>
+  <rect width="900" height="1288" rx="16" fill="#fbfcfa"/>
+  <text x="32" y="47" class="title">MoRAE 怎样学习适合流匹配的动作表示？</text>
+  <text x="33" y="77" class="subtitle">下图按原题对应的 v1 绘制。T 表示动作帧数，t 表示流从噪声到动作的积分时间。</text>
+
+  <rect x="24" y="103" width="852" height="234" rx="14" fill="#edf4ea" stroke="#a7bda1"/>
+  <text x="47" y="138" class="section">动作自监督预训练　让遮挡后的动作预测完整动作的特征</text>
+  <rect x="48" y="207" width="130" height="58" rx="9" class="node"/>
+  <text x="64" y="242" class="name">真实动作 x</text>
+  <path d="M178 236H202V192H225" class="edge"/>
+  <path d="M202 236V280H225" class="edge"/>
+  <rect x="227" y="157" width="307" height="69" rx="9" class="node"/>
+  <text x="243" y="185" class="name">在线编码器 + 预测头</text>
+  <text x="243" y="210" class="fine">输入遮挡连续帧或关节组后的动作</text>
+  <rect x="227" y="247" width="307" height="65" rx="9" class="node"/>
+  <text x="243" y="274" class="name">EMA 教师编码器</text>
+  <text x="243" y="298" class="fine">读完整动作，权重由在线编码器滑动平均</text>
+  <path d="M534 191H560V213H587" class="edge"/>
+  <path d="M534 280H560V258H587" class="edge"/>
+  <rect x="589" y="194" width="259" height="84" rx="9" class="node"/>
+  <text x="606" y="221" class="name">对齐遮挡位置的特征</text>
+  <text x="606" y="246" class="fine">以教师输出为目标</text>
+  <text x="606" y="268" class="fine">用 smooth L1 更新在线分支</text>
+
+  <rect x="24" y="351" width="852" height="259" rx="14" fill="#eaf3f4" stroke="#a0bdc2"/>
+  <text x="47" y="387" class="section">训练压缩器和两级解码器　让 32 维序列同时保留特征与动作</text>
+  <rect x="48" y="411" width="165" height="86" rx="9" class="node"/>
+  <text x="63" y="440" class="name">冻结动作编码器</text>
+  <text x="63" y="465" class="fine">从 x 提取特征 H</text>
+  <text x="63" y="486" class="fine">每帧 768 维</text>
+  <path d="M213 454H237" class="edge"/>
+  <rect x="239" y="411" width="197" height="86" rx="9" class="node"/>
+  <text x="254" y="440" class="name">单层注意力压缩器</text>
+  <text x="254" y="465" class="fine">预测均值和方差</text>
+  <text x="254" y="486" class="fine">采样得连续 z，T × 32</text>
+  <path d="M436 454H460" class="edge"/>
+  <rect x="462" y="411" width="167" height="86" rx="9" class="node"/>
+  <text x="477" y="440" class="name">特征解码器</text>
+  <text x="477" y="465" class="fine">由 z 重建 H</text>
+  <text x="477" y="486" class="fine">特征损失对照原 H</text>
+  <path d="M629 454H665" class="edge"/>
+  <rect x="667" y="411" width="181" height="86" rx="9" class="node"/>
+  <text x="682" y="440" class="name">动作解码器</text>
+  <text x="682" y="465" class="fine">从重建特征恢复动作</text>
+  <text x="682" y="486" class="fine">动作损失对照原 x</text>
+  <path d="M758 497V520H330V499" class="grad"/>
+  <text x="62" y="552" class="copy">虚线标出动作损失的反传路径。它经两级解码器抵达压缩器，共同塑造潜空间。</text>
+  <text x="62" y="580" class="fine">训练时在重建特征上加入小幅高斯扰动；KL 项约束压缩器给出的后验。</text>
+
+  <rect x="24" y="625" width="852" height="207" rx="14" fill="#fbf3e4" stroke="#d2bc91"/>
+  <text x="47" y="663" class="section">训练文本条件流　固定动作编码、压缩和解码模块</text>
+  <rect x="48" y="686" width="208" height="79" rx="9" class="node"/>
+  <text x="63" y="716" class="name">两个潜序列</text>
+  <text x="63" y="741" class="fine">高斯噪声 z₀ 和真实潜码 z₁</text>
+  <path d="M256 726H284" class="edge"/>
+  <rect x="286" y="686" width="238" height="79" rx="9" class="node"/>
+  <text x="302" y="716" class="name">在随机时刻 t 插值</text>
+  <text x="302" y="745" class="formula">zₜ = (1 − t) z₀ + t z₁</text>
+  <path d="M524 726H554" class="edge"/>
+  <rect x="556" y="686" width="292" height="79" rx="9" class="node"/>
+  <text x="572" y="716" class="name">非自回归 DiT-XL</text>
+  <text x="572" y="741" class="fine">用全段序列预测速度，目标为 z₁ − z₀</text>
+  <text x="61" y="802" class="copy">配对文本 → 冻结的 CLIP → 句向量 c</text>
+  <path d="M357 797H689V768" class="edge"/>
+
+  <rect x="24" y="847" width="852" height="228" rx="14" fill="#edf0f8" stroke="#acb4ce"/>
+  <text x="47" y="885" class="section">生成新动作　从一句话和整段噪声开始</text>
+  <rect x="48" y="906" width="217" height="116" rx="9" class="node"/>
+  <text x="64" y="937" class="name">文本 + 指定帧数 T</text>
+  <text x="64" y="964" class="fine">文本经 CLIP 编为 c</text>
+  <text x="64" y="990" class="fine">随机生成 T × 32 的噪声</text>
+  <path d="M265 963H291" class="edge"/>
+  <rect x="293" y="906" width="236" height="116" rx="9" class="node"/>
+  <text x="309" y="937" class="name">沿 DiT 速度场积分</text>
+  <text x="309" y="964" class="fine">在文本引导下更新整段序列</text>
+  <text x="309" y="990" class="fine">得到生成潜码，形状 T × 32</text>
+  <path d="M529 963H554" class="edge"/>
+  <rect x="556" y="906" width="292" height="116" rx="9" class="node"/>
+  <text x="572" y="937" class="name">特征解码器 → 动作解码器</text>
+  <text x="572" y="964" class="fine">先还原特征，再还原逐帧动作</text>
+  <text x="572" y="990" class="fine">用根状态和相对关节位置恢复骨架</text>
+  <text x="61" y="1052" class="copy">形状示例　HumanML3D 的 5 秒动作在 20 fps 下有 100 帧，生成潜码为 100 × 32。</text>
+
+  <rect x="24" y="1091" width="852" height="173" rx="14" fill="#f3f4f1" stroke="#b5c1b8"/>
+  <text x="47" y="1128" class="section">v2 修订了哪些环节？</text>
+  <text x="61" y="1162" class="copy">预训练　遮住约 30% 关节的所有通道和整条轨迹，以每个有效帧的教师特征监督。</text>
+  <text x="61" y="1195" class="copy">解码　　压缩后的潜码直接送入四层动作解码器；做流匹配时取后验均值。</text>
+  <text x="61" y="1228" class="copy">采样　　DiT-M（58M 参数），HumanML3D 用 5 步 RK4，KIT-ML 用 12 步。</text>
+</svg>

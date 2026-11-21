@@ -1798,6 +1798,16 @@
       "time"
     ]
   },
+  "morae-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": []
+  },
   "mosat-paper-notes": {
     "topics": [
       "multimodal",
