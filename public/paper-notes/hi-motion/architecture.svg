@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1270" viewBox="0 0 900 1270" role="img" aria-labelledby="title desc">
+  <title id="title">Hi-Motion 从文字到全身动作的生成过程</title>
+  <desc id="desc">文本描述经过编码和特征量化取得动作潜特征。学习表示时使用配对的动作序列。潜特征一方面由贝塞尔解码器展开为根、左右肩、左右髋的运动轨迹，另一方面直接进入骨架生成器。骨架生成器将当前时刻的意图融入上一帧骨架，在固定骨骼连接上更新节点，并通过 LSTM 预测本帧，将结果用于下一步。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L9 4.5 0 9Z" fill="#37595e"/></marker>
+    <marker id="soft-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4 0 8Z" fill="#55786b"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#16353b}
+      .title{font-size:28px;font-weight:700}.sub{font-size:17px}.sect{font-size:21px;font-weight:700}
+      .name{font-size:18px;font-weight:700}.body{font-size:16px}.small{font-size:14px;fill:#406064}
+      .box{fill:white;stroke:#a0b6b2;stroke-width:1.5}
+      .edge,.branch{fill:none;stroke:#37595e;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .branch{stroke-dasharray:6 5;stroke:#55786b;marker-end:url(#soft-arrow)}
+    </style>
+  </defs>
+  <rect width="900" height="1270" rx="18" fill="#fbfcf9"/>
+  <text x="32" y="46" class="title">Hi-Motion 如何让五个关节的轨迹带动全身？</text>
+  <text x="33" y="77" class="sub">同一个潜特征分给两个解码环节。一个预测跨帧轨迹，另一个逐帧更新骨架。</text>
+
+  <rect x="24" y="103" width="852" height="221" rx="14" fill="#edf4ea" stroke="#a6bda2"/>
+  <text x="45" y="139" class="sect">动作表示　文本与动作映射到离散潜空间</text>
+  <rect x="49" y="157" width="393" height="66" rx="9" class="box"/>
+  <text x="66" y="185" class="name">预训练 CLIP 文本编码器</text>
+  <text x="66" y="210" class="body">图 3 的输入示例：一个人在活动左臂热身。</text>
+  <rect x="461" y="157" width="390" height="66" rx="9" class="box"/>
+  <text x="478" y="185" class="name">图卷积动作编码器</text>
+  <text x="478" y="210" class="body">学习表示时，对训练动作做四层图卷积与映射。</text>
+  <path class="edge" d="M245 223V239H368V253"/>
+  <path class="branch" d="M656 223V239H533V253"/>
+  <rect x="238" y="255" width="424" height="48" rx="9" class="box"/>
+  <text x="450" y="286" text-anchor="middle" class="name">从 512 个码本项中取最近项 → 离散特征 zₑ</text>
+
+  <rect x="24" y="346" width="852" height="329" rx="14" fill="#e9f3f5" stroke="#9dbec3"/>
+  <text x="45" y="383" class="sect">时间维度　先为五个枢轴关节生成整段轨迹</text>
+  <path class="edge" d="M320 303V342H38V445H55"/>
+  <rect x="57" y="406" width="296" height="81" rx="9" class="box"/>
+  <text x="74" y="438" class="name">Bézier 解码器</text>
+  <text x="74" y="465" class="body">由 zₑ 预测各枢轴轨迹的控制点。</text>
+  <path class="edge" d="M353 446H401"/>
+  <rect x="403" y="406" width="435" height="81" rx="9" class="box"/>
+  <text x="421" y="438" class="name">曲线重建</text>
+  <text x="421" y="465" class="body">沿时间读取各关节的位置，供生成每帧时使用。</text>
+  <path class="edge" d="M623 487V509"/>
+  <rect x="57" y="511" width="781" height="139" rx="9" class="box"/>
+  <g transform="translate(76 515)" aria-hidden="true">
+    <g stroke="#688389" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M54 27V43L34 44 20 62 14 80M54 43L74 44 87 32 95 15M54 43V77L41 81 39 101 32 120M54 77L67 81 73 101 83 119"/>
+      <circle cx="54" cy="16" r="10" fill="#eaf2ee"/>
+    </g>
+    <g stroke="#875014" fill="#e9ac56" stroke-width="2">
+      <circle cx="34" cy="44" r="5.2"/><circle cx="74" cy="44" r="5.2"/><circle cx="54" cy="77" r="5.2"/><circle cx="41" cy="81" r="5.2"/><circle cx="67" cy="81" r="5.2"/>
+    </g>
+  </g>
+  <text x="196" y="549" class="name">五个枢轴</text>
+  <text x="197" y="577" class="body">根、左右肩、左右髋</text>
+  <text x="197" y="606" class="small">原图 2 以右肩示意。</text>
+  <path d="M396 531V629" fill="none" stroke="#c0d4d6"/>
+  <g transform="translate(427 524)" aria-hidden="true">
+    <path d="M5 78L78 6 101 100 171 24" fill="none" stroke="#a9b6bd" stroke-width="1.6" stroke-dasharray="4 4"/>
+    <path d="M5 78C78 6 101 100 171 24" fill="none" stroke="#216f7b" stroke-width="4"/>
+    <g fill="#e9ac56" stroke="#875014" stroke-width="1.2"><circle cx="5" cy="78" r="4.7"/><circle cx="78" cy="6" r="4.7"/><circle cx="101" cy="100" r="4.7"/><circle cx="171" cy="24" r="4.7"/></g>
+  </g>
+  <text x="628" y="553" class="name">单关节曲线示意</text>
+  <text x="628" y="579" class="body">圆点是控制点。</text>
+  <text x="628" y="606" class="small">曲线经过两端，</text>
+  <text x="628" y="626" class="small">中间点影响弯曲形状。</text>
+
+  <rect x="24" y="699" width="852" height="301" rx="14" fill="#fbf2df" stroke="#d5bb85"/>
+  <text x="45" y="737" class="sect">空间维度　将本步意图写入骨架图，再生成下一帧</text>
+  <path class="edge" d="M450 650V685H710V755"/>
+  <path class="edge" d="M662 279H862V746H802V755"/>
+  <text x="740" y="695" class="small">zₑ 直连骨架生成器</text>
+  <rect x="57" y="759" width="291" height="63" rx="9" class="box"/>
+  <text x="74" y="798" class="name">上一帧各关节的姿态 sₜ₋₁</text>
+  <rect x="395" y="759" width="443" height="63" rx="9" class="box"/>
+  <text x="413" y="786" class="name">本步的枢轴意图与 zₑ</text>
+  <text x="413" y="810" class="small">取每个枢轴在曲线上从 t−1 到 t 的三维位移。</text>
+  <path class="edge" d="M202 822V840H225V854"/>
+  <path class="edge" d="M616 822V840H315V854"/>
+  <rect x="57" y="856" width="390" height="113" rx="9" class="box"/>
+  <text x="75" y="891" class="name">特征融合 → 沿固定骨骼连接做三层图卷积</text>
+  <text x="75" y="922" class="body">每个节点接收前一帧的姿态与 zₑ 映射值，</text>
+  <text x="75" y="947" class="body">五个枢轴节点额外拼接各自的位移。</text>
+  <path class="edge" d="M447 913H486"/>
+  <rect x="488" y="856" width="350" height="113" rx="9" class="box"/>
+  <text x="506" y="891" class="name">全连接层与 LSTM → 全身姿态 sₜ</text>
+  <text x="506" y="922" class="body">把这帧作为下一步的已知姿态，</text>
+  <text x="506" y="947" class="body">沿着预测的运动趋势继续生成。</text>
+  <path class="edge" d="M654 969V985H39V790H55"/>
+
+  <path class="edge" d="M740 969V1016"/>
+  <rect x="24" y="1018" width="852" height="60" rx="12" fill="#edf0f8" stroke="#acb4ca"/>
+  <text x="45" y="1054" class="name">输出　按时间排列的全身骨架序列</text>
+  <text x="401" y="1053" class="body">轨迹提供生成条件，最终动作以生成的骨架为准。</text>
+  <rect x="24" y="1100" width="852" height="148" rx="14" fill="#eef4eb" stroke="#a6bda2"/>
+  <text x="45" y="1136" class="sect">训练监督　曲线和骨架各自从哪里得到目标？</text>
+  <rect x="49" y="1152" width="392" height="77" rx="9" class="box"/>
+  <text x="66" y="1182" class="name">从真实轨迹拟合控制点</text>
+  <text x="66" y="1209" class="body">算法 1 拟合五组控制点，监督解码器预测。</text>
+  <rect x="460" y="1152" width="391" height="77" rx="9" class="box"/>
+  <text x="477" y="1182" class="name">从真实骨架监督逐帧生成</text>
+  <text x="477" y="1209" class="body">比较各帧姿态，并比较相邻帧的变化量。</text>
+</svg>

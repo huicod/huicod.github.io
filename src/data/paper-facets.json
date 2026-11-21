@@ -1140,6 +1140,16 @@
     ],
     "controls": []
   },
+  "hi-motion-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
+  },
   "hip-paper-notes": {
     "topics": [
       "gesture",
