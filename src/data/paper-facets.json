@@ -2215,6 +2215,19 @@
     ],
     "controls": []
   },
+  "ninb-paper-notes": {
+    "topics": [
+      "editing",
+      "representation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "time"
+    ]
+  },
   "omni2sound-paper-notes": {
     "topics": ["multimodal", "video"],
     "methods": ["diffusion"],

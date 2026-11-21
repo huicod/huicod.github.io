@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1194" viewBox="0 0 900 1194" role="img" aria-labelledby="title desc">
+  <title id="title">NINB 如何从稀疏关键帧生成一段连续动作</title>
+  <desc id="desc">训练时，冻结的 NeMF 编码器用完整动作提供 1280 维干净潜码，随机关键帧作为去噪条件。生成时从高斯潜码出发，依据关键帧逐步去噪。最后 300 个扩散步用两项误差修正当前的干净潜码估计。最终用冻结解码器在各动作时刻查询根变换与关节旋转。</desc>
+  <defs>
+    <marker id="tip" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L9 4.5L0 9Z" fill="#385d62"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#173336}
+      .title{font-size:27px;font-weight:700}.lead{font-size:16px}.section{font-size:21px;font-weight:700}
+      .name{font-size:18px;font-weight:700}.body{font-size:15px}.hint{font-size:14px;fill:#415e60}
+      .card{fill:#fff;stroke:#a2b7b5;stroke-width:1.4}
+      .flow,.bypass,.return{fill:none;stroke:#385d62;stroke-width:2;stroke-linejoin:round;marker-end:url(#tip)}
+      .bypass{stroke-dasharray:5 5}.return{stroke:#618082;stroke-dasharray:8 4}
+    </style>
+  </defs>
+  <rect width="900" height="1194" rx="17" fill="#fafbf8"/>
+  <text x="30" y="43" class="title">NINB 怎样从几帧已知姿态补出整段动作？</text>
+  <text x="31" y="73" class="lead">扩散步 i 决定何时纠正潜码；动画时间 τ 决定从同一潜码读取哪一帧姿态。</text>
+
+  <rect x="23" y="97" width="854" height="253" rx="13" fill="#edf4e9" stroke="#aabfa3"/>
+  <text x="44" y="133" class="section">训练　从同一段动捕构造预测目标和稀疏条件</text>
+  <rect x="45" y="151" width="397" height="80" rx="9" class="card"/>
+  <text x="61" y="180" class="name">整段动作 → 冻结的 NeMF 编码器</text>
+  <text x="61" y="208" class="body">局部 1024 维与全局 256 维拼成潜码 z₀。</text>
+  <rect x="461" y="151" width="394" height="80" rx="9" class="card"/>
+  <text x="477" y="180" class="name">同一段动作 → 随机抽取关键帧</text>
+  <text x="477" y="208" class="body">先编码帧的位置，再把未观测位置的特征置零。</text>
+  <path d="M243 231V246H300V260" class="flow"/>
+  <path d="M659 231V246H600V260" class="flow"/>
+  <rect x="99" y="262" width="702" height="67" rx="9" class="card"/>
+  <text x="115" y="289" class="name">给 z₀ 加噪，让四层条件去噪器学会还原 z₀</text>
+  <text x="115" y="313" class="body">训练目标包括潜码均方误差，以及冻结解码器在已知帧上的位置与旋转误差。</text>
+
+  <rect x="23" y="372" width="854" height="676" rx="13" fill="#eaf2f4" stroke="#a4bfc5"/>
+  <text x="44" y="408" class="section">生成　输入关键帧及其时刻，从一个随机潜码开始</text>
+  <rect x="68" y="432" width="344" height="82" rx="9" class="card"/>
+  <text x="85" y="461" class="name">初始高斯噪声 → 当前潜码 zᵢ</text>
+  <text x="85" y="488" class="body">每个样本对应整段动作，长度为 1280 维。</text>
+  <rect x="455" y="432" width="374" height="82" rx="9" class="card"/>
+  <text x="472" y="461" class="name">用户给出的姿态与时间掩码</text>
+  <text x="472" y="488" class="body">保留下来的关键帧特征提供注意力的键和值。</text>
+  <path d="M240 514V530H309V547" class="flow"/>
+  <path d="M642 514V530H589V547" class="flow"/>
+  <rect x="126" y="549" width="648" height="74" rx="9" class="card"/>
+  <text x="143" y="579" class="name">条件去噪器预测当前的干净潜码估计 ẑ₀</text>
+  <text x="143" y="605" class="body">带噪潜码查询关键帧，扩散步 i 调制四个 Transformer 块。</text>
+
+  <path d="M449 623V656" class="flow"/>
+  <path d="M774 585H846V994H770" class="bypass"/>
+  <text x="565" y="646" class="hint">前段直接进入 DDIM 更新 →</text>
+  <rect x="68" y="658" width="761" height="285" rx="12" fill="#fff5df" stroke="#d3b77f"/>
+  <text x="86" y="690" class="section">最后 300 步　先用 IMG 修正 ẑ₀</text>
+  <text x="87" y="718" class="body">冻结解码器把当前估计解成动作，沿两条路径量出它偏了多少。</text>
+  <rect x="87" y="739" width="305" height="94" rx="9" class="card"/>
+  <text x="103" y="768" class="name">关键帧的几何误差</text>
+  <text x="103" y="793" class="body">比根平移、根朝向、局部关节位置</text>
+  <text x="103" y="815" class="body">与关节旋转，只在已知帧上计分。</text>
+  <rect x="415" y="739" width="395" height="94" rx="9" class="card"/>
+  <text x="431" y="768" class="name">与重编码参考潜码的差距</text>
+  <text x="431" y="793" class="body">对关键姿态做球面插值，按高斯平滑的掩码</text>
+  <text x="431" y="815" class="body">与解码动作混合，再送回冻结编码器。</text>
+  <path d="M239 833V849H311V864" class="flow"/>
+  <path d="M613 833V849H586V864" class="flow"/>
+  <rect x="138" y="866" width="621" height="58" rx="9" class="card"/>
+  <text x="155" y="901" class="name">沿两项损失的梯度修正本步估计，得到新的干净潜码估计</text>
+  <path d="M449 943V966" class="flow"/>
+  <rect x="126" y="968" width="644" height="55" rx="9" class="card"/>
+  <text x="145" y="1002" class="name">DDIM 用本步估计更新 zᵢ₋₁，整段动作共经过 1000 个采样步</text>
+  <path d="M126 995H46V586H124" class="return"/>
+
+  <path d="M450 1023V1070" class="flow"/>
+  <rect x="23" y="1072" width="854" height="97" rx="13" fill="#f2f1f8" stroke="#b5afc7"/>
+  <text x="44" y="1107" class="section">读出动作　冻结的 NeMF 解码器 D(z₀, τ)</text>
+  <text x="45" y="1135" class="body">按动画时刻 τ 查询根变换与各关节旋转，得到完整动作。论文在 30 fps、128 帧窗口评测。</text>
+  <text x="45" y="1157" class="hint">关键帧用损失引导，最终贴合精度由解码后关节空间的实测误差衡量。</text>
+</svg>
