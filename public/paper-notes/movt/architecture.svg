@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="1228" viewBox="0 0 820 1228" role="img" aria-labelledby="title desc">
+  <title id="title">MoVT 怎样把动作视频用于文本生成三维动作</title>
+  <desc id="desc">先用动捕及其二维投影对齐基础码本。用视频中的二维骨架学习新增条目，再映射回三维基础层。带文字的三维动作和视频都能提供基础层编号，用于训练掩码生成器。推理时由文本预测基础编号，三维残差生成器补各层细节，解码为逐帧三维关节；同一批基础编号也能解码为二维动作。</desc>
+  <defs>
+    <marker id="arrow" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="8.5" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#47646c"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#183b45}
+      .title{font-size:27px;font-weight:700}.section{font-size:21px;font-weight:700}
+      .head{font-size:18px;font-weight:700}.body{font-size:16px}.small{font-size:14px;fill:#496068}
+      .panel{stroke-width:1.4}.card{fill:#fff;stroke:#b6c9c8;stroke-width:1.3}
+      .three{fill:#e5f1ed;stroke:#a2beb4;stroke-width:1.3}
+      .two{fill:#f0ecf9;stroke:#b9aec9;stroke-width:1.3}
+      .shared{fill:#e3edf3;stroke:#a8bfca;stroke-width:1.3}
+      .flow,.branch{fill:none;stroke:#47646c;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+      .flow{marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="820" height="1228" rx="16" fill="#fcfcfa"/>
+  <text class="title" x="24" y="41">MoVT 如何从视频学到可生成的三维动作？</text>
+  <text class="body" x="25" y="72">绿色为三维动作码本，紫色为二维姿态码本。两边用相同的基础层编号查各自的向量。</text>
+
+  <rect class="panel" x="16" y="94" width="788" height="268" rx="14" fill="#f1f6f3" stroke="#b8ccc3"/>
+  <text class="section" x="33" y="128">训练 I–II　用同一段动作学习两个码本的对应关系</text>
+  <g>
+    <rect class="card" x="34" y="147" width="320" height="71" rx="9"/>
+    <text class="head" x="49" y="174">三维动捕序列</text>
+    <text class="body" x="49" y="201">训练残差量化自编码器（RVQ-VAE）。</text>
+  </g>
+  <g>
+    <rect class="card" x="466" y="147" width="320" height="71" rx="9"/>
+    <text class="head" x="481" y="174">同一动作的二维投影</text>
+    <text class="body" x="481" y="201">用 17 关节投影训练二维编解码器。</text>
+  </g>
+  <path class="flow" d="M355 178 H464"/>
+  <text class="small" x="410" y="167" text-anchor="middle">投影</text>
+  <path class="flow" d="M194 219 V239"/><path class="flow" d="M626 219 V239"/>
+  <g>
+    <rect class="three" x="34" y="240" width="320" height="58" rx="9"/>
+    <text class="head" x="49" y="275">三维基础层码本</text>
+  </g>
+  <g>
+    <rect class="two" x="466" y="240" width="320" height="58" rx="9"/>
+    <text class="head" x="481" y="275">二维基础层码本</text>
+  </g>
+  <path class="flow" d="M355 256 H464"/><path class="flow" d="M465 282 H356"/>
+  <text class="small" x="410" y="250" text-anchor="middle">映射 F</text>
+  <text class="small" x="410" y="301" text-anchor="middle">反向映射 R</text>
+  <text class="body" x="34" y="328">F、R 映射码本向量。训练以二维重建、三维向量往返一致性和配对片段的索引对齐为目标。</text>
+  <text class="small" x="34" y="350">基础层描述时序片段。更高量化层逐层编码剩余误差。</text>
+
+  <rect class="panel" x="16" y="377" width="788" height="266" rx="14" fill="#f8f5fa" stroke="#c8bdd2"/>
+  <text class="section" x="33" y="411">训练 III–IV　从视频学习新增条目，再回到三维</text>
+  <g>
+    <rect class="card" x="34" y="432" width="326" height="86" rx="9"/>
+    <text class="head" x="49" y="459">MotionX++ 动作视频</text>
+    <text class="body" x="49" y="483">提取二维关节序列，统一人物朝向，</text>
+    <text class="body" x="49" y="505">由二维编码器表示连续动作。</text>
+  </g>
+  <g>
+    <rect class="two" x="411" y="432" width="375" height="86" rx="9"/>
+    <text class="head" x="426" y="459">冻结原二维码本，学习新增码本</text>
+    <text class="body" x="426" y="483">用视频骨架的重建误差训练新增向量，</text>
+    <text class="body" x="426" y="505">同时更新二维解码器。</text>
+  </g>
+  <path class="flow" d="M361 476 H409"/>
+  <path class="flow" d="M598 519 V544"/>
+  <g>
+    <rect class="three" x="34" y="546" width="752" height="78" rx="9"/>
+    <text class="head" x="49" y="574">用 R 把新增二维向量映射到三维基础层，拼入原码本</text>
+    <text class="body" x="49" y="601">新增高层残差条目用高斯噪声初始化。固定基础层，用动捕微调三维编解码器和新增残差条目。</text>
+  </g>
+
+  <rect class="panel" x="16" y="658" width="788" height="222" rx="14" fill="#f0f5f8" stroke="#b7cbd5"/>
+  <text class="section" x="33" y="693">训练 V　让动作和视频共同提供“文字—编号”样本</text>
+  <g>
+    <rect class="three" x="34" y="711" width="361" height="67" rx="9"/>
+    <text class="head" x="49" y="738">文字描述 ＋ 三维动捕</text>
+    <text class="body" x="49" y="762">三维编码器查增强码本，得到基础层编号。</text>
+  </g>
+  <g>
+    <rect class="two" x="425" y="711" width="361" height="67" rx="9"/>
+    <text class="head" x="440" y="738">文字描述 ＋ 视频二维骨架</text>
+    <text class="body" x="440" y="762">二维编码器查增强码本，得到基础层编号。</text>
+  </g>
+  <path class="branch" d="M214 779 V792 H605 V779"/><path class="flow" d="M410 792 V805"/>
+  <g>
+    <rect class="shared" x="34" y="806" width="752" height="57" rx="9"/>
+    <text class="head" x="49" y="831">共享掩码 Transformer</text>
+    <text class="body" x="49" y="853">冻结两个 tokenizer。给定文字和可见编号，训练模型预测被遮住的基础层编号。</text>
+  </g>
+
+  <rect class="panel" x="16" y="895" width="788" height="292" rx="14" fill="#f8f6ef" stroke="#d1c6aa"/>
+  <text class="section" x="33" y="931">推理　从一段新文字生成动作</text>
+  <g>
+    <rect class="shared" x="34" y="950" width="752" height="60" rx="9"/>
+    <text class="head" x="49" y="977">文本提示 → 文本编码与掩码生成器 → 基础层编号序列</text>
+    <text class="body" x="49" y="999">按目标长度初始化全掩码序列，迭代填入编号。</text>
+  </g>
+  <path class="branch" d="M410 1011 V1024"/><path class="flow" d="M410 1024 H211 V1040"/>
+  <path class="flow" d="M410 1024 H602 V1040"/>
+  <g>
+    <rect class="three" x="34" y="1041" width="361" height="124" rx="9"/>
+    <text class="head" x="49" y="1069">三维输出</text>
+    <text class="body" x="49" y="1095">残差 Transformer 根据文字与低层 token，</text>
+    <text class="body" x="49" y="1119">逐层补全残差编号。查三维码本并将各层</text>
+    <text class="body" x="49" y="1143">向量求和，由三维解码器生成逐帧动作。</text>
+  </g>
+  <g>
+    <rect class="two" x="425" y="1041" width="361" height="124" rx="9"/>
+    <text class="head" x="440" y="1069">二维输出</text>
+    <text class="body" x="440" y="1095">同一串基础层编号也可以查二维码本。</text>
+    <text class="body" x="440" y="1119">二维解码器把对应向量还原为</text>
+    <text class="body" x="440" y="1143">逐帧的二维骨架序列。</text>
+  </g>
+  <text class="small" x="24" y="1214">本站据论文图 1、式（1–8）与表 3 绘制。不同色块对应不同码本，共享的是基础层编号。</text>
+</svg>

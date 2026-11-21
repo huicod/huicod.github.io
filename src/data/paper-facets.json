@@ -2153,6 +2153,17 @@
       "space"
     ]
   },
+  "movt-paper-notes": {
+    "topics": [
+      "generation",
+      "representation",
+      "video"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
+  },
   "mscot-paper-notes": {
     "topics": [
       "generation"
