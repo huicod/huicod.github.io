@@ -1201,6 +1201,15 @@
       "style"
     ]
   },
+  "icgn-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [],
+    "controls": [
+      "time"
+    ]
+  },
   "intentional-gesture-paper-notes": {
     "topics": [
       "gesture",
@@ -2136,6 +2145,31 @@
       "space"
     ]
   },
+  "nerm-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
+  "nermo-paper-notes": {
+    "topics": [
+      "generation",
+      "representation",
+      "editing"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
   "neural-animation-layering-paper-notes": {
     "topics": [
       "character",
@@ -2234,6 +2268,19 @@
     ],
     "controls": [
       "time"
+    ]
+  },
+  "pdvae-paper-notes": {
+    "topics": [
+      "dance",
+      "representation"
+    ],
+    "methods": [
+      "phase-frequency"
+    ],
+    "controls": [
+      "space",
+      "interaction"
     ]
   },
   "personagest-paper-notes": {

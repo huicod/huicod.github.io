@@ -1,0 +1,175 @@
+---
+title: "[ICLR2024] NeRM：让同一段生成动作按不同帧率播放"
+description: "Learning Neural Representations for High-Framerate Human Motion Synthesis 全文解读。用一次侧移演示从 20 到 120 fps 的连续时间查询，核对潜空间扩散、原始帧率训练、动作码本与 clip-FID。"
+pubDate: "2026-11-21"
+badge: "Paper"
+tags: ["NeRM", "High-Framerate Motion", "Text-to-Motion", "Action-to-Motion", "Implicit Neural Representation", "Latent Diffusion", "HumanML3D", "Paper-Notes"]
+---
+
+<link rel="stylesheet" href="/paper-notes/paper-reading.css?v=20261026-batch" />
+<div class="paper-reading" lang="zh-CN">
+<nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
+
+[ICLR 终稿 PDF（含附录）][pdf] · [作者报告幻灯片][slides] · [会议补充材料][supp]
+
+<details class="paper-meta"><summary>论文信息与阅读范围 · ICLR 2024</summary>
+
+*NeRM: Learning Neural Representations for High-Framerate Human Motion Synthesis*。作者 Dong Wei、Huaijiang Sun、Bin Li、Xiaoning Sun、Shengxiang Hu、Weiqing Li、Jianfeng Lu。收录于 ICLR 2024。本文依据 21 页会议版（含附录 A–F），讨论文本生成动作、动作类别生成和无条件生成，数值均为作者实验结果。[会议记录][venue] · [OpenReview][record]
+
+</details>
+
+<span id="reading-1" class="reading-anchor"></span>
+## 一句话总结
+
+NeRM 先用扩散模型生成一个描述整段动作的 256 维向量，再把“哪一时刻、以什么帧率取样”交给一个共享解码器。这样可以用原始高帧率动捕学习两帧之间的细节。HumanML3D 的 120 fps 实验中，NeRM 的局部片段分布指标 clip-FID 为 **1.315**，作为对照的 MLD 先生成低帧率动作再插值，得分为 **7.878**，此项越低越好。[原图 2][p4] · [原表 2][p8]
+
+<span id="reading-2" class="reading-anchor"></span>
+## 研究背景与动机
+
+**领域现状**　文本生成动作常将不同来源的动捕统一到一个帧率。HumanML3D 的常用设置是 20 fps，KIT 为 12.5 fps。固定长度的时间网格便于把多个样本组成一批，也方便比较文本与动作是否匹配。[§4.1 与表 1][p7]
+
+**现有痛点**　人向右横移时，一只脚要短暂支撑，另一只脚先伸出再接触地面。若在 20 fps 下只保留每隔 50 毫秒的姿态，转移重心的顺序可能已丢失。两端姿态之间可以插出平滑旋转，但未必恢复出支撑脚曾经停稳的那一瞬。[原图 4b][p8]
+
+**核心矛盾**　既要让模型看到这些短暂变化，又不能把整段高帧率动作都塞进每次扩散迭代。以 9.8 秒为例，20 fps 只有 196 帧，250 fps 有 2,450 帧。若所有样本按最高帧率补齐，连低帧率样本也要占用这个时间维度。[附录 E.4][p19]
+
+**本文目标**　从帧率不同的动捕学习一个生成模型，能按指定帧率或指定时刻输出姿态，并分别接受自然语言、动作类别或无条件采样。论文还要检查，在高帧率下新生成的局部动作有没有接近真实动捕。[§3.2–4.1][p6]
+
+**切入角度**　把一段动作写成时间函数。动作内容相同，查看它的时刻可以改变。短片段既能提供原始帧率的监督，又能把一次计算处理的姿态数控制在固定范围。[原图 2–3][p5]
+
+**核心 idea**　两步分别解决“这次生成什么动作”和“这个动作在某一时刻是什么姿态”。前者在整段动作的潜向量上扩散；后者用时间坐标、帧率和动作先验解码。提高输出帧率时，可以复用同一个潜向量。[§3.1][p4] · [§3.2][p6]
+
+<span id="reading-3" class="reading-anchor"></span>
+## 方法详解
+
+### 整体框架
+
+训练分两阶段。先给每条训练序列分配一组可学习的分布参数，用不同位置、不同帧率的片段训练共享的隐式神经表示（INR）解码器；再让条件扩散模型学习这些动作潜向量的分布。使用时，扩散模型先采样一个新向量，解码器在用户选择的时刻输出连续值姿态。[原文图 2、式 1–4][p4] · [条件采样][p6]
+
+<figure class="reading-figure"><a href="/paper-notes/nerm/architecture.svg" target="_blank" rel="noopener"><img src="/paper-notes/nerm/architecture.svg" alt="NeRM 先联合优化每段动捕的潜分布与时间解码器，再让扩散模型学习潜向量。生成时输入条件和噪声得到同一个动作向量，选择帧率与时刻后按需解码出姿态。" loading="lazy" /></a><figcaption>根据原文图 2、图 3 和附录图 6 重绘。上半部的真实姿态只用于训练；最下方比较固定动作向量后，以两种时刻间隔读取同一动作的路径。点击可放大。</figcaption></figure>
+
+### 关键设计
+
+1. **一条序列共享一个动作潜变量。** 对第 i 条训练动作，作者直接优化高斯分布的均值与协方差，从中采样 256 维向量 zᵢ。同一条动作内的不同片段共享这组分布参数，所有动作共享一个解码器。生成片段要重建真实姿态，KL 损失把各条序列的潜分布约束在标准正态附近。新动作由扩散产生潜向量；对另一段输入视频或动捕做即时编码并非这里的推理入口。[式 1–4][p5] · [附录 B.1–B.2][p14]
+
+2. **用物理时间选片段，保留原采样密度。** 以最大时长为尺度把时间换成 −1 到 1 上的归一化坐标，取中心 v、帧率 s 和固定数量 m 个姿态。相同的 m 在高帧率下只覆盖一小段真实时间，在低帧率下则能看到更长的动作结构。先用固定帧率学习整段轮廓，随后引入不同原始帧率的片段。式 2 的输入同时含坐标、zᵢ 和帧率 s。[图 3、式 2][p5] · [渐进训练][p6]
+
+3. **让时间坐标可以参考动作码本。** 先用正弦与余弦把每个坐标变为傅里叶特征。256 个可学习查询从 HumanML3D 上预训练的 VQ 码本（512 个条目、每个 512 维）读取动作原型，经三层自注意力更新。每个时间点再用自己的傅里叶特征查询这组原型。这样得到增强的时间特征；输出姿态由 MLP 连续回归，模型没有为每帧挑选一个带动作名称的码。[CCA 图 6][p15] · [实现参数][p14] · [附录 D][p17]
+
+4. **条件扩散只采样动作内容。** 文本由冻结的 CLIP ViT-L/14 编码，动作类别用可学习嵌入。带长跳连的 Transformer 在有噪的 z 上预测噪声，采样时采用无分类器引导。完成潜空间采样后，共享的九层 MLP 按时间坐标、帧率和 z 输出姿态。文本与无条件任务使用根速度、关节位置／速度／旋转和足接触标签等特征，类别任务采用 SMPL 表示。[式 5–6][p6] · [附录 A–B][p14] · [附录 D][p17]
+
+### 一个完整例子
+
+沿用原图 4b 的例子：一个人向右挪步，向前走，然后绕回来。下表用其中 **1 秒**说明接口。帧数是按采样间隔计算的示意，论文没有给这条样本的潜向量取值。[原文图 4][p8]
+
+| 环节 | 用同一个侧移动作说明 |
+| --- | --- |
+| 确定要生成的动作 | 描述进入 CLIP。给定文本条件，从随机噪声迭代采样出一个 256 维 z。把 z 固定，后续比较才对应同一次动作采样。 |
+| 按 20 fps 播放 | 取一段左闭右开的 1 秒区间，按 0、50、100…950 毫秒查询，共 20 个姿态。实际送入网络的是对应的归一化坐标与帧率。 |
+| 放慢观察脚部 | 保留 z，将输出设为 100 fps，改成间隔 10 毫秒查询，共 100 个姿态。图 4b 用这个帧率展示一只脚稳定支撑、另一只脚移动的过程。 |
+| 单看某一时刻 | 也可以只查询例如第 67 毫秒的姿态，省去生成之前所有帧的步骤。由于帧率本身也是条件，两种帧率在重合时刻能否达到数值上的完全相同，论文没有给出保证。 |
+
+### 训练与推理
+
+附录报告 INR 阶段批量 4,096、训练 20,000 个 epoch，潜空间扩散阶段批量 64、训练 3,000 个 epoch，使用 AdamW 和 NVIDIA GeForce RTX 3090。扩散训练设 1,000 步，生成采样用 50 步。图 8 报告每条序列平均耗时 0.295 秒，MLD 为 0.366 秒，T2M 为 0.052 秒；这些是该设置下的推理时间，作者没有给出总训练 GPU 小时。长序列按不重叠片段逐段解码，共用动作潜变量与时间坐标。[附录 B.1][p14] · [附录 B.3][p15] · [原图 8][p19]
+
+<span id="reading-4" class="reading-anchor"></span>
+## 实验关键数据
+
+### 把原始帧率保留下来，普通帧率生成也有收益吗？
+
+原表 1 节选。各方法都使用真实时长。HumanML3D 按 20 fps、KIT 按 12.5 fps 评测。R@3 是在一条配对描述与 31 条干扰描述中找到正确描述的前三名命中率。下表列均值，原表另列 95% 置信区间。[原表 1][p7] · [指标定义][p15]
+
+| 方法 | HumanML3D FID ↓ | HumanML3D R@3 ↑ | KIT FID ↓ | KIT R@3 ↑ |
+| --- | ---: | ---: | ---: | ---: |
+| MDM | 0.544 | 0.611 | 0.497 | 0.396 |
+| MLD | 0.473 | 0.772 | **0.404** | 0.734 |
+| NeRM，固定帧率训练 | 0.489 | 0.774 | 0.522 | 0.727 |
+| NeRM，原始帧率训练 | **0.389** | **0.779** | 0.472 | **0.736** |
+
+NeRM 自身的两行最有解释力：换用原始帧率后，两个数据集的 FID 与文本检索数值均改善。横向比较则各有取舍，KIT 的最低 FID 属于 MLD，NeRM 的 R@3 略高，两者的该项置信区间重叠。[原表 1][p7]
+
+### 同样输出 120 fps，直接生成和插值的差距多大？
+
+原表 2，HumanML3D 局部片段的 **clip-FID ↓**。作者从真实和生成动作中，在目标帧率下裁剪固定帧数的短片段并比较特征分布。这里的 clip 指动作片段。对照组先按常规帧率生成，再用球面线性插值（SLERP）补到目标帧率。[原表 2][p8] · [原图 7 与附录 C.2][p16]
+
+| 方法 | 20 fps | 40 fps | 60 fps | 100 fps | 120 fps |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| T2M | 1.067 | 2.831 | 6.442 | 9.182 | 11.264 |
+| MDM | 0.544 | 1.882 | 4.605 | 5.966 | 8.401 |
+| MLD | 0.473 | 1.465 | 3.816 | 5.138 | 7.878 |
+| **NeRM** | **0.389** | **0.493** | **0.680** | **0.903** | **1.315** |
+
+在同一目标帧率下，直接利用高帧率数据学到的局部动作分布更接近动捕。图 4、图 9 给出对应的脚部定性案例。这个分数汇总众多局部片段，只凭它无法判断某一次侧移的具体哪一帧脚滑，更不能推出所有生成的脚都锁在地面。[原图 4][p8] · [原图 9][p20]
+
+### 消融：哪些设计改善重建，哪些改善新动作采样？
+
+原表 5–7 节选，各行取 HumanML3D 的 **120 fps**。MRE 衡量冗余动作特征与已知动作的重建误差；clip-FID 评估新生成样本的分布，两者越低越好。[原表 5–6][p17] · [原表 7][p18]
+
+| 设置 | 重建 MRE ↓ | 生成 clip-FID ↓ |
+| --- | ---: | ---: |
+| 省去时间编码（表 5） | 0.091 | 2.944 |
+| 只用傅里叶时间编码（表 5） | 0.043 | 1.717 |
+| 去掉变分建模，每条动作直接优化单个 z（表 6） | **0.027** | 14.654 |
+| 解码器换为 Transformer（表 7） | 0.037 | **1.199** |
+| 完整 NeRM，码本增强＋变分潜变量＋MLP | 0.038 | 1.315 |
+
+- **码本增强。** 在 120 fps，从单纯傅里叶时间编码换到码本增强，clip-FID 从 1.717 降到 1.315。100 fps 的原表却列为 0.142 对 0.903，数值与该表的加粗和“各帧率最佳”的文字描述不一致，因此保留这个例外。[原表 5][p17]
+- **变分潜变量。** 单个 z 可以把已知动作拟合得更紧，但在 120 fps，采样新动作的 clip-FID 恶化到 14.654。作者采用重建误差略高的变分模型，保留可以采样的连续空间。[原表 6][p17]
+- **解码器与时间尺度。** Transformer 在 120 fps 的生成分数略好，作者为推理开销选择 MLP。另一组 20 fps 实验仅把直接输入的帧序号换成归一化时间，FID 从 0.958 降至 0.389。[原表 7][p18] · [原表 9][p19]
+
+**其他任务怎样读？** 类别条件实验在 UESTC 和 HumanAct12 的原始帧率下进行。UESTC 的识别准确率 NeRM 为 0.956、MDM 为 0.950，但测试 FID 分别为 14.23、12.81。另有部分 AMASS 数据上的无条件生成比较。这里的证据分别支持任务适用性，高帧率生成的直接对照仍是表 2。[表 3 与图 5][p9]
+
+<span id="reading-5" class="reading-anchor"></span>
+## 亮点与洞察
+
+- **统一物理时间，保留不同密度的监督。** 同样的 20 个真实姿态，在 20 fps 大约覆盖一秒，在 100 fps 只覆盖约五分之一秒。前后两种片段可分别教模型整体转向与局部交接，固定片段帧数又能限制批训练规模。[片段采样][p5]
+- **将生成分布与播放采样分开检查。** 表 6 说明一个动作更容易重建，并不意味着从训练集之外采样更可靠；表 2 则专门检查提高输出帧率时的局部质量。两张表回答不同问题。[原表 6][p17] · [原表 2][p8]
+
+<span id="reading-6" class="reading-anchor"></span>
+## 局限与展望
+
+- **能选择时刻，尚不能指定那个时刻的姿态。** 输入第 67 毫秒可以读出生成动作；要保证右脚恰好落在给定世界坐标、指定帧一定经过给定姿态，需要额外的控制或约束求解。附录把关键帧和轨迹控制列为后续方向。[局限讨论][p21]
+- **帧率上限有数据含义。** 时间函数可以加密查询，实际可学到的快速运动仍取决于动捕的采样率、动作内容及覆盖量。高帧率生成实验主表最高测试至 120 fps；原始数据中出现 250 fps，不等于系统已在所有帧率上通过同等验证。[原表 2][p8] · [附录 B.3][p15]
+- **训练和角色范围。** 每新增一条训练动作就要优化它自己的潜分布。附录报告训练较慢，也指出模型未覆盖可变化的身体形状。生成一条新动作只需采样，不必为每个文本重新训练。[附录 B.1][p14] · [附录 F][p21]
+
+<span id="reading-7" class="reading-anchor"></span>
+## 相关工作与启发
+
+- **NeRMo（ECCV 2024）。** 两篇有共同作者，也都让网络接受时间查询。NeRM 先采样一段新动作的潜变量，可以要求它在更多时刻输出姿态。NeRMo 则从观测到的历史骨架拟合当前片段，用来查询缺失与未来的位置。想把视频里的某个真实人物接着往下预测，应看后者。[NeRMo 站内解读](/blog/eccv2024-nermo/)
+
+- **NeMF。** 两者都以时间坐标读取姿态。NeMF 还研究用解码误差优化潜变量以满足观测；NeRM 的核心实验放在多帧率动捕学习及条件采样，另一篇的编辑能力需要独立看待。[NeMF 站内解读][nemf] · [NeRM §2–3][p3]
+- **T2M-GPT。** T2M-GPT 把文本生成动作写成离散动作码的逐个预测。NeRM 复用其预训练码本增强时间特征，真正由扩散采样的是一个整段连续向量。已有的动作码本也可以给时间解码器提供先验。[T2M-GPT 站内解读][t2mgpt] · [NeRM 码本来源][p14]
+- **Motion Latent Diffusion（MLD）。** 两者都在潜空间去噪。MLD 的 VAE 从固定帧率序列编码动作，NeRM 则直接学习训练序列的潜分布，并让解码器接受时间坐标。表 1 的固定帧率训练对照，比只比较两种方法各自最好的分数更能区分架构与数据带来的收益。[MLD 论文][mld] · [NeRM 表 1][p7]
+- **启发。** 如果目标是精确控制接触，可沿用高帧率查询以细看交界，再把接触足的世界坐标漂移、落地时刻偏差与分布指标分列。前两项会补上 clip-FID 没有回答的逐事件问题。[原图 4][p8] · [局限讨论][p21]
+
+<span id="reading-8" class="reading-anchor"></span>
+## 来源
+
+- ICLR 2024 会议终稿，共 21 页。架构见图 2、3、6，主实验见表 1–3；附录含重建、模块消融、推理时间、用户研究与限制。[ICLR 会议记录][venue] · [原始 PDF][pdf] · [OpenReview][record]
+- 作者在 ICLR 提供的补充包包含附录 PDF 与演示视频，可用来逐帧对照脚部支撑。会议另提供报告幻灯片。本次未独立训练或运行模型。[作者幻灯片][slides] · [会议补充材料][supp]
+
+</div>
+
+[venue]: https://proceedings.iclr.cc/paper_files/paper/2024/hash/9e3b203e72c4e058de26d02a92a81844-Abstract-Conference.html
+[record]: https://openreview.net/forum?id=sOJriBlOFd
+[pdf]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf
+[slides]: https://iclr.cc/media/iclr-2024/Slides/17649.pdf
+[supp]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Supplementary-Conference.zip
+[nemf]: /blog/neurips2022-nemf/
+[t2mgpt]: /blog/cvpr2023-t2m-gpt/
+[mld]: https://arxiv.org/abs/2212.04048
+[p3]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=3
+[p4]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=4
+[p5]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=5
+[p6]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=6
+[p7]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=7
+[p8]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=8
+[p9]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=9
+[p14]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=14
+[p15]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=15
+[p16]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=16
+[p17]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=17
+[p18]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=18
+[p19]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=19
+[p20]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=20
+[p21]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=21

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="936" viewBox="0 0 900 936" role="img" aria-labelledby="title desc">
+  <title id="title">PDVAE 从同组舞姿学习音乐先验，再逐人生成</title>
+  <desc id="desc">上半部为训练，动作与音乐产生后验，与只听音乐的先验对齐，同组双人接受一致性监督。下半部为推理，同一首音乐的先验复用，每位舞者采样振幅和相移，结合音乐解码局部动作，再根据起点和已生成的邻居预测根节点轨迹。</desc>
+  <defs>
+    <marker id="tip" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L9 4.5L0 9Z" fill="#426269"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;fill:#193238}
+      .title{font-weight:700;font-size:27px}.section{font-weight:700;font-size:21px}.name{font-weight:700;font-size:18px}.body{font-size:15px}.caption{font-size:15px;fill:#465e62}
+      .card{fill:#fff;stroke:#a2b5b2;stroke-width:1.4}.edge{fill:none;stroke:#426269;stroke-width:2;marker-end:url(#tip)}
+    </style>
+  </defs>
+  <rect width="900" height="936" rx="18" fill="#fbfcf9"/>
+  <text x="29" y="44" class="title">PDVAE 怎样让多人共享节奏，又跳出不同的舞姿？</text>
+  <text x="30" y="73" class="caption">同一首音乐只算一次先验。每位舞者有自己的相位曲线、身体动作和舞台轨迹。</text>
+  <rect x="24" y="99" width="852" height="282" rx="14" fill="#f0f5e9" stroke="#b2c29e"/>
+  <text x="45" y="134" class="section">训练　用同队动作教音乐先验学会哪些变化合理</text>
+  <rect x="45" y="153" width="365" height="83" rx="9" class="card"/>
+  <text x="62" y="183" class="name">同队舞者的真实动作 + 音乐</text>
+  <text x="62" y="211" class="body">分别编码两人的动作，交叉注意音乐。</text>
+  <rect x="487" y="153" width="367" height="83" rx="9" class="card"/>
+  <text x="504" y="183" class="name">每人的后验 q(z | 动作, 音乐)</text>
+  <text x="504" y="211" class="body">同队两人的分布与相位特征彼此靠近。</text>
+  <path d="M410 194H485" class="edge"/>
+  <rect x="45" y="260" width="365" height="86" rx="9" class="card"/>
+  <text x="62" y="292" class="name">只输入音乐，学习先验 p(z | 音乐)</text>
+  <text x="62" y="320" class="body">用自注意力取得与整段音乐相关的特征。</text>
+  <rect x="487" y="260" width="367" height="86" rx="9" class="card"/>
+  <text x="504" y="292" class="name">重建真实舞姿，同时对齐分布</text>
+  <text x="504" y="320" class="body">姿态重建 + 后验与先验的 KL + 组内一致性</text>
+  <path d="M410 304H485" class="edge"/>
+  <path d="M671 236V258" class="edge"/>
+  <rect x="24" y="400" width="852" height="456" rx="14" fill="#ebf3f3" stroke="#9cbac0"/>
+  <text x="45" y="435" class="section">生成　同一首音乐逐人采样，再把舞者放入同一舞台</text>
+  <rect x="45" y="457" width="305" height="78" rx="9" class="card"/>
+  <text x="62" y="487" class="name">整队共享的音乐先验</text>
+  <text x="62" y="514" class="body">256 个通道的频率、偏置及采样参数</text>
+  <rect x="425" y="457" width="403" height="78" rx="9" class="card"/>
+  <text x="442" y="487" class="name">第 n 人采样振幅 A 和相移 S</text>
+  <text x="442" y="514" class="body">沿用音乐给出的频率 F 与偏置 B。</text>
+  <path d="M350 496H423" class="edge"/>
+  <rect x="45" y="573" width="305" height="80" rx="9" class="card"/>
+  <text x="62" y="604" class="name">音乐特征</text>
+  <text x="62" y="631" class="body">解码器同时读取歌曲上下文。</text>
+  <rect x="425" y="573" width="403" height="80" rx="9" class="card"/>
+  <text x="442" y="604" class="name">展开相位曲线，解码局部骨架</text>
+  <text x="442" y="631" class="body">每个时刻的隐藏曲线 → 24 个关节的动作</text>
+  <path d="M625 535V571" class="edge"/>
+  <path d="M350 614H423" class="edge"/>
+  <rect x="45" y="700" width="305" height="84" rx="9" class="card"/>
+  <text x="62" y="731" class="name">初始站位 + 邻近舞者轨迹</text>
+  <text x="62" y="760" class="body">从之前已生成人物中选择邻居。</text>
+  <rect x="425" y="700" width="403" height="84" rx="9" class="card"/>
+  <text x="442" y="731" class="name">全局轨迹预测器</text>
+  <text x="442" y="760" class="body">输入局部动作和相位，估计根速度与高度。</text>
+  <path d="M625 653V698" class="edge"/>
+  <path d="M350 741H423" class="edge"/>
+  <path d="M490 784V818H200V786" class="edge" stroke-dasharray="6 5"/>
+  <text x="241" y="843" class="caption">新路径加入场景，可供下一人参考</text>
+  <path d="M708 784V869" class="edge"/>
+  <rect x="24" y="872" width="852" height="47" rx="10" fill="#fbefd8" stroke="#d3bb8e"/>
+  <text x="45" y="902" class="name">输出　每位舞者的局部舞姿与全局轨迹，合成同一舞台上的多人动作</text>
+</svg>

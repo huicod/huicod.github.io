@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1035" role="img" aria-labelledby="title desc">
+  <title id="title">ICGN 如何按指定帧数生成伴随语音的手势</title>
+  <desc id="desc">对同一段声音取 MFCC、音量和起音包络，生成两组音频特征。所需的时间坐标经傅里叶编码，分别查询两组特征。Transformer 解码粗动作，卷积补细动作，逐帧相加得到输出。训练使用平滑姿态、姿态差值及完整姿态监督。图注明论文对文本和身份条件的说明。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.4" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#38565a"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#182f32}
+      .heading{font-size:26px;font-weight:700}.group{font-size:21px;font-weight:700}.key{font-size:18px;font-weight:700}.detail{font-size:16px}.minor{font-size:15px;fill:#43575b}
+      .box{fill:#fff;stroke:#95b0ac;stroke-width:1.4}.arrow{fill:none;stroke:#38565a;stroke-width:2;marker-end:url(#arrow)}.join{fill:none;stroke:#38565a;stroke-width:2}.condition{fill:none;stroke:#856124;stroke-dasharray:6 4;stroke-width:2;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="900" height="1035" rx="16" fill="#fbfaf6"/>
+  <text x="32" y="45" class="heading">ICGN　同一段语音，怎样生成指定帧数的手势？</text>
+  <text x="33" y="76" class="detail">实线跟随语音和动作，虚线代表同一组目标时间坐标进入两路注意力。</text>
+
+  <rect x="24" y="103" width="852" height="193" rx="14" fill="#edf4f8" stroke="#a5bbc6"/>
+  <text x="44" y="139" class="group">语音条件　由同一段录音提取两组线索</text>
+  <rect x="46" y="163" width="386" height="104" rx="9" class="box"/>
+  <text x="62" y="193" class="key">内容分支　MFCC → 编码器 Ec</text>
+  <text x="62" y="221" class="detail">提取声音的倒谱特征，编码出供粗动作</text>
+  <text x="62" y="245" class="detail">分支使用的一串特征。</text>
+  <rect x="468" y="163" width="386" height="104" rx="9" class="box"/>
+  <text x="484" y="193" class="key">表现分支　音量、起音 → 编码器 Ee</text>
+  <text x="484" y="221" class="detail">从振幅构建音量标记，计算起音强度</text>
+  <text x="484" y="245" class="detail">包络，编码出第二组特征。</text>
+
+  <path d="M239 268V307M661 268V307" class="join"/>
+  <rect x="24" y="310" width="852" height="476" rx="14" fill="#eaf4ef" stroke="#9fbcae"/>
+  <text x="44" y="345" class="group">按时间查询　每个时刻读取整段声音中的相关特征</text>
+  <rect x="184" y="366" width="532" height="73" rx="9" fill="#fff7df" stroke="#bf9b54"/>
+  <text x="202" y="396" class="key">选择输出帧数 → 在 [−1, 1] 取样 → Fourier 编码</text>
+  <text x="202" y="422" class="detail">每个时间坐标产生一个查询向量 Q，两路共享查询网格。</text>
+  <path d="M338 440V455H239V476" class="condition"/>
+  <path d="M562 440V455H661V476" class="condition"/>
+  <rect x="311" y="447" width="278" height="28" rx="6" class="box"/>
+  <text x="328" y="467" class="minor">文本、说话者身份特征 → 拼入条件</text>
+  <path d="M311 463H280V478" class="arrow"/><path d="M589 463H620V478" class="arrow"/>
+  <path d="M239 307H40V518H55" class="arrow"/>
+  <path d="M661 307H860V518H845" class="arrow"/>
+  <rect x="59" y="479" width="362" height="77" rx="9" class="box"/>
+  <text x="75" y="510" class="key">多头注意力　查询内容特征</text>
+  <text x="75" y="537" class="detail">音频提供键和值，输出每个时刻的隐特征。</text>
+  <rect x="479" y="479" width="362" height="77" rx="9" class="box"/>
+  <text x="495" y="510" class="key">多头注意力　查询表现特征</text>
+  <text x="495" y="537" class="detail">另一组键和值，对应同样数量的时间位置。</text>
+  <path d="M239 557V586" class="arrow"/><path d="M661 557V586" class="arrow"/>
+  <rect x="59" y="589" width="362" height="75" rx="9" class="box"/>
+  <text x="75" y="619" class="key">Transformer 解码器 → 粗动作</text>
+  <text x="75" y="646" class="detail">输出整副姿态的主要运动轮廓。</text>
+  <rect x="479" y="589" width="362" height="75" rx="9" class="box"/>
+  <text x="495" y="619" class="key">一维卷积 → 细动作</text>
+  <text x="495" y="646" class="detail">输出同一姿态维度上的局部变化。</text>
+  <path d="M239 665V682H661V665" class="join"/><path d="M450 682V700" class="arrow"/>
+  <rect x="172" y="703" width="556" height="62" rx="9" fill="#fff" stroke="#67a18d" stroke-width="1.7"/>
+  <text x="190" y="740" class="key">同一时刻逐元素相加 → 所请求帧数的连续值姿态序列</text>
+
+  <rect x="24" y="804" width="852" height="148" rx="14" fill="#f5efe7" stroke="#c4ab8f"/>
+  <text x="44" y="841" class="group">训练监督　把参考动作也拆开，分别指导两条输出</text>
+  <text x="46" y="877" class="detail">真实姿态 → 时间均值滤波得到粗动作目标，平滑分量与原姿态的差值作为细动作目标。</text>
+  <text x="46" y="908" class="detail">分别约束粗动作、细动作和最终姿态，另加说话者风格多样性与对抗损失。</text>
+  <text x="46" y="933" class="minor">训练时才需要参考姿态。式 5 的两路相加与式 7 的差值符号在正文中单独说明。</text>
+  <text x="32" y="985" class="minor">据原文图 3、式 1–17 重绘。图 3 标注两路注意力共享权重；分支式 16–17 展开的是音频路径。</text>
+  <text x="32" y="1011" class="minor">帧数决定输出网格密度。动作幅度、情绪类型与手指目标没有单独的用户输入接口。</text>
+</svg>

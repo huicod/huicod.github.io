@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1140" viewBox="0 0 900 1140" role="img" aria-labelledby="title desc">
+  <title id="title">NeRM 从多帧率动捕学习连续时间动作场</title>
+  <desc id="desc">先将原始动捕片段与时间坐标对应，用重建损失和 KL 正则学习每条序列的潜分布及共享解码器。再训练扩散模型生成新的动作潜向量。推理选定时刻与帧率，按需读取连续姿态。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 8,4 0,8Z" fill="#385e61"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#173335}
+      .title{font-size:27px;font-weight:700}.lead{font-size:16px}.group{font-size:21px;font-weight:700}
+      .name{font-size:18px;font-weight:700}.body{font-size:15px}.caption{font-size:14px;fill:#36585a}
+      .card{fill:#fff;stroke:#a7b9b4;stroke-width:1.4}
+      .arrow,.line,.supervision{fill:none;stroke:#385e61;stroke-width:2;stroke-linejoin:round}
+      .arrow,.supervision{marker-end:url(#arrow)}.supervision{stroke-dasharray:5 5}
+    </style>
+  </defs>
+  <rect width="900" height="1140" rx="16" fill="#fbfcf8"/>
+  <text x="30" y="46" class="title">NeRM 怎样用同一个动作向量生成不同帧率？</text>
+  <text x="31" y="77" class="lead">动作内容保存在潜向量中，时间坐标与帧率决定解码器在哪些位置输出姿态。</text>
+
+  <rect x="23" y="104" width="854" height="425" rx="14" fill="#edf4ec" stroke="#adc6b0"/>
+  <text x="44" y="140" class="group">训练一　学习每条序列的潜分布与共享解码器</text>
+  <rect x="43" y="163" width="238" height="87" rx="9" class="card"/>
+  <text x="57" y="192" class="name">序列 i 的高斯分布</text>
+  <text x="57" y="218" class="body">直接学习均值与协方差</text>
+  <text x="57" y="239" class="caption">同一序列的不同片段共享</text>
+  <rect x="315" y="163" width="241" height="87" rx="9" class="card"/>
+  <text x="329" y="192" class="name">真实动捕与帧率 s</text>
+  <text x="329" y="218" class="body">随机中心 v，取 m 个姿态</text>
+  <text x="329" y="239" class="caption">保留采样时刻与对应真值</text>
+  <rect x="591" y="163" width="266" height="87" rx="9" class="card"/>
+  <text x="605" y="192" class="name">预训练动作码本</text>
+  <text x="605" y="218" class="body">查询读取 512 个动作原型</text>
+  <text x="605" y="239" class="caption">三个自注意力层更新查询特征</text>
+
+  <path d="M162 250V277" class="arrow"/>
+  <path d="M436 250V277" class="arrow"/>
+  <path d="M724 250V264H641V277" class="arrow"/>
+  <rect x="43" y="279" width="238" height="65" rx="9" class="card"/>
+  <text x="57" y="307" class="name">采样 256 维 zᵢ</text>
+  <text x="57" y="330" class="body">重参数化，允许梯度回传</text>
+  <rect x="315" y="279" width="407" height="65" rx="9" class="card"/>
+  <text x="330" y="307" class="name">码本增强的时间坐标</text>
+  <text x="330" y="330" class="body">归一化时间的傅里叶特征查询动作原型</text>
+  <path d="M162 344V356H406V367" class="arrow"/>
+  <path d="M518 344V367" class="arrow"/>
+  <path d="M335 250H298V387H316" class="arrow"/>
+  <rect x="318" y="369" width="404" height="69" rx="9" class="card"/>
+  <text x="332" y="396" class="name">共享 INR 解码器 · 九层 MLP</text>
+  <text x="332" y="422" class="body">结合 zᵢ、增强坐标和帧率嵌入，预测 m 帧</text>
+  <path d="M517 438V463" class="arrow"/>
+  <path d="M546 250V258H837V486H724" class="supervision"/>
+  <rect x="318" y="465" width="404" height="44" rx="9" class="card"/>
+  <text x="332" y="493" class="body">真实姿态监督重建，KL 正则约束每条潜分布</text>
+  <text x="747" y="468" class="caption">姿态真值</text>
+  <text x="46" y="479" class="caption">实线表示特征或姿态流向</text>
+  <text x="46" y="501" class="caption">虚线表示训练监督</text>
+
+  <rect x="23" y="551" width="854" height="206" rx="14" fill="#f0f2fa" stroke="#b4bfd6"/>
+  <text x="44" y="589" class="group">训练二　用配对条件学习动作潜向量的分布</text>
+  <rect x="44" y="613" width="239" height="86" rx="9" class="card"/>
+  <text x="58" y="642" class="name">训练一得到的 zᵢ</text>
+  <text x="58" y="667" class="body">加入已知强度的高斯噪声</text>
+  <text x="58" y="688" class="caption">扩散在 256 维空间进行</text>
+  <path d="M284 656H316" class="arrow"/>
+  <rect x="318" y="613" width="250" height="86" rx="9" class="card"/>
+  <text x="332" y="642" class="name">条件去噪 Transformer</text>
+  <text x="332" y="667" class="body">接收带噪向量和扩散步</text>
+  <text x="332" y="688" class="caption">拼入文本或类别嵌入</text>
+  <path d="M570 656H602" class="arrow"/>
+  <rect x="604" y="613" width="251" height="86" rx="9" class="card"/>
+  <text x="618" y="642" class="name">训练信号</text>
+  <text x="618" y="667" class="body">比较预测噪声与所加噪声</text>
+  <text x="618" y="688" class="caption">学到从噪声采样新动作的先验</text>
+  <text x="46" y="731" class="caption">文本用冻结的 CLIP 编码，类别用可学习嵌入；论文也评测了无条件采样。</text>
+
+  <rect x="23" y="779" width="854" height="337" rx="14" fill="#eaf4f2" stroke="#9ebfb9"/>
+  <text x="44" y="817" class="group">生成　先采样一个动作，再决定怎样观察它</text>
+  <rect x="44" y="839" width="234" height="74" rx="9" class="card"/>
+  <text x="58" y="869" class="name">文本／类别＋随机噪声</text>
+  <text x="58" y="895" class="body">条件随任务提供</text>
+  <path d="M280 876H312" class="arrow"/>
+  <rect x="314" y="839" width="242" height="74" rx="9" class="card"/>
+  <text x="328" y="869" class="name">潜空间反向扩散</text>
+  <text x="328" y="895" class="body">采样 50 步，得到新向量 z</text>
+  <path d="M558 876H595" class="arrow"/>
+  <rect x="597" y="839" width="259" height="74" rx="9" class="card"/>
+  <text x="611" y="869" class="name">复用共享解码器</text>
+  <text x="611" y="895" class="body">输入 z、帧率 s 与时间坐标</text>
+  <path d="M724 913V941H242V964" class="arrow"/>
+  <path d="M724 942V964" class="arrow"/>
+  <rect x="44" y="966" width="389" height="81" rx="9" class="card"/>
+  <text x="60" y="995" class="name">20 fps 的 1 秒片段</text>
+  <text x="60" y="1023" class="body">0、50、100 … 950 毫秒 → 20 个姿态</text>
+  <rect x="466" y="966" width="390" height="81" rx="9" class="card"/>
+  <text x="482" y="995" class="name">100 fps 的同一秒</text>
+  <text x="482" y="1023" class="body">0、10、20 … 990 毫秒 → 100 个姿态</text>
+  <text x="46" y="1087" class="caption">两条查询路径固定同一 z，示意采用左闭右开区间。长序列可分块查询后按时间组合。</text>
+</svg>

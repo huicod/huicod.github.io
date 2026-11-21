@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1104" role="img" aria-labelledby="title desc">
+  <title id="title">NeRMo 如何用观测到的运动建立可查询的姿态函数</title>
+  <desc id="desc">共享网络将连续时间、身体坐标编号及码本先验变成特征，并通过掩码区分可见位置。每个新片段的可见历史特征和数值用来拟合线性输出层。该层可以回答过去缺失和未来两个查询。训练时，预测未来和真实未来之间的差异监督共享网络。</desc>
+  <defs>
+    <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4L0 8Z" fill="#356368"/></marker>
+    <marker id="learn" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4L0 8Z" fill="#946128"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;fill:#17363a}
+      .title{font-weight:700;font-size:28px}.group{font-size:21px;font-weight:700}.key{font-size:18px;font-weight:700}
+      .small{font-size:15px}.note{font-size:14px;fill:#36575b}
+      .box{fill:#fff;stroke:#97b3b4;stroke-width:1.5}.arrow,.branch{fill:none;stroke:#356368;stroke-width:2}
+      .arrow{marker-end:url(#arr)}.train{fill:none;stroke:#946128;stroke-width:2;stroke-dasharray:6 5;marker-end:url(#learn)}
+    </style>
+  </defs>
+  <rect width="900" height="1104" rx="16" fill="#fafaf6"/>
+  <text x="31" y="46" class="title">NeRMo 如何从有限观测得到连续的姿态函数？</text>
+  <text x="32" y="76" class="small">同一个身体坐标在不同动作里的取值，由可见历史拟合出的线性层决定。</text>
+
+  <rect x="25" y="104" width="850" height="398" rx="15" fill="#edf4f1" stroke="#a4c4b8"/>
+  <text x="46" y="142" class="group">共享特征网络　给出待查位置的表示</text>
+  <rect x="46" y="164" width="238" height="79" rx="8" class="box"/>
+  <text x="60" y="193" class="key">连续时间 t</text>
+  <text x="60" y="221" class="small">归一化，再算正弦／余弦</text>
+  <rect x="305" y="164" width="261" height="79" rx="8" class="box"/>
+  <text x="319" y="193" class="key">身体坐标编号 j</text>
+  <text x="319" y="221" class="small">按编号查可学习向量</text>
+  <rect x="609" y="164" width="243" height="79" rx="8" class="box"/>
+  <text x="623" y="193" class="key">预训练 VQ-VAE 码本</text>
+  <text x="623" y="221" class="small">1,024 个动作原型</text>
+  <path d="M164 244V259H435V244" class="branch"/>
+  <path d="M301 259V277" class="arrow"/>
+  <path d="M730 244V277" class="arrow"/>
+  <rect x="46" y="279" width="520" height="67" rx="8" class="box"/>
+  <text x="61" y="307" class="key">拼接时间特征和身体坐标特征</text>
+  <text x="61" y="330" class="small">每个查询位置一行，输入为 256 ＋ 256 维</text>
+  <rect x="609" y="279" width="243" height="67" rx="8" class="box"/>
+  <text x="623" y="307" class="key">读出并更新原型特征</text>
+  <text x="623" y="330" class="small">可学习查询＋自注意力</text>
+  <path d="M304 347V363H730V347" class="branch"/><path d="M487 363V379" class="arrow"/>
+  <rect x="46" y="381" width="806" height="91" rx="8" class="box"/>
+  <text x="61" y="410" class="key">坐标读取原型 → 残差全连接块 → 掩码空间注意力</text>
+  <text x="61" y="436" class="small">可见性掩码标明哪些值实际存在。空间注意力结合可见坐标之间及所有坐标之间的关系。</text>
+  <text x="61" y="458" class="small">输出为每个位置的 1,024 维特征。下方分别使用历史可见位置和待查询位置的特征。</text>
+
+  <path d="M449 503V524" class="arrow"/>
+  <rect x="25" y="527" width="850" height="408" rx="15" fill="#eaf2f8" stroke="#a1bace"/>
+  <text x="46" y="562" class="group">新片段上的推理　一次拟合，可多次查询</text>
+  <rect x="46" y="586" width="239" height="76" rx="8" class="box"/>
+  <text x="60" y="615" class="key">可见历史特征 Yₕ</text>
+  <text x="60" y="642" class="small">仅取有实际测量值的位置</text>
+  <rect x="303" y="586" width="252" height="76" rx="8" class="box"/>
+  <text x="317" y="615" class="key">匹配的历史测量 Xₕ</text>
+  <text x="317" y="642" class="small">该片段测得的骨架坐标值</text>
+  <rect x="593" y="586" width="259" height="76" rx="8" class="box"/>
+  <text x="607" y="615" class="key">待查位置的特征 Yq</text>
+  <text x="607" y="642" class="small">指定的时间与身体坐标编号</text>
+  <path d="M164 663V677H429V663" class="branch"/><path d="M298 677V693" class="arrow"/>
+  <rect x="46" y="695" width="509" height="71" rx="8" class="box"/>
+  <text x="61" y="724" class="key">岭回归求本片段的最后一层 W、b</text>
+  <text x="61" y="749" class="small">用 Yₕ 拟合 Xₕ；同一片段的查询共用这组参数。</text>
+  <path d="M556 731H595" class="arrow"/><path d="M720 663V693" class="arrow"/>
+  <rect x="597" y="695" width="255" height="71" rx="8" class="box"/>
+  <text x="612" y="724" class="key">位置预测 Yq W ＋ b</text>
+  <text x="612" y="749" class="small">按关节重组成三维骨架</text>
+  <path d="M723 767V788H231V804" class="arrow"/><path d="M668 788V804" class="arrow"/>
+  <rect x="46" y="807" width="377" height="76" rx="8" class="box"/>
+  <text x="61" y="837" class="key">历史查询　修复缺失值</text>
+  <text x="61" y="861" class="small">例如观测窗口内左腕数据缺失的那一帧</text>
+  <rect x="475" y="807" width="377" height="76" rx="8" class="box"/>
+  <text x="490" y="837" class="key">未来查询　预测新位置</text>
+  <text x="490" y="861" class="small">例如最后一次观测后 140 毫秒的全身</text>
+  <text x="46" y="911" class="note">历史真值只用于拟合当前片段；未来查询需要提供查询时刻，推理时不提供未来骨架。</text>
+
+  <rect x="25" y="962" width="850" height="121" rx="15" fill="#faf1df" stroke="#cfb373"/>
+  <text x="46" y="996" class="group">训练时如何学会外推？</text>
+  <text x="46" y="1026" class="small">在每条训练动作上重复上方步骤，用其真实未来监督预测值。</text>
+  <text x="46" y="1055" class="small">误差通过可微的线性解回传，更新共享网络、坐标编码与正则项，为下一段历史学习可复用的特征。</text>
+  <path d="M26 1026H12V425H43" class="train"/>
+</svg>
