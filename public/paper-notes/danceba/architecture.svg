@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 998" role="img" aria-labelledby="title desc">
+  <title id="title">Danceba 怎样从音乐和起始动作码生成一段舞蹈</title>
+  <desc id="desc">训练时用两个预训练动作码本将动捕变成上下身编号。生成器把音乐特征与两路历史码组成三路序列，再融合音乐特征的短时傅里叶相角。经过门控因果注意力和三条并行的 Mamba 分支，每步预测一对动作码。编号接回历史，最后解码成连续姿态。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L8 4L0 8Z" fill="#395f60"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC",Arial,sans-serif;fill:#173034}
+      .title{font-size:27px;font-weight:700}.group{font-size:21px;font-weight:700}.key{font-size:18px;font-weight:700}
+      .desc{font-size:15px}.note{font-size:14px;fill:#345457}
+      .flow{fill:none;stroke:#395f60;stroke-width:2;marker-end:url(#arrow)}
+      .junction{fill:none;stroke:#395f60;stroke-width:2}
+      .white{fill:#fff;stroke:#a3b7b6;stroke-width:1.5}
+    </style>
+  </defs>
+  <rect width="900" height="998" rx="18" fill="#fafbf7"/>
+  <text x="30" y="45" class="title">Danceba 怎样把一段音乐变成连续舞姿？</text>
+  <text x="31" y="75" class="desc">动作码本保存局部动作模式；音乐、上身和下身的历史共同决定下一步。</text>
+  <rect x="24" y="101" width="852" height="182" rx="14" fill="#f0f5e9" stroke="#abc59f"/>
+  <text x="44" y="136" class="group">训练监督　把连续动捕转为两串离散编号</text>
+  <rect x="44" y="157" width="195" height="75" rx="9" class="white"/>
+  <text x="58" y="185" class="key">真实骨架序列</text><text x="58" y="212" class="desc">上身 15 个、下身 9 个关节</text>
+  <path d="M240 195H276" class="flow"/>
+  <rect x="278" y="157" width="252" height="75" rx="9" class="white"/>
+  <text x="292" y="185" class="key">预训练的双分区 VQ-VAE</text><text x="292" y="212" class="desc">每区 512 个码，时间压缩 8 倍</text>
+  <path d="M531 195H568" class="flow"/>
+  <rect x="570" y="157" width="282" height="75" rx="9" class="white"/>
+  <text x="585" y="185" class="key">每个码时刻有上下身各一码</text><text x="585" y="212" class="desc">当前码作输入，下一对真值作监督</text>
+  <text x="45" y="259" class="note">例：240 帧压成 30 对码，错开一个时刻，得到 29 个下一步预测目标。</text>
+  <rect x="24" y="304" width="852" height="560" rx="14" fill="#eaf4f1" stroke="#99beb5"/>
+  <text x="44" y="340" class="group">一次生成　同一段音乐怎样同时影响手臂和步伐</text>
+  <rect x="44" y="361" width="364" height="87" rx="9" class="white"/>
+  <text x="58" y="391" class="key">音乐特征与两串历史码</text><text x="58" y="419" class="desc">将音乐、上身和下身分别嵌入，按时间段拼接</text>
+  <rect x="435" y="361" width="389" height="87" rx="9" class="white"/>
+  <text x="450" y="391" class="key">PRE　音乐特征的相位分支</text><text x="450" y="419" class="desc">STFT 相角 → 居中裁剪 → 投影至三路特征</text>
+  <path d="M226 449V466H626V449" class="junction"/><path d="M425 466V483" class="flow"/>
+  <rect x="136" y="485" width="579" height="88" rx="9" fill="#fff" stroke="#79a9a6" stroke-width="1.5"/>
+  <text x="152" y="515" class="key">相加后进入 TGCA　音乐与上下身交换历史信息</text>
+  <text x="152" y="544" class="desc">因果注意力汇总信息，SiLU 门逐元素调节注意力输出。</text>
+  <path d="M425 574V594M169 594H690" class="junction"/>
+  <path d="M169 594V610M425 594V610M690 594V610" fill="none" stroke="#395f60" stroke-width="2"/>
+  <path d="M169 600V611" class="flow"/><path d="M425 600V611" class="flow"/><path d="M690 600V611" class="flow"/>
+  <rect x="44" y="613" width="244" height="69" rx="9" class="white"/>
+  <rect x="303" y="613" width="244" height="69" rx="9" class="white"/>
+  <rect x="562" y="613" width="262" height="69" rx="9" class="white"/>
+  <text x="58" y="641" class="key">音乐 Mamba</text><text x="58" y="665" class="desc">更新音乐时序状态</text>
+  <text x="317" y="641" class="key">上身 Mamba</text><text x="317" y="665" class="desc">更新上身时序状态</text>
+  <text x="577" y="641" class="key">下身 Mamba</text><text x="577" y="665" class="desc">更新下身时序状态</text>
+  <path d="M169 682V701H690V682M425 682V701" class="junction"/><path d="M425 701V716" class="flow"/>
+  <rect x="135" y="718" width="580" height="78" rx="9" fill="#dceee8" stroke="#86aaa0" stroke-width="1.5"/>
+  <text x="151" y="748" class="key">汇合后经两套分类头，同时预测上下身下一码</text>
+  <text x="151" y="775" class="desc">各取概率最高的编号，追加到历史，再处理下一步音乐。</text>
+  <path d="M135 756H34V405H44" class="flow" stroke-dasharray="6 4"/>
+  <text x="45" y="833" class="note">生成从一对起始码开始。用于训练的完整动捕序列仅出现在上半部。</text>
+  <path d="M425 865V880" class="flow"/>
+  <rect x="24" y="882" width="852" height="77" rx="12" fill="#fff1d8" stroke="#d7b783"/>
+  <text x="44" y="912" class="key">从编号回到三维舞姿</text>
+  <text x="44" y="938" class="desc">两路分别查码、解码、合并关节；默认评测还累加根节点速度，恢复全身移动轨迹。</text>
+  <text x="30" y="984" class="note">据原文图 1、式 1–12 与作者发布的采样、解码实现重绘。虚线表示自回归反馈。</text>
+</svg>

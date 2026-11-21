@@ -330,6 +330,16 @@
       "parts"
     ]
   },
+  "danceba-paper-notes": {
+    "topics": [
+      "dance"
+    ],
+    "methods": [
+      "phase-frequency",
+      "tokens"
+    ],
+    "controls": []
+  },
   "dancechat-paper-notes": {
     "topics": [
       "dance"
