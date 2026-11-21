@@ -436,6 +436,17 @@
       "space"
     ]
   },
+  "dc-motion-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "tokens",
+      "diffusion"
+    ],
+    "controls": []
+  },
   "decoupling-contact-paper-notes": {
     "topics": [
       "editing"

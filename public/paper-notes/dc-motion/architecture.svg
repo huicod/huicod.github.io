@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="1208" viewBox="0 0 820 1208" role="img" aria-labelledby="title desc">
+<title id="title">DC-Motion 的表示训练、条件生成与动作解码</title>
+<desc id="desc">编码器将动作变成连续向量，用最近邻查码本取得离散索引与原型，连续残差保存量化差值。训练时分别用索引和加噪残差监督两个生成器。推理先由文本产生原型，再用文本及原型从噪声生成残差，最后相加并解码。</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L10 5L0 10Z" fill="#3c5d63"/></marker>
+<marker id="target" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L10 5L0 10Z" fill="#996328"/></marker>
+<style>
+text{font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;fill:#213e47}
+.title{font-size:27px;font-weight:700}.section{font-size:21px;font-weight:700}.lead{font-size:17px;font-weight:700}.mid{font-size:16px;font-weight:700}.body{font-size:15px}.sub{font-size:15px;fill:#49616b}.tiny{font-size:14px;fill:#526a70}
+.p1{fill:#f0f6ef;stroke:#b7cbbd}.p2{fill:#faf4e8;stroke:#dbcca8}.p3{fill:#eef3f7;stroke:#bdcbd9}
+.box{fill:#fff;stroke:#b2c4c7}.discrete{fill:#e4eeef;stroke:#a5c3c6}.res{fill:#f1eaf3;stroke:#c8b7ce}.recon{fill:#dbece5;stroke:#a2c2b7}.loss{fill:#fffaf1;stroke:#cfb88e}
+.box,.p1,.p2,.p3,.discrete,.res,.recon,.loss{stroke-width:1.3}
+.line,.arrow,.super{fill:none;stroke:#3c5d63;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}.arrow{marker-end:url(#arrow)}.super{stroke:#996328;stroke-dasharray:5 4;marker-end:url(#target)}
+</style></defs>
+<rect width="820" height="1208" rx="16" fill="#fcfcf9"/>
+<text x="28" y="44" class="title" text-anchor="start">DC-Motion 如何从离散编号还原连续动作？</text>
+<text x="29" y="73" class="sub" text-anchor="start">蓝绿色表示码本原型，淡紫色表示连续残差；虚线表示训练时的监督。</text>
+<rect x="18" y="96" width="784" height="367" rx="15" class="p1"/>
+<text x="38" y="131" class="section" text-anchor="start">训练阶段一　从真实动作拆出原型和残差</text>
+<g class="node">
+<rect x="38" y="151" width="182" height="69" rx="9" class="box"/>
+<text x="52" y="176" class="lead" text-anchor="start">真实动作 x</text>
+<text x="52" y="200" class="body" text-anchor="start">T 帧关节动作特征</text>
+</g>
+<g class="node">
+<rect x="258" y="151" width="227" height="69" rx="9" class="box"/>
+<text x="272" y="176" class="lead" text-anchor="start">DC-VAE 编码器 E</text>
+<text x="272" y="200" class="body" text-anchor="start">9 层 Transformer</text>
+</g>
+<g class="node">
+<rect x="528" y="151" width="254" height="69" rx="9" class="box"/>
+<text x="542" y="176" class="lead" text-anchor="start">连续表示 z</text>
+<text x="542" y="200" class="body" text-anchor="start">16 个位置 × 256 维</text>
+</g>
+<path class="arrow" d="M220 185H254"/>
+<path class="arrow" d="M485 185H524"/>
+<path class="arrow" d="M655 220V240H218V257"/>
+<path class="arrow" d="M655 240V257"/>
+<g class="node">
+<rect x="59" y="261" width="320" height="90" rx="9" class="discrete"/>
+<text x="73" y="286" class="lead" text-anchor="start">最近邻量化　y → zq</text>
+<text x="73" y="310" class="body" text-anchor="start">逐位置从 2,048 项码本选择索引 y</text>
+<text x="73" y="332" class="body" text-anchor="start">查回原型 zq，共 16 × 256 维</text>
+</g>
+<g class="node">
+<rect x="476" y="261" width="280" height="90" rx="9" class="res"/>
+<text x="490" y="286" class="lead" text-anchor="start">保留量化差值　r</text>
+<text x="490" y="310" class="body" text-anchor="start">r = s × (z − zq)</text>
+<text x="490" y="332" class="body" text-anchor="start">16 × 256 个实数，s 为缩放系数</text>
+</g>
+<path class="arrow" d="M379 308H471"/>
+<text x="426" y="297" class="tiny" text-anchor="middle">zq</text>
+<path class="line" d="M218 351V375H334"/>
+<path class="arrow" d="M616 351V375H334V389"/>
+<g class="node">
+<rect x="75" y="393" width="676" height="53" rx="9" class="recon"/>
+<text x="89" y="418" class="lead" text-anchor="start">原型加回残差　D(zq + r/s) 重建原动作</text>
+</g>
+<text x="89" y="435" class="tiny" text-anchor="start">训练信号来自动作重建误差，以及码本向量与编码向量的对齐损失。</text>
+<rect x="18" y="483" width="784" height="258" rx="15" class="p2"/>
+<text x="38" y="519" class="section" text-anchor="start">训练阶段二、三　两个生成器各有自己的目标</text>
+<text x="38" y="544" class="sub" text-anchor="start">依次训练；DC-VAE 均冻结，训练残差扩散时结构生成器也冻结。</text>
+<g class="node">
+<rect x="39" y="561" width="356" height="93" rx="9" class="discrete"/>
+<text x="53" y="586" class="lead" text-anchor="start">阶段二　双向结构生成器</text>
+<text x="53" y="610" class="body" text-anchor="start">输入文本 c 与随机遮挡的真实索引</text>
+<text x="53" y="632" class="body" text-anchor="start">预测每个被遮挡位置的码本编号</text>
+</g>
+<g class="node">
+<rect x="423" y="561" width="359" height="93" rx="9" class="res"/>
+<text x="437" y="586" class="lead" text-anchor="start">阶段三　残差去噪网络</text>
+<text x="437" y="610" class="body" text-anchor="start">为真实残差 r 加噪，输入扩散步 t</text>
+<text x="437" y="632" class="body" text-anchor="start">用文本 c 和真实原型 zq 作为条件</text>
+</g>
+<path class="super" d="M215 655V677"/>
+<path class="super" d="M603 655V677"/>
+<g class="node">
+<rect x="39" y="681" width="356" height="41" rx="9" class="loss"/>
+<text x="53" y="706" class="mid" text-anchor="start">遮挡位交叉熵　预测编号 ↔ 真实编号</text>
+</g>
+<g class="node">
+<rect x="423" y="681" width="359" height="41" rx="9" class="loss"/>
+<text x="437" y="706" class="mid" text-anchor="start">噪声均方误差　预测噪声 ↔ 注入噪声</text>
+</g>
+<rect x="18" y="762" width="784" height="416" rx="15" class="p3"/>
+<text x="38" y="798" class="section" text-anchor="start">生成新动作　先生成原型，再采样与它匹配的残差</text>
+<text x="38" y="825" class="sub" text-anchor="start">这条路径只需文本和随机初值，解码时复用训练得到的同一码本与解码器。</text>
+<g class="node">
+<rect x="39" y="853" width="181" height="92" rx="9" class="box"/>
+<text x="53" y="878" class="lead" text-anchor="start">文本条件 c</text>
+<text x="53" y="902" class="body" text-anchor="start">16 个位置全部</text>
+<text x="53" y="924" class="body" text-anchor="start">初始化为 [MASK]</text>
+</g>
+<g class="node">
+<rect x="250" y="853" width="266" height="92" rx="9" class="discrete"/>
+<text x="264" y="878" class="lead" text-anchor="start">双向结构生成器</text>
+<text x="264" y="902" class="body" text-anchor="start">每轮保留高置信度预测</text>
+<text x="264" y="924" class="body" text-anchor="start">再次遮挡其余位置，直到填满</text>
+</g>
+<g class="node">
+<rect x="559" y="853" width="222" height="92" rx="9" class="discrete"/>
+<text x="573" y="878" class="lead" text-anchor="start">预测原型 zq</text>
+<text x="573" y="902" class="body" text-anchor="start">得到 16 个离散索引</text>
+<text x="573" y="924" class="body" text-anchor="start">按索引取码本向量</text>
+</g>
+<path class="arrow" d="M220 902H246"/>
+<path class="arrow" d="M516 902H555"/>
+<g class="node">
+<rect x="39" y="986" width="181" height="88" rx="9" class="box"/>
+<text x="53" y="1011" class="lead" text-anchor="start">残差初值</text>
+<text x="53" y="1035" class="body" text-anchor="start">标准高斯噪声</text>
+<text x="53" y="1057" class="body" text-anchor="start">并输入同一文本 c</text>
+</g>
+<g class="node">
+<rect x="250" y="986" width="266" height="88" rx="9" class="res"/>
+<text x="264" y="1011" class="lead" text-anchor="start">条件残差扩散</text>
+<text x="264" y="1035" class="body" text-anchor="start">按预测原型与文本去噪</text>
+<text x="264" y="1057" class="body" text-anchor="start">50 步得到连续残差 r</text>
+</g>
+<g class="node">
+<rect x="559" y="986" width="222" height="88" rx="9" class="recon"/>
+<text x="573" y="1011" class="lead" text-anchor="start">重组连续表示</text>
+<text x="573" y="1035" class="body" text-anchor="start">每个位置计算 zq + r/s</text>
+<text x="573" y="1057" class="body" text-anchor="start">得到 16 × 256 维潜序列</text>
+</g>
+<path class="arrow" d="M665 945V963H416V982"/>
+<path class="arrow" d="M677 945V982"/>
+<path class="arrow" d="M220 1030H246"/>
+<path class="arrow" d="M516 1030H555"/>
+<path class="arrow" d="M675 1074V1096H416V1110"/>
+<g class="node">
+<rect x="106" y="1114" width="604" height="46" rx="9" class="recon"/>
+<text x="120" y="1139" class="lead" text-anchor="start">共享解码器 D　将合成潜序列解码为 T 帧连续的关节动作</text>
+</g>
+<text x="29" y="1198" class="tiny" text-anchor="start">据 arXiv v2 图 2–3、式 1–16、算法 1 及实现细节重绘。</text>
+</svg>
