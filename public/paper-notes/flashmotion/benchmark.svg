@@ -1,0 +1,41 @@
+<svg role="img" aria-labelledby="title description" width="860" height="384" preserveAspectRatio="xMinYMin meet" viewBox="0 0 860 384" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink"><title id="title">BABEL 的质量与速度评测长度</title><desc id="description">质量用 311 条、201 至 1030 帧的序列。4 步生成 1000 帧约需 93 毫秒，10000 帧约需 216 毫秒；由论文吞吐量换算。</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="860" height="384"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-384)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="0" width="860" height="384" rx="14" ry="14" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,97%,96%); fill-rule: evenodd;"/>
+			<text x="26" y="342" style="font-family: Microsoft YaHei, sans-serif; font-weight: 700; font-size: 26px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,684) scale(1,-1)">BABEL 的质量与速度，分别在哪些长度上测？</text>
+			<text x="27" y="311" style="font-family: Microsoft YaHei, sans-serif; font-size: 16px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,622) scale(1,-1)">同一横轴表示输出帧数（对数刻度）。播放时长按 BABEL 的 20 帧/秒折算。</text>
+			<path d="M 186,265 L 186,105 Z" style="stroke: rgb(79%,83%,83%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="172.805419921875" y="78" style="font-family: Microsoft YaHei, sans-serif; font-size: 15px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,156) scale(1,-1)">100</text>
+			<path d="M 275.556424,265 L 275.556424,105 Z" style="stroke: rgb(79%,83%,83%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="262.36184363190944" y="78" style="font-family: Microsoft YaHei, sans-serif; font-size: 15px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,156) scale(1,-1)">200</text>
+			<path d="M 393.943576,265 L 393.943576,105 Z" style="stroke: rgb(79%,83%,83%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="380.7489962118406" y="78" style="font-family: Microsoft YaHei, sans-serif; font-size: 15px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,156) scale(1,-1)">500</text>
+			<path d="M 483.5,265 L 483.5,105 Z" style="stroke: rgb(79%,83%,83%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="464.101806640625" y="78" style="font-family: Microsoft YaHei, sans-serif; font-size: 15px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,156) scale(1,-1)">1,000</text>
+			<path d="M 573.056424,265 L 573.056424,105 Z" style="stroke: rgb(79%,83%,83%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="553.6582303506594" y="78" style="font-family: Microsoft YaHei, sans-serif; font-size: 15px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,156) scale(1,-1)">2,000</text>
+			<path d="M 691.443576,265 L 691.443576,105 Z" style="stroke: rgb(79%,83%,83%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="672.0453829305906" y="78" style="font-family: Microsoft YaHei, sans-serif; font-size: 15px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,156) scale(1,-1)">5,000</text>
+			<path d="M 781,265 L 781,105 Z" style="stroke: rgb(79%,83%,83%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="757.20361328125" y="78" style="font-family: Microsoft YaHei, sans-serif; font-size: 15px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,156) scale(1,-1)">10,000</text>
+			<path d="M 186,104 L 781,104 Z" style="stroke: rgb(47%,56%,58%); stroke-linecap: butt; stroke-width: 1;"/>
+			<text x="28" y="219" style="font-family: Microsoft YaHei, sans-serif; font-weight: 700; font-size: 19px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,438) scale(1,-1)">动作质量</text>
+			<text x="28" y="192" style="font-family: Microsoft YaHei, sans-serif; font-size: 14px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,384) scale(1,-1)">311 条验证序列</text>
+			<path d="M 276.200827,208 L 487.319074,208 Z" style="stroke: rgb(12%,44%,37%); stroke-linecap: butt; stroke-width: 11;"/>
+			<circle cx="276.2008270825954" cy="208" r="6" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(12%,44%,37%); fill-rule: evenodd;"/>
+			<circle cx="487.31907434978876" cy="208" r="6" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(12%,44%,37%); fill-rule: evenodd;"/>
+			<text x="327.01629837244207" y="239" style="font-family: Microsoft YaHei, sans-serif; font-weight: 700; font-size: 17px;fill: rgb(9%,36%,31%); stroke:none;" transform="translate(0,478) scale(1,-1)">201–1,030 帧</text>
+			<text x="313.27118118494207" y="181" style="font-family: Microsoft YaHei, sans-serif; font-size: 15px;fill: rgb(9%,36%,31%); stroke:none;" transform="translate(0,362) scale(1,-1)">约 10.1–51.5 秒动作</text>
+			<text x="28" y="136" style="font-family: Microsoft YaHei, sans-serif; font-weight: 700; font-size: 19px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,272) scale(1,-1)">生成速度</text>
+			<text x="28" y="112" style="font-family: Microsoft YaHei, sans-serif; font-size: 14px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,224) scale(1,-1)">4 步 · 单序列</text>
+			<circle cx="483.5" cy="133" r="7" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(67%,39%,18%); fill-rule: evenodd;"/>
+			<text x="446.91015625" y="149" style="font-family: Microsoft YaHei, sans-serif; font-weight: 700; font-size: 17px;fill: rgb(52%,29%,14%); stroke:none;" transform="translate(0,298) scale(1,-1)">约 93 ms</text>
+			<circle cx="781.0" cy="133" r="7" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(67%,39%,18%); fill-rule: evenodd;"/>
+			<text x="739.168212890625" y="149" style="font-family: Microsoft YaHei, sans-serif; font-weight: 700; font-size: 17px;fill: rgb(52%,29%,14%); stroke:none;" transform="translate(0,298) scale(1,-1)">约 216 ms</text>
+			<text x="26" y="28" style="font-family: Microsoft YaHei, sans-serif; font-size: 16px;fill: rgb(15%,26%,30%); stroke:none;" transform="translate(0,56) scale(1,-1)">区间表示有参考动作的质量评测范围。圆点表示单独测速的长度，标注为生成耗时。</text>
+		</g>
+	</g>
+</svg>

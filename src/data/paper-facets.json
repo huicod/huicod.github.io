@@ -864,6 +864,21 @@
     ],
     "controls": []
   },
+  "flashmotion-paper-notes": {
+    "topics": [
+      "generation",
+      "gesture",
+      "dance",
+      "editing"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "time",
+      "parts"
+    ]
+  },
   "fld-paper-notes": {
     "topics": [
       "representation",

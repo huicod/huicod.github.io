@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="1240" viewBox="0 0 820 1240" role="img" aria-labelledby="title description">
+<title id="title">FlashMotion 的条件输入、动作主干、训练与少步采样</title>
+<desc id="description">分别选取文本、语音或音乐的逐帧条件，双向 Mamba 对整段动作作干净估计。区间速度与动作空间损失用于训练。推理从高斯噪声出发，按一或四个区间生成，编辑可附加软掩码。</desc>
+<defs>
+<marker id="a" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L9 4L0 8Z" fill="#3b5b61"/></marker>
+<marker id="b" viewBox="0 0 9 8" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L9 4L0 8Z" fill="#98632c"/></marker>
+<style>text{font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;fill:#243c45}.title{font-size:29px;font-weight:700}.intro{font-size:16px;fill:#516872}.section{font-size:21px;font-weight:700}.lead{font-size:17px;font-weight:700}.mid{font-size:16px;font-weight:600}.body{font-size:15px}.small{font-size:14px;fill:#516671}.p1,.p2,.p3,.p4,.box,.teal,.out{stroke-width:1.3}.p1{fill:#f1f6f1;stroke:#b9cbbd}.p2{fill:#edf4f4;stroke:#afc9c7}.p3{fill:#faf4e9;stroke:#d7c39d}.p4{fill:#eff2f9;stroke:#bec7de}.box{fill:white;stroke:#b3c3c6}.teal{fill:#e1efeb;stroke:#9dbab1}.out{fill:#d2e6df;stroke:#9cb6ad}.line,.arrow,.teach,.line-dash,.fwd,.bwd{fill:none;stroke:#3b5b61;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}.arrow,.fwd,.bwd{marker-end:url(#a)}.fwd,.bwd{stroke-width:2.4}.line-dash,.teach{stroke:#98632c;stroke-dasharray:6 5}.teach{marker-end:url(#b)}</style>
+</defs>
+<rect width="820" height="1240" rx="16" fill="#fcfcf9"/>
+<text x="28" y="47" class="title" text-anchor="start">FlashMotion 如何一次生成整段动作？</text>
+<text x="29" y="75" class="intro" text-anchor="start">t、r 是去噪时间；N 是动作帧数。一次网络调用同时处理这 N 帧。</text>
+<rect x="18" y="99" width="784" height="226" rx="15" class="p1"/>
+<text x="38" y="134" class="section" text-anchor="start">输入条件由任务决定，每个任务单独训练</text>
+<g class="node">
+<rect x="37" y="151" width="232" height="79" rx="10" class="box"/>
+<text x="51" y="178" class="lead" text-anchor="start">文本 → 动作</text>
+<text x="51" y="203" class="body" text-anchor="start">按帧区间铺开 UMT5 特征</text>
+<text x="51" y="224" class="body" text-anchor="start">每帧 4096 维</text>
+</g>
+<g class="node">
+<rect x="294" y="151" width="232" height="79" rx="10" class="box"/>
+<text x="308" y="178" class="lead" text-anchor="start">语音 → 手势</text>
+<text x="308" y="203" class="body" text-anchor="start">HuBERT 1024 维</text>
+<text x="308" y="224" class="body" text-anchor="start">加上对齐的 300 维文本</text>
+</g>
+<g class="node">
+<rect x="550" y="151" width="232" height="79" rx="10" class="box"/>
+<text x="564" y="178" class="lead" text-anchor="start">音乐 → 舞蹈</text>
+<text x="564" y="203" class="body" text-anchor="start">Librosa 音乐特征</text>
+<text x="564" y="224" class="body" text-anchor="start">每帧 35 维</text>
+</g>
+<path d="M153 230V248H627V262" class="line"/>
+<path d="M410 230V248" class="line"/>
+<path d="M666 230V248H627" class="line"/>
+<path d="M627 250V262" class="arrow"/>
+<g class="node">
+<rect x="356" y="265" width="426" height="45" rx="10" class="teal"/>
+<text x="570" y="293" class="mid" text-anchor="middle">逐帧投影与条件 BiMamba  →  条件序列 C</text>
+</g>
+<rect x="18" y="344" width="784" height="371" rx="15" class="p2"/>
+<text x="38" y="379" class="section" text-anchor="start">每个采样区间调用同一个动作估计器</text>
+<g class="node">
+<rect x="37" y="415" width="233" height="102" rx="10" class="box"/>
+<text x="51" y="442" class="lead" text-anchor="start">当前动作状态 zₜ</text>
+<text x="51" y="467" class="body" text-anchor="start">训练时由动作和噪声混合</text>
+<text x="51" y="488" class="body" text-anchor="start">推理从整段高斯噪声开始</text>
+</g>
+<g class="node">
+<rect x="37" y="539" width="233" height="77" rx="10" class="box"/>
+<text x="51" y="566" class="lead" text-anchor="start">时间 t 与区间 t−r</text>
+<text x="51" y="591" class="body" text-anchor="start">时间嵌入经 FiLM 调制</text>
+</g>
+<path d="M270 465H306" class="arrow"/>
+<path d="M270 576H306" class="arrow"/>
+<rect x="310" y="415" width="472" height="201" rx="10" class="teal"/>
+<text x="330" y="444" class="lead" text-anchor="start">动作主干 · 堆叠 CoBiMamba 模块</text>
+<text x="330" y="471" class="body" text-anchor="start">每一帧的条件和动作决定写入、保留和读出。</text>
+<path d="M354 496H580" class="fwd"/>
+<path d="M580 509H354" class="bwd"/>
+<text x="607" y="509" class="mid" text-anchor="start">正扫 + 反扫</text>
+<text x="330" y="548" class="body" text-anchor="start">两条时间方向的输出融合，保留前后文。</text>
+<text x="330" y="578" class="body" text-anchor="start">CoFusion 用 AdaIN 逐帧调节动作通道。</text>
+<text x="330" y="601" class="small" text-anchor="start">扫描与逐帧融合随长度 N 线性增长。</text>
+<path d="M685 310V409" class="arrow"/>
+<path d="M548 616V645" class="arrow"/>
+<g class="node">
+<rect x="310" y="649" width="472" height="46" rx="10" class="out"/>
+<text x="546" y="678" class="mid" text-anchor="middle">预测所有帧的干净动作  ẑ₀   ·   N × 动作维度</text>
+</g>
+<rect x="18" y="734" width="784" height="162" rx="15" class="p3"/>
+<text x="38" y="769" class="section" text-anchor="start">训练时，同一预测接收两类监督</text>
+<path d="M700 695V780H216" class="line-dash"/>
+<path d="M216 780V790" class="teach"/>
+<path d="M611 780V790" class="teach"/>
+<g class="node">
+<rect x="37" y="795" width="356" height="82" rx="10" class="box"/>
+<text x="51" y="822" class="lead" text-anchor="start">区间平均速度</text>
+<text x="51" y="847" class="body" text-anchor="start">由 (zₜ − ẑ₀) / t 导出速度，</text>
+<text x="51" y="868" class="body" text-anchor="start">用 MeanFlow 恒等式监督。</text>
+</g>
+<g class="node">
+<rect x="429" y="795" width="353" height="82" rx="10" class="box"/>
+<text x="443" y="822" class="lead" text-anchor="start">动作空间中的误差</text>
+<text x="443" y="847" class="body" text-anchor="start">与真值比较动作、关节位置，</text>
+<text x="443" y="868" class="body" text-anchor="start">以及关节速度与加速度。</text>
+</g>
+<rect x="18" y="913" width="784" height="277" rx="15" class="p4"/>
+<text x="38" y="948" class="section" text-anchor="start">生成时，在整段动作上走 1 步或 4 步</text>
+<g class="node">
+<rect x="37" y="975" width="184" height="80" rx="10" class="box"/>
+<text x="51" y="1002" class="lead" text-anchor="start">高斯噪声 z₁</text>
+<text x="51" y="1027" class="body" text-anchor="start">按任务选权重</text>
+<text x="51" y="1048" class="body" text-anchor="start">长度设为 N 帧</text>
+</g>
+<g class="node">
+<rect x="281" y="975" width="263" height="80" rx="10" class="box"/>
+<text x="295" y="1002" class="lead" text-anchor="start">估计整段干净动作</text>
+<text x="295" y="1027" class="body" text-anchor="start">按当前 zₜ、C 和区间</text>
+<text x="295" y="1048" class="body" text-anchor="start">调用上方动作主干</text>
+</g>
+<g class="node">
+<rect x="601" y="975" width="181" height="80" rx="10" class="box"/>
+<text x="615" y="1002" class="lead" text-anchor="start">更新到 zᵣ</text>
+<text x="615" y="1027" class="body" text-anchor="start">在 zₜ 与 ẑ₀ 间插值</text>
+<text x="615" y="1048" class="body" text-anchor="start">r = 0 时输出</text>
+</g>
+<path d="M221 1016H274" class="arrow"/>
+<path d="M544 1016H595" class="arrow"/>
+<path d="M689 1055V1081H410V1062" class="arrow"/>
+<text x="538" y="1104" class="small" text-anchor="middle">四步版沿下一个区间继续更新</text>
+<text x="39" y="1144" class="lead" text-anchor="start">可选多步编辑</text>
+<text x="189" y="1143" class="body" text-anchor="start">在每次预测前，用 tM 混入已知帧或关节的带噪约束。</text>
+<text x="189" y="1167" class="body" text-anchor="start">以前窗尾部作为已知帧，还可逐窗续写。</text>
+<text x="28" y="1218" class="small" text-anchor="start">依据论文图 2、式 6–16 重绘。橙色虚线通向训练损失。</text>
+</svg>
