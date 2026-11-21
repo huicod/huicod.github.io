@@ -10,7 +10,7 @@ tags: ["NeRM", "High-Framerate Motion", "Text-to-Motion", "Action-to-Motion", "I
 <div class="paper-reading" lang="zh-CN">
 <nav class="reading-toc" aria-label="本文目录"><strong>阅读目录</strong><ol><li><a href="#reading-1">一句话总结</a></li><li><a href="#reading-2">研究背景与动机</a></li><li><a href="#reading-3">方法详解</a></li><li><a href="#reading-4">实验关键数据</a></li><li><a href="#reading-5">亮点与洞察</a></li><li><a href="#reading-6">局限与展望</a></li><li><a href="#reading-7">相关工作与启发</a></li><li><a href="#reading-8">来源</a></li></ol></nav>
 
-[ICLR 终稿 PDF（含附录）][pdf] · [作者报告幻灯片][slides] · [会议补充材料][supp]
+[可翻译的 HTML 全文（含附录 A–F）][html] · [ICLR 终稿 PDF][pdf] · [作者报告幻灯片][slides] · [会议补充材料][supp]
 
 <details class="paper-meta"><summary>论文信息与阅读范围 · ICLR 2024</summary>
 
@@ -145,31 +145,32 @@ NeRM 自身的两行最有解释力：换用原始帧率后，两个数据集的
 <span id="reading-8" class="reading-anchor"></span>
 ## 来源
 
-- ICLR 2024 会议终稿，共 21 页。架构见图 2、3、6，主实验见表 1–3；附录含重建、模块消融、推理时间、用户研究与限制。[ICLR 会议记录][venue] · [原始 PDF][pdf] · [OpenReview][record]
+- ICLR 2024 会议终稿，共 21 页。架构见图 2、3、6，主实验见表 1–3；附录含重建、模块消融、推理时间、用户研究与限制。[HTML 全文][html] · [ICLR 会议记录][venue] · [原始 PDF][pdf] · [OpenReview][record]
 - 作者在 ICLR 提供的补充包包含附录 PDF 与演示视频，可用来逐帧对照脚部支撑。会议另提供报告幻灯片。本次未独立训练或运行模型。[作者幻灯片][slides] · [会议补充材料][supp]
 
 </div>
 
 [venue]: https://proceedings.iclr.cc/paper_files/paper/2024/hash/9e3b203e72c4e058de26d02a92a81844-Abstract-Conference.html
 [record]: https://openreview.net/forum?id=sOJriBlOFd
+[html]: /paper-notes/nerm/fulltext/
 [pdf]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf
 [slides]: https://iclr.cc/media/iclr-2024/Slides/17649.pdf
 [supp]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Supplementary-Conference.zip
 [nemf]: /blog/neurips2022-nemf/
 [t2mgpt]: /blog/cvpr2023-t2m-gpt/
 [mld]: https://arxiv.org/abs/2212.04048
-[p3]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=3
-[p4]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=4
-[p5]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=5
-[p6]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=6
-[p7]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=7
-[p8]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=8
-[p9]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=9
-[p14]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=14
-[p15]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=15
-[p16]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=16
-[p17]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=17
-[p18]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=18
-[p19]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=19
-[p20]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=20
-[p21]: https://proceedings.iclr.cc/paper_files/paper/2024/file/9e3b203e72c4e058de26d02a92a81844-Paper-Conference.pdf#page=21
+[p3]: /paper-notes/nerm/fulltext/#page-3
+[p4]: /paper-notes/nerm/fulltext/#page-4
+[p5]: /paper-notes/nerm/fulltext/#page-5
+[p6]: /paper-notes/nerm/fulltext/#page-6
+[p7]: /paper-notes/nerm/fulltext/#page-7
+[p8]: /paper-notes/nerm/fulltext/#page-8
+[p9]: /paper-notes/nerm/fulltext/#page-9
+[p14]: /paper-notes/nerm/fulltext/#page-14
+[p15]: /paper-notes/nerm/fulltext/#page-15
+[p16]: /paper-notes/nerm/fulltext/#page-16
+[p17]: /paper-notes/nerm/fulltext/#page-17
+[p18]: /paper-notes/nerm/fulltext/#page-18
+[p19]: /paper-notes/nerm/fulltext/#page-19
+[p20]: /paper-notes/nerm/fulltext/#page-20
+[p21]: /paper-notes/nerm/fulltext/#page-21
