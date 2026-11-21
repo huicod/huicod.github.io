@@ -2809,6 +2809,19 @@
     ],
     "controls": []
   },
+  "sfcontrol-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "time",
+      "parts"
+    ]
+  },
   "sfd-paper-notes": {
     "topics": [
       "video"
