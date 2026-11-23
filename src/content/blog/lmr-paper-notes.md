@@ -16,9 +16,11 @@ tags: ["lmr", "论文解读", "动作生成", "自回归", "潜空间规划", "P
 
 **论文：** Think Before You Move: Latent Motion Reasoning for Text-to-Motion Generation。  
 **作者：** Yijie Qian、Juncheng Wang、Yuxiang Feng、Chao Xu、Wang Lu、Yang Liu、Baigui Sun、Yiqiang Chen、Yong Liu、Shujun Wang。  
-**出处与版本：** IEEE TPAMI 2026，DOI [10.1109/TPAMI.2026.3737484](https://doi.org/10.1109/TPAMI.2026.3737484)。本文完整阅读指定的 [arXiv v2](https://arxiv.org/abs/2512.24100v2)（2026-09-16，18 页含附录 A–E）；首版为 2025-12-30。正式出版身份已核实，但本次没有取得另行排版的 IEEE 全文。  
-**入口：** [作者项目](https://chenhaoqcdyq.github.io/LMR/) · [官方代码](https://github.com/chenhaoqcdyq/lmr-codes) · [模型文件](https://huggingface.co/qianyijie/lmr)。  
-**领域与关键词：** 文本生成动作、自回归生成、双粒度表示、潜空间规划、语义对齐。阅读及资源核查日期：2026-10-26。
+**期刊与版本。** IEEE TPAMI 于 2026 年 9 月 28 日在线发表（Early Access）。解读中的图、表和页码取自 9 月 16 日公开的 arXiv v2，共 18 页，含附录 A–E。[期刊 DOI](https://doi.org/10.1109/TPAMI.2026.3737484) · [出版日期记录](https://pubmed.ncbi.nlm.nih.gov/42804401/)
+
+**全文与资源。** [原文 HTML](https://arxiv.org/html/2512.24100v2) · [原文 PDF](https://arxiv.org/pdf/2512.24100v2) · [作者项目](https://chenhaoqcdyq.github.io/LMR/) · [官方代码](https://github.com/chenhaoqcdyq/lmr-codes) · [模型文件](https://huggingface.co/qianyijie/lmr)
+
+**版本差异。** 如果读过 2025 年 12 月的首版，可以直接看 v2 新增的两项实验。表 III 检查悬空、接地偏差等局部运动质量，表 VII 检查打乱计划后动作与文本是否还匹配。两版表 I 中 LMR 自身的主结果一致。[首版](https://arxiv.org/html/2512.24100v1) · [v2 表 III](https://arxiv.org/html/2512.24100v2#S6.T3) · [v2 表 VII](https://arxiv.org/html/2512.24100v2#S6.T7)
 
 </details>
 
@@ -104,7 +106,7 @@ LMR 将文本到动作的自回归生成拆成“先预测一段较短的运动�
 
    论文不只展示“加上模块后 FID 更低”，还在执行阶段把正常推理前缀换成随机、打乱、常数或零前缀。随机和打乱前缀会降低文本对齐，但 FID 甚至略好于正常前缀；常数和零前缀则明显损坏生成。这说明模型使用了前缀中的信息，也显示动作分布质量与语义符合程度是不同目标。
 
-   这一结果支持“中间表示有用”，但无法单独证明它具有人的推理过程，或其每个位置对应一个可解释的计划步骤。理解这条边界，比把作者的 System 2 比喻直接当作能力标签更有价值。[§6.4；表 7]
+   这项干预说明执行阶段使用了前缀中的信息。若要进一步判断某个码是否代表“转身”，还需要单独替换这个码，再检查转身出现的时刻和方向。[原文表 VII](https://arxiv.org/html/2512.24100v2#S6.T7)
 
 ### 一个完整例子
 
@@ -124,7 +126,7 @@ LMR 将文本到动作的自回归生成拆成“先预测一段较短的运动�
 
 **推理。** 仅输入文本与采样设置，先采样推理流，再采样执行流，最后解码执行流。Classifier-Free Guidance 用于增强条件作用。当前离散代码使用 KV cache，并在推理前缀中管理 END/PAD；它不是需要预先输入真实动作长度的插帧模型，但仍受实现的槽位和最大序列长度约束。要等待推理前缀完成才能进入执行生成，不能仅凭“自回归”推出零首帧延迟。
 
-**当前公开资源。** 截至 2026-10-26，官方仓库快照 [7ec24d3](https://github.com/chenhaoqcdyq/lmr-codes/tree/7ec24d3e23a3f6d60826956bb384614e778cef3b) 已有离散版推理代码；官方 Hugging Face 模型库实际列出 GPT 与 dual_tokenizer 两组 checkpoint 和配置。README 的训练/评估脚本、完整 MotionStreamer 版本及处理后数据条目仍未勾选，不能把已发布的离散推理入口扩大成两种版本均可完整复现。本次仅静态查看小型代码、模型元数据与文件条目，没有下载或加载权重，也没有生成动作。模型加载依赖匹配的配置和统计量；公开入口存在不等于实验结果已复现。
+**公开实现。** 2026 年 11 月 23 日核查时，作者已发布离散版推理代码，以及 GPT 生成器和双分支 tokenizer 的权重与配置。仓库仍将离散版的训练和评估脚本、完整 MotionStreamer 版本及处理后的训练数据列为待发布。这里核对了源码与文件清单，下面的实验数字均为作者报告。[代码快照](https://github.com/chenhaoqcdyq/lmr-codes/tree/7ec24d3e23a3f6d60826956bb384614e778cef3b) · [权重清单](https://huggingface.co/qianyijie/lmr/tree/f71e91c865b38a3352bd49380b26562bc1d5b48a)
 
 <span id="reading-4" class="reading-anchor"></span>
 
@@ -222,7 +224,7 @@ LMR 将文本到动作的自回归生成拆成“先预测一段较短的运动�
 | + Explicit Language CoT | 0.188 | 0.511 | 0.702 | 0.795 | 3.021 | 9.752 |
 | + Reasoning Tokens (Ours) | 0.040 | 0.537 | 0.721 | 0.810 | 2.895 | 9.668 |
 
-**前缀干预：** 原表 7（PDF p13）直接替换执行阶段接收的推理信息。
+**打乱计划，动作还符合原句吗？** 作者固定模型参数、前缀长度和 token 总数，仅替换推理前缀的内容，然后重新生成执行序列。Shuffle 打乱码的顺序，Random 换成随机的有效码，Constant 把所有位置换成编号 0 的码，Zero 则把嵌入向量清零。[原文表 VII](https://arxiv.org/html/2512.24100v2#S6.T7)
 
 | 前缀 | FID ↓ | Top-1 ↑ | MM-Dist ↓ |
 |---|---:|---:|---:|
