@@ -1516,6 +1516,15 @@
     ],
     "controls": []
   },
+  "light-t2m-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
   "livegesture-paper-notes": {
     "topics": [
       "gesture"

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 495" width="850" height="495" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Light-T2M 在不同采样步数下的 FID</title>
+  <desc id="chart-desc">HumanML3D，FID 越低越好。UniPC 在 5、7、9、10、15、20 步的 FID 依次为 0.226、0.145、0.042、0.040、0.039、0.039。DDIM 在 5、10、20、30、40、50 步的 FID 依次为 0.083、0.061、0.053、0.046、0.043、0.041。各点来自论文附录表 7。</desc>
+  <defs>
+    <style>
+      text { font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif; fill: #233d47; }
+      .title { font-size: 25px; font-weight: 700; }
+      .label { font-size: 17px; }
+      .tick { font-size: 16px; fill: #526875; }
+      .value { font-size: 16px; font-weight: 600; }
+      .foot { font-size: 15px; fill: #526875; }
+      .grid { fill: none; stroke: #dce5e8; stroke-width: 1; }
+      .axis { fill: none; stroke: #8196a0; stroke-width: 1.5; }
+      .unipc { fill: none; stroke: #007d78; stroke-width: 3; stroke-linejoin: round; }
+      .ddim { fill: none; stroke: #b35a18; stroke-width: 3; stroke-linejoin: round; stroke-dasharray: 7 5; }
+    </style>
+    <circle id="u" r="4.5" fill="#007d78" stroke="white" stroke-width="1.2"/>
+    <path id="d" d="M0,-5.5 L5.5,0 L0,5.5 L-5.5,0 Z" fill="#b35a18" stroke="white" stroke-width="1.2"/>
+  </defs>
+  <rect width="850" height="495" rx="14" fill="white"/>
+  <text x="34" y="39" class="title">采样步数怎样影响动作分布质量？</text>
+  <text x="35" y="70" class="label">HumanML3D · FID 越低越好</text>
+
+  <g aria-label="图例">
+    <path d="M545 61h32" class="unipc"/><use href="#u" x="561" y="61"/>
+    <text x="584" y="67" class="label">UniPC</text>
+    <path d="M681 61h32" class="ddim"/><use href="#d" x="697" y="61"/>
+    <text x="721" y="67" class="label">DDIM</text>
+  </g>
+
+  <g aria-label="FID 纵轴">
+    <path d="M92 102h698 M92 146h698 M92 190h698 M92 234h698 M92 278h698 M92 322h698" class="grid"/>
+    <path d="M92 102v264h698" class="axis"/>
+    <g class="tick" text-anchor="end">
+      <text x="80" y="108">0.24</text><text x="80" y="152">0.20</text><text x="80" y="196">0.16</text>
+      <text x="80" y="240">0.12</text><text x="80" y="284">0.08</text><text x="80" y="328">0.04</text>
+      <text x="80" y="372">0.00</text>
+    </g>
+  </g>
+  <g aria-label="采样步数横轴">
+    <path d="M100 366v6 m75 -6v6 m150 -6v6 m150 -6v6 m150 -6v6 m150 -6v6" class="axis"/>
+    <g class="tick" text-anchor="middle">
+      <text x="100" y="393">5</text><text x="175" y="393">10</text><text x="325" y="393">20</text>
+      <text x="475" y="393">30</text><text x="625" y="393">40</text><text x="775" y="393">50</text>
+    </g>
+    <text x="444" y="418" text-anchor="middle" class="label">采样步数</text>
+  </g>
+
+  <g aria-label="UniPC 的六个测量点">
+    <polyline points="100,117.4 130,206.5 160,319.8 175,322 250,323.1 325,323.1" class="unipc"/>
+    <use href="#u" x="100" y="117.4"/><use href="#u" x="130" y="206.5"/><use href="#u" x="160" y="319.8"/>
+    <use href="#u" x="175" y="322"/><use href="#u" x="250" y="323.1"/><use href="#u" x="325" y="323.1"/>
+    <text x="112" y="121" class="value" style="fill:#006b67">0.226</text>
+    <text x="175" y="348" class="value" style="fill:#006b67">0.040</text>
+  </g>
+  <g aria-label="DDIM 的六个测量点">
+    <polyline points="100,274.7 175,298.9 325,307.7 475,315.4 625,318.7 775,320.9" class="ddim"/>
+    <use href="#d" x="100" y="274.7"/><use href="#d" x="175" y="298.9"/><use href="#d" x="325" y="307.7"/>
+    <use href="#d" x="475" y="315.4"/><use href="#d" x="625" y="318.7"/><use href="#d" x="775" y="320.9"/>
+    <text x="95" y="258" class="value" style="fill:#93470e">0.083</text>
+    <text x="182" y="287" class="value" style="fill:#93470e">0.061</text>
+    <text x="751" y="307" class="value" style="fill:#93470e">0.041</text>
+  </g>
+
+  <text x="35" y="452" class="label">5 步时 DDIM 的 FID 较低。10 步时 UniPC 达 0.040，再增至 20 步为 0.039。</text>
+  <text x="35" y="478" class="foot">数据取自论文附录表 7。圆点和菱形是作者报告的实测点。</text>
+</svg>
