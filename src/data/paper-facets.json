@@ -1803,6 +1803,17 @@
       "parts"
     ]
   },
+  "mogeflow-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "tokens",
+      "flow"
+    ],
+    "controls": []
+  },
   "momask-paper-notes": {
     "topics": [
       "generation",

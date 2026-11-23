@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="1080" viewBox="0 0 820 1080" role="img" aria-labelledby="title desc">
+  <title id="title">MoGeFlow 从分组量化到连续解码的训练与推理架构</title>
+  <desc id="desc">训练样本先经过冻结的 PartVQ 编码器。六个关节组独立取最近码，拼接其向量并标准化，得到流的目标。文本经冻结的 CLIP 提取词特征及句特征。可训练 Transformer 以插值状态、文本和流时间为条件预测端点，按速度误差学习。推理以给定长度的噪声和文本出发，欧拉积分得到连续终点，反标准化后直接送入冻结的动作解码器。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#1c3643}
+      .title{font-size:28px;font-weight:700}.section{font-size:21px;font-weight:700}
+      .node{font-size:18px;font-weight:700}.body{font-size:16px}.small{font-size:15px;fill:#415866}
+      .card{fill:white;stroke:#bac9ce;stroke-width:1.3}
+      .fixed{fill:#e3efed;stroke:#86ada7;stroke-width:1.4}
+      .learn{fill:#e6eaff;stroke:#a1aaca;stroke-width:1.4}
+      .target{fill:#fff0cb;stroke:#d2b16d;stroke-width:1.4}
+      .flow,.join{fill:none;stroke:#49616d;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      .flow{marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#49616d"/></marker>
+  </defs>
+  <rect width="820" height="1080" rx="16" fill="#fcfcfa"/>
+  <text x="25" y="39" class="title">MoGeFlow 如何用动作码本训练一个连续生成器？</text>
+  <text x="26" y="69" class="body">青色为冻结模块，紫色为学习到的流模型，黄色为训练目标或采样终点。</text>
+
+  <rect x="16" y="89" width="788" height="250" rx="14" fill="#f2f7f5" stroke="#bccfc9"/>
+  <text x="34" y="123" class="section">训练目标　把一段动作变成一串有部位结构的码向量</text>
+  <rect class="card" x="34" y="144" width="170" height="70" rx="9"/>
+  <text x="47" y="172" class="node">真实动作 x</text>
+  <text x="47" y="198" class="body">F 帧 · 六个关节组</text>
+  <path class="flow" d="M205 179H237"/>
+  <rect class="fixed" x="239" y="144" width="255" height="70" rx="9"/>
+  <text x="253" y="172" class="node">PartVQ 分组时序编码器</text>
+  <text x="253" y="198" class="body">下采样至 T = F/4 个时刻</text>
+  <path class="flow" d="M495 179H527"/>
+  <rect class="fixed" x="529" y="144" width="257" height="70" rx="9"/>
+  <text x="543" y="172" class="node">六套独立码本</text>
+  <text x="543" y="198" class="body">每组从 128 个原型中取最近码</text>
+  <path class="flow" d="M658 215V235"/>
+  <rect class="target" x="34" y="237" width="752" height="62" rx="9"/>
+  <text x="49" y="262" class="node">流的目标 Y₁</text>
+  <text x="49" y="286" class="body">每个时刻将六组码向量拼成一帧，再按各组码本的均值、标准差逐维标准化。</text>
+  <text x="35" y="323" class="small">PartVQ 先通过动作重建学习分组编码器、码本与解码器。训练流时三者均冻结。</text>
+
+  <rect x="16" y="355" width="788" height="370" rx="14" fill="#f4f5fb" stroke="#c9cce1"/>
+  <text x="34" y="390" class="section">流匹配训练　让模型在每个流时间估计应当朝哪里移动</text>
+  <rect class="card" x="34" y="412" width="350" height="78" rx="9"/>
+  <text x="49" y="442" class="node">高斯噪声 Y₀ + 上栏目标 Y₁</text>
+  <text x="49" y="468" class="body">随机取流时间 τ，得到直线插值 Yτ。</text>
+  <rect class="fixed" x="420" y="412" width="366" height="78" rx="9"/>
+  <text x="435" y="442" class="node">动作描述 → 冻结 CLIP 文本编码器</text>
+  <text x="435" y="468" class="body">输出词级特征和整句特征。</text>
+  <path class="flow" d="M209 491V521"/><path class="flow" d="M603 491V521"/>
+  <rect class="learn" x="34" y="523" width="752" height="91" rx="9"/>
+  <text x="49" y="551" class="node">文本条件 Transformer</text>
+  <text x="49" y="577" class="body">每帧各组分别投影后拼接成一个动作 token，与词特征做联合注意力。</text>
+  <text x="49" y="600" class="body">句向量和流时间调制各层，六个输出头分别估计该组的干净端点。</text>
+  <path class="flow" d="M408 615V642"/>
+  <rect class="card" x="34" y="644" width="752" height="62" rx="9"/>
+  <text x="49" y="670" class="node">用速度误差训练流模型</text>
+  <text x="49" y="694" class="body">从预测端点和当前状态算出速度，在有效帧上拟合目标位移 Y₁ − Y₀。</text>
+
+  <rect x="16" y="741" width="788" height="321" rx="14" fill="#f8f7f0" stroke="#d5cfb7"/>
+  <text x="34" y="775" class="section">文本生成动作　沿学到的速度场积分，再直接解码</text>
+  <rect class="card" x="34" y="796" width="291" height="80" rx="9"/>
+  <text x="48" y="825" class="node">描述 c + 长度 + 高斯噪声</text>
+  <text x="48" y="852" class="body">按长度建立 T 个码帧位置。</text>
+  <path class="flow" d="M326 836H362"/>
+  <rect class="learn" x="364" y="796" width="422" height="80" rx="9"/>
+  <text x="379" y="825" class="node">复用文本编码器与学好的速度场</text>
+  <text x="379" y="852" class="body">96 步欧拉积分，文本引导强度为 6。</text>
+  <path class="flow" d="M575 877V891H150V905"/>
+  <rect class="target" x="34" y="907" width="232" height="78" rx="9"/>
+  <text x="48" y="937" class="node">连续采样终点</text>
+  <text x="48" y="963" class="body">逐维反标准化</text>
+  <path class="flow" d="M267 947H305"/>
+  <rect class="fixed" x="307" y="907" width="232" height="78" rx="9"/>
+  <text x="321" y="937" class="node">冻结的动作解码器</text>
+  <text x="321" y="963" class="body">直接接收连续向量</text>
+  <path class="flow" d="M540 947H578"/>
+  <rect class="card" x="580" y="907" width="206" height="78" rx="9"/>
+  <text x="594" y="937" class="node">全身动作序列</text>
+  <text x="594" y="963" class="body">恢复到动作帧率</text>
+  <text x="35" y="1016" class="small">v3 主实验给定真实动作长度。把终点重新投影到最近码，是论文另行比较的解码条件。</text>
+  <text x="35" y="1043" class="small">依据 MoGeFlow，arXiv v3，图 1、§3.1、§3.3–3.4、附录 A.5 重绘。</text>
+</svg>

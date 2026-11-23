@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="548" viewBox="0 0 820 548" role="img" aria-labelledby="title desc">
+  <title id="title">同一个连续采样终点的两种解码方式</title>
+  <desc id="desc">以“单膝跪地，摆好姿势，再站起抬起双臂”为例，放大一个动作码帧中某个关节组的向量。橙色菱形是流模型给出的连续终点，青色圆点是该组的码本向量。主方法保留菱形；重新量化对照把菱形移到最近的圆点。图中坐标与采样路径仅用于讲解。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#1b3742}
+      .title{font-size:27px;font-weight:700}.section{font-size:20px;font-weight:700}.body{font-size:16px}
+      .small{font-size:15px;fill:#425d66}.label{font-size:16px;font-weight:700}
+      .code{fill:#f8fffd;stroke:#448579;stroke-width:2.6}
+    </style>
+    <marker id="move" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="10" markerHeight="10" orient="auto" markerUnits="userSpaceOnUse"><path fill="#52669b" d="M0 0L8 4L0 8Z"/></marker>
+    <marker id="snap" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse"><path fill="#906c38" d="M0 0L8 4L0 8Z"/></marker>
+  </defs>
+  <rect width="820" height="548" rx="16" fill="#fcfcfa"/>
+  <text x="25" y="40" class="title">流停在两个码之间时，解码器收到什么？</text>
+  <text x="26" y="73" class="body">以「单膝跪地，摆好姿势，再站起抬起双臂」为例，放大其中一个码帧的一个关节组。</text>
+
+  <rect x="20" y="98" width="402" height="352" rx="12" fill="#f2f6f5" stroke="#bbcdc6"/>
+  <text x="36" y="129" class="section">反标准化后的码空间</text>
+  <text x="36" y="154" class="small">圆点代表这个组学到的码向量。</text>
+  <g aria-label="码本中的原型">
+    <circle class="code" cx="78" cy="246" r="6"/>
+    <circle class="code" cx="159" cy="196" r="6"/>
+    <circle class="code" cx="342" cy="194" r="6"/>
+    <circle class="code" cx="351" cy="293" r="6"/>
+    <circle class="code" cx="323" cy="374" r="6"/>
+    <circle class="code" cx="184" cy="348" r="6"/>
+    <circle class="code" cx="72" cy="331" r="6"/>
+    <circle fill="#d7eae1" stroke="#347667" stroke-width="3" cx="218" cy="225" r="8"/>
+  </g>
+  <text x="206" y="204" class="small">最近码 e</text>
+  <path fill="none" stroke="#677bb0" stroke-width="2.6" stroke-linecap="round" marker-end="url(#move)" d="M93 379C129 369 124 324 154 308S211 310 249 266"/>
+  <circle cx="93" cy="379" r="4" fill="#596e9a"/>
+  <text x="68" y="408" class="small">噪声起点</text>
+  <path fill="none" stroke="#906c38" stroke-width="2.1" stroke-dasharray="5 4" marker-end="url(#snap)" d="M252 250L226 232"/>
+  <path fill="#e6ac44" stroke="#8e6424" stroke-width="1.8" d="M258 247L267 256L258 265L249 256Z"/>
+  <text x="271" y="255" class="label">连续终点 y</text>
+  <text x="35" y="435" class="small">示意坐标与轨迹，实际每个组为 128 维。</text>
+
+  <rect x="440" y="98" width="360" height="174" rx="12" fill="#edf5f1" stroke="#a6c4b7"/>
+  <text x="457" y="130" class="section">v3 主方法 · 直接解码</text>
+  <path fill="#e6ac44" stroke="#8e6424" stroke-width="1.5" d="M466 153L474 161L466 169L458 161Z"/>
+  <text x="488" y="166" class="label">送入 y</text>
+  <text x="457" y="199" class="body">该组保留流产生的连续向量。各组向量</text>
+  <text x="457" y="225" class="body">拼回全身码帧，整段序列进入解码器。</text>
+  <text x="457" y="251" class="small">最近码与终点之间的偏移得以保留。</text>
+
+  <rect x="440" y="286" width="360" height="164" rx="12" fill="#f7f4ed" stroke="#d0bea0"/>
+  <text x="457" y="318" class="section">论文对照 · 最近码解码</text>
+  <circle class="code" cx="466" cy="348" r="7"/>
+  <text x="488" y="354" class="label">送入 e</text>
+  <text x="457" y="384" class="body">将 y 换成最近码 e（左图虚线），</text>
+  <text x="457" y="410" class="body">各组都完成替换后再用同一解码器。</text>
+  <text x="457" y="436" class="small">从 e 到 y 的偏移在投影时被消除。</text>
+
+  <text x="25" y="487" class="body">图中一个点对应一个关节组在一个码帧的表示。完整动作需要六组以及所有码帧。</text>
+  <text x="25" y="519" class="small">动作描述取自作者图 2。空间与路径为教学示意。解码对照见 arXiv v3 §3.4、表 4。</text>
+</svg>
