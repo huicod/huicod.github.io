@@ -2689,6 +2689,16 @@
       "style"
     ]
   },
+  "rmg-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": []
+  },
   "robogesture-paper-notes": {
     "topics": [
       "gesture",

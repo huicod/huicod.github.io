@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="552" viewBox="0 0 850 552" role="img" aria-labelledby="title desc">
+  <title id="title">同一关节从 0° 转到 90°，走球弧与走直线的中点</title>
+  <desc id="desc">固定旋转轴，把四元数写为标量分量和沿轴的向量分量。单位球面上的圆弧中点为 (0.9239, 0.3827)，对应实际旋转 45 度。两端点直接取平均得到直线弦中点 (0.8536, 0.3536)，范数约 0.9239。横纵轴只画这两个变化的分量。本图是流时间的几何算例。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#193641}
+      .title{font-size:27px;font-weight:700}.section{font-size:20px;font-weight:700}
+      .body{font-size:16px}.note{font-size:14px;fill:#425e66}.number{font-size:19px;font-weight:650}
+      .point{stroke:#193641;fill:#fff;stroke-width:2.5}
+      .axis{fill:none;stroke:#7e979e;stroke-width:1.4}.radial{stroke:#c1cfd1;stroke-width:1.4}
+    </style>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L7 3.5L0 7Z" fill="#7e979e"/></marker>
+  </defs>
+  <rect width="850" height="552" rx="15" fill="#fcfcfa"/>
+  <text x="26" y="42" class="title">一个关节转过 90°，两条插值路径的中点在哪里？</text>
+  <text x="27" y="75" class="body">固定旋转轴，只画四元数的两个分量。物理旋转角 θ 对应图中的夹角 θ/2。</text>
+
+  <rect x="20" y="98" width="410" height="352" rx="12" fill="#f5f8f8" stroke="#c4d2d4"/>
+  <text x="38" y="130" class="section">单位四元数的圆截面</text>
+  <text x="39" y="156" class="note">纵轴为沿固定轴的向量分量</text>
+  <path class="axis" marker-end="url(#arrow)" d="M56 409V175"/>
+  <path class="axis" marker-end="url(#arrow)" d="M56 409H406"/>
+  <text x="40" y="431" class="note">0</text>
+  <text x="83" y="434" class="note">横轴为标量分量</text>
+  <path class="radial" d="M56 409L268.132 196.868"/>
+  <path class="radial" stroke-dasharray="4 4" d="M56 409L333.164 294.195"/>
+  <path d="M356 409A300 300 0 0 0 268.132 196.868L356 409Z" fill="#c8e6df" fill-opacity=".75"/>
+  <path d="M356 409A300 300 0 0 0 268.132 196.868" fill="none" stroke="#086b61" stroke-width="3.5"/>
+  <path d="M356 409L268.132 196.868" fill="none" stroke="#ac5a26" stroke-width="2.5" stroke-dasharray="7 4"/>
+  <circle class="point" cx="356" cy="409" r="4.5"/>
+  <circle class="point" cx="268.132" cy="196.868" r="4.5"/>
+  <text x="281" y="191" class="note">终点 · 旋转 90°</text>
+  <text x="284" y="434" class="note">起点 · 旋转 0°</text>
+  <path d="M305 303H263L248 289" fill="none" stroke="#985622" stroke-width="1.4"/>
+  <text x="184" y="286" class="note" style="fill:#8a4319">弦的中点</text>
+  <path d="M339 290L357 272H369" fill="none" stroke="#086b61" stroke-width="1.4"/>
+  <text x="339" y="263" class="note" style="fill:#086b61">弧的中点</text>
+  <circle cx="333.164" cy="294.195" r="5.2" stroke="#fff" stroke-width="1.7" fill="#086b61"/>
+  <path d="M312.066 296.934L318.066 302.934L312.066 308.934L306.066 302.934Z" fill="#ac5a26" stroke="#fff" stroke-width="1.4"/>
+
+  <rect x="447" y="98" width="383" height="166" rx="12" fill="#eef7f3" stroke="#a8cdbf"/>
+  <circle cx="468" cy="127" r="5.5" fill="#086b61"/>
+  <text x="483" y="134" class="section" style="fill:#095e51">沿最短球弧插值</text>
+  <text x="465" y="165" class="body">从 0° 到 90°，中点对应物理旋转 45°。</text>
+  <text x="465" y="195" class="body">两个分量是 cos(22.5°) 与 sin(22.5°)。</text>
+  <text x="465" y="235" class="number" style="fill:#095e51">(0.9239, 0.3827)　范数为 1</text>
+
+  <rect x="447" y="278" width="383" height="172" rx="12" fill="#fcf4e9" stroke="#dfc29e"/>
+  <path d="M468 302L474 308L468 314L462 308Z" fill="#ac5a26"/>
+  <text x="483" y="315" class="section" style="fill:#874418">沿直线插值</text>
+  <text x="465" y="347" class="body">把起点与终点的坐标逐分量取平均，</text>
+  <text x="465" y="375" class="body">得到弦的中点，落在单位球内部。</text>
+  <text x="465" y="415" class="number" style="fill:#874418">(0.8536, 0.3536)　范数约 0.9239</text>
+
+  <text x="27" y="485" class="body">两个中点都取流时间 t = 0.5。这里的 t 表示从先验到目标的插值进度，动作帧序号另外计。</text>
+  <text x="27" y="520" class="note">本站按论文 §3.3 与附录 A 的球面公式构造的单关节算例。坐标保留四位小数，未使用模型生成样本。</text>
+</svg>
