@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Co-speech holistic 3D motion generation with style from video — Supplementary material</title>
+<link href="reader.css" rel="stylesheet"/>
+<script defer="" src="reader.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#paper-body">跳到正文 / Skip to paper</a>
+<header class="reader-header">
+<nav aria-label="Reader navigation" class="reader-nav">
+<a href="source.pdf">原文 PDF ↗</a>
+<a href="#paper-body">正文 / Paper</a>
+<a href="/blog/gmod2026-chgs/">中文解读</a><a href="../">论文正文 HTML</a></nav>
+<div class="paper-heading">
+<h1>Co-speech holistic 3D motion generation with style from video — Supplementary material</h1>
+<div class="paper-metadata"><p>Author supplementary material · Graphical Models 146 (2026), 101332 · 4 pages · <a href="https://ars.els-cdn.com/content/image/1-s2.0-S1524070326000135-mmc1.pdf">Supplementary PDF at Elsevier</a></p><p>© 2026 Yayu Zhang, Yu-Hui Wen, Chenguang Li, Liping Jing and Jian Yu. Published by Elsevier Inc. <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a>.</p><p>Reflowed from the PDF for browser translation. Figures, displayed equations and tables link to their source images. The PDF preserves the original layout and mathematical typography.</p></div>
+</div>
+</header>
+<div class="reader-layout">
+<aside class="reader-sidebar">
+<details id="paper-toc" open="">
+<summary>目录 · Contents</summary>
+<nav aria-label="Table of contents" class="toc-content"><ol><li class="depth-1"><a href="#appendix-a">A. Limitations of RVQ-VAE in Facial Expression Modeling</a></li><li class="depth-1"><a href="#appendix-b">B. Metric Details</a></li><li class="depth-1"><a href="#appendix-c">C. Details of User Study</a></li><li class="depth-1"><a href="#appendix-d">D. Additional Visualization Results</a></li><li class="depth-1"><a href="#references">References</a></li></ol></nav>
+</details>
+</aside>
+<main id="paper-body" tabindex="-1"><div class="page-marker" id="page-1"><a href="source.pdf#page=1" rel="noopener" target="_blank">PDF p. 1</a></div>
+<h2 data-page="1" id="appendix-a">A. Limitations of RVQ-VAE in Facial Expression Modeling</h2>
+<p data-page="1">The facial training data comprises 100-dimensional FLAME expression parameters, and its training optimization involves two distinct loss functions. The first loss function constrains the continuous representation obtained by processing the FLAME parameters through the RVQ-VAE [1] encoder, while the second loss function constrains the vertex positions (10475 vertices) obtained after processing the continuous representation through the decoder, with additional constraints on velocity and acceleration. It is crucial to emphasize that the key metrics for evaluating facial expression generation quality are all computed based on these vertices.</p>
+<p data-page="1">Without using RVQ-VAE, the 100-dimensional expression parameters and the 10475 vertices maintain an exact correspondence. However, introducing RVQ-VAE adds a quantization substitution operation during decoding, where quantization errors cause inconsistencies between the expression parameters and the vertices. Even minor quantization errors may lead to significant deviations in vertex positions, resulting in inconsistent learning objectives between the two loss functions. This inconsistency may hinder the diffusion model from effectively learning the distribution in the latent space.</p>
+<h2 data-page="1" id="appendix-b">B. Metric Details</h2>
+<p data-page="1">Fréchet Gesture Distance (FGD). FGD evaluates the overall quality of generated gestures by comparing the distribution of latent features extracted from generated gestures and ground-truth gestures using a pre-trained network [2]. The formula is:</p>
+<figure data-page="1" id="eq-b-1"><a data-image-zoom="" href="assets/0005-formula.png"><img alt="Equation (B.1)" height="48" loading="lazy" src="assets/0005-formula.png" style="height:auto" translate="no" width="1640"/></a>
+</figure>
+<p data-page="1">where 𝜇𝑟 and Σ𝑟 represent the first and second moments of the latent feature distribution extracted from ground-truth gestures 𝐠, while 𝜇𝑔 and Σ𝑔 represent the first and second moments of the latent feature distribution extracted from generated gestures ̂𝐠. Here, ‖ ⋅ ‖2 denotes the squared Euclidean distance, and Tr(⋅) denotes the trace of a matrix.</p>
+<p data-page="1">Diversity. For each generated sequence, we first compute the absolute deviation of each frame's pose from the sequence-level mean pose, then accumulate the deviations over all test sequences and divide by the total number of frames:</p>
+<figure data-page="1" id="eq-b-2"><a data-image-zoom="" href="assets/0008-formula.png"><img alt="Equation (B.2)" height="118" loading="lazy" src="assets/0008-formula.png" style="height:auto" translate="no" width="1640"/></a>
+</figure>
+<p data-page="1">where ̄𝑝𝑠 = 1 𝑇𝑠 ∑𝑇𝑠 𝑡=1 𝑝𝑠𝑡 is the mean pose of sequence 𝑠, 𝑝𝑠𝑡 ∈ ℝ𝐽×3 denotes the joint positions at frame 𝑡, 𝑆 is the total number of test sequences, and 𝑇𝑠 is the number of frames in sequence 𝑠. A higher value indicates more diverse motion.</p>
+<p data-page="1">BC Dev. Beat Constancy (BC) evaluates audio-gesture synchronization by measuring the coincidence between motion beats and audio beats. The raw BC score is computed as:</p>
+<figure data-page="1" id="eq-b-3"><a data-image-zoom="" href="assets/0011-formula.png"><img alt="Equation (B.3)" height="115" loading="lazy" src="assets/0011-formula.png" style="height:auto" translate="no" width="1640"/></a>
+</figure>
+<p data-page="1">where 𝑔 and 𝑎 are the sets of gesture beats and speech beats, respectively. However, a higher BC score does not necessarily indicate better performance, as it can be inflated by motion jitter or outliers [3]. Therefore, we use the deviation between the BC of the generated results and that of the ground-truth data as the evaluation metric, denoted as BC Dev.</p>
+<h2 data-page="1" id="appendix-c">C. Details of User Study</h2>
+<p data-page="1">Screenshots of the user research system are shown in Fig. (C.1) and Fig. (C.2). Fig. (C.1) illustrates the user study interface with the style encoder, while Fig. (C.2) shows the interface without the style encoder. To reduce order effects, the video sequences for different methods were randomized. Following DiffuseStyleGesture [4], the evaluation involved 20 participants aged between 20 and 30 with good English proficiency, primarily graduate students from our institution, with a few from other universities.</p>
+<h2 data-page="1" id="appendix-d">D. Additional Visualization Results</h2>
+<p data-page="1">We present additional qualitative visualization results in Fig. (D.1) and Fig. (D.2). Fig. (D.1) shows the results generated using the 3D style encoder. Fig. (D.2) shows the corresponding results generated using the 2D style encoder, where style features are extracted from video inputs.</p>
+<div class="page-marker" id="page-2"><a href="source.pdf#page=2" rel="noopener" target="_blank">PDF p. 2</a></div>
+<figure data-page="2" id="fig-c-1"><a data-image-zoom="" href="assets/0017-picture.png"><img alt="Figure C.1: Screenshot of the user study interface with style encoder." height="963" loading="lazy" src="assets/0017-picture.png" style="height:auto" translate="no" width="755"/></a>
+<figcaption>Figure C.1: Screenshot of the user study interface with style encoder.</figcaption>
+</figure>
+<figure data-page="2" id="fig-c-2"><a data-image-zoom="" href="assets/0019-picture.png"><img alt="Figure C.2: Screenshot of the user study interface without style encoder." height="936" loading="lazy" src="assets/0019-picture.png" style="height:auto" translate="no" width="761"/></a>
+<figcaption>Figure C.2: Screenshot of the user study interface without style encoder.</figcaption>
+</figure>
+<div class="page-marker" id="page-3"><a href="source.pdf#page=3" rel="noopener" target="_blank">PDF p. 3</a></div>
+<figure data-page="3" id="fig-d-1"><a data-image-zoom="" href="assets/0021-picture.png"><img alt="Figure D.1: Qualitative results of stylized gesture generation using the 3D style encoder." height="808" loading="lazy" src="assets/0021-picture.png" style="height:auto" translate="no" width="1731"/></a>
+<figcaption>Figure D.1: Qualitative results of stylized gesture generation using the 3D style encoder.</figcaption>
+</figure>
+<figure data-page="3" id="fig-d-2"><a data-image-zoom="" href="assets/0023-picture.png"><img alt="Figure D.2: Qualitative results of stylized gesture generation using the 2D style encoder." height="858" loading="lazy" src="assets/0023-picture.png" style="height:auto" translate="no" width="1726"/></a>
+<figcaption>Figure D.2: Qualitative results of stylized gesture generation using the 2D style encoder.</figcaption>
+</figure>
+<div class="page-marker" id="page-4"><a href="source.pdf#page=4" rel="noopener" target="_blank">PDF p. 4</a></div>
+<h2 data-page="4" id="references">References</h2>
+<p class="list-item" data-page="4">[1] Lee, D., Kim, C., Kim, S., Cho, M., Han, W.S., 2022. Autoregressive image generation using residual quantization, in: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition, pp. 11523-11532.</p>
+<p class="list-item" data-page="4">[2] Aberman, K., Li, P., Lischinski, D., Sorkine-Hornung, O., Cohen-Or, D., Chen, B., 2020. Skeleton-aware networks for deep motion retargeting. ACM Transactions on Graphics (TOG) 39, 62-1.</p>
+<p class="list-item" data-page="4">[3] Chen, J., Liu, Y., Wang, J., Zeng, A., Li, Y., Chen, Q., 2024. Diffsheg: A diffusion-based approach for real-time speech-driven holistic 3d expression and gesture generation, in: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 7352-7361.</p>
+<p class="list-item" data-page="4">[4] Yang, S.,Wu, Z., Li,M., Zhang, Z., Hao, L., Bao,W., Cheng,M., Xiao, L., 2023. Diffusestylegesture: Stylized audio-driven co-speech gesture generation with diffusion models. arXiv preprint arXiv:2305.04919 .</p></main>
+</div>
+<dialog aria-labelledby="image-viewer-label" id="image-viewer">
+<div class="image-viewer-toolbar">
+<span id="image-viewer-label">原图 / Original image</span>
+<a href="" id="image-viewer-link" rel="noopener" target="_blank">单独打开 ↗</a>
+<button autofocus="" id="image-viewer-close" type="button">关闭 / Close</button>
+</div>
+<div class="image-viewer-content"><img alt="" id="image-viewer-image"/></div>
+</dialog>
+</body>
+</html>

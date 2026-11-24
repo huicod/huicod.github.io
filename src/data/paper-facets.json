@@ -204,6 +204,18 @@
       "streaming"
     ]
   },
+  "chgs-paper-notes": {
+    "topics": [
+      "gesture"
+    ],
+    "methods": [
+      "diffusion",
+      "tokens"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
   "cmdm-paper-notes": {
     "topics": [
       "generation"
