@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="1050" viewBox="0 0 840 1050" role="img" aria-labelledby="title description" lang="zh-CN">
+  <title id="title">LAC 如何用合成的并行动作训练逐帧分割器</title>
+  <desc id="description">先在 Mixamo 上训练生成编码器，将骨架的时变动作与静态体形及视角分开，再把两个动作的系数平均。相同的动作配上两套不同静态成分，得到时间对齐的正样本。独立的 UNIK 编码器用整段和对应帧的对比学习预训练，最后用下游动作标签训练逐帧分类器。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#183741}
+      .title{font-size:27px;font-weight:700}.section{font-size:20px;font-weight:700}
+      .head{font-size:17px;font-weight:700}.body{font-size:16px}.note{fill:#4e6870;font-size:15px}
+      .frame{fill:#f6f9f8;stroke:#c7d6d4}.plain{fill:white;stroke:#b3c3c7}
+      .gen{fill:#e5f3ee;stroke:#86afa3}.enc{fill:#e8eff8;stroke:#91aac5}
+      .out{fill:#fcf2dc;stroke:#c8ae76}.frame,.plain,.gen,.enc,.out{stroke-width:1.4}
+      .arrow,.branch{fill:none;stroke:#536d75;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+      .arrow{marker-end:url(#tip)}
+    </style>
+    <marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 1 9 5 0 9Z" fill="#536d75"/></marker>
+  </defs>
+  <rect width="840" height="1050" rx="16" fill="#fefefb"/>
+  <text class="title" x="25" y="39">LAC 如何从「走路」和「喝水」学会辨认并行动作？</text>
+  <text class="note" x="26" y="66">绿色为骨架生成器，蓝色为识别用的 UNIK 编码器。最终迁移到分割任务的是后者。</text>
+
+  <g aria-label="训练生成器，以重定向学习动作与静态因素">
+    <rect class="frame" x="16" y="84" width="808" height="237" rx="15"/>
+    <text class="section" x="32" y="117">一　训练生成器 · 用同一动作在不同角色上的轨迹作监督</text>
+    <rect class="plain" x="32" y="136" width="172" height="91" rx="9"/>
+    <text class="head" x="46" y="163">Mixamo 骨架对</text>
+    <text class="body" x="46" y="189">动作 A、角色甲</text>
+    <text class="body" x="46" y="212">动作 B、角色乙</text>
+    <path class="arrow" d="M205 181H226"/>
+    <rect class="gen" x="230" y="136" width="265" height="91" rx="9"/>
+    <text class="head" x="244" y="163">生成编码器＋线性动作分解</text>
+    <text class="body" x="244" y="189">时序卷积编码每条骨架序列，</text>
+    <text class="body" x="244" y="212">在 160 个正交方向上取投影。</text>
+    <path class="arrow" d="M496 181H517"/>
+    <rect class="gen" x="521" y="136" width="287" height="91" rx="9"/>
+    <text class="head" x="535" y="163">每条序列分出两组系数</text>
+    <text class="body" x="535" y="189">128 个动作方向，系数随时间变化。</text>
+    <text class="body" x="535" y="212">32 个静态方向，先做时间平均。</text>
+    <path class="arrow" d="M663 228V244"/>
+    <rect class="gen" x="32" y="248" width="776" height="57" rx="9"/>
+    <text class="head" x="46" y="272">解码与重建</text>
+    <text class="body" x="46" y="293">原配对重建各自的输入。交换静态成分后，将「动作 A＋角色乙」与乙做 A 的真实轨迹比较。</text>
+  </g>
+
+  <g aria-label="生成同步的正样本，再对序列和对应帧作对比">
+    <rect class="frame" x="16" y="338" width="808" height="469" rx="15"/>
+    <text class="section" x="32" y="371">二　预训练识别编码器 · 从两条同步骨架中提取共同动作</text>
+    <rect class="plain" x="32" y="390" width="213" height="75" rx="9"/>
+    <text class="head" x="46" y="416">两段已裁剪的骨架</text>
+    <text class="body" x="46" y="443">甲走路，乙喝水。</text>
+    <path class="arrow" d="M246 428H267"/>
+    <rect class="gen" x="271" y="390" width="537" height="75" rx="9"/>
+    <text class="head" x="285" y="416">用训练好的生成器组合同一时刻的动作</text>
+    <text class="body" x="285" y="443">编码两段骨架，将各时刻的走路、喝水动作系数取平均。</text>
+    <path class="branch" d="M540 466V477H221M540 477H614"/>
+    <path class="arrow" d="M221 477V486"/><path class="arrow" d="M614 477V486"/>
+    <rect class="gen" x="32" y="490" width="378" height="72" rx="9"/>
+    <text class="head" x="46" y="517">组合动作＋甲的静态成分 → 解码</text>
+    <text class="body" x="46" y="544">得到甲的体形、视角下的「边走边喝」。</text>
+    <rect class="gen" x="430" y="490" width="378" height="72" rx="9"/>
+    <text class="head" x="444" y="517">组合动作＋乙的静态成分 → 解码</text>
+    <text class="body" x="444" y="544">得到另一条时间对齐的「边走边喝」。</text>
+    <path class="branch" d="M221 563V577H619V563"/>
+    <path class="arrow" d="M420 577V588"/>
+    <rect class="enc" x="32" y="592" width="776" height="67" rx="9"/>
+    <text class="head" x="46" y="619">UNIK 骨架视觉编码器 · 查询分支和动量更新的键分支</text>
+    <text class="body" x="46" y="644">同一组合动作、不同角色或视角构成正对；队列中其他动作的特征提供负样本。</text>
+    <path class="branch" d="M420 660V674H221M420 674H619"/>
+    <path class="arrow" d="M221 674V684"/><path class="arrow" d="M619 674V684"/>
+    <rect class="enc" x="32" y="688" width="378" height="71" rx="9"/>
+    <text class="head" x="46" y="715">序列级对比</text>
+    <text class="body" x="46" y="742">时间平均，比较两段动作的整体表示。</text>
+    <rect class="enc" x="430" y="688" width="378" height="71" rx="9"/>
+    <text class="head" x="444" y="715">帧级对比</text>
+    <text class="body" x="444" y="742">比较相同时刻的帧特征，保留动作变化。</text>
+    <text class="note" x="33" y="788">两个对比损失共同训练 UNIK。组合动作可用作学习样本，真实程度取决于输入动作是否兼容。</text>
+  </g>
+
+  <g aria-label="迁移预训练的视觉编码器并输出逐帧动作类别">
+    <rect class="frame" x="16" y="824" width="808" height="208" rx="15"/>
+    <text class="section" x="32" y="857">三　迁移到动作分割 · 给未裁剪长序列的每一帧打分</text>
+    <rect class="plain" x="32" y="875" width="198" height="73" rx="9"/>
+    <text class="head" x="46" y="904">长骨架序列</text>
+    <text class="body" x="46" y="931">包含连续或重叠动作。</text>
+    <path class="arrow" d="M231 912H253"/>
+    <rect class="enc" x="257" y="875" width="252" height="73" rx="9"/>
+    <text class="head" x="271" y="904">预训练的 UNIK</text>
+    <text class="body" x="271" y="931">逐帧特征，形状为 T × 256。</text>
+    <path class="arrow" d="M510 912H532"/>
+    <rect class="out" x="536" y="875" width="272" height="73" rx="9"/>
+    <text class="head" x="550" y="904">逐帧分类头</text>
+    <text class="body" x="550" y="931">为各帧给出动作类别分数。</text>
+    <text class="note" x="33" y="981">迁移训练使用下游帧标签。推理时只需骨架、UNIK 和分类头。</text>
+    <text class="note" x="33" y="1007">动作切换由逐帧预测反映；模型没有单独输出每个动作原语的起止时间。</text>
+  </g>
+</svg>

@@ -1440,6 +1440,14 @@
       "parts"
     ]
   },
+  "lac-paper-notes": {
+    "topics": [
+      "understanding",
+      "representation"
+    ],
+    "methods": [],
+    "controls": []
+  },
   "lact-motion-paper-notes": {
     "topics": [
       "generation"
