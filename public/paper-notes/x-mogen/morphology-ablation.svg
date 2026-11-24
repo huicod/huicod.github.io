@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="454" viewBox="0 0 800 454" role="img" aria-labelledby="title desc">
+  <title id="title">两种骨长监督分别影响哪些指标？</title>
+  <desc id="desc">UniMo4D 常规测试集。按完整模型、去掉自编码器的逐帧骨长损失、去掉生成训练的形态一致性模块排列，FID 为 0.050、0.108、0.049，平均骨长误差 MME 为 0.201、0.237、0.238。两图均从零开始，刻度独立，数值越小越好。依据 X-MoGen 的式 4、式 9 和表 4 绘制。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#203945}
+      .title{font-size:26px;font-weight:700}.metric{font-size:18px;font-weight:700}
+      .label{font-size:17px;font-weight:600}.value{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+      .small{font-size:14px;fill:#49616a}.tick{font-size:12px;fill:#52666e;font-variant-numeric:tabular-nums}
+      .axis{stroke:#83959a;stroke-width:1}.grid{stroke:#d6dfdf;stroke-width:1;stroke-dasharray:3 4}
+      .fid{fill:#56879d}.mme{fill:#488579}.fid-full{fill:#2a607d}.mme-full{fill:#216856}
+    </style>
+  </defs>
+  <rect width="800" height="454" rx="13" fill="#fdfdfb"/>
+  <text class="title" x="25" y="42">两种骨长监督分别影响哪些指标？</text>
+  <text class="small" x="26" y="70">UniMo4D 常规测试集 · 两项分数均越低越好，每列使用自己的刻度。</text>
+  <rect x="18" y="92" width="764" height="250" rx="10" fill="#f5f8f8" stroke="#d5dfdd"/>
+  <text class="metric" x="35" y="126">训练配置</text>
+  <text class="metric" x="243" y="126">FID · 动作分布距离</text>
+  <text class="metric" x="516" y="126">MME · 平均骨长误差</text>
+  <path d="M243 147V299M516 147V299M243 299H439M516 299H716" fill="none" class="axis"/>
+  <path d="M341 147V299M439 147V299M616 147V299M716 147V299" fill="none" class="grid"/>
+  <g aria-label="完整模型，FID 0.050，MME 0.201">
+    <text class="label" x="35" y="180">完整模型</text>
+    <rect x="243" y="166" width="81.667" height="16" rx="3" class="fid-full"/>
+    <text class="value" x="332" y="180">0.050</text>
+    <rect x="516" y="166" width="160.8" height="16" rx="3" class="mme-full"/>
+    <text class="value" x="684" y="180">0.201</text>
+  </g>
+  <g aria-label="去掉自编码器逐帧骨长损失，FID 0.108，MME 0.237">
+    <text class="label" x="35" y="229">去掉 AE 骨长损失</text>
+    <rect x="243" y="215" width="176.4" height="16" rx="3" class="fid"/>
+    <text class="value" x="427" y="229">0.108</text>
+    <rect x="516" y="215" width="189.6" height="16" rx="3" class="mme"/>
+    <text class="value" x="713" y="229">0.237</text>
+  </g>
+  <g aria-label="去掉形态一致性模块，FID 0.049，MME 0.238">
+    <text class="label" x="35" y="278">去掉 MCM</text>
+    <rect x="243" y="264" width="80.033" height="16" rx="3" class="fid"/>
+    <text class="value" x="330" y="278">0.049</text>
+    <rect x="516" y="264" width="190.4" height="16" rx="3" class="mme"/>
+    <text class="value" x="714" y="278">0.238</text>
+  </g>
+  <g class="tick" text-anchor="middle">
+    <text x="243" y="321">0</text><text x="341" y="321">0.06</text><text x="439" y="321">0.12</text>
+    <text x="516" y="321">0</text><text x="616" y="321">0.125</text><text x="716" y="321">0.25</text>
+  </g>
+  <text class="label" x="26" y="373">AE 训练</text>
+  <text class="small" x="123" y="373">在解码后的每一帧，比较重建动作和真实动作的各段骨长。</text>
+  <text class="label" x="26" y="403">生成器训练</text>
+  <text class="small" x="123" y="403">MCM 从整段潜序列回归一组骨长，用参考骨长监督被遮挡位置。</text>
+  <text class="small" x="26" y="436">数据取自 X-MoGen 表 4，训练目标见式 4 与式 9。</text>
+</svg>

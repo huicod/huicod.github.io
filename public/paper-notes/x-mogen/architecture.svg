@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="1160" viewBox="0 0 840 1160" role="img" aria-labelledby="title description">
+  <title id="title">X-MoGen 从物种和动作描述生成三维动作的过程</title>
+  <desc id="description">人类和四足动物先统一成 25 关节。第一阶段并行学习以物种为条件的静止骨架和共享连续动作表示。第二阶段根据标准姿势和文字，预测被遮住的动作位置，并用冻结的骨长预测器提供辅助监督。生成时从全掩码开始，逐轮填回连续潜向量，再经动作解码器还原关节运动。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#233b45}
+      .title{font-size:27px;font-weight:700}.section{font-size:20px;font-weight:700}
+      .head{font-size:17px;font-weight:700}.body{font-size:15.5px}.note{font-size:14px;fill:#45606a}
+      .panel{fill:#f5f8f7;stroke:#c9d5d5}.paper{fill:#fff;stroke:#a4b5b9}
+      .morph{fill:#e7f2ed;stroke:#83aa99}.motion{fill:#e9eff8;stroke:#95aacc}
+      .out{fill:#faf2dc;stroke:#c3a66f}.aux{fill:#f1f5ee;stroke:#8ca38c;stroke-dasharray:6 4}
+      .panel,.paper,.morph,.motion,.out,.aux{stroke-width:1.4}
+      .arrow,.auxarrow{fill:none;stroke:#56717c;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .auxarrow{stroke:#66876f;stroke-dasharray:5 4;marker-end:url(#greenarrow)}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 9 5 0 10Z" fill="#56717c"/></marker>
+    <marker id="greenarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 9 5 0 10Z" fill="#66876f"/></marker>
+  </defs>
+  <rect width="840" height="1160" fill="#fdfdfb" rx="16"/>
+  <text x="26" y="41" class="title">X-MoGen 怎样让同一模型生成人与动物的动作？</text>
+  <text x="27" y="69" class="note">绿色表示骨架形态，蓝色表示连续动作特征，虚线表示训练时的辅助监督。</text>
+
+  <g aria-label="训练数据的骨架对齐">
+    <rect x="16" y="88" width="808" height="143" rx="14" class="panel"/>
+    <text x="32" y="118" class="section">数据准备　相同的关节编号，保留不同的骨长比例</text>
+    <g>
+      <rect x="32" y="133" width="320" height="81" rx="10" class="paper"/>
+      <text x="46" y="158" class="head">UniMo4D 的动作来源</text>
+      <text x="46" y="181" class="body">人类：HumanML3D、KIT-ML</text>
+      <text x="46" y="202" class="body">动物：AniMo4D</text>
+    </g>
+    <path d="M353 173H378" class="arrow"/>
+    <g>
+      <rect x="382" y="133" width="424" height="81" rx="10" class="morph"/>
+      <text x="396" y="158" class="head">统一为 25 关节，每帧 76 维</text>
+      <text x="396" y="181" class="body">对齐关节与尺度，保留根运动及其余关节的位置。</text>
+      <text x="396" y="202" class="body">其中 3 个槽位留给尾部，无尾角色与骨盆重合。</text>
+    </g>
+  </g>
+
+  <g aria-label="第一阶段学习物种骨架与共享动作表示">
+    <rect x="16" y="249" width="808" height="232" rx="14" class="panel"/>
+    <text x="32" y="281" class="section">第一阶段　分别学身体形态和动作表示</text>
+    <g>
+      <rect x="32" y="297" width="381" height="164" rx="10" class="morph"/>
+      <text x="47" y="324" class="head">图变分自编码器 CGAE</text>
+      <text x="47" y="350" class="body">参考骨长放在固定图上，物种名称经</text>
+      <text x="47" y="373" class="body">BioCLIP-2 编码；训练重建骨长并约束后验。</text>
+      <text x="47" y="406" class="body">生成时，物种特征与随机样本给出骨长，</text>
+      <text x="47" y="429" class="body">沿预定运动学树恢复标准姿势 P。</text>
+    </g>
+    <g>
+      <rect x="427" y="297" width="379" height="164" rx="10" class="motion"/>
+      <text x="442" y="324" class="head">动作自编码器 AE</text>
+      <text x="442" y="350" class="body">动作 X 经时序卷积与残差层，压缩成</text>
+      <text x="442" y="373" class="body">长度为 ⌊L/4⌋ 的连续潜序列 Z。</text>
+      <text x="442" y="406" class="body">解码并重建各帧，同时约束重建动作</text>
+      <text x="442" y="429" class="body">与原动作对应帧之间的骨长差异。</text>
+    </g>
+  </g>
+
+  <g aria-label="第二阶段训练文本条件动作生成器">
+    <rect x="16" y="499" width="808" height="392" rx="14" class="panel"/>
+    <text x="32" y="531" class="section">第二阶段　用骨架和文本补全被遮住的动作位置</text>
+    <g>
+      <rect x="32" y="548" width="239" height="76" rx="10" class="morph"/>
+      <text x="46" y="574" class="head">标准姿势 P</text>
+      <text x="46" y="599" class="body">线性投影为首个骨架 token。</text>
+    </g>
+    <g>
+      <rect x="289" y="548" width="247" height="76" rx="10" class="motion"/>
+      <text x="303" y="574" class="head">连续动作 Z</text>
+      <text x="303" y="599" class="body">随机位置替换成掩码 [M]。</text>
+    </g>
+    <g>
+      <rect x="554" y="548" width="252" height="76" rx="10" class="paper"/>
+      <text x="568" y="574" class="head">动作描述</text>
+      <text x="568" y="599" class="body">CLIP 编码整句与各词的特征。</text>
+    </g>
+    <path d="M151 625V652" class="arrow"/>
+    <path d="M411 625V652" class="arrow"/>
+    <path d="M680 625V652" class="arrow"/>
+    <g>
+      <rect x="32" y="655" width="774" height="83" rx="10" class="motion"/>
+      <text x="47" y="682" class="head">掩码 Transformer（M-Trans）</text>
+      <text x="47" y="707" class="body">标准姿势与动作序列构成查询，句与词特征提供键和值，得到各待填位置的上下文 hᵢ。</text>
+    </g>
+    <path d="M223 739V757" class="arrow"/>
+    <g>
+      <rect x="32" y="760" width="379" height="111" rx="10" class="motion"/>
+      <text x="47" y="786" class="head">流匹配补全头</text>
+      <text x="47" y="813" class="body">MLP 用 hᵢ、流时间和当前潜向量预测速度。</text>
+      <text x="47" y="836" class="body">监督来自高斯噪声通向真实潜向量的直线。</text>
+    </g>
+    <path d="M413 815H435" class="auxarrow"/>
+    <g>
+      <rect x="440" y="760" width="366" height="111" rx="10" class="aux"/>
+      <text x="455" y="786" class="head">冻结的骨长预测器 MCM</text>
+      <text x="455" y="813" class="body">GRU 和 MLP 从整段潜序列估计静态骨长，</text>
+      <text x="455" y="836" class="body">对照参考骨长，只向待填位置传回梯度。</text>
+    </g>
+  </g>
+
+  <g aria-label="生成时两层采样循环和解码输出">
+    <rect x="16" y="909" width="808" height="205" rx="14" class="panel"/>
+    <text x="32" y="941" class="section">推理　外层决定填哪些位置，内层决定每处填什么</text>
+    <g>
+      <rect x="32" y="961" width="213" height="103" rx="10" class="paper"/>
+      <text x="45" y="987" class="head">从全掩码序列开始</text>
+      <text x="45" y="1014" class="body">给定物种与动作描述，</text>
+      <text x="45" y="1037" class="body">取得标准姿势与文本条件。</text>
+    </g>
+    <path d="M246 1013H266" class="arrow"/>
+    <g>
+      <rect x="270" y="961" width="307" height="103" rx="10" class="motion"/>
+      <text x="284" y="987" class="head">选择部分 [M]，预测并填回</text>
+      <text x="284" y="1014" class="body">M-Trans 读取已填位置。每个新位置</text>
+      <text x="284" y="1037" class="body">从噪声开始，按带文本引导的速度更新。</text>
+    </g>
+    <path d="M502 1065V1085H347V1068" class="arrow"/>
+    <path d="M578 1013H598" class="arrow"/>
+    <g>
+      <rect x="602" y="961" width="204" height="103" rx="10" class="out"/>
+      <text x="616" y="987" class="head">全部填完后解码</text>
+      <text x="616" y="1014" class="body">AE 解码连续潜序列，</text>
+      <text x="616" y="1037" class="body">还原人或动物的关节运动。</text>
+    </g>
+  </g>
+  <text x="27" y="1141" class="note">据原文图 2、式 1–11 与 UniMo4D 数据说明绘制。骨长监督鼓励比例一致，未施加逐帧关节或接触硬约束。</text>
+</svg>

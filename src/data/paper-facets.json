@@ -3485,6 +3485,18 @@
       "style"
     ]
   },
+  "x-mogen-paper-notes": {
+    "topics": [
+      "generation",
+      "character",
+      "representation"
+    ],
+    "methods": [
+      "flow",
+      "diffusion"
+    ],
+    "controls": []
+  },
   "zero-shot-stl-paper-notes": {
     "topics": [
       "character"
