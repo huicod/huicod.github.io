@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1182" viewBox="0 0 880 1182" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">LG-Tok 怎样把动作和文字一起编码，再从文字生成动作</title>
+  <desc id="desc">训练编解码器时将帧特征、可学习潜在位置和文字送入 Transformer，用多尺度残差量化得到离散码。解码器的逐帧查询分别读取反量化的动作特征和文字。第二阶段用这些离散码训练按尺度生成的 SAR。推理时先由 SAR 采样离散码，再以相同的码分别有文字和无文字解码，在连续动作空间合成结果。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#173946}
+      .title{font-size:26px;font-weight:700}.stage{font-size:20px;font-weight:700}.label{font-size:17px;font-weight:700}
+      .body{font-size:15.5px}.small{font-size:14.5px;fill:#45636c}.math{font-size:18px;font-weight:600}
+      .frame{fill:#f8faf9;stroke:#c0d1cd;stroke-width:1.2}.plain{fill:#fff;stroke:#b3c5c4}
+      .lang{fill:#e8f4ed;stroke:#82ac95}.net{fill:#e9eff8;stroke:#92a9c9}.code{fill:#faf0df;stroke:#c2a06c}
+      .arrow,.cond,.supervise{stroke:#536f77;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#a)}
+      .cond{stroke:#478463;marker-end:url(#g)}.supervise{stroke-dasharray:5 4}
+    </style>
+    <marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0l8 4-8 4z" fill="#536f77"/></marker>
+    <marker id="g" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0l8 4-8 4z" fill="#478463"/></marker>
+  </defs>
+  <rect width="880" height="1182" fill="#fff"/>
+  <text x="24" y="37" class="title">LG-Tok｜文字怎样参与动作编码、生成与还原？</text>
+  <text x="25" y="65" class="small">绿色为文字条件，橙色为离散动作码，蓝色为动作网络。虚线表示训练目标。</text>
+  <g aria-label="第一阶段训练语言引导的动作编解码器">
+    <rect x="16" y="83" width="848" height="448" rx="13" class="frame"/>
+    <text x="32" y="116" class="stage">一　训练编解码器：给定动作和配文，学会重建原动作</text>
+    <rect x="32" y="136" width="374" height="70" rx="8" class="plain"/>
+    <text x="46" y="164" class="label">真实动作 → F 个逐帧特征</text>
+    <text x="46" y="190" class="body">额外加入 T 个可学习的潜在位置。</text>
+    <rect x="476" y="136" width="371" height="70" rx="8" class="lang"/>
+    <text x="491" y="164" class="label">配文 → 冻结的 LLaMA-3.2-1B</text>
+    <text x="491" y="190" class="body">训练时随机去掉文字，概率 p = 0.1。</text>
+    <path d="M215 207v15" class="arrow"/>
+    <path d="M575 207v9H385v7" class="cond"/>
+    <rect x="32" y="227" width="427" height="73" rx="8" class="net"/>
+    <text x="46" y="255" class="label">编码器 · 拼接文字、潜在位置与动作帧</text>
+    <text x="46" y="281" class="body">全局自注意力融合，只取 T 个潜在位置的输出。</text>
+    <path d="M460 263h32" class="arrow"/>
+    <rect x="497" y="227" width="322" height="73" rx="8" class="code"/>
+    <text x="511" y="255" class="label">10 级残差量化 · 从粗到细</text>
+    <text x="511" y="281" class="body">每级下采样、查码，再更新剩余误差。</text>
+    <path d="M642 301v18" class="arrow"/>
+    <rect x="497" y="324" width="322" height="68" rx="8" class="code"/>
+    <text x="511" y="350" class="label">每个尺度保留一组离散索引</text>
+    <text x="511" y="375" class="body">查回向量，上采样到 T 后逐级相加。</text>
+    <path d="M496 358h-39" class="arrow"/>
+    <rect x="32" y="324" width="420" height="68" rx="8" class="net"/>
+    <text x="46" y="350" class="label">解码器 · F 个可学习的帧查询</text>
+    <text x="46" y="375" class="body">分别以交叉注意力读取反量化特征与文字。</text>
+    <path d="M834 207v197H296v-10" class="cond"/>
+    <path d="M145 393v26" class="arrow"/>
+    <rect x="32" y="423" width="348" height="53" rx="8" class="plain"/>
+    <text x="46" y="455" class="label">线性映射 → 重建的 F 帧动作</text>
+    <path d="M381 449h80" class="supervise"/>
+    <rect x="466" y="423" width="353" height="53" rx="8" class="plain"/>
+    <text x="481" y="455" class="label">对照原动作，计算平滑 L1 误差</text>
+    <text x="32" y="508" class="small">长度示例：196 帧输入，标准版 T = 49。这里的 49 是潜在位置数；十级共有 236 个离散索引。</text>
+  </g>
+  <g aria-label="第二阶段用量化索引训练按尺度自回归的文本动作生成器">
+    <rect x="16" y="546" width="848" height="215" rx="13" class="frame"/>
+    <text x="32" y="579" class="stage">二　训练动作生成器：学会根据文字预测离散码</text>
+    <rect x="32" y="598" width="221" height="73" rx="8" class="lang"/>
+    <text x="46" y="625" class="label">配文 → CLIP 文本特征</text>
+    <text x="46" y="651" class="body">用作生成器的条件。</text>
+    <path d="M254 636h30" class="cond"/>
+    <rect x="289" y="598" width="255" height="73" rx="8" class="net"/>
+    <text x="303" y="625" class="label">尺度自回归生成器 SAR</text>
+    <text x="303" y="651" class="body">输入起始符及此前尺度的码。</text>
+    <path d="M545 636h27" class="arrow"/>
+    <rect x="577" y="598" width="270" height="73" rx="8" class="code"/>
+    <text x="591" y="625" class="label">预测下一尺度的整组索引</text>
+    <text x="591" y="651" class="body">尺度之间串行，同尺度内部并行。</text>
+    <rect x="82" y="694" width="574" height="46" rx="8" class="plain"/>
+    <text x="97" y="722" class="body">监督来自阶段一：配对动作经编码、量化，得到各尺度的目标索引。</text>
+    <path d="M657 717h63v-43" class="supervise"/>
+  </g>
+  <g aria-label="从一句话生成并做有文字和无文字两次解码">
+    <rect x="16" y="776" width="848" height="388" rx="13" class="frame"/>
+    <text x="32" y="808" class="stage">三　推理：输入新句子，输出一段连续动作</text>
+    <rect x="32" y="829" width="212" height="70" rx="8" class="lang"/>
+    <text x="46" y="856" class="label">新句子</text>
+    <text x="46" y="881" class="body">向左走，再向右，回到中间</text>
+    <path d="M245 864h33" class="cond"/>
+    <rect x="283" y="829" width="265" height="70" rx="8" class="net"/>
+    <text x="297" y="856" class="label">CLIP 条件 → SAR 采样</text>
+    <text x="297" y="881" class="body">依次预测十个尺度的动作码。</text>
+    <path d="M549 864h25" class="arrow"/>
+    <rect x="579" y="829" width="268" height="70" rx="8" class="code"/>
+    <text x="593" y="856" class="label">反量化 → 同一组动作特征</text>
+    <text x="593" y="881" class="body">将各尺度码向量上采样后相加。</text>
+    <path d="M717 900v19H319v21" class="arrow"/>
+    <path d="M717 919v21" class="arrow"/>
+    <path d="M95 900v40" class="cond"/>
+    <rect x="32" y="945" width="393" height="65" rx="8" class="net"/>
+    <text x="46" y="970" class="label">有文字解码 → 动作 m_c</text>
+    <text x="46" y="994" class="body">解码器同时读取 LLaMA 词特征与动作特征。</text>
+    <rect x="470" y="945" width="377" height="65" rx="8" class="net"/>
+    <text x="484" y="970" class="label">无文字解码 → 动作 m_u</text>
+    <text x="484" y="994" class="body">同一解码器、同一组动作特征，去掉文字。</text>
+    <path d="M221 1011v23h182v13" class="arrow"/>
+    <path d="M660 1011v23H478v13" class="arrow"/>
+    <rect x="103" y="1052" width="675" height="67" rx="8" class="plain"/>
+    <text x="121" y="1079" class="label">在动作空间调节文字引导，输出 F 帧</text>
+    <text x="121" y="1104" class="math">最终动作 = m_c + g × (m_c − m_u)</text>
+    <text x="32" y="1145" class="small">g = 0 时直接使用有文字的预测。图据论文图 3、附录 B 图 7 和式 4 重绘。</text>
+  </g>
+</svg>

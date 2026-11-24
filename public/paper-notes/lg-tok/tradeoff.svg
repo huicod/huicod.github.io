@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 425" width="760" height="425" role="img" aria-labelledby="title desc" xml:lang="zh-CN">
+  <title id="title">Motion-X 上离散码数量与重建、生成质量的关系</title>
+  <desc id="desc">横坐标依次是 mini、mid、标准版，分别含 104、160、236 个离散码。重建 rFID 依次是 0.094、0.051、0.041。生成 gFID 依次是 0.071、0.076、0.088。两种 FID 均越低越好。来源为原论文表 6。</desc>
+  <style>
+    text {font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif; fill:#233941}
+    .title {font-size:25px; font-weight:700}
+    .subtitle,.legend {font-size:16px}
+    .tick,.source {font-size:14px; fill:#526871}
+    .variant {font-size:17px; font-weight:650}
+    .count {font-size:15px; fill:#526871}
+    .value {font-size:18px; font-weight:700; paint-order:stroke; stroke:#fff; stroke-width:5; stroke-linejoin:round; font-variant-numeric:tabular-nums}
+    .r {fill:#126661}
+    .g {fill:#964821}
+    .grid {fill:none;stroke:#dce4e5;stroke-width:1}
+    .axis {fill:none;stroke:#a7b8bb;stroke-width:1.2}
+    .recon {fill:none;stroke:#16756e;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+    .gen {fill:none;stroke:#ab532b;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:8 7}
+    .recon-dot {fill:#fff;stroke:#16756e;stroke-width:3}
+    .gen-dot {fill:#ab532b;stroke:#fff;stroke-width:1.6}
+  </style>
+  <rect x="1" y="1" width="758" height="423" rx="16" fill="#fff" stroke="#d2dddc"/>
+  <text x="25" y="39" class="title">Motion-X 上，更多离散码让重建更准</text>
+  <text x="25" y="68" class="subtitle">三种模型共用评测协议。两项 FID 均越低越好。</text>
+
+  <path class="recon" d="M28 98H64"/><circle class="recon-dot" cx="46" cy="98" r="5"/>
+  <text x="76" y="104" class="legend">从真实动作编码后重建 · rFID</text>
+  <path class="gen" d="M375 98H411"/><path class="gen-dot" d="M393 91l7 7-7 7-7-7z"/>
+  <text x="423" y="104" class="legend">从文字预测动作再解码 · gFID</text>
+
+  <g class="grid">
+    <path d="M82 133H716M82 175H716M82 217H716M82 259H716M82 301H716"/>
+  </g>
+  <path class="axis" d="M82 132V343H716"/>
+  <g text-anchor="end" class="tick">
+    <text x="69" y="138">0.10</text><text x="69" y="180">0.08</text>
+    <text x="69" y="222">0.06</text><text x="69" y="264">0.04</text>
+    <text x="69" y="306">0.02</text><text x="69" y="348">0.00</text>
+  </g>
+  <path class="recon" d="M130 145.6L396 235.9L665 256.9"/>
+  <path class="gen" d="M130 193.9L396 183.4L665 158.2"/>
+  <g class="recon-dot"><circle cx="130" cy="145.6" r="5.7"/><circle cx="396" cy="235.9" r="5.7"/><circle cx="665" cy="256.9" r="5.7"/></g>
+  <g class="gen-dot"><path d="M130 186.4l7.5 7.5-7.5 7.5-7.5-7.5z"/><path d="M396 175.9l7.5 7.5-7.5 7.5-7.5-7.5z"/><path d="M665 150.7l7.5 7.5-7.5 7.5-7.5-7.5z"/></g>
+  <g text-anchor="middle" class="value r"><text class="r" x="130" y="133">0.094</text><text class="r" x="396" y="261">0.051</text><text class="r" x="665" y="282">0.041</text></g>
+  <g text-anchor="middle" class="value g"><text class="g" x="130" y="220">0.071</text><text class="g" x="396" y="169">0.076</text><text class="g" x="665" y="144">0.088</text></g>
+  <path class="axis" d="M130 343v5m266-5v5m269-5v5"/>
+  <g text-anchor="middle">
+    <text class="variant" x="130" y="369">mini</text><text class="variant" x="396" y="369">mid</text><text class="variant" x="665" y="369">标准版</text>
+    <text class="count" x="130" y="391">104 个离散码</text><text class="count" x="396" y="391">160 个离散码</text><text class="count" x="665" y="391">236 个离散码</text>
+  </g>
+  <text class="source" x="25" y="413">数据取自 LG-Tok 表 6，绘制均值。原表另列 95% 置信区间。</text>
+</svg>

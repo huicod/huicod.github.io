@@ -1536,6 +1536,16 @@
     ],
     "controls": []
   },
+  "lg-tok-paper-notes": {
+    "topics": [
+      "representation",
+      "generation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
+  },
   "light-t2m-paper-notes": {
     "topics": [
       "generation"
