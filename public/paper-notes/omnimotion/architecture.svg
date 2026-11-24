@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="864" height="1090" viewBox="0 0 864 1090" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">OmniMotion 怎样从条件信号逐段生成人体动作</title>
+  <desc id="desc">动作自编码器先将四帧压缩成一个连续位置。文本预训练时，因果 Transformer 根据文本与已有动作产生条件，DiT 学习预测加在目标位置上的噪声。适配语音或音乐时，文本与音频送入 AdaLN，音频另经交叉注意力进入 Transformer，DiT 冻结。推理从全掩码开始，按原时间顺序生成连续向量，解码回全身动作。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#183642}
+      .title{font-size:28px;font-weight:700}.section{font-size:20px;font-weight:700}
+      .head{font-size:17px;font-weight:700}.body{font-size:16px}.note{font-size:15px;fill:#49616b}
+      .frame{fill:#f7f9fa;stroke:#c6d5d9}.plain{fill:#fff;stroke:#bccbd0}
+      .condition{fill:#e8f4ee;stroke:#8db09c}.ar{fill:#e6eef9;stroke:#94adcc}
+      .dit{fill:#f9efdf;stroke:#c7a876}.arrow,.guide{fill:none;stroke:#526e78;stroke-width:1.9}
+      .arrow{marker-end:url(#arrow)}.guide{stroke-dasharray:5 4;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0l8 4-8 4" fill="#526e78"/></marker>
+  </defs>
+  <rect width="864" height="1090" fill="#fff"/>
+  <text x="24" y="38" class="title">OmniMotion 如何逐段生成人体动作？</text>
+  <text x="25" y="66" class="note">绿色为外部条件，蓝色为按时间建模的 Transformer，橙色为预测连续向量的扩散头。</text>
+  <g aria-label="动作编解码器的重建训练">
+    <rect x="16" y="84" width="832" height="164" rx="13" class="frame"/>
+    <text x="32" y="116" class="section">一　训练动作编解码器</text>
+    <rect x="32" y="131" width="176" height="65" rx="8" class="plain"/>
+    <text x="44" y="157" class="head">全身动作序列</text><text x="44" y="181" class="body">T 帧 × 322 维</text>
+    <path class="arrow" d="M209 164h24"/>
+    <rect x="237" y="131" width="164" height="65" rx="8" class="plain"/>
+    <text x="249" y="157" class="head">动作编码器</text><text x="249" y="181" class="body">时序卷积与下采样</text>
+    <path class="arrow" d="M402 164h24"/>
+    <rect x="430" y="131" width="183" height="65" rx="8" class="ar"/>
+    <text x="442" y="157" class="head">连续动作向量</text><text x="442" y="181" class="body">时间长度缩至 T/4</text>
+    <path class="arrow" d="M614 164h24"/>
+    <rect x="642" y="131" width="190" height="65" rx="8" class="plain"/>
+    <text x="654" y="157" class="head">动作解码器</text><text x="654" y="181" class="body">上采样，恢复逐帧动作</text>
+    <text x="32" y="227" class="note">用原动作做 L1 重建监督。语音、音乐数据各自先适配编解码器，再训练相应的条件生成器。</text>
+  </g>
+  <g aria-label="文本预训练的因果主干和扩散头">
+    <rect x="16" y="263" width="832" height="279" rx="13" class="frame"/>
+    <text x="32" y="295" class="section">二　用文字和配对动作预训练生成器</text>
+    <rect x="32" y="311" width="379" height="70" rx="8" class="plain"/>
+    <text x="45" y="338" class="head">配对动作 → 连续向量 → 随机掩码</text>
+    <text x="45" y="363" class="body">保留原时间顺序，遮挡比例按余弦调度。</text>
+    <rect x="452" y="311" width="380" height="70" rx="8" class="condition"/>
+    <text x="465" y="338" class="head">动作描述 → LaMP 文本编码器</text>
+    <text x="465" y="363" class="body">用 AdaLN 把文字条件注入主干。</text>
+    <path class="arrow" d="M221 382v23"/><path class="arrow" d="M642 382v12H378v11"/>
+    <rect x="32" y="410" width="393" height="79" rx="8" class="ar"/>
+    <text x="45" y="439" class="head">因果 Transformer → 当前位置条件 zᵢ</text>
+    <text x="45" y="466" class="body">门控调节注意力输出，RMSNorm 归一化。</text>
+    <path class="arrow" d="M426 450h32"/>
+    <rect x="462" y="410" width="370" height="79" rx="8" class="dit"/>
+    <text x="475" y="439" class="head">DiT 扩散头</text>
+    <text x="475" y="466" class="body">以 zᵢ 和扩散时间为条件，预测噪声。</text>
+    <text x="33" y="521" class="note">训练信号：向真实目标向量加入已知噪声，计算预测误差。</text>
+    <path class="guide" d="M647 514v-21"/>
+  </g>
+  <g aria-label="保留文本条件，适配语音或音乐">
+    <rect x="16" y="557" width="832" height="240" rx="13" class="frame"/>
+    <text x="32" y="590" class="section">三　从文本模型适配到语音手势或音乐舞蹈</text>
+    <rect x="32" y="607" width="249" height="63" rx="8" class="condition"/>
+    <text x="45" y="632" class="head">保留文本特征</text><text x="45" y="655" class="body">例如图 2 的任务词 Speak。</text>
+    <rect x="314" y="607" width="518" height="63" rx="8" class="condition"/>
+    <text x="328" y="632" class="head">语音或音乐 → 该模态的时序特征</text>
+    <text x="328" y="655" class="body">保留音频随时间的变化，提供给两条条件路径。</text>
+    <path class="arrow" d="M157 671v22"/><path class="arrow" d="M388 671v9h-74v13"/>
+    <path class="arrow" d="M634 671v22"/>
+    <rect x="32" y="698" width="380" height="58" rx="8" class="ar"/>
+    <text x="45" y="723" class="head">AdaLN</text><text x="45" y="746" class="body">合并文字与音频特征，调制主干。</text>
+    <rect x="446" y="698" width="386" height="58" rx="8" class="ar"/>
+    <text x="459" y="723" class="head">交叉注意力</text><text x="459" y="746" class="body">动作位置读取音频特征。</text>
+    <text x="33" y="782" class="note">适配时更新掩码 Transformer 和新增的交叉注意力层，沿用并冻结文本阶段的 DiT。</text>
+  </g>
+  <g aria-label="从全掩码按时间生成并解码">
+    <rect x="16" y="812" width="832" height="263" rx="13" class="frame"/>
+    <text x="32" y="845" class="section">推理　外层沿动作时间前进，内层在一个位置去噪</text>
+    <rect x="32" y="861" width="180" height="89" rx="8" class="plain"/>
+    <text x="45" y="889" class="head">全掩码序列</text>
+    <text x="45" y="914" class="body">任务条件已给定。</text>
+    <path class="arrow" d="M213 905h24"/>
+    <rect x="241" y="861" width="276" height="89" rx="8" class="ar"/>
+    <text x="254" y="889" class="head">外层：计算 zᵢ</text>
+    <text x="254" y="914" class="body">根据条件与已生成的前缀，</text>
+    <text x="254" y="937" class="body">给出下一个位置的上下文。</text>
+    <path class="arrow" d="M518 905h25"/>
+    <rect x="547" y="861" width="285" height="89" rx="8" class="dit"/>
+    <text x="560" y="889" class="head">内层：为当前位置采样</text>
+    <text x="560" y="914" class="body">DiT 从噪声迭代得到一个</text>
+    <text x="560" y="937" class="body">连续动作向量 xᵢ。</text>
+    <path class="arrow" d="M690 951v16H378v-14"/>
+    <text x="468" y="990" class="note">填回 xᵢ，再预测下一个位置。</text>
+    <rect x="32" y="1007" width="800" height="51" rx="8" class="plain"/>
+    <text x="46" y="1039" class="head">全部位置填完 → 由对应的动作解码器恢复逐帧全身动作（身体、手、脸与根轨迹）。</text>
+  </g>
+</svg>

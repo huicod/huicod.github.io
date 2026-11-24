@@ -2359,6 +2359,18 @@
     "methods": ["diffusion"],
     "controls": ["time"]
   },
+  "omnimotion-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "gesture",
+      "dance"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
   "opendance-paper-notes": {
     "topics": [
       "dance",
