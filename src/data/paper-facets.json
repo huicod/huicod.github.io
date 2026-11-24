@@ -2227,6 +2227,17 @@
       "interaction"
     ]
   },
+  "mugen-paper-notes": {
+    "topics": [
+      "generation",
+      "understanding",
+      "representation"
+    ],
+    "methods": [
+      "language"
+    ],
+    "controls": []
+  },
   "multi-level-diffusion-paper-notes": {
     "topics": [
       "editing",

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="510" viewBox="0 0 850 510" role="img" aria-labelledby="title desc" xml:lang="zh-CN">
+  <title id="title">SnapMoGen 测试集上，用真实动作残差替换采样器的诊断</title>
+  <desc id="desc">按比例将预测均值移向真实动作编码，依次取 0%、25%、50%、75%、100%，FID 为 23.54、16.95、6.89、1.70、0.65，检索 R@1 为 0.828、0.926、0.962、0.957、0.939。将残差在批内随机打乱后，FID 为 14.23，R@1 为 0.422。数值取自论文附录表 9。这一诊断使用测试动作真值。</desc>
+  <style>
+    text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #223943 }
+    .headline { font-size: 25px; font-weight: 700 }
+    .subtitle, .row, .note { font-size: 16px }
+    .heading { font-size: 17px; font-weight: 700 }
+    .tick, .source { font-size: 14px; fill: #4b6269 }
+    .row, .value, .tick { font-variant-numeric: tabular-nums }
+    .value { font-size: 15px; font-weight: 700 }
+    .grid { stroke: #d6e1e4; fill: none; stroke-width: 1 }
+    .fid { fill: #08736b }
+    .retrieval { fill: #315e9b }
+    .shuffled { fill: #a45120 }
+  </style>
+  <rect x="1" y="1" width="848" height="508" rx="14" fill="#fff" stroke="#cddadb"/>
+  <text x="24" y="42" class="headline">给预测补回真实动作残差，会发生什么？</text>
+  <text x="24" y="75" class="subtitle">从预测均值出发，沿同一条配文对应的真实动作编码方向移动。</text>
+
+  <text x="24" y="120" class="heading">真值残差比例</text>
+  <text x="232" y="120" class="heading">动作分布 FID ↓</text>
+  <text x="566" y="120" class="heading">文本检索 R@1 ↑</text>
+  <path class="grid" d="M232 135 V372 M316 135 V372 M400 135 V372 M442 135 V372 M566 135 V372 M671 135 V372 M776 135 V372"/>
+  <g class="tick" text-anchor="middle">
+    <text x="232" y="399">0</text><text x="316" y="399">10</text><text x="400" y="399">20</text><text x="442" y="399">25</text>
+    <text x="566" y="399">0</text><text x="671" y="399">0.5</text><text x="776" y="399">1</text>
+  </g>
+
+  <g class="row">
+    <text x="24" y="157">0% · 只解码均值</text>
+    <text x="24" y="194">25%</text><text x="24" y="231">50%</text><text x="24" y="268">75%</text>
+    <text x="24" y="305">100% · 重建真值</text>
+    <text x="24" y="361" font-weight="700">批内打乱残差</text>
+  </g>
+  <!-- Bar widths are scaled per metric: 210 px for a FID of 25, or an R@1 of 1. -->
+  <g class="fid">
+    <rect x="232" y="143" width="197.736" height="15" rx="3"/><rect x="232" y="180" width="142.380" height="15" rx="3"/>
+    <rect x="232" y="217" width="57.876" height="15" rx="3"/><rect x="232" y="254" width="14.280" height="15" rx="3"/>
+    <rect x="232" y="291" width="5.460" height="15" rx="2"/>
+  </g>
+  <g class="retrieval">
+    <rect x="566" y="143" width="173.880" height="15" rx="3"/><rect x="566" y="180" width="194.460" height="15" rx="3"/>
+    <rect x="566" y="217" width="202.020" height="15" rx="3"/><rect x="566" y="254" width="200.970" height="15" rx="3"/>
+    <rect x="566" y="291" width="197.190" height="15" rx="3"/>
+  </g>
+  <path d="M24 326 H819" stroke="#9baeb3" stroke-dasharray="4 5"/>
+  <g class="shuffled">
+    <rect x="232" y="347" width="119.532" height="15" rx="3"/>
+    <rect x="566" y="347" width="88.620" height="15" rx="3"/>
+  </g>
+  <g class="value">
+    <text x="438" y="157">23.54</text><text x="383" y="194">16.95</text><text x="298" y="231">6.89</text>
+    <text x="255" y="268">1.70</text><text x="246" y="305">0.65</text><text x="360" y="361">14.23</text>
+    <text x="748" y="157">0.828</text><text x="769" y="194">0.926</text><text x="777" y="231">0.962</text>
+    <text x="776" y="268">0.957</text><text x="772" y="305">0.939</text><text x="663" y="361">0.422</text>
+  </g>
+  <text x="24" y="440" class="note">一半匹配残差已使 FID 降至 6.89。随机交换残差后，R@1 降至 0.422。</text>
+  <text x="24" y="477" class="source">数据源于 MUGEN 附录 H.2 表 9，SnapMoGen 测试集。常规文本生成时无法取得真值残差。</text>
+</svg>

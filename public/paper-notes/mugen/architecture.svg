@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1200" viewBox="0 0 880 1200" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">MUGEN 的连续动作表示怎样连接文本生成动作和动作描述</title>
+  <desc id="desc">先训练 ALAE，把任意目标长度的身体运动编码成固定数量的连续槽，再用相对时间查询重建。生成时，GPT-2 按槽数展开，提示决定每个槽读取哪些层，然后从低秩加对角的联合高斯分布抽一次样，由冻结的解码器生成指定长度的动作。理解时，冻结的编码器从真实动作提取相同格式的槽，经投影送入共享的 GPT-2，逐词生成描述。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#193845}
+      .title{font-size:27px;font-weight:700}.stage{font-size:20px;font-weight:700}.label{font-size:17px;font-weight:700}
+      .body{font-size:15.5px}.note{font-size:14.5px;fill:#415b68}
+      .panel{fill:#fafbf9;stroke:#c4d4ce;stroke-width:1.2}.base{fill:#fff;stroke:#a7baba}
+      .model{fill:#eaf1f9;stroke:#8faac6}.slot{fill:#faf0de;stroke:#bc9a62}.text{fill:#e9f4ec;stroke:#82ac91}
+      .arrow,.target{fill:none;stroke:#4d6976;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .target{stroke-dasharray:5 4}
+    </style>
+    <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0l8 4-8 4z" fill="#4d6976"/></marker>
+  </defs>
+  <rect width="880" height="1200" fill="white"/>
+  <text x="24" y="37" class="title">MUGEN｜一段动作怎样既能被写出来，又能被读回去？</text>
+  <text x="25" y="65" class="note">蓝色为网络，橙色为连续动作表示，绿色为语言。实线传递数据，虚线表示训练监督。</text>
+
+  <g aria-label="第一阶段，训练动作编解码器">
+    <rect x="16" y="83" width="848" height="296" rx="13" class="panel"/>
+    <text x="32" y="114" class="stage">一　训练动作编解码器 ALAE，得到两个方向共用的表示</text>
+    <g class="node">
+      <rect x="32" y="133" width="184" height="77" rx="8" class="base"/>
+      <text x="45" y="162" class="label">真实动作</text>
+      <text x="45" y="188" class="body">T 帧 × F 维特征</text>
+    </g>
+    <path d="M216 171h24" class="arrow"/>
+    <g class="node">
+      <rect x="244" y="133" width="288" height="77" rx="8" class="model"/>
+      <text x="258" y="162" class="label">时序卷积与交叉注意力</text>
+      <text x="258" y="188" class="body">K 个查询读取全部 T 帧的特征。</text>
+    </g>
+    <path d="M532 171h24" class="arrow"/>
+    <g class="node">
+      <rect x="561" y="133" width="287" height="77" rx="8" class="slot"/>
+      <text x="575" y="162" class="label">K 个连续槽，每槽 512 维</text>
+      <text x="575" y="188" class="note">HumanML3D 取 2，SnapMoGen 取 4</text>
+    </g>
+    <path d="M702 210v24" class="arrow"/>
+    <g class="node">
+      <rect x="454" y="239" width="394" height="77" rx="8" class="model"/>
+      <text x="468" y="268" class="label">解码器按指定长度 T 还原运动</text>
+      <text x="468" y="294" class="body">T 个相对时间查询读槽，再经时序卷积。</text>
+    </g>
+    <path d="M454 278h-22" class="arrow"/>
+    <g class="node">
+      <rect x="255" y="239" width="173" height="77" rx="8" class="base"/>
+      <text x="269" y="268" class="label">重建动作</text>
+      <text x="269" y="294" class="body">仍为 T × F</text>
+    </g>
+    <path d="M255 278h-30" class="target"/>
+    <path d="M123 210v24" class="target"/>
+    <g class="node">
+      <rect x="32" y="239" width="188" height="77" rx="8" class="base"/>
+      <text x="46" y="268" class="label">与原动作对照</text>
+      <text x="46" y="294" class="body">重建、关节与感知损失</text>
+    </g>
+    <text x="32" y="351" class="note">训好后固定动作编码器和解码器，保存每维潜变量的均值与标准差。槽是实数向量，无需查码本。</text>
+  </g>
+
+  <g aria-label="文本生成动作，可以看到语言模型迭代、深度路由和一次联合采样">
+    <rect x="16" y="394" width="848" height="496" rx="13" class="panel"/>
+    <text x="32" y="427" class="stage">二　生成方向：给定一句话与目标帧数，产生连续运动</text>
+    <g class="node">
+      <rect x="32" y="447" width="335" height="72" rx="8" class="text"/>
+      <text x="46" y="476" class="label">输入文字，末尾加 &lt;MOT&gt;</text>
+      <text x="46" y="502" class="body">“站在原地，用力向正前方指。”</text>
+    </g>
+    <path d="M367 484h32" class="arrow"/>
+    <g class="node">
+      <rect x="404" y="447" width="444" height="72" rx="8" class="model"/>
+      <text x="418" y="476" class="label">GPT-2 展开 K 步，保留各步的全部 12 层状态</text>
+      <text x="418" y="502" class="body">上一步的末层状态经归一化，作为下一步输入。</text>
+    </g>
+    <path d="M622 519v26" class="arrow"/>
+    <path d="M405 504h-21v31H210v10" class="arrow"/>
+    <g class="node">
+      <rect x="32" y="550" width="350" height="83" rx="8" class="model"/>
+      <text x="46" y="578" class="label">路由器读取整句的隐藏状态</text>
+      <text x="46" y="606" class="body">为每个槽算一组 12 层的混合权重。</text>
+    </g>
+    <path d="M382 592h32" class="arrow"/>
+    <g class="node">
+      <rect x="419" y="550" width="429" height="83" rx="8" class="model"/>
+      <text x="433" y="578" class="label">按槽加权求和</text>
+      <text x="433" y="606" class="body">第 k 步的 12 层状态 → 槽 k 的一个读出向量。</text>
+    </g>
+    <path d="M626 633v23" class="arrow"/>
+    <g class="node">
+      <rect x="419" y="661" width="429" height="87" rx="8" class="model"/>
+      <text x="433" y="689" class="label">因子头预测全部槽的联合高斯分布</text>
+      <text x="433" y="714" class="body">逐维预测均值和尺度，低秩因子跨槽相关。</text>
+      <text x="433" y="735" class="note">因子秩 r = 64。</text>
+    </g>
+    <path d="M419 705h-32" class="arrow"/>
+    <g class="node">
+      <rect x="32" y="661" width="350" height="87" rx="8" class="slot"/>
+      <text x="46" y="689" class="label">一次抽样得到整组连续槽</text>
+      <text x="46" y="714" class="body">按第一阶段统计量还原尺度。</text>
+      <text x="46" y="735" class="note">K = 2 时，同时得到 2 × 512 个实数。</text>
+    </g>
+    <path d="M202 748v24" class="arrow"/>
+    <g class="node">
+      <rect x="32" y="777" width="350" height="69" rx="8" class="model"/>
+      <text x="46" y="804" class="label">冻结的 ALAE 解码器</text>
+      <text x="46" y="829" class="body">按外部给出的 T 生成 T 个查询。</text>
+    </g>
+    <path d="M382 812h32" class="arrow"/>
+    <g class="node">
+      <rect x="419" y="777" width="429" height="69" rx="8" class="base"/>
+      <text x="433" y="804" class="label">输出 T 帧动作特征</text>
+      <text x="433" y="829" class="body">HumanML3D 每帧 263 维，SnapMoGen 为 296 维。</text>
+    </g>
+    <text x="32" y="871" class="note">训练时用真实槽监督潜在分布，并解码预测均值计算动作损失。上图橙色抽样路径用于推理。</text>
+  </g>
+
+  <g aria-label="动作理解方向与共享训练">
+    <rect x="16" y="905" width="848" height="273" rx="13" class="panel"/>
+    <text x="32" y="939" class="stage">三　理解方向：读入真实动作，经同一语言模型写出描述</text>
+    <g class="node">
+      <rect x="32" y="958" width="247" height="72" rx="8" class="model"/>
+      <text x="46" y="986" class="label">输入动作 → 冻结的编码器</text>
+      <text x="46" y="1012" class="body">提取同一格式的 K 个连续槽。</text>
+    </g>
+    <path d="M279 995h25" class="arrow"/>
+    <g class="node">
+      <rect x="309" y="958" width="240" height="72" rx="8" class="model"/>
+      <text x="323" y="986" class="label">可训练的投影层</text>
+      <text x="323" y="1012" class="body">将动作槽映射为 GPT-2 输入。</text>
+    </g>
+    <path d="M549 995h22" class="arrow"/>
+    <g class="node">
+      <rect x="576" y="958" width="272" height="72" rx="8" class="text"/>
+      <text x="590" y="986" class="label">共享 GPT-2 → 文字描述</text>
+      <text x="590" y="1012" class="body">把动作当作上下文，逐词输出。</text>
+    </g>
+    <path d="M709 1030v25" class="target"/>
+    <g class="node">
+      <rect x="32" y="1060" width="816" height="65" rx="8" class="base"/>
+      <text x="46" y="1087" class="label">两个方向在同批动作和配文上联合训练</text>
+      <text x="46" y="1112" class="body">生成侧学习动作与潜在分布；理解侧用参考文字训练逐词预测。推理时可单独使用任一方向。</text>
+    </g>
+    <text x="32" y="1154" class="note">据原文图 1、图 2、§3.1–3.3 和附录 A、C、G 重绘。站立指向案例出自附录 H.6 表 13。</text>
+  </g>
+</svg>
