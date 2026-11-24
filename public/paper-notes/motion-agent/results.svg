@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="492" viewBox="0 0 850 492" role="img" aria-labelledby="title desc" xml:lang="zh-CN">
+  <title id="title">在 KIT-ML 上，MotionLLM 更新多少参数，得到怎样的生成质量？</title>
+  <desc id="desc">据 ICLR 2025 终稿表 8。2B 基座配普通码本，用秩 32 或 64 的 LoRA 微调时，生成 FID 为 0.712 和 0.658；秩 64 换残差码本为 0.647；2B 全量微调为 0.591；9B 基座用秩 32 的 LoRA 微调为 0.438。9B 配置更新 108 百万参数，2B 全量微调更新 2697.4 百万参数。图中另列各配置的 R@1。</desc>
+  <style>
+    text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #203640 }
+    .title { font-size: 25px; font-weight: 700 }
+    .intro, .row, .note { font-size: 16px }
+    .header { font-size: 16px; font-weight: 700 }
+    .value { font-size: 16px; font-weight: 600 }
+    .tick, .source { font-size: 14px; fill: #4c636a }
+    .row, .value, .tick { font-variant-numeric: tabular-nums }
+    .grid { stroke: #dae4e6; stroke-width: 1; fill: none }
+    .base { fill: #507083 }
+    .full { fill: #ad562a }
+    .large { fill: #08756d }
+  </style>
+  <rect x=".5" y=".5" width="849" height="491" rx="15" fill="#fff" stroke="#cbdadb"/>
+  <text x="24" y="44" class="title">换码本、提高 LoRA 秩、全量微调，收益有多大？</text>
+  <text x="24" y="77" class="intro">KIT-ML 文本生成动作 · 基座为 Gemma 2 · 参数量按训练时实际更新的部分计</text>
+  <g class="header">
+    <text x="24" y="127">基座与微调设置</text>
+    <text x="310" y="127" text-anchor="middle">可训练参数（百万）</text>
+    <text x="418" y="127">动作分布 FID ↓</text>
+    <text x="778" y="127" text-anchor="middle">检索 R@1 ↑</text>
+  </g>
+  <path class="grid" d="M24 143 H826 M418 152 V342 M486 152 V342 M554 152 V342 M622 152 V342 M690 152 V342"/>
+  <g class="tick" text-anchor="middle">
+    <text x="418" y="365">0</text><text x="486" y="365">0.2</text>
+    <text x="554" y="365">0.4</text><text x="622" y="365">0.6</text><text x="690" y="365">0.8</text>
+  </g>
+  <g class="row">
+    <text x="24" y="173">2B · LoRA 秩 32 · VQ</text>
+    <text x="24" y="212">2B · LoRA 秩 64 · VQ</text>
+    <text x="24" y="251">2B · LoRA 秩 64 · RVQ</text>
+    <text x="24" y="290">2B · 全量微调 · VQ</text>
+    <text x="24" y="329">9B · LoRA 秩 32 · VQ</text>
+  </g>
+  <g class="row" text-anchor="middle">
+    <text x="310" y="173">41.5</text><text x="310" y="212">83.1</text>
+    <text x="310" y="251">83.1 + 13.4</text><text x="310" y="290">2697.4</text>
+    <text x="310" y="329">108</text>
+    <text x="778" y="173">0.415</text><text x="778" y="212">0.422</text>
+    <text x="778" y="251">0.429</text><text x="778" y="290">0.423</text>
+    <text x="778" y="329">0.439</text>
+  </g>
+  <!-- The FID axis begins at zero and uses 340 px per unit. -->
+  <g>
+    <rect class="base" x="418" y="160" width="242.08" height="14" rx="3"/>
+    <rect class="base" x="418" y="199" width="223.72" height="14" rx="3"/>
+    <rect class="base" x="418" y="238" width="219.98" height="14" rx="3"/>
+    <rect class="full" x="418" y="277" width="200.94" height="14" rx="3"/>
+    <rect class="large" x="418" y="316" width="148.92" height="14" rx="3"/>
+  </g>
+  <g class="value">
+    <text x="669" y="173">0.712</text><text x="651" y="212">0.658</text>
+    <text x="647" y="251">0.647</text><text x="628" y="290">0.591</text>
+    <text x="576" y="329">0.438</text>
+  </g>
+  <path class="grid" d="M24 389 H826"/>
+  <text x="24" y="420" class="note">同为 2B、秩 64，RVQ 增加了 13.4 百万参数的残差预测器，FID 从 0.658 降到 0.647。</text>
+  <text x="24" y="452" class="note">9B 的 LoRA 更新约为 2B 全量微调的 4.0%，在本次比较中取得了更低的 FID。</text>
+  <text x="24" y="477" class="source">数据取自 ICLR 2025 终稿附录 A.6 表 8。VQ 为单码本量化，RVQ 为多码本残差量化。</text>
+</svg>

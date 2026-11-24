@@ -1917,6 +1917,20 @@
       "parts"
     ]
   },
+  "motion-agent-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "understanding"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "time"
+    ]
+  },
   "motion-anything-paper-notes": {
     "topics": [
       "multimodal",

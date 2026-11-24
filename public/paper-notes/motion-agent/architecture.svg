@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1170" viewBox="0 0 880 1170" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">Motion-Agent 如何把多轮编辑变成可执行的动作生成计划</title>
+  <desc id="desc">先训练 VQ-VAE，将每四帧身体动作压成一个码本索引。随后冻结动作编解码器，在 Gemma 上分别训练文字生成动作、动作生成描述两套适配器。推理时 GPT-4 将请求整理为分段的 JSON 调用清单，MotionLLM 的生成适配器逐段输出离散码；相同描述可复用缓存，把各段的码串起来再统一解码为连续运动。理解方向用动作编码器产生码，由描述适配器生成文字，GPT-4 根据文字描述和对话回答。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#183644}
+      .title{font-size:27px;font-weight:700}.stage{font-size:20px;font-weight:700}.label{font-size:17px;font-weight:700}
+      .body{font-size:15.5px}.note{font-size:14.5px;fill:#415b68}
+      .panel{fill:#f8faf9;stroke:#c4d4ce;stroke-width:1.2}.base{fill:#fff;stroke:#a7baba}
+      .net{fill:#eaf1f9;stroke:#8faac6}.token{fill:#faf0de;stroke:#bc9a62}.lang{fill:#e9f4ec;stroke:#82ac91}
+      .arrow,.target{fill:none;stroke:#4d6976;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .target{stroke-dasharray:5 4}
+    </style>
+    <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0l8 4-8 4z" fill="#4d6976"/>
+    </marker>
+  </defs>
+  <rect width="880" height="1170" fill="#fff"/>
+  <text x="24" y="38" class="title">Motion-Agent｜从“改做深蹲”到连续的身体动作</text>
+  <text x="25" y="65" class="note">绿色为语言或调用计划，橙色为离散动作码，蓝色为模型。实线传递数据，虚线表示训练监督。</text>
+
+  <g aria-label="训练动作表示和翻译模型">
+    <rect x="16" y="82" width="848" height="371" rx="13" class="panel"/>
+    <text x="32" y="115" class="stage">一　训练动作编解码器和 MotionLLM，建立动作与文字的翻译关系</text>
+    <g class="node">
+      <rect x="32" y="135" width="163" height="72" rx="8" class="base"/>
+      <text x="45" y="162" class="label">真实运动</text>
+      <text x="45" y="187" class="body">T 帧身体特征</text>
+    </g>
+    <path class="arrow" d="M195 171h25"/>
+    <g class="node">
+      <rect x="225" y="135" width="269" height="72" rx="8" class="net"/>
+      <text x="238" y="162" class="label">VQ 编码器与最近邻量化</text>
+      <text x="238" y="187" class="body">时间压缩 4 倍，码本含 512 项。</text>
+    </g>
+    <path class="arrow" d="M494 171h27"/>
+    <g class="node">
+      <rect x="526" y="135" width="322" height="72" rx="8" class="token"/>
+      <text x="539" y="162" class="label">每个时间位置留下一个索引</text>
+      <text x="539" y="187" class="body">例：120 帧 → 30 个离散动作码。</text>
+    </g>
+    <path class="arrow" d="M687 207v20"/>
+    <g class="node">
+      <rect x="526" y="232" width="322" height="65" rx="8" class="net"/>
+      <text x="539" y="259" class="label">查回码本向量，由 VQ 解码器重建</text>
+      <text x="539" y="282" class="body">每个码本向量为 512 维。</text>
+    </g>
+    <path class="arrow" d="M526 264h-27"/>
+    <g class="node">
+      <rect x="225" y="232" width="269" height="65" rx="8" class="base"/>
+      <text x="238" y="259" class="label">对照原动作训练</text>
+      <text x="238" y="282" class="body">监督重建与关节位置，约束量化。</text>
+    </g>
+    <path class="target" d="M113 207v57h107"/>
+    <line x1="32" x2="848" y1="314" y2="314" stroke="#c4d4ce" stroke-dasharray="3 5"/>
+    <g class="node">
+      <rect x="32" y="330" width="261" height="74" rx="8" class="lang"/>
+      <text x="45" y="358" class="label">配对的动作码与文字</text>
+      <text x="45" y="383" class="body">将 512 个码及起止标记加入词表。</text>
+    </g>
+    <path class="arrow" d="M293 367h28"/>
+    <g class="node">
+      <rect x="326" y="330" width="522" height="74" rx="8" class="net"/>
+      <text x="339" y="358" class="label">MotionLLM：同一 Gemma 骨干，两个任务适配器</text>
+      <text x="339" y="383" class="body">文字 → 动作码（LoRA 秩 64）；动作码 → 文字（秩 32）。</text>
+    </g>
+    <text x="32" y="430" class="note">训练适配器时，动作编解码器与原语言模型骨干保持冻结。对话规划器 GPT-4 通过提示使用。</text>
+  </g>
+  <g aria-label="多轮生成与片段编辑">
+    <rect x="16" y="469" width="848" height="438" rx="13" class="panel"/>
+    <text x="32" y="502" class="stage">二　多轮生成与编辑：修改分段计划，再解码整段动作</text>
+    <g class="node">
+      <rect x="32" y="523" width="333" height="73" rx="8" class="lang"/>
+      <text x="45" y="552" class="label">用户指令 ＋ 上一轮对话</text>
+      <text x="45" y="577" class="body">上一轮开合跳和俯卧撑；现在改做深蹲。</text>
+    </g>
+    <path class="arrow" d="M365 560h29"/>
+    <g class="node">
+      <rect x="399" y="523" width="449" height="73" rx="8" class="lang"/>
+      <text x="412" y="552" class="label">GPT-4 确定任务、调用次数和各段描述</text>
+      <text x="412" y="577" class="body">示意计划：先生成开合跳，再生成深蹲。</text>
+    </g>
+    <path class="arrow" d="M625 596v19"/>
+    <g class="node">
+      <rect x="399" y="620" width="449" height="73" rx="8" class="base"/>
+      <text x="412" y="649" class="label">执行器解析 JSON 计划</text>
+      <text x="412" y="674" class="body">按顺序取出每项 generate 调用的文字参数。</text>
+    </g>
+    <path class="arrow" d="M399 656h-29"/>
+    <g class="node">
+      <rect x="32" y="620" width="333" height="73" rx="8" class="net"/>
+      <text x="45" y="649" class="label">MotionLLM 的生成适配器</text>
+      <text x="45" y="674" class="body">对新片段逐码预测；相同描述可复用旧码。</text>
+    </g>
+    <path class="arrow" d="M199 693v21"/>
+    <g class="node">
+      <rect x="32" y="719" width="333" height="74" rx="8" class="token"/>
+      <text x="45" y="748" class="label">按计划顺序串接各段索引</text>
+      <text x="45" y="774" class="body">开合跳的码序列 ＋ 深蹲的码序列</text>
+    </g>
+    <path class="arrow" d="M365 756h29"/>
+    <g class="node">
+      <rect x="399" y="719" width="449" height="74" rx="8" class="net"/>
+      <text x="412" y="748" class="label">冻结的 VQ 解码器统一解码</text>
+      <text x="412" y="774" class="body">拼接后的整组码一起转换为连续逐帧动作特征。</text>
+    </g>
+    <path class="arrow" d="M625 793v17"/>
+    <g class="node">
+      <rect x="399" y="815" width="449" height="63" rx="8" class="base"/>
+      <text x="412" y="842" class="label">输出动作</text>
+      <text x="412" y="864" class="body">公开示例由逐帧特征恢复 22 个关节并渲染。</text>
+    </g>
+    <text x="33" y="840" class="note">下一轮可继续替换或追加片段。</text>
+    <text x="33" y="863" class="note">缓存复用的是码；边界处的姿态仍经统一解码。</text>
+  </g>
+  <g aria-label="动作理解与问答">
+    <rect x="16" y="923" width="848" height="211" rx="13" class="panel"/>
+    <text x="32" y="956" class="stage">三　理解与问答：GPT-4 依据动作描述回答后续问题</text>
+    <g class="node">
+      <rect x="32" y="977" width="213" height="73" rx="8" class="net"/>
+      <text x="45" y="1006" class="label">待理解的动作</text>
+      <text x="45" y="1031" class="body">由同一 VQ 编码器提取码。</text>
+    </g>
+    <path class="arrow" d="M245 1013h23"/>
+    <g class="node">
+      <rect x="273" y="977" width="296" height="73" rx="8" class="net"/>
+      <text x="286" y="1006" class="label">MotionLLM 的描述适配器</text>
+      <text x="286" y="1031" class="body">读取动作码，逐词写出动作描述。</text>
+    </g>
+    <path class="arrow" d="M569 1013h23"/>
+    <g class="node">
+      <rect x="597" y="977" width="251" height="73" rx="8" class="lang"/>
+      <text x="610" y="1006" class="label">GPT-4 综合文字信息</text>
+      <text x="610" y="1031" class="body">结合问题、描述和对话作答。</text>
+    </g>
+    <text x="32" y="1080" class="note">生成分支的输出是运动；问答分支的输出是语言。对目标、职业等的判断经由描述和常识推断。</text>
+    <text x="32" y="1108" class="note">图 1 展示健身动作的逐轮修改，图 2 给出两种调用与统一解码；缓存行为据公开演示实现。</text>
+  </g>
+  <text x="24" y="1158" class="note">据 ICLR 2025 会议版图 1–2、§3、§4.1、附录表 7 及作者代码重绘。120 帧为形状示例。</text>
+</svg>
