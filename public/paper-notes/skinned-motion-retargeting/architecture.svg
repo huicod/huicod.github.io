@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1120" viewBox="0 0 1000 1120" role="img" aria-labelledby="title desc">
+  <title id="title">蒙皮后哪里穿进去了，怎样改回骨架运动？</title>
+  <desc id="desc">源骨架和运动经逐帧编码得到共享动作向量。冻结的目标解码器初次给出目标动作，FK 与线性混合蒙皮将其变成摆好姿势的网格。先检测四肢相对其余身体的自穿透，再利用雅可比转置把顶点位移投回动作空间，由网络预测动作残差。另一条支路用蒙皮权重将静态表面特征分配给各目标关节。同一解码器结合两条支路再次预测目标动作。</desc>
+  <defs>
+    <marker id="main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#325d77"/></marker>
+    <marker id="geo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#28796a"/></marker>
+    <marker id="cue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#a56123"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",Arial,sans-serif;fill:#193847}
+      .title{font-size:32px;font-weight:700}.intro{font-size:17px;fill:#3e5966}.head{font-size:22px;font-weight:700}.body{font-size:18px}.note{font-size:16px;fill:#405a65}.cap{font-size:16px;font-weight:700;fill:#365460}
+      .blue{fill:#edf5fa;stroke:#8baec1}.green{fill:#eef7f4;stroke:#82b2a9}.amber{fill:#fcf5e9;stroke:#c89d61}.light{fill:#f5f8f9;stroke:#acbec5}.bar{fill:#edf3f5;stroke:#b4c4ca}
+      rect{stroke-width:1.5}.m,.g,.a{fill:none;stroke-width:2.4;stroke-linejoin:round}.m{stroke:#325d77;marker-end:url(#main)}.g{stroke:#28796a;marker-end:url(#geo)}.a{stroke:#a56123;marker-end:url(#cue)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1118" rx="12" fill="white" stroke="#d5dfe2"/>
+  <text x="26" y="41" class="title">蒙皮后哪里穿进去了，怎样改回骨架运动？</text>
+  <text x="27" y="68" class="intro">逐帧读图。蓝线是骨架动作，橙线传递当前姿势的穿透线索，绿线提供目标角色的静态条件。</text>
+
+  <rect x="24" y="94" width="550" height="100" rx="12" class="blue"/>
+  <text x="44" y="125" class="head">源骨架和源动作 → 共享动作向量 z</text>
+  <text x="44" y="154" class="body">每个关节的静姿与运动构成 26 维输入。</text>
+  <text x="44" y="179" class="note">源 Transformer 中的可学习动作 token 汇总成每帧 32 维。</text>
+  <rect x="610" y="94" width="366" height="100" rx="12" class="green"/>
+  <text x="630" y="126" class="head">目标骨架 S</text>
+  <text x="630" y="155" class="body">每个目标关节各有一个 token。</text>
+  <text x="630" y="179" class="note">来自静姿全局位置及相对父关节偏移。</text>
+
+  <path d="M298 194V223" class="m"/>
+  <path d="M794 194V266H574" class="g"/>
+  <rect x="24" y="224" width="550" height="87" rx="12" class="blue"/>
+  <text x="44" y="257" class="head">目标解码器 · 第一次</text>
+  <text x="44" y="287" class="body">z 和 S 共同预测初始关节旋转、根运动与接地状态。</text>
+
+  <path d="M298 311V339" class="m"/>
+  <rect x="24" y="340" width="550" height="88" rx="12" class="blue"/>
+  <text x="44" y="373" class="head">先让目标角色真正摆出这个姿势</text>
+  <text x="44" y="404" class="body">正向运动学 FK → 线性混合蒙皮 LBS → 顶点与法线。</text>
+  <rect x="610" y="340" width="366" height="88" rx="12" class="green"/>
+  <text x="630" y="373" class="head">目标角色的静止网格</text>
+  <text x="630" y="404" class="body">顶点位置、法线、蒙皮权重 W。</text>
+  <path d="M610 385H574" class="g"/>
+
+  <path d="M298 428V459" class="m"/>
+  <path d="M794 428V459" class="g"/>
+  <rect x="24" y="460" width="550" height="104" rx="12" class="amber"/>
+  <text x="44" y="493" class="head">在摆好姿势的表面检测自穿透</text>
+  <text x="44" y="522" class="body">一条肢体的顶点查询其余身体上的最近参考顶点。</text>
+  <text x="44" y="547" class="note">由参考法线、距离与法线相似度筛出穿入点，取得位移 d。</text>
+  <rect x="610" y="460" width="366" height="104" rx="12" class="green"/>
+  <text x="630" y="493" class="head">把静态表面信息分给关节</text>
+  <text x="630" y="522" class="body">位置和法线 → 逐顶点几何 MLP。</text>
+  <text x="630" y="547" class="note">用归一化的 Wᵀ 按关节加权汇集。</text>
+
+  <path d="M298 564V596" class="a"/>
+  <rect x="24" y="597" width="550" height="106" rx="12" class="amber"/>
+  <text x="44" y="631" class="head">将顶点位移投回动作空间</text>
+  <text x="44" y="660" class="body">雅可比 J 描述 z 的变化如何移动已蒙皮的目标顶点。</text>
+  <text x="44" y="686" class="note">u = Jᵀ (穿入点掩码 × d)，给出 32 维的一阶修正线索。</text>
+
+  <path d="M298 703V733" class="a"/>
+  <path d="M794 564V733" class="g"/>
+  <rect x="24" y="734" width="550" height="103" rx="12" class="amber"/>
+  <text x="44" y="767" class="head">修正当前动作</text>
+  <text x="44" y="796" class="body">原动作 z 和归一化的 u → 修正 MLP → 残差 Δz。</text>
+  <text x="44" y="821" class="note">修正后的动作向量为 z + Δz。</text>
+  <rect x="610" y="734" width="366" height="103" rx="12" class="green"/>
+  <text x="630" y="767" class="head">补入目标体形</text>
+  <text x="630" y="796" class="body">各关节的几何特征 → MLP → 偏置 b。</text>
+  <text x="630" y="821" class="note">带体形信息的目标骨架 token 为 S + b。</text>
+
+  <path d="M298 837V878" class="a"/>
+  <path d="M794 837V878" class="g"/>
+  <rect x="112" y="879" width="776" height="91" rx="12" class="blue"/>
+  <text x="134" y="913" class="head">同一个目标解码器 · 第二次</text>
+  <text x="134" y="945" class="body">用 z + Δz 与 S + b 解出修正的骨架运动，再经 FK 和蒙皮得到目标角色动画。</text>
+
+  <rect x="24" y="993" width="952" height="87" rx="12" class="bar"/>
+  <text x="44" y="1024" class="cap">训练顺序</text>
+  <text x="137" y="1024" class="note">先用配对动作训练骨架编码器和解码器，约束姿态、平滑、接地与跨骨架动作嵌入。</text>
+  <text x="137" y="1053" class="note">再冻结两者，仅训练三个几何修正 MLP；在最终蒙皮上计算穿透损失，同时限制残差幅度。</text>
+  <text x="26" y="1105" class="note">教学示意，依据原文图 3–4、式 4–6 与 14–26、附录 A.1–A.2 重绘。</text>
+</svg>
