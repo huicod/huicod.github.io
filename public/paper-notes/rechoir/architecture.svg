@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="1025" viewBox="0 0 1060 1025" role="img" aria-labelledby="title desc">
+  <title id="title">ReCHOIR 如何同时调整目标角色和物体的位置</title>
+  <desc id="desc">蓝色主干将源人物动作编码为全局与六个部位的运动表示。橙色分支从源物体和接触记录提取六个部位条件，逐部相加后进入接触引导器和并行的物体平移解码器。接触引导器向冻结的目标人体解码器逐层注入残差。两路在目标骨架上对齐特征，分别预测人体动作和物体平移，物体旋转沿用源序列。</desc>
+  <defs>
+    <marker id="blue-tip" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="m0 0 8 4-8 4z" fill="#315f7b"/></marker>
+    <marker id="gold-tip" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="m0 0 8 4-8 4z" fill="#9c6124"/></marker>
+    <marker id="green-tip" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="m0 0 8 4-8 4z" fill="#28736a"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#183948}
+      .title{font-size:31px;font-weight:700}.head{font-size:22px;font-weight:700}.copy{font-size:18px}.note{font-size:16px;fill:#405b68}.smallhead{font-size:17px;font-weight:700}
+      rect{stroke-width:1.4}.human{fill:#edf5fa;stroke:#88adc3}.object{fill:#fcf5e9;stroke:#c3a078}.target{fill:#edf6f2;stroke:#82ae9e}.neutral{fill:#f3f6f8;stroke:#a6bac3}
+      .main,.hoi,.skel{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}.main{stroke:#315f7b;marker-end:url(#blue-tip)}.hoi{stroke:#9c6124;marker-end:url(#gold-tip)}.skel{stroke:#28736a;marker-end:url(#green-tip)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1058" height="1023" rx="15" fill="#fff" stroke="#d0dee5"/>
+  <text x="26" y="42" class="title">换一个角色，怎样让手和物体继续一起动？</text>
+  <text x="27" y="73" class="note">逐帧读图。蓝线传人体动作，橙线传源互动条件与修正，绿框说明目标骨架怎样参与解码。</text>
+  <rect x="24" y="101" width="475" height="111" rx="12" class="human"/>
+  <text x="42" y="132" class="head">源角色的骨架与动作</text>
+  <text x="42" y="163" class="copy">静止骨架、关节姿态和速度、根运动及接地标签。</text>
+  <text x="42" y="190" class="note">按髋、脊柱、左右臂、左右腿给关节分组。</text>
+  <rect x="554" y="101" width="482" height="111" rx="12" class="object"/>
+  <text x="572" y="132" class="head">源互动中的单个刚体</text>
+  <text x="572" y="163" class="copy">1,024 个形状采样点、物体位姿、8 个交互关节。</text>
+  <text x="572" y="190" class="note">由距离提取接触开关，记录物体局部坐标中的接触位置。</text>
+  <path class="main" d="M261 212v33"/><path class="hoi" d="M795 212v33"/>
+  <rect x="24" y="247" width="475" height="116" rx="12" class="human"/>
+  <text x="42" y="280" class="head">人体编码器 · PAME</text>
+  <text x="42" y="311" class="copy">图注意力沿骨骼传递特征；全身和各组分别池化。</text>
+  <text x="42" y="338" class="note">1 个全局 token 与 6 个部位 token 再做自注意力。</text>
+  <rect x="554" y="247" width="482" height="116" rx="12" class="object"/>
+  <text x="572" y="280" class="head">接触编码器 · Contact Encoder</text>
+  <text x="572" y="311" class="copy">PointNet++ 读形状，两个 MLP 分别读位姿与接触。</text>
+  <text x="572" y="338" class="note">用 6 个部位查询读取这些条件，得到 6 个部位修正量。</text>
+  <path class="main" d="M261 363v32"/><path class="hoi" d="M795 363v32"/>
+  <rect x="24" y="397" width="475" height="93" rx="12" class="human"/>
+  <text x="42" y="429" class="head">原人体表示 Zₕ</text>
+  <text x="42" y="460" class="copy">保留该帧的全身运动与各部位姿态。</text>
+  <path class="main" d="M499 443h52"/>
+  <rect x="554" y="397" width="482" height="93" rx="12" class="object"/>
+  <text x="572" y="429" class="head">加入互动条件的表示 Z<tspan baseline-shift="sub" font-size="15">f</tspan></text>
+  <text x="572" y="460" class="copy">保留全局 token，将 6 个修正量逐部加到 Zₕ。</text>
+  <path class="main" d="M118 490v69"/>
+  <path class="hoi" d="M795 490v34H524v35"/><path class="hoi" d="M795 524h77v35"/>
+  <rect x="24" y="561" width="285" height="136" rx="12" class="human"/>
+  <text x="40" y="595" class="head">人体解码器 · 冻结</text>
+  <text x="40" y="626" class="copy">读取原表示 Zₕ。</text>
+  <text x="40" y="653" class="note">在各层加入右侧引导残差，</text>
+  <text x="40" y="677" class="note">保留骨架重定向先验。</text>
+  <rect x="386" y="561" width="282" height="136" rx="12" class="object"/>
+  <text x="403" y="595" class="head">接触引导器 · 可训练</text>
+  <text x="403" y="626" class="copy">读取融合表示 Z<tspan baseline-shift="sub" font-size="14">f</tspan>。</text>
+  <text x="403" y="653" class="note">复制人体解码器结构，</text>
+  <text x="403" y="677" class="note">逐层预测互动残差。</text>
+  <path class="hoi" d="M386 643h-73"/>
+  <rect x="724" y="561" width="312" height="136" rx="12" class="object"/>
+  <text x="741" y="595" class="head">物体运动解码器</text>
+  <text x="741" y="626" class="copy">也读取融合表示 Z<tspan baseline-shift="sub" font-size="14">f</tspan>。</text>
+  <text x="741" y="653" class="note">对目标关节的特征做 MLP、</text>
+  <text x="741" y="677" class="note">池化，再回归物体中心位置。</text>
+  <rect x="245" y="731" width="557" height="88" rx="12" class="target"/>
+  <text x="262" y="761" class="head">目标骨架与同一套六部位标签</text>
+  <text x="262" y="792" class="note">全局广播、局部按组分配，再拼接目标关节的静止骨架特征与部位 ID。</text>
+  <path class="skel" d="M293 731v-31"/><path class="skel" d="M526 731v-31"/><path class="skel" d="M759 731v-31"/>
+  <path class="main" d="M108 697v153"/><path class="hoi" d="M931 697v153"/>
+  <rect x="24" y="853" width="475" height="79" rx="12" class="human"/>
+  <text x="42" y="883" class="head">目标人物运动</text>
+  <text x="42" y="911" class="note">输出关节旋转、根运动与接地标签；FK 恢复关节位置。</text>
+  <rect x="554" y="853" width="482" height="79" rx="12" class="object"/>
+  <text x="572" y="883" class="head">目标物体运动</text>
+  <text x="572" y="911" class="note">平移由模型预测，旋转沿用源序列，刚体形状相同。</text>
+  <text x="27" y="966" class="smallhead">训练顺序</text><text x="125" y="966" class="note">先用配对人体动作训练 PAME，再冻结它，训练接触编码、引导与物体分支；目标侧无配对物体轨迹。</text>
+  <text x="27" y="999" class="note">教学示意，依据原文图 2–5、式 2–5 与 13–16。人体与物体共享条件，在训练中接受相对位置和接触损失约束。</text>
+</svg>

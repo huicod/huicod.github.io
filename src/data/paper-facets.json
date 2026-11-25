@@ -2798,6 +2798,18 @@
       "time"
     ]
   },
+  "rechoir-paper-notes": {
+    "topics": [
+      "character",
+      "representation",
+      "editing"
+    ],
+    "methods": [],
+    "controls": [
+      "interaction",
+      "parts"
+    ]
+  },
   "rhythmic-gesticulator-paper-notes": {
     "topics": [
       "gesture",
