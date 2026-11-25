@@ -345,6 +345,18 @@
     "methods": [],
     "controls": []
   },
+  "cross-axis-feature-fusion-paper-notes": {
+    "topics": [
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "parts",
+      "time"
+    ]
+  },
   "customdance-paper-notes": {
     "topics": [
       "dance",
@@ -1863,6 +1875,16 @@
     ],
     "controls": []
   },
+  "molingo-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": []
+  },
   "momask-paper-notes": {
     "topics": [
       "generation",
@@ -2439,6 +2461,18 @@
       "flow"
     ],
     "controls": []
+  },
+  "partmotionedit-paper-notes": {
+    "topics": [
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "parts",
+      "time"
+    ]
   },
   "partphase-paper-notes": {
     "topics": [

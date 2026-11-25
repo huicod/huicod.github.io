@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="736" viewBox="0 0 960 736" role="img" aria-labelledby="title desc">
+  <title id="title">PartMotionEdit 的动作编辑流程</title>
+  <desc id="desc">真实源动作和文字经冻结编码器进入双向交互模块。五个部位查询预测时变权重，调制源动作特征，扩散模型根据这些条件生成目标动作，最后由冻结解码器还原。下方单独画出训练时利用源和目标的局部位置及旋转差异构造监督。</desc>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#364d60"/></marker>
+    <marker id="sup" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#946126"/></marker>
+    <style>
+    text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#182f3e}.head{font-size:27px;font-weight:700}.label{font-size:19px;font-weight:700}.body{font-size:17px}.hint{font-size:15px;fill:#465e6b}.edge,.train{fill:none;stroke:#364d60;stroke-width:2;marker-end:url(#arr);stroke-linejoin:round}.train{stroke:#946126;stroke-dasharray:6 5;marker-end:url(#sup)}.box{stroke-width:1.5;rx:11}.fixed{fill:#eaf3fa;stroke:#7c9bad}.learn{fill:#e5f3ee;stroke:#7ea496}.plain{fill:#fff;stroke:#9badb5}.target{fill:#f9edcf;stroke:#b49a5d}
+    </style>
+  </defs>
+  <rect width="960" height="736" fill="#fff"/>
+  <text x="30" y="42" class="head">PartMotionEdit 如何把一句修改要求用到局部动作</text>
+  <text x="31" y="74" class="body">实线是生成时的信息，虚线是配对训练样本提供的监督。</text>
+  <rect x="22" y="102" width="916" height="419" rx="17" fill="#f6f8fa" stroke="#d4dfe4"/>
+  <text x="43" y="136" class="label">编辑一段给定的源动作</text>
+  <g class="body">
+    <rect class="box fixed" x="44" y="165" width="195" height="74"/>
+    <text x="59" y="195">源动作 · 连续骨架特征</text><text x="59" y="221" class="hint">冻结动作编码器</text>
+    <rect class="box fixed" x="44" y="266" width="195" height="74"/>
+    <text x="59" y="297">文字 · 编辑指令</text><text x="59" y="322" class="hint">冻结 CLIP 文字编码器</text>
+    <rect class="box learn" x="286" y="165" width="207" height="175"/>
+    <text x="304" y="199" class="label">BMI · 双向交互</text>
+    <text x="304" y="235">文字先读取源动作</text><text x="304" y="265">动作再读取更新的文字</text><text x="304" y="309" class="hint">输出文字与动作两路特征</text>
+    <rect class="box learn" x="559" y="165" width="351" height="82"/>
+    <text x="579" y="196" class="label">DDPM · 条件去噪</text>
+    <text x="579" y="224">结合文字与动作条件，逐步生成动作特征</text>
+    <rect class="box learn" x="559" y="277" width="351" height="97"/>
+    <text x="579" y="309" class="label">PMM · 五个部位查询</text>
+    <text x="579" y="336">查询读取动作 → 部位间交换信息</text>
+    <text x="579" y="359" class="hint">预测 T × 5 权重 R，逐元素调制动作残差</text>
+    <rect class="box fixed" x="286" y="414" width="207" height="73"/>
+    <text x="304" y="445" class="label">冻结动作解码器</text><text x="304" y="470" class="hint">把生成特征还原为连续动作</text>
+    <rect class="box plain" x="44" y="414" width="195" height="73"/>
+    <text x="60" y="445" class="label">编辑后的整段运动</text><text x="60" y="470" class="hint">检查目标部位与保留区域</text>
+  </g>
+  <path class="edge" d="M239 201H283"/><path class="edge" d="M239 302H283"/>
+  <path class="edge" d="M493 207H556"/><path class="edge" d="M493 310H556"/>
+  <path class="edge" d="M739 277V250"/>
+  <path class="edge" d="M910 205H923V449H496"/><text x="629" y="472" class="hint">反向扩散后的特征</text>
+  <path class="edge" d="M286 451H242"/>
+  <rect x="22" y="544" width="916" height="170" rx="17" fill="#fcf8ef" stroke="#ded4bb"/>
+  <text x="43" y="579" class="label">只有在训练时才用真实目标动作</text>
+  <rect class="box target" x="44" y="598" width="229" height="87"/>
+  <text x="59" y="630" class="body">成对的源动作与目标动作</text><text x="59" y="658" class="hint">逐帧分组 · 躯干、双臂、双腿</text>
+  <rect class="box target" x="332" y="598" width="231" height="87"/>
+  <text x="348" y="630" class="body">部位位置差与旋转差</text><text x="348" y="658" class="hint">取负并两次归一化为相似度</text>
+  <rect class="box target" x="623" y="598" width="287" height="87"/>
+  <text x="640" y="630" class="body">回归相似度曲线 · 约束 R</text><text x="640" y="658" class="hint">再惩罚相邻帧的权重突变</text>
+  <path class="train" d="M273 642H329"/><path class="train" d="M563 642H620"/><path class="train" d="M840 598V507H866V377"/>
+</svg>
