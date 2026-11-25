@@ -1799,6 +1799,16 @@
     "methods": [],
     "controls": []
   },
+  "moalign-paper-notes": {
+    "topics": [
+      "video",
+      "representation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
   "mobius-paper-notes": {
     "topics": [
       "multimodal",

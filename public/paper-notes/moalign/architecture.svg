@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1020" height="854" viewBox="0 0 1020 854" role="img" aria-labelledby="title description">
+  <title id="title">MoAlign 的教师训练、生成器微调与文本生成视频</title>
+  <desc id="description">第一阶段，从冻结的 VideoMAEv2 输出中学习能预测 RAFT 估计光流的 64 维运动特征。第二阶段，教师看干净视频，CogVideoX 学生看同一视频的带噪潜变量和文字，匹配各自内部的视频块相似关系，同时学习去噪。生成时，仅文字与噪声进入已微调的生成模型，最后由 VAE 解码 RGB 视频。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1L9 5 0 9z" fill="#4a626a"/></marker>
+    <marker id="goldarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1L9 5 0 9z" fill="#9d722a"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC","Segoe UI",sans-serif;fill:#1c3340}
+      .title{font-size:26px;font-weight:700}.phase{font-size:21px;font-weight:700}.node{font-size:19px;font-weight:650}.detail{font-size:16px}.hint{font-size:15px;fill:#485d67}
+      .box{rx:9;stroke-width:1.5}.fixed{fill:#e9f2f9;stroke:#8ba8ba}.learn{fill:#e5f3eb;stroke:#87a998}.input{fill:#fff;stroke:#9eafb4}.loss{fill:#fcf2d9;stroke:#b69757}
+      .edge,.supervision{fill:none;stroke:#4a626a;stroke-width:2;stroke-linejoin:round;marker-end:url(#arrow)}.supervision{stroke:#9d722a;stroke-dasharray:6 4;marker-end:url(#goldarrow)}
+    </style>
+  </defs>
+  <rect width="1020" height="854" fill="#fff"/>
+  <text x="25" y="37" class="title">MoAlign · 从训练视频的光流到生成器的运动表征</text>
+  <rect x="27" y="56" width="16" height="13" class="fixed"/><text x="51" y="68" class="hint">冻结模块</text>
+  <rect x="138" y="56" width="16" height="13" class="learn"/><text x="162" y="68" class="hint">本阶段可训练</text>
+  <path class="supervision" d="M300 62H336"/><text x="348" y="68" class="hint">训练监督</text>
+
+  <rect x="14" y="86" width="992" height="223" rx="13" fill="#f6f9f9" stroke="#cddad9"/>
+  <text x="31" y="119" class="phase">① 训练教师：哪些视频特征足以读出运动？</text>
+  <rect x="31" y="142" width="145" height="66" class="box input"/>
+  <text x="46" y="170" class="node">训练视频</text><text x="46" y="195" class="detail">连续 RGB 帧</text>
+  <rect x="217" y="142" width="197" height="66" class="box fixed"/>
+  <text x="231" y="170" class="node">VideoMAEv2</text><text x="231" y="195" class="detail">时空块 · 每块 768 维</text>
+  <rect x="458" y="142" width="234" height="66" class="box learn"/>
+  <text x="473" y="170" class="node">压缩头 · 3D 卷积</text><text x="473" y="195" class="detail">每块 64 维运动特征 M</text>
+  <rect x="737" y="142" width="247" height="66" class="box learn"/>
+  <text x="752" y="170" class="node">光流解码头</text><text x="752" y="195" class="detail">输出二维像素位移场</text>
+  <path class="edge" d="M176 175H215"/><path class="edge" d="M414 175H456"/><path class="edge" d="M692 175H735"/>
+  <rect x="217" y="237" width="345" height="52" class="box fixed"/>
+  <text x="232" y="268" class="detail">RAFT 从相邻画面估计参考光流</text>
+  <rect x="737" y="237" width="247" height="52" class="box loss"/>
+  <text x="752" y="268" class="node">L1 光流预测误差</text>
+  <path class="edge" d="M104 209V263H215"/><path class="supervision" d="M562 263H735"/><path class="edge" d="M861 208V235"/>
+
+  <rect x="14" y="328" width="992" height="306" rx="13" fill="#f6f9f9" stroke="#cddad9"/>
+  <text x="31" y="363" class="phase">② 微调生成器：比较同一段视频内部的时空关系</text>
+  <rect x="31" y="384" width="194" height="76" class="box input"/>
+  <text x="45" y="414" class="node">干净的训练视频</text><text x="45" y="438" class="detail">提供教师参照</text>
+  <rect x="265" y="384" width="300" height="76" class="box fixed"/>
+  <text x="279" y="413" class="node">VideoMAEv2 ＋ 已学压缩头</text><text x="279" y="438" class="detail">固定教师 · 输出 M</text>
+  <rect x="31" y="487" width="194" height="87" class="box input"/>
+  <text x="45" y="515" class="node">同一视频经 VAE</text><text x="45" y="540" class="detail">潜变量加噪</text><text x="45" y="562" class="detail">另给文本与扩散步</text>
+  <rect x="265" y="487" width="300" height="87" class="box learn"/>
+  <text x="279" y="515" class="node">CogVideoX-2B ＋ 投影头</text><text x="279" y="540" class="detail">第 18 层 · 1920 维投到 64 维</text><text x="279" y="562" class="detail">匹配教师时空网格 · 输出 Z</text>
+  <rect x="626" y="384" width="358" height="190" class="box loss"/>
+  <text x="644" y="414" class="node">各自构造块与块的余弦相似度</text>
+  <text x="644" y="441" class="detail">同帧：比较不同画面位置</text>
+  <text x="644" y="466" class="detail">跨帧：较近的帧对权重更高</text>
+  <path d="M644 484H966" stroke="#cfb67f"/>
+  <text x="644" y="514" class="node">教师与学生的关系差异</text>
+  <text x="644" y="542" class="detail">共同优化去噪损失 ＋ 0.5 × 对齐损失</text>
+  <path class="edge" d="M225 422H263"/><path class="edge" d="M225 530H263"/>
+  <path class="supervision" d="M565 422H624"/><path class="edge" d="M565 530H624"/>
+  <text x="32" y="609" class="hint">举例：对同一对跨帧位置，教师给出相似度 0.8，学生给出 0.3，这一对的差 0.5 再按帧距加权。</text>
+
+  <rect x="14" y="652" width="992" height="181" rx="13" fill="#f3f5fa" stroke="#d0d8e3"/>
+  <text x="31" y="686" class="phase">③ 文本生成视频：沿用原有采样路径</text>
+  <rect x="31" y="706" width="224" height="78" class="box input"/>
+  <text x="46" y="736" class="node">文字提示 ＋ 随机噪声</text><text x="46" y="761" class="detail">例如“硬币落入杯中”</text>
+  <rect x="297" y="706" width="257" height="78" class="box fixed"/>
+  <text x="311" y="736" class="node">微调后的 CogVideoX</text><text x="311" y="761" class="detail">迭代去噪，得到视频潜变量</text>
+  <rect x="596" y="706" width="173" height="78" class="box fixed"/>
+  <text x="610" y="736" class="node">VAE 解码器</text><text x="610" y="761" class="detail">还原画面</text>
+  <rect x="811" y="706" width="173" height="78" class="box input"/>
+  <text x="826" y="736" class="node">RGB 视频</text><text x="826" y="761" class="detail">观察跨帧运动</text>
+  <path class="edge" d="M255 745H295"/><path class="edge" d="M554 745H594"/><path class="edge" d="M769 745H809"/>
+  <text x="32" y="812" class="hint">光流估计、教师、投影和对齐损失都只用于训练；生成时无需输入参照视频或运动轨迹。</text>
+</svg>
