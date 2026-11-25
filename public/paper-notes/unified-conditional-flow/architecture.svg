@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1000" viewBox="0 0 1040 1000" role="img" aria-labelledby="title desc">
+  <title id="title">文本和骨架如何驱动同一个动作流模型</title>
+  <desc id="desc">训练时沿高斯噪声与真实动作之间的直线采样。带噪动作依次经过关节级和帧级注意力，两级都读取冻结 T5 的词向量，静止骨架与流时间经 AdaLN-Zero 调制各层。模型预测同一动作的两组干净特征，再换算速度。生成从噪声出发。编辑和同拓扑重定向均从源动作出发，逐步累加源、目标两种条件产生的速度差，分别改文字、改骨架。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#455f6d"/></marker>
+    <marker id="cond" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#31736a"/></marker>
+    <marker id="loss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#9a762a"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC","Segoe UI",sans-serif;fill:#213b45}
+      .title{font-size:28px;font-weight:700}.section{font-size:22px;font-weight:700}.node{font-size:20px;font-weight:650}.body{font-size:17px}.note{font-size:16px;fill:#445962}.formula{font-family:"Segoe UI",Arial,sans-serif;font-size:20px;fill:#213b45}
+      .input,.context,.core,.readout,.training,.sample{stroke-width:1.5;rx:10}
+      .input{fill:#f2f5f7;stroke:#9eb1ba}.context{fill:#eaf4f0;stroke:#8aada2}.core{fill:#eaf2f8;stroke:#88a6bc}.readout{fill:#e7f2f8;stroke:#7599ad}.training{fill:#fbf4df;stroke:#bca466}.sample{fill:#fff;stroke:#afbdc2}
+      .edge,.condition,.supervision,.split{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+      .edge,.split{stroke:#455f6d}.edge{marker-end:url(#arrow)}.condition{stroke:#31736a;marker-end:url(#cond)}.supervision{stroke:#9a762a;stroke-dasharray:5 5;marker-end:url(#loss)}
+    </style>
+  </defs>
+  <rect width="1040" height="1000" fill="white"/>
+  <text x="25" y="37" class="title">文本和骨架如何驱动同一个动作流模型</text>
+  <text x="26" y="67" class="note">沿中央实线读动作，左右绿色连线表示条件注入，金色虚线表示训练监督。</text>
+
+  <rect x="24" y="90" width="242" height="103" class="context"/>
+  <text x="40" y="122" class="node">动作描述 P</text>
+  <text x="40" y="151" class="body">冻结 T5-Large</text>
+  <text x="40" y="177" class="note">保留逐词嵌入</text>
+  <rect x="307" y="90" width="426" height="103" class="input"/>
+  <text x="324" y="122" class="node">当前动作状态 xτ</text>
+  <text x="324" y="151" class="body">训练时混合高斯噪声与真实动作</text>
+  <text x="324" y="177" class="formula">xτ = (1 − τ) ε + τ x₁</text>
+  <rect x="774" y="90" width="242" height="103" class="context"/>
+  <text x="789" y="122" class="node">骨架 S 和流时间 τ</text>
+  <text x="789" y="151" class="body">T 形静止姿态的关节偏移</text>
+  <text x="789" y="177" class="note">旋转取单位旋转，速度为零</text>
+
+  <path class="edge" d="M520 194V223"/>
+  <rect x="307" y="225" width="426" height="75" class="core"/>
+  <text x="324" y="255" class="node">逐帧线性投影，再拆成关节 token</text>
+  <text x="324" y="282" class="body">标准骨架每帧 584 维 → 24 个关节 × 18 维</text>
+  <path class="condition" d="M145 194V225"/>
+  <rect x="24" y="227" width="242" height="73" class="context"/>
+  <text x="40" y="256" class="node">两组独立线性投影</text>
+  <text x="40" y="282" class="body">分别供关节和帧读取</text>
+  <path class="condition" d="M895 194V225"/>
+  <rect x="774" y="227" width="242" height="73" class="context"/>
+  <text x="789" y="256" class="node">骨架与时间分别编码</text>
+  <text x="789" y="282" class="body">相加，再经 MLP 融合</text>
+
+  <rect x="307" y="329" width="426" height="231" rx="14" fill="#f6f9fb" stroke="#acc0cc" stroke-width="1.5"/>
+  <path class="edge" d="M520 300V328"/>
+  <text x="324" y="359" class="section">时空 Transformer 块 × 12</text>
+  <rect x="323" y="373" width="394" height="71" class="core"/>
+  <text x="340" y="402" class="node">同帧关节之间做自注意力</text>
+  <text x="340" y="427" class="body">每个关节再用交叉注意力读取词向量</text>
+  <path class="edge" d="M520 445V464"/>
+  <rect x="323" y="466" width="394" height="76" class="core"/>
+  <text x="340" y="495" class="node">拼回 432 维帧，沿时间做自注意力</text>
+  <text x="340" y="522" class="body">帧再读取词向量，经 SwiGLU 更新</text>
+  <path class="condition" d="M146 300V409H321"/>
+  <path class="condition" d="M146 409V504H321"/>
+  <text x="35" y="387" class="note">关节级 K / V</text>
+  <text x="35" y="482" class="note">帧级 K / V</text>
+  <path class="condition" d="M893 300V409H719"/>
+  <path class="condition" d="M893 409V504H719"/>
+  <text x="772" y="382" class="note">AdaLN-Zero</text>
+  <text x="774" y="481" class="note">逐层调制与门控</text>
+
+  <path class="edge" d="M520 560V588"/>
+  <rect x="307" y="590" width="426" height="83" class="readout"/>
+  <text x="324" y="620" class="node">预测干净动作，再换算成流速度 v</text>
+  <text x="324" y="649" class="formula">v = (x̂₁ − xτ) / (1 − τ)</text>
+  <rect x="24" y="580" width="242" height="101" class="training"/>
+  <text x="40" y="611" class="node">训练目标</text>
+  <text x="40" y="638" class="body">生成特征和重定向特征</text>
+  <text x="40" y="662" class="body">各自计算 MSE，等权相加</text>
+  <path class="supervision" d="M307 633H268"/>
+  <rect x="774" y="580" width="242" height="101" class="readout"/>
+  <text x="789" y="611" class="node">同一动作的两个视图</text>
+  <text x="789" y="638" class="body">生成 296 维 · 常规评测</text>
+  <text x="789" y="662" class="body">重定向 288 维 · 几何重建</text>
+  <path class="edge" d="M733 633H771"/>
+
+  <path class="edge" d="M520 673V703"/>
+  <rect x="24" y="705" width="992" height="85" rx="12" fill="#eef4f5" stroke="#91a9b0" stroke-width="1.5"/>
+  <text x="41" y="737" class="node">同一模型按条件组合速度</text>
+  <text x="41" y="766" class="body">从无条件速度出发，先加骨架带来的改变量，再加已有骨架时文字带来的改变量。两项可分别调节。</text>
+  <path class="split" d="M520 790V803M187 803H853"/>
+  <path class="edge" d="M520 804V819"/>
+  <path class="edge" d="M187 804V819"/>
+  <path class="edge" d="M853 804V819"/>
+  <rect x="24" y="822" width="313" height="151" class="sample"/>
+  <text x="40" y="854" class="section">文本生成动作</text>
+  <text x="40" y="884" class="body">起点为高斯噪声，给定文字与骨架。</text>
+  <text x="40" y="912" class="body">沿引导速度积分，得到连续动作。</text>
+  <text x="40" y="944" class="note">论文生成评测用 100 步 RK4。</text>
+  <rect x="350" y="822" width="340" height="151" class="sample"/>
+  <text x="366" y="854" class="section">文本编辑</text>
+  <text x="366" y="884" class="body">起点为源动作，固定骨架。</text>
+  <text x="366" y="912" class="body">原描述 → 目标描述，每步累加两种</text>
+  <text x="366" y="938" class="body">条件的速度差，得到编辑动作。</text>
+  <rect x="703" y="822" width="313" height="151" class="sample"/>
+  <text x="719" y="854" class="section">同拓扑重定向</text>
+  <text x="719" y="884" class="body">起点为源动作，两侧文字均留空。</text>
+  <text x="719" y="912" class="body">换成目标骨架，同样累加速度差。</text>
+  <text x="719" y="940" class="note">预测旋转经目标骨架 FK 生成动画。</text>
+</svg>

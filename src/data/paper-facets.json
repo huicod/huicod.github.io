@@ -3447,6 +3447,19 @@
       "space"
     ]
   },
+  "unified-conditional-flow-paper-notes": {
+    "topics": [
+      "generation",
+      "editing",
+      "character"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "parts"
+    ]
+  },
   "unimask-m-paper-notes": {
     "topics": [
       "editing"
