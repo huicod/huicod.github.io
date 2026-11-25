@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1015" viewBox="0 0 1000 1015" role="img" aria-labelledby="title desc">
+  <title id="title">SATA 如何把源动作解码到不同关节数的目标骨架</title>
+  <desc id="desc">逐帧输入源骨架图和关节运动。静止位置与经冻结 T5 编码的骨骼功能描述调制运动特征。图编码器交错处理帧内关节与同一关节的时间序列，跨关节最大池化为逐帧固定宽度的动作潜变量。解码器将潜变量广播到目标骨架，结合其静姿、功能描述和图结构，预测旋转、根运动与接触，经正向运动学获得目标动作。额外训练的文字生成器也能提供运动潜变量。</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#456477"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#307568"/></marker>
+    <marker id="c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#926c2a"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#193949}
+      .title{font-size:29px;font-weight:700}.heading{font-size:22px;font-weight:700}.sub{font-size:18px;font-weight:600}.body{font-size:17px}.note{font-size:15px;fill:#415e6a}
+      .warm,.cool,.mint,.plain,.panel{stroke-width:1.5;rx:12}.warm{fill:#fbf5e6;stroke:#c6a45d}.cool{fill:#edf4fa;stroke:#89aac2}.mint{fill:#edf6f2;stroke:#87b3a7}.plain{fill:#fff;stroke:#b3c4cb}.panel{fill:#f7fafb;stroke:#b3c4cb}
+      .flow,.cond,.optional{fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+      .flow{stroke:#456477;marker-end:url(#a)}.cond{stroke:#307568;marker-end:url(#b)}.optional{stroke:#926c2a;stroke-dasharray:6 5;marker-end:url(#c)}
+    </style>
+  </defs>
+  <rect width="1000" height="1015" fill="#fff"/>
+  <text x="24" y="42" class="title">SATA 如何把一段动作交给另一副骨架？</text>
+  <text x="25" y="74" class="note">蓝线沿源动作到目标动作，绿线传入骨架与关节功能，金色虚线表示可替换的文字生成入口。</text>
+
+  <rect x="24" y="98" width="456" height="123" class="cool"/>
+  <text x="42" y="130" class="heading">源角色的动作图序列</text>
+  <text x="42" y="160" class="body">原始 BVH → 每帧一张骨架图，保留源关节数。</text>
+  <text x="42" y="187" class="body">节点提供旋转、位置、速度、根运动与接触。</text>
+  <text x="42" y="211" class="note">骨骼边记录连接关系、子节点深度与反向深度。</text>
+
+  <rect x="500" y="98" width="476" height="123" class="mint"/>
+  <text x="517" y="130" class="heading">每个源关节的静姿与功能</text>
+  <text x="517" y="160" class="body">静姿：相对根、相对父节点的位置。</text>
+  <text x="517" y="187" class="body">骨名与父子上下文 → Gemini 生成功能短句</text>
+  <text x="517" y="211" class="note">→ 冻结的 T5 编码；同一骨架可以复用这些描述。</text>
+  <path class="flow" d="M252 222V243"/>
+  <path class="cond" d="M737 222V243"/>
+
+  <rect x="24" y="245" width="952" height="90" class="cool"/>
+  <text x="42" y="276" class="heading">语义与空间调制（SeAM）</text>
+  <text x="42" y="304" class="body">静姿的正弦编码与关节词义共同产生缩放、平移和门值，按关节调制动作特征，再与原特征相加。</text>
+  <text x="42" y="327" class="note">骨骼功能描述作用于指定的关节节点；源角色的骨骼连接继续供空间图网络使用。</text>
+  <path class="flow" d="M360 336V357"/>
+
+  <rect x="24" y="359" width="952" height="171" class="panel"/>
+  <text x="42" y="391" class="heading">源图编码器 · 空间与时间交替 3 层</text>
+  <rect x="42" y="408" width="421" height="100" class="plain"/>
+  <text x="56" y="438" class="sub">每一帧，沿关节看</text>
+  <text x="56" y="465" class="body">GINE 沿骨骼边传消息，空间注意力连全身。</text>
+  <text x="56" y="490" class="note">两路汇合，再经 MLP 与残差更新。</text>
+  <path class="flow" d="M464 458H496"/>
+  <rect x="498" y="408" width="459" height="100" class="plain"/>
+  <text x="513" y="438" class="sub">每个关节，沿时间看</text>
+  <text x="513" y="465" class="body">同一关节的各帧连成序列，做时间自注意力。</text>
+  <text x="513" y="490" class="note">将结果放回各帧的骨架图，进入下一层。</text>
+  <path class="flow" d="M360 531V552"/>
+
+  <rect x="24" y="554" width="625" height="122" class="cool"/>
+  <text x="42" y="585" class="heading">逐帧汇总：从多个关节变为一个动作表示</text>
+  <text x="42" y="614" class="body">沿源关节维做最大池化，保留时间轴。每帧输出宽度固定。</text>
+  <text x="42" y="642" class="body">连续 VAE 为 128 维；离散 RVQ 的 256 维特征经 6 级量化。</text>
+  <text x="42" y="665" class="note">重建与重定向主要用连续版本。两个瓶颈分别训练。</text>
+  <rect x="693" y="554" width="283" height="122" class="warm"/>
+  <text x="709" y="585" class="sub">可选 · 整句动作描述</text>
+  <text x="709" y="615" class="body">另训 MDM 预测连续潜变量，</text>
+  <text x="709" y="640" class="body">或 MoMask 预测离散码，</text>
+  <text x="709" y="664" class="note">生成时也从潜表示进入解码器。</text>
+  <path class="optional" d="M692 615H652"/>
+  <path class="flow" d="M360 677V715"/>
+
+  <rect x="24" y="717" width="625" height="123" class="cool"/>
+  <text x="42" y="749" class="heading">在目标图上解码</text>
+  <text x="42" y="778" class="body">同一帧的潜表示广播到每个目标关节，结合目标骨架条件。</text>
+  <text x="42" y="806" class="body">镜像的时空图块接收目标连接关系，逐关节预测运动。</text>
+  <text x="42" y="830" class="note">重建用原骨架；重定向换目标骨架，目标关节数可以不同。</text>
+  <rect x="693" y="717" width="283" height="123" class="mint"/>
+  <text x="709" y="749" class="sub">目标角色的静态骨架</text>
+  <text x="709" y="778" class="body">连接关系、静姿位置、</text>
+  <text x="709" y="805" class="body">目标关节的功能描述。</text>
+  <text x="709" y="830" class="note">无需输入目标角色的动作轨迹。</text>
+  <path class="cond" d="M692 778H652"/>
+  <path class="flow" d="M360 841V862"/>
+
+  <rect x="24" y="864" width="952" height="73" class="cool"/>
+  <text x="42" y="894" class="heading">目标角色的连续动作</text>
+  <text x="42" y="922" class="body">输出头预测旋转、根运动与接触；正向运动学（FK）沿目标骨骼树展开，恢复关节轨迹。</text>
+  <text x="25" y="971" class="sub">训练监督</text>
+  <text x="133" y="971" class="body">重建旋转、位置与速度，加接触、穿地、平滑等损失；连续瓶颈加 KL，离散瓶颈加承诺损失。</text>
+  <text x="25" y="998" class="note">教学示意，依据原论文图 2、§3.1–3.4、§4.1.1 与附录 D.4。</text>
+</svg>

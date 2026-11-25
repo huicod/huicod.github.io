@@ -2873,6 +2873,18 @@
       "parts"
     ]
   },
+  "sata-paper-notes": {
+    "topics": [
+      "representation",
+      "character",
+      "generation"
+    ],
+    "methods": [
+      "tokens",
+      "diffusion"
+    ],
+    "controls": []
+  },
   "scalemogen-paper-notes": {
     "topics": [
       "generation",
