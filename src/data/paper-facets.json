@@ -1276,6 +1276,16 @@
       "time"
     ]
   },
+  "intention-anticipation-paper-notes": {
+    "topics": [
+      "generation",
+      "representation"
+    ],
+    "methods": [],
+    "controls": [
+      "time"
+    ]
+  },
   "intentional-gesture-paper-notes": {
     "topics": [
       "gesture",
@@ -3211,6 +3221,20 @@
       "retrieval"
     ],
     "controls": []
+  },
+  "think-then-react-paper-notes": {
+    "topics": [
+      "generation",
+      "understanding"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "interaction",
+      "streaming"
+    ]
   },
   "time-to-move-paper-notes": {
     "topics": [

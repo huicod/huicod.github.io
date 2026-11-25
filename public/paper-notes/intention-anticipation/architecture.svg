@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 745" role="img" aria-labelledby="title desc">
+  <title id="title">从过去的骨架提前预测意图，再生成连续姿态</title>
+  <desc id="desc">训练时先将姿态从十四个簇归并为八类，以逐帧类别监督意图网络。推理时历史骨架送入意图和姿态编码器，前者预测八类概率，时间卷积聚合未来十帧。姿态解码器结合历史、初始高斯噪声和上次姿态逐帧输出。NDMS 在评估时检查局部速度和方向。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#365367"/></marker>
+    <marker id="supervise" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8d5721"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC","PingFang SC",sans-serif;fill:#183746}
+      .heading{font-size:27px;font-weight:700}.section{font-size:20px;font-weight:700}
+      .name{font-size:18px;font-weight:700}.body{font-size:16px}.label{font-size:15px}
+      .box{stroke-width:1.25}.link,.sup{fill:none;stroke:#365367;stroke-width:2.1;stroke-linejoin:round;marker-end:url(#arrow)}
+      .sup{stroke:#8d5721;stroke-dasharray:6 4;marker-end:url(#supervise)}
+    </style>
+  </defs>
+  <rect width="840" height="745" rx="16" fill="#fcfdfb"/>
+  <text x="30" y="41" class="heading">用较快的意图预测，引导逐帧骨架生成</text>
+  <rect x="24" y="62" width="792" height="118" rx="13" fill="#faf4e8" stroke="#d6bea0"/>
+  <text x="42" y="90" class="section">训练时生成意图伪标签</text>
+  <g text-anchor="middle">
+    <rect x="48" y="104" width="164" height="54" rx="8" fill="#fffaf2" stroke="#c4a575" class="box"/>
+    <text x="130" y="138" class="name">训练集逐帧姿态</text>
+    <rect x="261" y="104" width="241" height="54" rx="8" fill="#fffaf2" stroke="#c4a575" class="box"/>
+    <text x="382" y="128" class="name">k-means 聚为 14 类</text><text x="382" y="148" class="label">沿序列找编号反复出现的循环</text>
+    <rect x="551" y="104" width="228" height="54" rx="8" fill="#fffaf2" stroke="#c4a575" class="box"/>
+    <text x="665" y="128" class="name">按频率合并为 8 类</text><text x="665" y="148" class="label">给每帧分配一个类别编号</text>
+  </g>
+  <path d="M212 131H256" class="link"/><path d="M502 131H546" class="link"/>
+  <rect x="24" y="203" width="792" height="413" rx="13" fill="#f0f6f8" stroke="#adc4ca"/>
+  <text x="42" y="239" class="section">推理时只给历史骨架</text>
+  <path d="M763 158V274" class="sup"/>
+  <text x="619" y="234" class="label" style="fill:#805124">逐帧类别监督</text>
+  <g text-anchor="middle">
+    <rect x="52" y="322" width="182" height="72" rx="9" fill="#fff" stroke="#7897a8" class="box"/>
+    <text x="143" y="352" class="name">同一人的历史骨架</text><text x="143" y="378" class="body">截至最后观测帧</text>
+    <rect x="298" y="276" width="203" height="68" rx="9" fill="#e6f3ec" stroke="#72a589" class="box"/>
+    <text x="400" y="304" class="name">意图编码与解码</text><text x="400" y="328" class="body">GRU 预测未来状态</text>
+    <rect x="553" y="276" width="227" height="68" rx="9" fill="#e6f3ec" stroke="#72a589" class="box"/>
+    <text x="666" y="304" class="name">未来类别概率序列</text><text x="666" y="328" class="body">每个未来时刻有 8 个概率</text>
+    <rect x="553" y="364" width="227" height="60" rx="9" fill="#e6f3ec" stroke="#72a589" class="box"/>
+    <text x="666" y="389" class="name">时间卷积</text><text x="666" y="412" class="body">汇总 τ 至 τ＋9 帧的预测</text>
+    <rect x="298" y="442" width="203" height="68" rx="9" fill="#e7eef8" stroke="#819dbb" class="box"/>
+    <text x="400" y="471" class="name">姿态编码器</text><text x="400" y="495" class="body">保留观测运动的状态</text>
+    <rect x="553" y="442" width="227" height="70" rx="9" fill="#e7eef8" stroke="#819dbb" class="box"/>
+    <text x="666" y="471" class="name">姿态解码器</text><text x="666" y="496" class="body">首步从最后观测姿态出发</text>
+    <rect x="52" y="529" width="182" height="64" rx="9" fill="#fff" stroke="#7897a8" class="box"/>
+    <text x="143" y="556" class="name">高斯噪声 z</text><text x="143" y="580" class="body">每次采样可改变</text>
+    <rect x="553" y="549" width="227" height="49" rx="9" fill="#d4e6f2" stroke="#6989a9" class="box"/>
+    <text x="666" y="580" class="name">输出当前帧的连续骨架</text>
+  </g>
+  <path d="M234 358H261V310H294" class="link"/>
+  <path d="M261 358V476H294" class="link"/>
+  <path d="M501 310H549" class="link"/>
+  <path d="M666 344V360" class="link"/>
+  <path d="M666 424V438" class="link"/>
+  <path d="M501 476H549" class="link"/>
+  <path d="M234 560H528V495H549" class="link"/>
+  <text x="284" y="548" class="label">初始化解码器隐状态</text>
+  <path d="M666 512V545" class="link"/>
+  <path d="M780 574H800V477H784" class="link"/>
+  <text x="687" y="537" class="label">供下一步使用</text>
+  <rect x="24" y="635" width="792" height="89" rx="13" fill="#f0f1ed" stroke="#b9c3bd"/>
+  <text x="42" y="668" class="section">评估时使用 NDMS</text>
+  <text x="42" y="699" class="body">预测切成 8 帧滑窗 → 在同活动的真实片段中找近邻 → 比较关节速度的方向与大小</text>
+</svg>

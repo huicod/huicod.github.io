@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 866" width="940" height="866" role="img" aria-labelledby="title desc" xml:lang="zh-CN">
+  <title id="title">Think-Then-React 的训练与在线反应生成</title>
+  <desc id="desc">上半部分从双人骨骼与标注说明训练。下半部分显示发起者 A 的已见动作怎样更新文字和反应。生成器每步追加 B 的一个动作码，解码还接收 B 的参考首帧。</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L9 5 L0 10 Z" fill="#52636a"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC","PingFang SC",sans-serif;fill:#172e32}
+      .title{font-size:28px;font-weight:700}.section{font-size:20px;font-weight:700}.head{font-size:19px;font-weight:700}.body{font-size:16px}.hint{font-size:15px;fill:#42565a}
+      .wire{fill:none;stroke:#52636a;stroke-width:2.1;stroke-linejoin:round;marker-end:url(#a)}
+      .obs{fill:#e7f2fc;stroke:#8cb2cd}.gen{fill:#e8f5ed;stroke:#91bba6}.init{fill:#f3edfa;stroke:#b59cca}.plain{fill:#f9faf6;stroke:#bdc8c7}.think{fill:#fff3d7;stroke:#c9ac70}
+      .box{stroke-width:1.6;rx:12}
+    </style>
+  </defs>
+  <rect width="940" height="866" fill="#fff"/>
+  <text x="34" y="44" class="title">Think-Then-React · 从 A 的动作生成 B 的反应</text>
+  <text x="34" y="78" class="section">训练　从双人动作与交互描述学习</text>
+  <g id="training">
+    <rect x="34" y="96" width="259" height="106" class="box plain"/>
+    <text x="49" y="125" class="head">编码连续骨骼</text>
+    <text x="49" y="156" class="body">VQ-VAE：每 4 帧一个姿态码</text><text x="49" y="182" class="body">另记初始位置 x、z 与朝向 r</text>
+    <path d="M293 149 H319" class="wire"/>
+    <rect x="324" y="96" width="277" height="106" class="box plain"/>
+    <text x="339" y="125" class="head">Flan-T5 跨模态预训练</text>
+    <text x="339" y="156" class="body">动作 ↔ 文字、姿态 ↔ 空间</text><text x="339" y="182" class="body">双人交叉片段补全</text>
+    <path d="M601 149 H627" class="wire"/>
+    <rect x="632" y="96" width="272" height="106" class="box plain"/>
+    <text x="647" y="125" class="head">同一骨干做因果微调</text>
+    <text x="647" y="156" class="body">A 的前缀 → 整段互动描述</text><text x="647" y="182" class="body">A 与描述 → B 的反应动作</text>
+  </g>
+  <path d="M34 225 H904" stroke="#c9d4d2" stroke-width="1.5"/>
+  <text x="34" y="259" class="section">推理　同一模型以两种速度工作</text>
+  <g id="observation">
+    <rect x="34" y="283" width="302" height="102" class="box obs"/>
+    <text x="51" y="312" class="head">观察 A 的当前动作前缀</text>
+    <text x="51" y="341" class="body">初始空间符号 + 已见姿态码</text>
+    <text x="51" y="366" class="body">每一步多观察一个码</text>
+  </g>
+  <path d="M336 318 H513" class="wire"/>
+  <text x="358" y="305" class="hint">定期读取 A</text>
+  <g id="thinking">
+    <rect x="518" y="283" width="350" height="102" class="box think"/>
+    <text x="536" y="312" class="head">Thinking · 每 4 个码更新一次</text>
+    <text x="536" y="341" class="body">写出对双方互动的一个文字猜测</text>
+    <text x="536" y="366" class="body">例如：两人准备在头顶击掌</text>
+  </g>
+  <path d="M693 385 V429" class="wire"/>
+  <text x="707" y="414" class="hint">当前描述</text>
+  <path d="M336 353 H381 V481 H513" class="wire"/>
+  <text x="392" y="468" class="hint">每步读取 A</text>
+  <g id="initial-state">
+    <rect x="34" y="458" width="302" height="120" class="box init"/>
+    <text x="51" y="487" class="head">B 的给定开场状态</text>
+    <text x="51" y="516" class="body">生成提示：初始 x、z、朝向</text>
+    <text x="51" y="541" class="body">与参考首个姿态码</text>
+    <text x="51" y="565" class="body">解码条件：参考首帧连续特征</text>
+  </g>
+  <path d="M336 525 H513" class="wire"/>
+  <text x="362" y="551" class="hint">初始条件</text>
+  <g id="reacting">
+    <rect x="518" y="434" width="350" height="126" class="box gen"/>
+    <text x="536" y="465" class="head">Reacting · 每步生成一次</text>
+    <text x="536" y="495" class="body">以 A 前缀、当前文字和 B 的开场</text>
+    <text x="536" y="522" class="body">状态为条件，从 B 已生成的历史</text>
+    <text x="536" y="547" class="body">继续预测下一个 B 姿态码</text>
+  </g>
+  <path d="M692 560 V618" class="wire"/>
+  <text x="704" y="596" class="hint">追加一个码</text>
+  <g id="token-history">
+    <rect x="518" y="623" width="350" height="81" class="box gen"/>
+    <text x="536" y="653" class="head">B 的动作码历史</text>
+    <text x="536" y="683" class="body">先前的码保留，后续码随猜测改变</text>
+  </g>
+  <path d="M868 672 H902 V507 H873" class="wire"/>
+  <text x="922" y="644" class="hint" transform="rotate(-90 922 644)">返回下一步生成</text>
+  <path d="M518 663 H341" class="wire"/>
+  <text x="359" y="651" class="hint">生成的姿态码</text>
+  <path d="M186 578 V617" class="wire"/>
+  <text x="197" y="605" class="hint">首帧投影</text>
+  <g id="decoding">
+    <rect x="34" y="623" width="302" height="81" class="box plain"/>
+    <text x="51" y="653" class="head">VQ-VAE 解码器</text>
+    <text x="51" y="683" class="body">码本向量与首帧特征共同解码</text>
+  </g>
+  <path d="M186 704 V739" class="wire"/>
+  <g id="output">
+    <rect x="34" y="744" width="834" height="72" class="box gen"/>
+    <text x="51" y="773" class="head">输出　B 的连续反应运动</text>
+    <text x="51" y="798" class="body">把 B 的骨骼放回与 A 的交互中观察；手掌接触的时刻与位置仍需在输出轨迹上测量。</text>
+  </g>
+  <text x="34" y="847" class="hint">依据论文图 1–2、附录 A.1、官方评测提示与解码实现重绘。</text>
+</svg>
