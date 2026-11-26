@@ -2201,6 +2201,19 @@
       "style"
     ]
   },
+  "motions-paper-notes": {
+    "topics": [
+      "character",
+      "editing",
+      "representation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "style"
+    ]
+  },
   "motionspaceflow-paper-notes": {
     "topics": [
       "generation",

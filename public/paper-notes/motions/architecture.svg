@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1006" viewBox="0 0 1080 1006" role="img" aria-labelledby="title desc">
+  <title id="title">MotionS 怎样把背手的风格加到另一个骨架的跳跃上？</title>
+  <desc id="desc">内容来自对角色自身一段源动作训练的扩散模型。风格可以来自动作、文字、图像或视频。风格特征随时间复制，与当前内容特征一同进入规范解码器。风格特征也映射成均值和标准差，在 SMPL 规范空间做 AdaIN 调制。规范骨架与角色骨架各自提供关节查询，通过两次交叉注意力在空间之间切换，最终得到角色骨架上的关节旋转。训练时另有旁路重建源动作。</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#426a7d"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#976337"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#213f49}
+      .title{font-weight:700;font-size:31px}.sub,.foot{font-size:17px;fill:#48626a}.label{font-weight:700;font-size:22px}.body{font-size:18px}
+      .node rect{stroke-width:1.5}.input{fill:#f4f7f4;stroke:#b1c3b8}.motion{fill:#edf5f9;stroke:#9bbccc}.style{fill:#fff3e7;stroke:#cfab88}.out{fill:#edf5ef;stroke:#9eb9a6}
+      .wire,.cond{fill:none;stroke:#426a7d;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+      .cond{stroke:#976337}.train{fill:#f8f9f7;stroke:#b5c0b4;stroke-dasharray:5 4}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1078" height="1004" rx="15" fill="#fff" stroke="#cfdfd9"/>
+  <text x="30" y="48" class="title">MotionS 怎样把背手的风格加到另一副骨架的跳跃上？</text>
+  <text x="31" y="81" class="sub">按一次去噪步骤阅读。蓝线传递动作特征，橙线传递风格条件。</text>
+
+  <g class="node">
+    <rect class="input" x="30" y="109" width="463" height="120" rx="11"/>
+    <text class="label" x="50" y="145">内容来自角色自己的源动作</text>
+    <text class="body" x="50" y="180">例如一段跳跃。先用源动作训练该角色的</text>
+    <text class="body" x="50" y="206">扩散模型，采样时从噪声生成动作变体。</text>
+  </g>
+  <g class="node">
+    <rect class="input" x="530" y="109" width="520" height="120" rx="11"/>
+    <text class="label" x="550" y="145">风格提示可用四种形式</text>
+    <text class="body" x="550" y="180">SMPL 动作、文字、图片，或视频中的图像。</text>
+    <text class="body" x="550" y="206">例如用“双手背后行走”的动作提供风格。</text>
+  </g>
+  <path class="wire" d="M260 229V254" marker-end="url(#a)"/>
+  <path class="cond" d="M790 229V254" marker-end="url(#b)"/>
+  <g class="node">
+    <rect class="motion" x="30" y="258" width="463" height="132" rx="10"/>
+    <text class="label" x="50" y="294">当前角色的内容特征</text>
+    <text class="body" x="50" y="329">当前带噪动作与扩散步数进入 QnA 编码器，</text>
+    <text class="body" x="50" y="356">得到沿时间变化的内容向量。</text>
+  </g>
+  <g class="node">
+    <rect class="style" x="530" y="258" width="520" height="132" rx="10"/>
+    <text class="label" x="550" y="294">共用的风格特征</text>
+    <text class="body" x="550" y="329">动作编码器与 CLIP 的文字、图像特征对齐。</text>
+    <text class="body" x="550" y="356">视频取五帧，平均其图像特征。</text>
+  </g>
+  <path class="wire" d="M260 390V430" marker-end="url(#a)"/>
+  <path class="cond" d="M686 390V430" marker-end="url(#b)"/>
+  <path class="cond" d="M987 390V655H892" marker-end="url(#b)"/>
+  <text class="foot" x="892" y="575">线性映射</text>
+  <text class="foot" x="895" y="603">得到 μ、σ</text>
+  <g class="node">
+    <rect class="motion" x="30" y="435" width="851" height="140" rx="10"/>
+    <text class="label" x="50" y="471">第一次拓扑转换 · 角色内容进入 SMPL 规范空间</text>
+    <text class="body" x="50" y="507">K/V 来自内容特征和沿时间复制的风格特征。Q 来自规范骨架的关节嵌入。</text>
+    <text class="body" x="50" y="537">先按骨骼邻接图卷积，再作交叉注意力，得到规范骨架 23 个非根关节的特征。</text>
+  </g>
+  <path class="wire" d="M453 575V598" marker-end="url(#a)"/>
+  <g class="node">
+    <rect class="style" x="30" y="603" width="851" height="96" rx="10"/>
+    <text class="label" x="50" y="638">在规范空间中调整风格</text>
+    <text class="body" x="50" y="672">AdaIN 将规范动作特征归一化，再用风格给出的标准差 σ 缩放、均值 μ 平移。</text>
+  </g>
+  <path class="wire" d="M453 699V723" marker-end="url(#a)"/>
+  <g class="node">
+    <rect class="motion" x="30" y="728" width="1020" height="99" rx="10"/>
+    <text class="label" x="50" y="763">第二次拓扑转换 · 回到角色自己的骨架</text>
+    <text class="body" x="50" y="797">这次由角色的各关节提供 Q，读取已调好风格的规范动作特征 K/V，恢复角色关节的数量和顺序。</text>
+  </g>
+  <path class="wire" d="M534 827V849" marker-end="url(#a)"/>
+  <g class="node">
+    <rect class="out" x="30" y="854" width="1020" height="67" rx="10"/>
+    <text class="label" x="50" y="895">角色动画</text>
+    <text class="body" x="198" y="895">每步预测干净的关节旋转，反复去噪形成新序列。全局平移由独立卷积网络生成。</text>
+  </g>
+  <g class="node">
+    <rect class="train" x="30" y="941" width="1020" height="46" rx="8"/>
+    <text class="foot" x="49" y="970">训练另设内容重建旁路，绕过 AdaIN。角色的风格化动作没有配对真值，以分部旋转和风格特征弱监督。</text>
+  </g>
+</svg>
