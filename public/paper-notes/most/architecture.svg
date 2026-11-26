@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1064" viewBox="0 0 1000 1064" role="img" aria-labelledby="title desc">
+  <title id="title">MoST 如何把踢腿的风格迁移到跳跃</title>
+  <desc id="desc">内容和参考动作分别经过同一个编码器。内容的逐帧动态直接传给生成器。两段动作经过时间池化的内容特征分别提供 Q 和 K，参考片段的分部风格提供 V。跨部位注意力得到与跳跃匹配的风格，再用 AdaIN 调制生成器。输出含关节运动、根位姿和速度。训练时用同风格不同动作的参考片段约束两次输出。</desc>
+  <defs>
+    <marker id="blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#33627a"/></marker>
+    <marker id="amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#975923"/></marker>
+    <marker id="green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#346a56"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#192f38}
+      .h1{font-size:31px;font-weight:700}.h2{font-size:23px;font-weight:700}.body{font-size:20px}.note{font-size:17px;fill:#405861}
+      .motion{fill:#edf5fa;stroke:#a3bfce}.style{fill:#fff3e8;stroke:#d9b698}.common{fill:#f4f6f5;stroke:#b6c9c4}.mix{fill:#eaf4ed;stroke:#99bcaa}
+      .node rect{stroke-width:1.5}.line,.sline,.gline{fill:none;stroke:#33627a;stroke-width:2.8;stroke-linejoin:round;stroke-linecap:round;marker-end:url(#blue)}
+      .sline{stroke:#975923;marker-end:url(#amber)}.gline{stroke:#346a56;marker-end:url(#green)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1062" rx="15" fill="#fff" stroke="#cfdbd8"/>
+  <text x="33" y="50" class="h1">MoST 怎样把踢腿的风格迁移到跳跃？</text>
+  <text x="34" y="83" class="note">蓝线跟踪内容片段，橙线跟踪风格片段，绿线跟踪合成结果。</text>
+  <g class="node">
+    <rect x="32" y="108" width="451" height="84" rx="11" class="motion"/>
+    <text x="52" y="142" class="h2">内容片段</text>
+    <text x="52" y="172" class="body">带怒气的跳跃（Angry Jump）</text>
+  </g>
+  <g class="node">
+    <rect x="517" y="108" width="451" height="84" rx="11" class="style"/>
+    <text x="537" y="142" class="h2">风格参考片段</text>
+    <text x="537" y="172" class="body">趾高气扬地踢腿（Strutting Kick）</text>
+  </g>
+  <path d="M259 194v23" class="line"/><path d="M743 194v23" class="sline"/>
+  <g class="node">
+    <rect x="32" y="222" width="936" height="110" rx="11" class="common"/>
+    <text x="52" y="259" class="h2">两次调用同一个 Transformer 编码器，共享权重</text>
+    <text x="52" y="290" class="body">按身体部位编码，另设根运动通道。先看同帧各部位，再看跨帧动态。</text>
+    <text x="52" y="317" class="note">每段都产生逐帧内容和全段的分部风格。此次迁移使用右侧参考片段的风格。</text>
+  </g>
+  <path d="M259 334v24" class="line"/><path d="M743 334v24" class="sline"/>
+  <g class="node">
+    <rect x="32" y="362" width="451" height="106" rx="11" class="motion"/>
+    <text x="52" y="398" class="h2">跳跃的内容</text>
+    <text x="52" y="431" class="body">保留逐帧动态给生成器；另沿时间池化，</text>
+    <text x="52" y="455" class="body">得到每个部位的内容摘要。</text>
+  </g>
+  <g class="node">
+    <rect x="517" y="362" width="451" height="106" rx="11" class="style"/>
+    <text x="537" y="398" class="h2">踢腿的内容与表演风格</text>
+    <text x="537" y="431" class="body">将逐帧动态池化得到内容摘要，同时</text>
+    <text x="537" y="455" class="body">保留风格 token 汇总的分部风格。</text>
+  </g>
+  <path d="M365 470v32" class="line"/><path d="M738 470v32" class="sline"/>
+  <g class="node">
+    <rect x="190" y="508" width="778" height="140" rx="11" class="mix"/>
+    <text x="211" y="544" class="h2">PSM · 依照动作内容，分配参考风格</text>
+    <text x="211" y="578" class="body">Q 来自跳跃的部位摘要，K 来自踢腿的部位摘要。</text>
+    <text x="211" y="607" class="body">V 来自踢腿片段的分部风格。注意力决定各部位分别借多少。</text>
+    <text x="211" y="633" class="note">参考风格另走线性残差；两路相加并经残差 MLP，得到调制后的风格。</text>
+  </g>
+  <path d="M95 470v234h91" class="line"/>
+  <text x="46" y="550" class="note" style="paint-order:stroke;stroke:white;stroke-width:9">逐帧动态</text>
+  <path d="M737 650v26" class="gline"/>
+  <g class="node">
+    <rect x="190" y="682" width="778" height="100" rx="11" class="common"/>
+    <text x="211" y="719" class="h2">动作生成器</text>
+    <text x="211" y="755" class="body">从跳跃的逐帧动态出发，每个块用 AdaIN 注入调制后的风格。</text>
+  </g>
+  <path d="M507 784v25" class="gline"/>
+  <g class="node">
+    <rect x="32" y="815" width="936" height="90" rx="11" class="mix"/>
+    <text x="53" y="851" class="h2">生成新的跳跃（Strutting Jump）</text>
+    <text x="53" y="885" class="body">同时输出局部关节运动、根位姿与速度；根运动也可以随风格改变。</text>
+  </g>
+  <g class="node">
+    <rect x="32" y="936" width="936" height="99" rx="11" fill="#f7f7f5" stroke="#9faeaa" stroke-dasharray="6 5"/>
+    <text x="53" y="972" class="h2">仅在训练时 · 如何减少从参考里照搬踢腿？</text>
+    <text x="53" y="1006" class="body">固定内容，换两段同风格、不同动作的参考，让两次生成尽量接近（式 17）。</text>
+  </g>
+</svg>

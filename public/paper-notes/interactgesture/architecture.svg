@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1100" viewBox="0 0 960 1100" role="img" aria-labelledby="title desc">
+  <title id="title">InteractGesture 如何让后一个动作块的目标影响提前抬手</title>
+  <desc id="desc">冻结既有 GestureLSM、分部动作解码器和 SMPL-X。每次需要引导时，先解码扩散模型预测的干净动作估计，再用指定帧和关节的三维目标误差调整它，送回 DDIM。动作块错开一个采样波次启动，在重叠的活动期内，前块向后块刷新上下文，后块的目标误差同时反传到前块。</desc>
+  <defs>
+    <marker id="blue" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 10 5 0 10Z" fill="#33687b"/></marker>
+    <marker id="orange" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 10 5 0 10Z" fill="#ab5937"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#19373d}
+      .title{font-size:31px;font-weight:700}.lead{font-size:18px;fill:#435d61}
+      .section{font-size:23px;font-weight:700}.name{font-size:20px;font-weight:700}
+      .body{font-size:17px}.small{font-size:15px;fill:#476168}.o{fill:#8d492f}.b{fill:#2b6278}
+      .node rect{stroke-width:1.4}.model{fill:#edf5f7;stroke:#abc5cd}
+      .control{fill:#fff4e8;stroke:#d4b194}.result{fill:#eaf4ed;stroke:#a6c4b1}
+      .ink,.grad,.again{fill:none;stroke-linecap:round;stroke-linejoin:round}
+      .ink{stroke:#33687b;stroke-width:2.5;marker-end:url(#blue)}
+      .grad{stroke:#ab5937;stroke-width:2.6;stroke-dasharray:6 5;marker-end:url(#orange)}
+      .again{stroke:#33687b;stroke-width:1.7;marker-end:url(#blue)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="958" height="1098" rx="16" fill="#fff" stroke="#cbd9d9"/>
+  <text class="title" x="32" y="55">InteractGesture 怎样让下一段的目标影响提前抬手？</text>
+  <text class="lead" x="32" y="91">蓝线传递动作或上下文，橙色虚线传递空间误差的梯度。</text>
+  <rect x="32" y="121" width="896" height="93" rx="11" fill="#f3f6f4" stroke="#cad7d1"/>
+  <text class="name" x="54" y="157">训练留下的部件</text>
+  <text class="body" x="54" y="190">分部 RVQ-VAE 学会编码与解码动作；GestureLSM 学会听语音生成动作。引导时二者均冻结。</text>
+
+  <text class="section" x="32" y="260">一次引导　把三维关节误差送回采样器</text>
+  <g class="node">
+    <rect class="model" x="42" y="290" width="396" height="113" rx="11"/>
+    <text class="name" x="60" y="322">预测当前动作块的干净潜变量</text>
+    <text class="body" x="60" y="352">输入当前语音、带噪潜变量和历史上下文。</text>
+    <text class="body" x="60" y="379">GestureLSM 给出这一去噪步的干净估计。</text>
+  </g>
+  <path class="ink" d="M439 346H515"/>
+  <g class="node">
+    <rect class="model" x="520" y="290" width="396" height="113" rx="11"/>
+    <text class="name" x="538" y="322">可微解码，得到三维关节</text>
+    <text class="body" x="538" y="352">上身、手、下身分别解码旋转；累积根速度。</text>
+    <text class="body" x="538" y="379">SMPL-X 由姿势、根位移与体形生成关节。</text>
+  </g>
+  <path class="ink" d="M718 404V443"/>
+  <g class="node">
+    <rect class="control" x="520" y="448" width="396" height="113" rx="11"/>
+    <text class="name" x="538" y="480">比较用户指定的目标与生成位置</text>
+    <text class="body" x="538" y="510">目标 H 给出位置，掩膜 M 选中帧与关节。</text>
+    <text class="body" x="538" y="537">在同一参考系下，仅累加选中处的平方误差。</text>
+  </g>
+  <path class="grad" d="M519 505H443"/>
+  <g class="node">
+    <rect class="control" x="42" y="448" width="396" height="113" rx="11"/>
+    <text class="name" x="60" y="480">沿梯度修正干净估计</text>
+    <text class="body" x="60" y="510">梯度经 SMPL-X 与解码器传回动作潜变量。</text>
+    <text class="body" x="60" y="537">Adam 更新潜变量；所有模型权重保持冻结。</text>
+  </g>
+  <path class="ink" d="M240 562V600"/>
+  <g class="node">
+    <rect class="model" x="42" y="606" width="396" height="88" rx="11"/>
+    <text class="name" x="60" y="640">DDIM 更新到下一步</text>
+    <text class="body" x="60" y="670">用修正后的估计推进采样，按日程重复。</text>
+  </g>
+  <path class="again" d="M42 652H19V346H37"/>
+  <path class="ink" d="M439 651H514"/>
+  <g class="node">
+    <rect class="result" x="520" y="606" width="396" height="88" rx="11"/>
+    <text class="name" x="538" y="640">完成的动作块</text>
+    <text class="body" x="538" y="670">最后可在干净潜变量上再优化，然后解码。</text>
+  </g>
+
+  <path d="M32 728H928" stroke="#d9e2e0"/>
+  <text class="section" x="32" y="771">渐进调度　只有仍在生成的块可以互相调整</text>
+  <text class="body" x="32" y="804">两条横带是相邻动作块，横向表示采样波次；实验中后块晚一个波次启动。</text>
+  <text class="name" x="51" y="864">前块 k</text>
+  <rect x="172" y="831" width="510" height="50" rx="8" fill="#e9f3f6" stroke="#9ebfcb"/>
+  <text class="body b" x="189" y="863">仍在去噪，可调整前段抬手轨迹</text>
+  <rect x="685" y="831" width="228" height="50" rx="8" fill="#f2f3ef" stroke="#c7ceca"/>
+  <text class="body" x="701" y="863">已完成，移出活动窗口</text>
+
+  <path class="ink" d="M300 882V936"/>
+  <text class="small b" x="313" y="914">向后刷新重叠的 S 帧上下文</text>
+  <path class="grad" d="M575 939V886"/>
+  <text class="small o" x="589" y="914">后块目标的梯度向前传</text>
+  <text class="name" x="51" y="973">后块 k+1</text>
+  <rect x="266" y="941" width="647" height="50" rx="8" fill="#e9f3f6" stroke="#9ebfcb"/>
+  <text class="body b" x="285" y="973">新到的语音与空间目标进入这一块，例如要求右腕抵达指定点</text>
+  <text class="body" x="32" y="1033">每块含 128 帧动作，对应 32 个潜空间时间位置。相邻两块的起点相隔 128 − S 帧。</text>
+  <text class="small" x="32" y="1069">据原文图 2、3 与 §3.1–3.5 重绘。掩膜排除后块开头重复的历史帧，以免同一目标计算两次。</text>
+</svg>

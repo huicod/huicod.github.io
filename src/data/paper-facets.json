@@ -1347,6 +1347,20 @@
       "interaction"
     ]
   },
+  "interactgesture-paper-notes": {
+    "topics": [
+      "gesture",
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "parts",
+      "streaming"
+    ]
+  },
   "jca-paper-notes": {
     "topics": [
       "generation",
@@ -1982,6 +1996,16 @@
       "time",
       "space",
       "parts"
+    ]
+  },
+  "most-paper-notes": {
+    "topics": [
+      "editing",
+      "generation"
+    ],
+    "methods": [],
+    "controls": [
+      "style"
     ]
   },
   "motion-agent-paper-notes": {
