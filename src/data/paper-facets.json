@@ -952,6 +952,16 @@
     ],
     "controls": []
   },
+  "fine-grained-motion-retrieval-paper-notes": {
+    "topics": [
+      "understanding",
+      "multimodal"
+    ],
+    "methods": [
+      "retrieval"
+    ],
+    "controls": []
+  },
   "finemogen-paper-notes": {
     "topics": [
       "generation",
@@ -1800,6 +1810,16 @@
     "methods": [
       "language",
       "tokens",
+      "diffusion"
+    ],
+    "controls": []
+  },
+  "mag-paper-notes": {
+    "topics": [
+      "gesture",
+      "representation"
+    ],
+    "methods": [
       "diffusion"
     ],
     "controls": []

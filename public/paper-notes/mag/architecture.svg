@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1020" height="1260" viewBox="0 0 1020 1260" role="img" lang="zh-CN" aria-labelledby="title desc">
+  <title id="title">MAG 怎样从一句话和它的声音生成连续手势</title>
+  <desc id="desc">先用动作重建和跨模态对比训练三组动作 VAE，再让带掩码的自回归 Transformer 根据已知动作和音文特征计算条件。推理时，内层扩散从噪声采样出待补位置的连续动作向量，外层将它写回并继续生成，最后用动作解码器恢复手势。</desc>
+  <defs>
+    <style>
+      text {font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203833}
+      .title {font-size:33px;font-weight:700}
+      .lead {font-size:18px;fill:#49615c}
+      .section {font-size:24px;font-weight:700}
+      .head {font-size:20px;font-weight:700}
+      .copy {font-size:17px}
+      .note {font-size:16px;fill:#49615c}
+      .arrow,.feedback {fill:none;stroke:#55756e;stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round;marker-end:url(#arr)}
+      .feedback {stroke:#896742;marker-end:url(#return)}
+      .box {stroke-width:1.3}
+      .motion {fill:#ecf5f0;stroke:#a4c2af}
+      .audio {fill:#edf4fa;stroke:#a5c1d0}
+      .training {fill:#f3eff7;stroke:#beb1cc}
+      .sampling {fill:#fcf3e6;stroke:#cfb48e}
+    </style>
+    <marker id="arr" viewBox="0 0 8 8" markerWidth="6.5" markerHeight="6.5" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#55756e"/></marker>
+    <marker id="return" viewBox="0 0 8 8" markerWidth="6.5" markerHeight="6.5" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#896742"/></marker>
+  </defs>
+  <rect x="1" y="1" width="1018" height="1258" rx="18" fill="#fff" stroke="#c8d6ce"/>
+  <text x="36" y="54" class="title">MAG 怎样从语音和转录生成连续手势？</text>
+  <text x="38" y="88" class="lead">同一段语音与转录有两种用途：训练动作表示时提供参照，生成手势时提供条件。</text>
+
+  <rect x="22" y="112" width="976" height="329" rx="14" fill="#f6f9f7"/>
+  <text x="39" y="151" class="section">训练第一阶段　让动作向量既能重建姿态，又能与声音、文字对应</text>
+  <g><rect x="40" y="178" width="212" height="80" rx="9" class="box motion"/>
+    <text x="55" y="208" class="head">动捕序列</text>
+    <text x="55" y="239" class="copy">上身、双手、下身三路</text></g>
+  <path d="M255 217H286" class="arrow"/>
+  <g><rect x="291" y="178" width="222" height="80" rx="9" class="box motion"/>
+    <text x="307" y="208" class="head">分部位动作编码器</text>
+    <text x="307" y="239" class="copy">每路产生 T × 64 连续值</text></g>
+  <path d="M516 217H553" class="arrow"/>
+  <g><rect x="558" y="178" width="416" height="80" rx="9" class="box motion"/>
+    <text x="575" y="208" class="head">分部位解码，再和原动作比较</text>
+    <text x="575" y="239" class="copy">监督姿态、速度与加速度，另加 KL 正则。</text></g>
+  <path d="M404 261V288" class="arrow"/>
+  <g><rect x="291" y="293" width="222" height="91" rx="9" class="box motion"/>
+    <text x="307" y="325" class="head">汇聚成片段表示</text>
+    <text x="307" y="355" class="copy">线性投影＋注意力池化</text></g>
+  <path d="M516 340H553" class="arrow"/>
+  <g><rect x="558" y="293" width="416" height="110" rx="9" class="box training"/>
+    <text x="575" y="325" class="head">动作↔转录、动作↔音频的对比学习</text>
+    <text x="575" y="355" class="copy">正样本取自同一片段。文本与音频的表征</text>
+    <text x="575" y="381" class="copy">来自已冻结的 WavCaps 编码器。</text></g>
+  <g><rect x="40" y="293" width="212" height="91" rx="9" class="box audio"/>
+    <text x="55" y="325" class="head">配对转录与语音</text>
+    <text x="55" y="355" class="copy">BERT 文本／HTSAT 音频</text></g>
+  <path d="M147 387V418H767V407" class="arrow"/>
+
+  <rect x="22" y="457" width="976" height="345" rx="14" fill="#f5f8fa"/>
+  <text x="39" y="497" class="section">训练第二阶段　MMAG 学习在给定条件下补出动作向量</text>
+  <g><rect x="40" y="526" width="375" height="118" rx="9" class="box audio"/>
+    <text x="55" y="558" class="head">HGAT 从语音与转录提取生成条件</text>
+    <text x="55" y="590" class="copy">MFCC 与 HuBERT 用局部注意力融合，再与</text>
+    <text x="55" y="617" class="copy">fastText 转录特征对齐时间后做自注意力。</text></g>
+  <g><rect x="40" y="667" width="375" height="99" rx="9" class="box motion"/>
+    <text x="55" y="699" class="head">训练动作经第一阶段的编码器</text>
+    <text x="55" y="728" class="copy">三路连续表示合并，形状为 T × 64 × 3。</text>
+    <text x="55" y="752" class="note">保留部分位置作为已知上下文。</text></g>
+  <path d="M419 568H457" class="arrow"/>
+  <path d="M419 697H436V620H457" class="arrow"/>
+  <g><rect x="462" y="526" width="235" height="118" rx="9" class="box training"/>
+    <text x="477" y="558" class="head">掩码自回归</text>
+    <text x="477" y="586" class="head">Transformer</text>
+    <text x="477" y="617" class="copy">结合说话人 ID 构成条件 c。</text></g>
+  <path d="M701 584H742" class="arrow"/>
+  <g><rect x="747" y="526" width="227" height="118" rx="9" class="box sampling"/>
+    <text x="764" y="558" class="head">小型 MLP 去噪网络</text>
+    <text x="764" y="589" class="copy">由条件 c 和噪声时刻 t</text>
+    <text x="764" y="617" class="copy">预测本次加入的噪声。</text></g>
+  <path d="M419 736H457" class="arrow"/>
+  <g><rect x="462" y="682" width="512" height="84" rx="9" class="box sampling"/>
+    <text x="477" y="713" class="head">待预测位置的干净动作向量</text>
+    <text x="477" y="744" class="copy">随机选扩散时刻 t，加入已知高斯噪声，作为去噪训练样本。</text></g>
+  <path d="M859 679V648" class="arrow"/>
+
+  <rect x="22" y="817" width="976" height="412" rx="14" fill="#faf8f3"/>
+  <text x="39" y="858" class="section">推理　外层决定补哪些位置，内层为这些位置采样连续数值</text>
+  <g><rect x="40" y="883" width="278" height="113" rx="9" class="box audio"/>
+    <text x="56" y="914" class="head">当前条件</text>
+    <text x="56" y="945" class="copy">语音、对齐转录、说话人 ID</text>
+    <text x="56" y="974" class="copy">以及本轮已经填好的位置</text></g>
+  <path d="M322 939H355" class="arrow"/>
+  <g><rect x="360" y="883" width="260" height="113" rx="9" class="box training"/>
+    <text x="376" y="914" class="head">外层 · 掩码自回归</text>
+    <text x="376" y="945" class="copy">Transformer 读取当前上下文，</text>
+    <text x="376" y="974" class="copy">得到待补位置的条件 c。</text></g>
+  <path d="M624 939H664" class="arrow"/>
+  <g><rect x="669" y="883" width="305" height="113" rx="9" class="box sampling"/>
+    <text x="685" y="914" class="head">内层 · 反向扩散</text>
+    <text x="685" y="945" class="copy">从高斯噪声出发，由 c 引导去噪，</text>
+    <text x="685" y="974" class="copy">得到待补位置的连续动作表示。</text></g>
+  <path d="M820 1000V1023" class="arrow"/>
+  <g><rect x="669" y="1028" width="305" height="79" rx="9" class="box motion"/>
+    <text x="685" y="1060" class="head">将采样结果写回动作序列</text>
+    <text x="685" y="1087" class="copy">新增向量成为下一轮的已知条件。</text></g>
+  <path d="M665 1058H491V1000" class="feedback"/>
+  <text x="502" y="1048" class="note">还有待补位置</text>
+  <path d="M820 1111V1129" class="arrow"/>
+  <g><rect x="40" y="1134" width="934" height="69" rx="9" class="box motion"/>
+    <text x="56" y="1164" class="head">填完后解码</text>
+    <text x="56" y="1190" class="copy">三个部位的 MTA-VAE 解码器将连续向量还原为姿态，合成随语音变化的身体与手部动作。</text></g>
+</svg>

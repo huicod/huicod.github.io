@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1010" viewBox="0 0 960 1010" lang="zh-CN" role="img" aria-labelledby="title desc">
+  <title id="title">如何用文字、口述或视频，从动作库里找出对应片段？</title>
+  <desc id="desc">四种模态先编码为一串特征。查询中的每个特征在候选片段中寻找最大点积，候选片段也反向查找查询。两个方向分别带权求和，取平均得到片段分数。训练时对齐六种模态配对并重建掩去的动作特征，查询时按分数对动作库排序。</desc>
+  <defs>
+    <style>
+      text { font-family: "Microsoft YaHei","Noto Sans CJK SC",sans-serif; fill:#1f343c }
+      .title { font-size:29px; font-weight:bold }
+      .section { font-size:23px; font-weight:bold; fill:#205c5c }
+      .label { font-size:21px; font-weight:bold }
+      .body { font-size:18px }
+      .small { font-size:16px; fill:#445c66 }
+      .grid { fill:none; stroke:#acbdc5; stroke-width:1 }
+      .arrow { fill:none; stroke:#497875; stroke-width:2; marker-end:url(#end) }
+      .point { fill:#268378; stroke:#175b52; stroke-width:1 }
+      .rect { rx:9; stroke-width:1.5 }
+    </style>
+    <marker id="end" viewBox="0 0 10 10" markerWidth="8" markerHeight="8" refX="8.5" refY="5" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#497875"/></marker>
+  </defs>
+  <rect x="1" y="1" width="958" height="1008" rx="16" fill="#fff" stroke="#bed2cf"/>
+  <text x="34" y="53" class="title">如何用文字、口述或视频，从动作库里找出对应片段？</text>
+  <text x="35" y="88" class="small">以文字查动作为例。一次查询可只提供一种模态，每段候选动作都会得到一个匹配分数。</text>
+  <text x="34" y="139" class="section">四种编码器各保留一串特征</text>
+  <rect x="34" y="157" width="892" height="241" fill="#f6faf9" stroke="#c3d6d2" class="rect"/>
+  <path d="M167 158V397 M672 158V397 M35 217H925 M35 277H925 M35 337H925" class="grid"/>
+  <g class="label"><text x="55" y="194">文字</text><text x="55" y="254">口述语音</text><text x="55" y="314">视频</text><text x="55" y="374">动作</text></g>
+  <g class="body">
+    <text x="188" y="194">DistilBERT 编码词，再经过 Transformer</text>
+    <text x="188" y="254">WavLM 提取语音特征，用可学习的记忆压缩</text>
+    <text x="188" y="314">均匀抽帧，CLIP 编码图像，再沿时间建模</text>
+    <text x="188" y="374">每帧拆为 8 个部位，交替做时间与部位编码</text>
+    <text x="693" y="194">词特征序列</text><text x="693" y="254">压缩的语音特征序列</text>
+    <text x="693" y="314">帧特征序列</text><text x="693" y="374">部位 × 时间特征序列</text>
+  </g>
+  <path d="M480 400V428" class="arrow"/>
+  <text x="34" y="465" class="section">相似度怎样从局部匹配变成一个分数？</text>
+  <rect x="34" y="483" width="892" height="254" fill="#f5f8fb" stroke="#bdcfd8" class="rect"/>
+  <text x="55" y="515" class="label">查询词 × 候选动作特征</text>
+  <g class="small" text-anchor="middle">
+    <text x="180" y="551">动作片段中的特征位置</text>
+    <text x="79" y="594">词 1</text><text x="79" y="632">词 2</text><text x="79" y="670">词 3</text>
+  </g>
+  <rect x="118" y="568" width="192" height="114" fill="#fff" class="grid"/>
+  <path d="M166 568V682 M214 568V682 M262 568V682 M118 606H310 M118 644H310" class="grid"/>
+  <g class="point"><circle cx="238" cy="587" r="8"/><circle cx="142" cy="625" r="8"/><circle cx="238" cy="663" r="8"/></g>
+  <text x="55" y="715" class="small">圆点标出了示例中每行的最大值。</text>
+  <g class="body">
+    <text x="382" y="551">① 每个查询词与所有候选动作特征计算点积。</text>
+    <text x="382" y="590">② 每行取最大值，按各词学到的权重求和。</text>
+    <text x="382" y="629">③ 再按列取最大值，用动作侧权重求和。</text>
+    <text x="382" y="668">④ 将两个方向的得分取平均，作为片段分数。</text>
+  </g>
+  <text x="382" y="715" class="small">不同词可以匹配到同一处，公式没有强制时间顺序。</text>
+  <path d="M480 739V757H250V777" class="arrow"/>
+  <path d="M480 757H710V777" class="arrow"/>
+  <rect x="34" y="783" width="433" height="189" fill="#f4f1fa" stroke="#c7bddb" class="rect"/>
+  <rect x="492" y="783" width="434" height="189" fill="#edf7f1" stroke="#abcbb8" class="rect"/>
+  <text x="55" y="822" class="label">训练时怎样学匹配</text><text x="513" y="822" class="label">检索时返回什么</text>
+  <g class="body">
+    <text x="55" y="861">四种模态产生六对组合，每对双向对齐。</text>
+    <text x="55" y="897">辅助任务遮住部分动作特征，再利用</text><text x="55" y="925">其余动作与文字、语音、视频特征重建。</text>
+    <text x="513" y="861">用查询对库中每个候选动作打分。</text>
+    <text x="513" y="897">将候选片段按分数从高到低排序，</text><text x="513" y="925">返回库中排名前 K 的动作。</text>
+  </g>
+</svg>
