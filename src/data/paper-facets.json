@@ -1315,6 +1315,20 @@
     ],
     "controls": []
   },
+  "higgs-realtime-duplex-paper-notes": {
+    "topics": [
+      "multimodal",
+      "video"
+    ],
+    "methods": [
+      "flow",
+      "diffusion"
+    ],
+    "controls": [
+      "streaming",
+      "interaction"
+    ]
+  },
   "hip-paper-notes": {
     "topics": [
       "gesture",

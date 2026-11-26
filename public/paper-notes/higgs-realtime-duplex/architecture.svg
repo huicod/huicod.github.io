@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="1124" viewBox="0 0 980 1124" role="img" lang="zh-CN" aria-labelledby="title desc">
+  <title id="title">Higgs Realtime Duplex 怎样在听、说和查资料之间切换？</title>
+  <desc id="desc">前台 45B 混合专家模型读取本块的听觉、视觉和异步返回的结果，产生下一块的语音和面部表示。每块长 160 毫秒。前台可跨块思考、直接调用工具，或把复杂问题交给更大的后端。参考音频和图像分别在两个输出解码器中设置声音与面孔。</desc>
+  <defs>
+    <style>
+      text { font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif; fill:#1c353d }
+      .title { font-size:30px; font-weight:700 }
+      .section { font-size:22px; font-weight:700; fill:#205e59 }
+      .head { font-size:21px; font-weight:700 }
+      .text { font-size:18px }
+      .note { font-size:16px; fill:#445e66 }
+      .cell { font-size:17px; text-anchor:middle }
+      .row { font-size:17px; font-weight:700 }
+      .box { stroke-width:1.5 }
+      .input { fill:#edf5fa; stroke:#a8c4d3 }
+      .front { fill:#e8f4ee; stroke:#9ebfad }
+      .async { fill:#fbf4e8; stroke:#d6bb90 }
+      .media { fill:#f1f5fa; stroke:#aec2d4 }
+      .identity { fill:#f4eff8; stroke:#c5b5d3 }
+      .arrow,.return { fill:none; stroke-linejoin:round; stroke-linecap:round; stroke-width:2.3 }
+      .arrow { stroke:#517771; marker-end:url(#flow) }
+      .return { stroke:#946c31; marker-end:url(#back) }
+      .grid { stroke:#c2d2d2; stroke-width:1.3; fill:none }
+    </style>
+    <marker id="flow" viewBox="0 0 10 10" markerWidth="7" markerHeight="7" refX="8" refY="5" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#517771"/></marker>
+    <marker id="back" viewBox="0 0 10 10" markerWidth="7" markerHeight="7" refX="8" refY="5" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#946c31"/></marker>
+  </defs>
+  <rect x="1" y="1" width="978" height="1122" rx="16" fill="#fff" stroke="#c5d7d2"/>
+  <text x="38" y="52" class="title">Higgs Realtime Duplex 如何边听边说，还能同时查资料？</text>
+  <text x="39" y="91" class="text">前台模型以 160 毫秒为一步，读取刚到的输入，生成下一块要播放的声音和面部表示。</text>
+
+  <text x="38" y="145" class="section">当前块的输入</text>
+  <g><rect x="38" y="163" width="273" height="109" rx="10" class="input box"/>
+    <text x="55" y="199" class="head">用户的声音</text>
+    <text x="55" y="231" class="text">每块 1 个音频 token。</text>
+    <text x="55" y="256" class="note">静音也占一个时间块。</text></g>
+  <g><rect x="328" y="163" width="310" height="109" rx="10" class="input box"/>
+    <text x="346" y="199" class="head">摄像头或共享屏幕</text>
+    <text x="346" y="231" class="text">开启视频时，每 6 块取 1 帧。</text>
+    <text x="346" y="256" class="note">每帧约 12 个视觉 token。</text></g>
+  <g><rect x="655" y="163" width="287" height="109" rx="10" class="async box"/>
+    <text x="673" y="199" class="head">已到达的返回内容</text>
+    <text x="673" y="231" class="text">工具结果可分批送回。</text>
+    <text x="673" y="256" class="note">后端回复也随输入块送回。</text></g>
+  <path d="M174 275V327" class="arrow"/>
+  <path d="M481 275V327" class="arrow"/>
+  <path d="M712 275V303H590V327" class="return"/>
+
+  <g><rect x="38" y="332" width="600" height="138" rx="10" class="front box"/>
+    <text x="58" y="368" class="head">45B 混合专家前台模型</text>
+    <text x="58" y="404" class="text">决定开口、附和或让出话轮，同时可继续看、听与思考。</text>
+    <text x="58" y="440" class="text">推理和工具调用的内容可以跨越多个时间块。</text></g>
+  <path d="M641 400H680" class="return"/>
+  <g><rect x="686" y="332" width="256" height="138" rx="10" class="async box"/>
+    <text x="705" y="368" class="head">异步执行</text>
+    <text x="705" y="402" class="text">直接调用外部工具，或</text>
+    <text x="705" y="432" class="text">将任务与共享上下文</text>
+    <text x="705" y="458" class="text">交给更大的后端模型。</text></g>
+  <path d="M876 329V278" class="return"/>
+
+  <text x="38" y="518" class="section">下一块如何变成有声音的面孔</text>
+  <path d="M611 473V536H263V557" class="arrow"/>
+  <path d="M611 536H713V557" class="arrow"/>
+  <g><rect x="38" y="562" width="439" height="181" rx="10" class="media box"/>
+    <text x="58" y="598" class="head">语音支路</text>
+    <text x="58" y="634" class="text">前台每块输出 2 个音频帧。</text>
+    <path d="M58 653H455" class="grid"/>
+    <text x="58" y="685" class="text">因果流匹配解码器将其还原为语音。</text>
+    <text x="58" y="717" class="note">短参考录音在解码器处提供音色条件。</text></g>
+  <g><rect x="503" y="562" width="439" height="181" rx="10" class="identity box"/>
+    <text x="523" y="598" class="head">面部视频支路</text>
+    <text x="523" y="634" class="text">前台每块输出 2 个面部潜变量。</text>
+    <path d="M523 653H921" class="grid"/>
+    <text x="523" y="685" class="text">因果 DiT 借助最近两个潜变量生成视频。</text>
+    <text x="523" y="717" class="note">单张参考图在解码器处提供外貌条件。</text></g>
+
+  <text x="38" y="804" class="section">同一时间轴上的活动</text>
+  <text x="38" y="838" class="note">以下四块为教学示意。独立行可以同时有活动，工具返回的时刻由实际执行决定。</text>
+  <rect x="38" y="856" width="904" height="190" rx="10" fill="#f7faf9" stroke="#bbcecb"/>
+  <path d="M198 856V1046 M384 856V1046 M570 856V1046 M756 856V1046 M38 902H942 M38 950H942 M38 998H942" class="grid"/>
+  <g class="cell">
+    <text x="291" y="886">块 k</text><text x="477" y="886">k + 1</text><text x="663" y="886">k + 2</text><text x="849" y="886">k + 3</text>
+    <text x="291" y="933">正在讲话</text><text x="477" y="933">讲话将结束</text><text x="663" y="933">短暂停顿</text><text x="849" y="933">再次开口</text>
+    <text x="291" y="981">倾听</text><text x="477" y="981">简短附和</text><text x="663" y="981">开始回复</text><text x="849" y="981">听到插话</text>
+    <text x="291" y="1029">查询已发出</text><text x="477" y="1029">处理中</text><text x="663" y="1029">部分结果到达</text><text x="849" y="1029">继续处理</text>
+  </g>
+  <g class="row"><text x="57" y="886">每块 160 ms</text><text x="57" y="933">用户麦克风</text><text x="57" y="981">前台会话</text><text x="57" y="1029">后台查询</text></g>
+  <text x="38" y="1090" class="note">160 毫秒描述输入输出的分块粒度。用户停声到听见回复的整链路延迟还取决于生成和传输。</text>
+</svg>
