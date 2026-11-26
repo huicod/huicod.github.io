@@ -189,6 +189,16 @@
     "methods": [],
     "controls": []
   },
+  "cast-paper-notes": {
+    "topics": [
+      "video",
+      "character"
+    ],
+    "methods": [],
+    "controls": [
+      "streaming"
+    ]
+  },
   "categorical-codebook-matching-paper-notes": {
     "topics": [
       "character",
@@ -756,6 +766,18 @@
     "controls": [
       "streaming"
     ]
+  },
+  "echomotion-paper-notes": {
+    "topics": [
+      "video",
+      "generation",
+      "multimodal"
+    ],
+    "methods": [
+      "diffusion",
+      "flow"
+    ],
+    "controls": []
   },
   "edit-flows-paper-notes": {
     "topics": [

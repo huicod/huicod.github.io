@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1134" viewBox="0 0 1000 1134" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">CAST 怎样用单目视频驱动另一副骨架？</title>
+  <desc id="desc">视频提供图像特征，目标骨架的静止姿态和父子关系提供关节查询。模型分别预测局部旋转和相机坐标系中的骨方向与可靠度。GRACE 由根向叶逐层组合并校正，叶节点缺少方向线索，单一骨轴约束摆动，两条不共线方向可约束整个朝向。最后输出目标骨架的逐帧局部旋转。训练时由真实动作监督。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#3c6981"/></marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#357361"/></marker>
+    <marker id="aux-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#7a8583"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203640}
+      .title{font-size:31px;font-weight:700}.head{font-size:23px;font-weight:700}.body{font-size:20px}.small{font-size:17px;fill:#415863}.label{font-size:18px;font-weight:700}
+      .box{stroke-width:1.6}.blue{fill:#edf5fa;stroke:#9cbccd}.warm{fill:#fff4e7;stroke:#d3ad82}.green{fill:#eaf4ef;stroke:#9bb9ac}.common{fill:#f3f6f5;stroke:#b6c9c4}
+      .line,.out,.aux{fill:none;stroke:#3c6981;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .out{stroke:#357361;marker-end:url(#green-arrow)}.aux{stroke:#7a8583;stroke-dasharray:5 5;marker-end:url(#aux-arrow)}
+      .bone{fill:none;stroke:#3f7565;stroke-linecap:round;stroke-width:3}.joint{fill:#fff;stroke:#3f7565;stroke-width:2.5}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1132" rx="15" fill="#fff" stroke="#c9d7d6"/>
+  <text x="32" y="48" class="title">CAST 怎样用单目视频驱动另一副骨架？</text>
+  <text x="33" y="81" class="small">由上往下跟踪一帧中的一个关节。树的每一层都在同一帧内完成校正。</text>
+
+  <g>
+    <rect x="30" y="105" width="454" height="108" rx="12" class="box blue"/>
+    <text x="50" y="141" class="head">单目 RGB 视频</text>
+    <text x="50" y="173" class="body">前景掩码可用于画面预处理。</text>
+    <text x="50" y="198" class="small">冻结的 DINO 提取各帧的图像特征。</text>
+    <rect x="516" y="105" width="454" height="108" rx="12" class="box warm"/>
+    <text x="536" y="141" class="head">待驱动的目标骨架</text>
+    <text x="536" y="173" class="body">提供静止姿态、骨偏移与父子关系。</text>
+    <text x="536" y="198" class="small">每个目标关节形成一个查询，在各帧复用。</text>
+    <path d="M257 215v28" class="line"/><path d="M743 215v28" class="line"/>
+  </g>
+
+  <g>
+    <rect x="30" y="249" width="940" height="106" rx="12" class="box common"/>
+    <text x="50" y="285" class="head">逐关节读取视频</text>
+    <text x="50" y="317" class="body">图像交叉注意力 → 骨架图注意力 → 逐关节时间注意力，汇合成共享特征。</text>
+    <text x="50" y="343" class="small">离线模型可读完整窗口。流式变体另行微调，每次仅使用当下可用的帧块和历史。</text>
+    <path d="M257 357v29" class="line"/><path d="M743 357v29" class="line"/>
+  </g>
+  <g>
+    <rect x="30" y="392" width="454" height="100" rx="12" class="box blue"/>
+    <text x="50" y="428" class="head">每个关节的初始局部旋转</text>
+    <text x="50" y="459" class="body">旋转解码器结合静止姿态，预测 6D 残差。</text>
+    <text x="50" y="481" class="small">解码后得到相对于父节点的旋转。</text>
+    <rect x="516" y="392" width="454" height="100" rx="12" class="box green"/>
+    <text x="536" y="428" class="head">每条骨的方向与可靠度</text>
+    <text x="536" y="459" class="body">读取父、子关节特征和静止骨向量，</text>
+    <text x="536" y="481" class="small">直接估计该骨在相机坐标系中的单位方向。</text>
+    <path d="M257 494v29" class="line"/><path d="M743 494v29" class="out"/>
+  </g>
+
+  <g>
+    <rect x="30" y="529" width="940" height="387" rx="12" class="box green"/>
+    <text x="50" y="566" class="head">GRACE · 先校正父节点，再处理子节点</text>
+    <text x="50" y="604" class="body">① 组合已校正的父节点朝向和当前局部旋转，算出各条子骨的暂估方向。</text>
+    <text x="50" y="639" class="body">② 用右侧分支预测的方向作参照，按可靠度求对齐旋转。子骨的分布决定可校正的量。</text>
+
+    <g>
+      <rect x="50" y="661" width="284" height="145" rx="9" fill="#fff" stroke="#bfd1c9"/>
+      <path d="M77 707h37" class="bone" stroke-dasharray="4 4" opacity=".48"/>
+      <circle cx="114" cy="707" r="6" class="joint"/>
+      <text x="138" y="713" class="label">叶节点</text>
+      <text x="66" y="752" class="body">没有子骨提供方向。</text>
+      <text x="66" y="782" class="small">保留学到的局部旋转。</text>
+      <rect x="358" y="661" width="284" height="145" rx="9" fill="#fff" stroke="#bfd1c9"/>
+      <path d="M380 713l42-11" class="bone"/>
+      <circle cx="380" cy="713" r="6" class="joint"/><circle cx="422" cy="702" r="4" class="joint"/>
+      <text x="444" y="713" class="label">单一有效骨轴</text>
+      <text x="374" y="752" class="body">以最小摆动对齐骨轴。</text>
+      <text x="374" y="782" class="small">绕轴扭转由旋转预测提供。</text>
+      <rect x="666" y="661" width="284" height="145" rx="9" fill="#fff" stroke="#bfd1c9"/>
+      <path d="M720 685l-30 23 34 11" class="bone"/>
+      <circle cx="690" cy="708" r="6" class="joint"/><circle cx="720" cy="685" r="4" class="joint"/><circle cx="724" cy="719" r="4" class="joint"/>
+      <text x="745" y="713" class="label">多条不共线子骨</text>
+      <text x="682" y="752" class="body">理想方向约束完整朝向。</text>
+      <text x="682" y="782" class="small">条件良好时进行加权多向对齐。</text>
+    </g>
+    <text x="50" y="850" class="body">③ 门控决定应用多少校正，结合关节特征、方向可靠度、分歧与静止几何。</text>
+    <text x="50" y="886" class="body">④ 将更新后的朝向传给下一层，直到处理完所有关节。</text>
+    <path d="M257 918v29" class="out"/><path d="M743 918v29" class="aux"/>
+  </g>
+
+  <g>
+    <rect x="30" y="953" width="454" height="146" rx="12" class="box blue"/>
+    <text x="50" y="990" class="head">输出目标骨架动画</text>
+    <text x="50" y="1024" class="body">从相邻两级的朝向还原每帧局部旋转。</text>
+    <text x="50" y="1054" class="body">正向运动学给出以根为中心的关节位置。</text>
+    <text x="50" y="1083" class="small">根朝向以相机为参照，根平移未建模。</text>
+    <rect x="516" y="953" width="454" height="146" rx="12" fill="#f7f8f6" stroke="#a4b1aa" stroke-width="1.6" stroke-dasharray="6 5"/>
+    <text x="536" y="990" class="head">仅训练时 · 从真值动作构造监督</text>
+    <text x="536" y="1024" class="body">约束骨方向、可靠度、校正后旋转和</text>
+    <text x="536" y="1054" class="body">正向运动学位置，另设辅助姿态损失。</text>
+    <text x="536" y="1083" class="small">预测器与 GRACE 联合训练，图像编码器冻结。</text>
+  </g>
+</svg>

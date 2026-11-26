@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1100" viewBox="0 0 1000 1100" role="img" aria-labelledby="title description">
+  <title id="title">EchoMotion 怎样让画面中的人和三维骨架一起动</title>
+  <desc id="description">蓝色代表视频，橙色代表 SMPL 人体动作。两路各自计算查询、键和值，随后使用带同步位置编码的联合自注意力。各自再读文本，预测各自的更新，循环采样。训练先做动作预训练，再用视频动作对学习联合生成与双向补全。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="7" markerHeight="7" refX="5.6" refY="3" orient="auto" viewBox="0 0 7 6"><path d="M0 0 7 3 0 6z" fill="#45635e"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#192f38}
+      .title{font-size:31px;font-weight:700}.sub{font-size:23px;font-weight:700}.body{font-size:20px}.small{font-size:17px;fill:#425a60}
+      .video{fill:#edf5fa;stroke:#a3bfce}.motion{fill:#fff3e8;stroke:#d9b698}.joint{fill:#eaf4ed;stroke:#99bcaa}
+      .train{fill:#f6f5f1;stroke:#c5c5b8;stroke-dasharray:6 5}.node{stroke-width:1.5}
+      .flow{fill:none;stroke:#45635e;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1098" rx="15" fill="#fff" stroke="#cbdad6"/>
+  <text x="32" y="52" class="title">EchoMotion 怎样让画面中的人和三维骨架一起动？</text>
+  <text x="34" y="86" class="small">蓝色跟踪画面，橙色跟踪人体。读到绿色区域时，两路信息在同一次注意力计算中相遇。</text>
+  <g>
+    <rect x="30" y="112" width="940" height="100" rx="12" fill="#f5f7f6" stroke="#b5c8c2" class="node"/>
+    <text x="51" y="146" class="sub">选择本轮采样要生成什么</text>
+    <text x="51" y="178" class="body">文本 → 视频与动作　　｜　　动作＋文本 → 视频　　｜　　视频 → 动作</text>
+    <text x="51" y="201" class="small">待生成的一路从噪声开始；给定的一路保留干净特征，供另一侧读取。</text>
+  </g>
+  <path d="M260 213v28" class="flow"/><path d="M740 213v28" class="flow"/>
+  <g>
+    <rect x="30" y="246" width="454" height="129" rx="12" class="video node"/>
+    <text x="49" y="281" class="sub">画面 · 视频潜变量</text>
+    <text x="49" y="316" class="body">视频 VAE 沿时间压缩，再分成时空块。</text>
+    <text x="49" y="346" class="small">视频位置由时间、高度、宽度三个索引描述。</text>
+    <rect x="516" y="246" width="454" height="129" rx="12" class="motion node"/>
+    <text x="535" y="281" class="sub">人体 · 每帧 51 个连续动作 token</text>
+    <text x="535" y="316" class="body">位置、旋转、体形分别经过三组 MLP。</text>
+    <text x="535" y="346" class="small">保留原始时间分辨率，快速屈膝也有逐帧表示。</text>
+  </g>
+  <path d="M260 376v25" class="flow"/><path d="M740 376v25" class="flow"/>
+  <g>
+    <rect x="30" y="407" width="940" height="171" rx="12" class="joint node"/>
+    <text x="51" y="442" class="sub">双模态 DiT · 在引入动作分支的层里，两路 token 互相读取</text>
+    <text x="51" y="478" class="body">两路各算 Q、K、V，按序列拼接，用联合自注意力交换信息。</text>
+    <text x="51" y="515" class="body">MVS-RoPE 将动作第 f 帧的时间坐标写成 f/4，与视频潜变量用同一把时间尺。</text>
+    <text x="51" y="548" class="small">动作 token 的空间索引沿画面网格右下方延伸；这里记录 token 身份，不代表关节的像素位置。</text>
+  </g>
+  <path d="M260 579v26" class="flow"/><path d="M740 579v26" class="flow"/>
+  <g>
+    <rect x="30" y="611" width="454" height="92" rx="12" class="video node"/>
+    <text x="49" y="647" class="sub">画面分支</text>
+    <text x="49" y="680" class="body">文本交叉注意力 → 本路前馈网络</text>
+    <rect x="516" y="611" width="454" height="92" rx="12" class="motion node"/>
+    <text x="535" y="647" class="sub">动作分支</text>
+    <text x="535" y="680" class="body">文本交叉注意力 → 本路前馈网络</text>
+  </g>
+  <path d="M260 704v26" class="flow"/><path d="M740 704v26" class="flow"/>
+  <g>
+    <rect x="30" y="735" width="940" height="75" rx="12" class="joint node"/>
+    <text x="51" y="770" class="sub">按任务更新待生成的潜变量，反复采样</text>
+    <text x="51" y="796" class="small">联合生成时，两路每轮都更新；视频转动作只给视频条件，文本在该任务中置空。</text>
+  </g>
+  <path d="M260 811v21" class="flow"/><path d="M740 811v21" class="flow"/>
+  <g>
+    <rect x="30" y="837" width="454" height="73" rx="12" class="video node"/>
+    <text x="49" y="881" class="sub">视频 VAE 解码 → RGB 视频</text>
+    <rect x="516" y="837" width="454" height="73" rx="12" class="motion node"/>
+    <text x="535" y="881" class="sub">动作投影头解码 → 三维人体参数</text>
+  </g>
+  <g>
+    <rect x="30" y="946" width="940" height="126" rx="12" class="train node"/>
+    <text x="51" y="981" class="sub">训练如何得到上面的两条分支？</text>
+    <text x="51" y="1016" class="body">第一阶段只训练动作分支，视频分支关闭。第二阶段用 HuMoVe 的配对样本解冻两路，</text>
+    <text x="51" y="1046" class="body">轮换训练联合生成、动作转视频、视频转动作三种任务。</text>
+  </g>
+</svg>
