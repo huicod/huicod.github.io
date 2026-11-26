@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1118" viewBox="0 0 1000 1118" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">COMET 如何从一组关节目标生成连续全身动作</title>
+  <desc id="desc">训练时从动捕数据学习条件动作解码器，并另从参考动作拟合姿态高斯混合模型。推理时依据当前姿态、剩余帧数与目标更新意图，解码器每次预测下一帧增量，随后结合目标距离选择是否用参考姿态修正，输出的状态进入下一帧。</desc>
+  <defs>
+    <style>
+      text { font-family: "Microsoft YaHei","Noto Sans CJK SC",sans-serif; fill:#203937 }
+      .title { font-size:29px; font-weight:700 } .sect { font-size:23px; font-weight:700; fill:#30685d }
+      .head { font-size:21px; font-weight:700 } .copy { font-size:18px } .legend { font-size:16px; fill:#45615d }
+      .offline { fill:#f2f2f8; stroke:#b7b6ce } .input { fill:#f0f6fc; stroke:#adcad9 }
+      .main { fill:#eaf4ef; stroke:#9fbfb0 } .ref { fill:#fbf4e8; stroke:#d4b990 }
+      rect.card { stroke-width:1.5 } .arrow,.saved { fill:none; stroke-linejoin:round; stroke-linecap:round; stroke-width:2.4 }
+      .arrow { stroke:#496c63; marker-end:url(#arrow) } .saved { stroke:#837792; stroke-dasharray:7 6; marker-end:url(#saved) }
+    </style>
+    <marker id="arrow" viewBox="0 0 9 8" markerWidth="7" markerHeight="7" refX="7" refY="4" orient="auto"><path d="M0 0 9 4 0 8z" fill="#496c63"/></marker>
+    <marker id="saved" viewBox="0 0 9 8" markerWidth="7" markerHeight="7" refX="7" refY="4" orient="auto"><path d="M0 0 9 4 0 8z" fill="#837792"/></marker>
+  </defs>
+  <rect x="1" y="1" width="998" height="1116" rx="16" fill="#fff" stroke="#c7d9d3"/>
+  <text x="35" y="52" class="title">COMET 怎样一边走向关节目标，一边稳住全身姿态？</text>
+  <text x="37" y="85" class="legend">紫色虚线传递训练好的模型或参考参数，绿色实线传递这一帧的信息。</text>
+  <text x="38" y="132" class="sect">训练与准备　分别学习动作变化和可参考的姿态</text>
+  <g><rect x="58" y="154" width="488" height="148" rx="12" class="card offline"/>
+    <text x="78" y="187" class="head">条件 VAE：AMASS 和 CIRCLE 动捕</text>
+    <text x="78" y="220" class="copy">编码器用姿态、增量与关节意图学习潜变量；</text>
+    <text x="78" y="248" class="copy">解码器学习恢复下一帧增量，另监督关节位置。</text>
+    <text x="78" y="278" class="copy">部署时保留解码器，从高斯分布采样。</text></g>
+  <g><rect x="578" y="154" width="376" height="148" rx="12" class="card offline"/>
+    <text x="597" y="187" class="head">参考动作 → 拟合 GMM</text>
+    <text x="597" y="220" class="copy">用骨盆高度与姿态旋转拟合分布。</text>
+    <text x="597" y="248" class="copy">默认取行走，可换成某种风格。</text>
+    <text x="597" y="278" class="copy">基准用 50 个高斯分量。</text></g>
+  <path d="M58 279H39V578H55" class="saved"/>
+  <path d="M954 279H976V578H957" class="saved"/>
+  <text x="58" y="358" class="sect">逐帧推理　先求下一步怎么动，再判断要不要修正</text>
+  <g><rect x="58" y="382" width="448" height="120" rx="12" class="card input"/>
+    <text x="77" y="414" class="head">当前全身姿态＋本段关节目标</text>
+    <text x="77" y="446" class="copy">六处关节里选一个子集，指定世界坐标、</text>
+    <text x="77" y="475" class="copy">时刻及朝向；由当前姿态取得关节位置。</text></g>
+  <path d="M508 443H533" class="arrow"/>
+  <g><rect x="537" y="382" width="417" height="120" rx="12" class="card input"/>
+    <text x="555" y="414" class="head">逐帧重算意图，加关节掩码</text>
+    <text x="555" y="446" class="copy">目标关节位移 ÷ 剩余帧数；另算骨盆</text>
+    <text x="555" y="475" class="copy">朝向目标中心的引导和身体朝向差。</text></g>
+  <path d="M232 504V538" class="arrow"/>
+  <path d="M680 504V522H445V538" class="arrow"/>
+  <g><rect x="58" y="542" width="513" height="110" rx="12" class="card main"/>
+    <text x="77" y="575" class="head">条件 Transformer 解码器</text>
+    <text x="77" y="607" class="copy">读取当前姿态、活动意图与 64 维采样潜变量，</text>
+    <text x="77" y="634" class="copy">从第一个输出 token 读出全身姿态增量。</text></g>
+  <g><rect x="612" y="542" width="342" height="110" rx="12" class="card ref"/>
+    <text x="630" y="575" class="head">保存好的参考参数</text>
+    <text x="630" y="607" class="copy">分量均值和协方差描述姿态，</text>
+    <text x="630" y="634" class="copy">供远处匹配；补间另给终姿。</text></g>
+  <path d="M315 654V684" class="arrow"/>
+  <g><rect x="58" y="688" width="513" height="92" rx="12" class="card main"/>
+    <text x="77" y="723" class="head">积分增量 → 下一帧的候选姿态</text>
+    <text x="77" y="755" class="copy">更新骨盆位移、根朝向和身体各关节旋转。</text></g>
+  <path d="M315 782V812" class="arrow"/>
+  <path d="M784 654V812" class="arrow"/>
+  <g><rect x="58" y="816" width="896" height="128" rx="12" class="card ref"/>
+    <text x="77" y="849" class="head">参考反馈：根据骨盆到目标中心的距离选择修正方式</text>
+    <text x="77" y="880" class="copy">远处：按马氏距离选最近的高斯分量，朝均值轻推旋转与骨盆高度（α = 0.01）。</text>
+    <text x="77" y="911" class="copy">近处：普通到达任务关闭参考修正；关键帧补间可改用已知终姿（α = 0.05）。</text></g>
+  <path d="M505 946V975" class="arrow"/>
+  <g><rect x="58" y="980" width="896" height="91" rx="12" class="card main"/>
+    <text x="77" y="1015" class="head">输出一帧 SMPL-X 全身姿态，回到下一帧的输入</text>
+    <text x="77" y="1047" class="copy">用户可更换控制点及目标。每帧重新计算意图，由相同的解码器继续生成。</text></g>
+  <path d="M57 1027H16V442H55" class="arrow"/>
+</svg>

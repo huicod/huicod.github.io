@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1030" role="img" aria-labelledby="title desc">
+<title id="title">MoCoDiff 的分段生成和历史反馈</title><desc id="desc">文本、风格示范和历史尾帧分别编码为注意力的键和值；带噪动作特征产生查询。冻结的扩散模型在每个去噪步接收三路残差，生成当前动作片段，将末十帧送给下一段。底部单列训练时混合真实历史和模型历史的做法。</desc>
+<defs>
+<marker id="arrow" orient="auto" markerWidth="8" markerHeight="8" refX="6" refY="3.5" viewBox="0 0 8 7"><path d="M0 0 L7 3.5 L0 7 Z" fill="#39526a"/></marker>
+<marker id="loop" orient="auto" markerWidth="8" markerHeight="8" refX="6" refY="3.5" viewBox="0 0 8 7"><path d="M0 0 L7 3.5 L0 7 Z" fill="#217276"/></marker>
+</defs>
+<style>
+text {font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#183145}
+.title {font-size:32px;font-weight:700}.small {font-size:17px}.head{font-size:20px;font-weight:700}.body {font-size:18px}
+.flow{stroke:#39526a;stroke-width:2.2;fill:none;marker-end:url(#arrow)}.loop{stroke:#217276;stroke-width:2.4;fill:none;marker-end:url(#loop)}
+</style>
+<rect width="1000" height="1030" fill="#fafcfb" rx="18" />
+<text class="title" x="38" y="47" text-anchor="start">MoCoDiff 如何把新动作接在前一段之后？</text>
+<text class="small" x="40" y="80" text-anchor="start">i 表示动作片段，t 表示当前片段内部的去噪步。沿实线由上往下读，右侧折线回到下一片段。</text>
+<rect x="40" y="111" width="280" height="82" rx="12" fill="#eaf2fc" stroke="#a5bdd4" stroke-width="1.5"/>
+<text class="head" x="56" y="143" text-anchor="start">内容文本 Tᵢ</text>
+<text class="body" x="56" y="175" text-anchor="start">例如“向前走”</text>
+<rect x="348" y="111" width="280" height="82" rx="12" fill="#fff5df" stroke="#d7b773" stroke-width="1.5"/>
+<text class="head" x="364" y="143" text-anchor="start">风格参考 Sᵢ</text>
+<text class="body" x="364" y="175" text-anchor="start">示范动作序列，例如僵尸步态</text>
+<rect x="656" y="111" width="280" height="82" rx="12" fill="#e6f4ef" stroke="#93bcac" stroke-width="1.5"/>
+<text class="head" x="672" y="143" text-anchor="start">历史 Hᵢ</text>
+<text class="body" x="672" y="175" text-anchor="start">上段生成动作的最后 10 帧</text>
+<path class="flow" d="M180 193 V225"/>
+<path class="flow" d="M488 193 V225"/>
+<path class="flow" d="M796 193 V225"/>
+<rect x="40" y="229" width="280" height="107" rx="12" fill="#eaf2fc" stroke="#a5bdd4" stroke-width="1.5"/>
+<text class="head" x="56" y="261" text-anchor="start">文本编码器</text>
+<text class="body" x="56" y="293" text-anchor="start">冻结 CLIP ＋文本层</text>
+<text class="body" x="56" y="319" text-anchor="start">输出语义特征 Fₜ</text>
+<rect x="348" y="229" width="280" height="107" rx="12" fill="#fff5df" stroke="#d7b773" stroke-width="1.5"/>
+<text class="head" x="364" y="261" text-anchor="start">风格编码器</text>
+<text class="body" x="364" y="293" text-anchor="start">冻结 MotionCLIP ＋投影</text>
+<text class="body" x="364" y="319" text-anchor="start">输出风格特征 Fₛ</text>
+<rect x="656" y="229" width="280" height="107" rx="12" fill="#e6f4ef" stroke="#93bcac" stroke-width="1.5"/>
+<text class="head" x="672" y="261" text-anchor="start">历史编码器</text>
+<text class="body" x="672" y="293" text-anchor="start">时序汇聚与可学习投影</text>
+<text class="body" x="672" y="319" text-anchor="start">输出近期动态 Fₕ</text>
+<path class="flow" d="M180 336 V377"/>
+<path class="flow" d="M488 336 V377"/>
+<path class="flow" d="M796 336 V377"/>
+<rect x="40" y="380" width="280" height="108" rx="12" fill="#eaf2fc" stroke="#a5bdd4" stroke-width="1.5"/>
+<text class="head" x="56" y="412" text-anchor="start">语义分支  SIMC</text>
+<text class="body" x="56" y="444" text-anchor="start">Q 读取文本的 K、V</text>
+<text class="body" x="56" y="470" text-anchor="start">产生动作内容修正</text>
+<rect x="348" y="380" width="280" height="108" rx="12" fill="#fff5df" stroke="#d7b773" stroke-width="1.5"/>
+<text class="head" x="364" y="412" text-anchor="start">风格分支  STIMC</text>
+<text class="body" x="364" y="444" text-anchor="start">Q 读取风格的 K、V</text>
+<text class="body" x="364" y="470" text-anchor="start">产生姿态与节奏修正</text>
+<rect x="656" y="380" width="280" height="108" rx="12" fill="#e6f4ef" stroke="#93bcac" stroke-width="1.5"/>
+<text class="head" x="672" y="412" text-anchor="start">历史分支  TIMC</text>
+<text class="body" x="672" y="444" text-anchor="start">Q 读取历史的 K、V</text>
+<text class="body" x="672" y="470" text-anchor="start">掩码限制到近期历史</text>
+<text class="small" x="40" y="102" text-anchor="start">三路 Q 均取自当前带噪动作特征 Xₜ；K、V 按条件分别计算。</text>
+<path class="flow" d="M180 488 V519"/>
+<path class="flow" d="M488 488 V519"/>
+<path class="flow" d="M796 488 V519"/>
+<rect x="40" y="523" width="896" height="106" rx="12" fill="#f2f4f8" stroke="#b3bdca" stroke-width="1.5"/>
+<text class="head" x="56" y="555" text-anchor="start">冻结 U-Net 的编码块：在当前去噪步合成修正</text>
+<text class="body" x="56" y="587" text-anchor="start">加到 Xₜ 上的三项分别来自文本、风格和历史；历史的影响随采样过程先强后弱。</text>
+<text class="body" x="56" y="613" text-anchor="start">初始块从噪声开始，首段省去历史支路。</text>
+<path class="flow" d="M488 629 V661"/>
+<rect x="40" y="665" width="896" height="106" rx="12" fill="#e6f4ef" stroke="#93bcac" stroke-width="1.5"/>
+<text class="head" x="56" y="697" text-anchor="start">同一片段内重复去噪 → 解码为动作帧 Cᵢ</text>
+<text class="body" x="56" y="729" text-anchor="start">从当前条件得到连续人体动作；生成完一段后，按顺序推进到下一组文本和风格。</text>
+<text class="body" x="56" y="755" text-anchor="start">将 Cᵢ 的最后 10 帧写入下一段的历史缓冲。</text>
+<path class="loop" d="M936 709 H971 V151 H940"/>
+<line x1="40" y1="809" x2="936" y2="809" stroke="#b2c4bc" stroke-dasharray="5 6"/>
+<text class="head" x="40" y="846" text-anchor="start">训练时如何提供历史</text>
+<rect x="40" y="864" width="896" height="124" rx="12" fill="#f1eef9" stroke="#b9acd1" stroke-width="1.5"/>
+<text class="head" x="56" y="896" text-anchor="start">逐步让模型接自己的动作</text>
+<text class="body" x="56" y="928" text-anchor="start">前 30% 的训练步骤使用真实历史；接下来 50% 逐步提高使用模型历史的概率。</text>
+<text class="body" x="56" y="954" text-anchor="start">最后 20% 使用模型历史，取参数滑动平均模型的预测更新缓冲。</text>
+<text class="body" x="56" y="980" text-anchor="start">监督结合动作重建、平滑和动态变化三项损失。</text>
+</svg>

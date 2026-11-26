@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MoCoDiff · 原文 HTML 阅读器</title>
+  <link rel="stylesheet" href="./reading.css">
+  <style>
+    [hidden]{display:none!important}
+    .file-picker{font:15px/1.7 system-ui,sans-serif;display:flex;flex-wrap:wrap;align-items:center;gap:.75em;margin:1em 0}
+    .file-picker input{max-width:100%}
+    .file-picker button{font:inherit}
+    #paper-body img{max-width:100%;height:auto;display:block}
+    #paper-body figure{margin:1.2em 0}
+    #paper-body figure details{overflow-x:auto}
+    #paper-body figcaption{font-size:15px}
+    #paper-body .caption{font-size:15px}
+    #paper-body h2{font-size:24px}
+    #paper-body .page-marker{font:13px system-ui,sans-serif;display:inline-block;margin:1.5em 0 1em}
+    @media(max-width:760px){.file-picker{display:block}.file-picker button{margin-top:.5em}}
+  </style>
+  <script type="module" src="./read.js"></script>
+</head>
+<body>
+<header class="reader-header">
+  <nav class="reader-nav" aria-label="论文与阅读器"><a href="/blog/cvpr2026-mocodiff/">← 返回中文解读</a><a href="./" id="nav-main">正文</a><a href="?part=supplement" id="nav-supplement">补充材料</a><a href="https://openaccess.thecvf.com/content/CVPR2026/html/Song_MoCoDiff_A_Controllable_Autoregressive_Diffusion_Model_for_Expressive_Motion_Generation_CVPR_2026_paper.html">CVF 论文记录 ↗</a></nav>
+  <div class="paper-heading">
+    <h1 lang="en">MoCoDiff: A Controllable Autoregressive Diffusion Model for Expressive Motion Generation</h1>
+    <div class="paper-metadata">
+      <p lang="en">Wenfeng Song, Xuehan Wang, Shuai Li, Yi Chen, Yuting Guo, Zhenyu Wu, Xingliang Jin, Chenglizhao Chen, Fei Hou, Hongyu Wu and Aimin Hao · CVPR 2026</p>
+      <p id="howto"></p>
+      <div class="file-picker"><input id="file" type="file" accept=".pdf,.zip" aria-label="选择 CVF 文件"><button type="button" id="forget" hidden>清除此浏览器中的文件</button></div>
+      <p id="status" role="status" aria-live="polite"></p>
+      <noscript>请开启 JavaScript 以在浏览器内重排原文。也可以通过上方 CVF 论文记录打开原文和补充材料。</noscript>
+    </div>
+  </div>
+</header>
+<div class="reader-layout">
+  <aside class="reader-sidebar" hidden><nav id="paper-toc"><details open><summary>阅读目录</summary><div class="toc-content"><ol id="outline"></ol></div></details></nav></aside>
+  <main id="paper-body" lang="en"></main>
+</div>
+</body>
+</html>

@@ -238,6 +238,20 @@
       "streaming"
     ]
   },
+  "comet-paper-notes": {
+    "topics": [
+      "character",
+      "generation"
+    ],
+    "methods": [],
+    "controls": [
+      "space",
+      "time",
+      "parts",
+      "style",
+      "streaming"
+    ]
+  },
   "como-paper-notes": {
     "topics": [
       "representation",
@@ -1924,6 +1938,18 @@
       "time",
       "space",
       "parts"
+    ]
+  },
+  "mocodiff-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "style",
+      "time"
     ]
   },
   "modaliff-paper-notes": {
