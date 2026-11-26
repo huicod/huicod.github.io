@@ -429,6 +429,20 @@
       "parts"
     ]
   },
+  "dancingbox-paper-notes": {
+    "topics": [
+      "character",
+      "video",
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "parts"
+    ]
+  },
   "dart-paper-notes": {
     "topics": [
       "generation",

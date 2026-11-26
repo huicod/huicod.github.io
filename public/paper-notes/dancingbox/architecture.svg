@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="879" viewBox="0 0 1060 879" role="img" aria-labelledby="title desc">
+  <title id="title">DancingBox：从桌上道具到人形骨架</title>
+  <desc id="desc">固定相机记录道具表演。SAM2、π³ 和 CoTracker3 分别提供分部掩膜、点云和像素轨迹，汇合成有方向的三维框序列。框经编码器和 ControlNet 注入冻结的 MDM；采样时还按框中心引导关节位置，可选文字帮助消歧。训练配对来自已有骨架动作及由其构造的框。</desc>
+  <defs>
+    <marker id="capture" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#426a7d"/></marker>
+    <marker id="generate" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#8c5b35"/></marker>
+    <marker id="train" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#547151"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#233f48} .heading{font-size:31px;font-weight:700}.sub{font-size:17px;fill:#52666e}.label{font-size:22px;font-weight:700}.body{font-size:18px}.tiny{font-size:16px}
+      .vision{fill:#edf5f8;stroke:#91b3c1}.model{fill:#fff4e7;stroke:#ccac87}.example{fill:#f0f5ec;stroke:#9db296}.input{fill:#f6f7f4;stroke:#b7c2bd}
+      .node rect{stroke-width:1.4}.route,.gen,.training{fill:none;stroke-width:2.3;stroke-linejoin:round;stroke-linecap:round}.route{stroke:#426a7d}.gen{stroke:#8c5b35}.training{stroke:#547151;stroke-dasharray:5 5}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1058" height="877" rx="15" fill="#fff" stroke="#d3deda"/>
+  <text x="28" y="48" class="heading">DancingBox 怎样把桌上道具的表演变成人体动画？</text>
+  <text x="29" y="78" class="sub">蓝色部分估计道具怎样移动，橙色部分用人体动作先验补出骨架。绿色虚线表示训练监督。</text>
+
+  <g class="node">
+    <rect class="input" x="28" y="101" width="1004" height="79" rx="10"/>
+    <text x="48" y="132" class="label">单目 RGB 视频与首帧点击</text>
+    <text x="48" y="161" class="body">固定相机拍下手操纵道具的过程。用户点选桌面参照物和道具的可动部位，常用 1–6 个部位。</text>
+  </g>
+  <path class="route" d="M530 180V197 M181 197H870"/>
+  <g class="route" marker-end="url(#capture)"><path d="M181 197V212"/><path d="M530 197V212"/><path d="M870 197V212"/></g>
+  <g class="node">
+    <rect class="vision" x="28" y="215" width="306" height="100" rx="10"/>
+    <text x="46" y="247" class="label">π³ · 单目三维重建</text>
+    <text x="46" y="276" class="body">为各帧估计深度和点云，</text>
+    <text x="46" y="301" class="body">把像素对应到三维位置。</text>
+  </g>
+  <g class="node">
+    <rect class="vision" x="376" y="215" width="305" height="100" rx="10"/>
+    <text x="394" y="247" class="label">SAM2 · 分部掩膜</text>
+    <text x="394" y="276" class="body">从点击传播各部位的边界，</text>
+    <text x="394" y="301" class="body">地面掩膜用于对齐向上方向。</text>
+  </g>
+  <path class="route" d="M681 265H718" marker-end="url(#capture)"/>
+  <g class="node">
+    <rect class="vision" x="722" y="215" width="310" height="100" rx="10"/>
+    <text x="740" y="247" class="label">CoTracker3 · 跨帧跟踪</text>
+    <text x="740" y="276" class="body">在各部位掩膜内取样像素，</text>
+    <text x="740" y="301" class="body">追踪同一点在后续帧的位置。</text>
+  </g>
+  <path class="route" d="M181 315V333H877V315 M530 315V346" marker-end="url(#capture)"/>
+  <g class="node">
+    <rect class="vision" x="28" y="350" width="1004" height="85" rx="10"/>
+    <text x="48" y="382" class="label">每个部位随时间移动的三维有向框</text>
+    <text x="48" y="412" class="body">首帧用 PCA 拟合框；后续帧用跟踪点的三维对应估计刚体变换。完全遮挡时该部位可缺框。</text>
+    <g aria-hidden="true" fill="none" stroke="#498398" stroke-width="2.4" stroke-linejoin="round">
+      <path d="m908 369 30 1 0 18-30-1z m0 0 11-9 30 1-11 9 m11-9v18l-11 9"/>
+      <path d="m963 379 29-10 6 17-29 10z m0 0 6-12 29-10-6 12 m6-12 6 17-6 12"/>
+    </g>
+  </g>
+
+  <path class="gen" d="M530 435V451 M295 451H816"/>
+  <g class="gen" marker-end="url(#generate)"><path d="M295 451V466"/><path d="M816 451V466"/></g>
+  <g class="node">
+    <rect class="model" x="28" y="469" width="538" height="113" rx="10"/>
+    <text x="47" y="501" class="label">框运动编码器 · 生成每帧条件</text>
+    <text x="47" y="532" class="body">8 个顶点 → 共享 MLP → 均值与最大值相加。</text>
+    <text x="47" y="559" class="body">框间自注意力后再次池化，每帧得到定长特征。</text>
+  </g>
+  <g class="node">
+    <rect class="model" x="598" y="469" width="434" height="113" rx="10"/>
+    <text x="617" y="501" class="label">框与关节之间的空间引导</text>
+    <text x="617" y="532" class="body">采样时比较框中心与候选人体关节的位置，</text>
+    <text x="617" y="559" class="body">距离短的关节权重更大。</text>
+  </g>
+  <g class="gen" marker-end="url(#generate)"><path d="M295 582V599H545V617"/><path d="M817 582V617"/></g>
+  <g class="node">
+    <rect class="example" x="28" y="620" width="375" height="120" rx="10"/>
+    <text x="47" y="652" class="label">训练用的框从哪里来？</text>
+    <text x="47" y="682" class="body">由人体动作合成数量可变的部位框。</text>
+    <text x="47" y="709" class="body">合成框作条件，原骨架动作提供监督。</text>
+  </g>
+  <path class="training" d="M403 677H453" marker-end="url(#train)"/>
+  <g class="node">
+    <rect class="model" x="457" y="620" width="575" height="120" rx="10"/>
+    <text x="477" y="652" class="label">ControlNet + 预训练人体动作扩散模型 MDM</text>
+    <text x="477" y="682" class="body">框特征由 ControlNet 注入，从噪声反复去噪得到人体动作。</text>
+    <text x="477" y="709" class="body">训练更新框编码器与 ControlNet，保留 MDM 人体先验。</text>
+  </g>
+  <g class="node">
+    <rect class="input" x="28" y="774" width="375" height="77" rx="10"/>
+    <text x="47" y="804" class="label">可选文字</text>
+    <text x="47" y="832" class="body">单框香蕉翻转时，可指定“后空翻”。</text>
+  </g>
+  <path class="gen" d="M403 811H431V715H452" marker-end="url(#generate)"/>
+  <path class="gen" d="M745 740V770" marker-end="url(#generate)"/>
+  <g class="node">
+    <rect class="model" x="457" y="774" width="575" height="77" rx="10"/>
+    <text x="477" y="804" class="label">输出 · 连续的人形骨架动作</text>
+    <text x="477" y="832" class="body">同一框轨迹可以对应多种合理的人体姿势。</text>
+    <g aria-hidden="true" fill="none" stroke="#a77847" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round">
+      <circle cx="964" cy="791" r="5" fill="#ffdaae"/>
+      <path d="m963 801-4 16m3-13-14 3-9-6m22 3 12-8 9 1m-23 20-12 8-12-3m24-5 13 4 8-8"/>
+    </g>
+  </g>
+</svg>
