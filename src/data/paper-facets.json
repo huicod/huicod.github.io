@@ -148,6 +148,20 @@
       "parts"
     ]
   },
+  "base-paper-notes": {
+    "topics": [
+      "gesture",
+      "character"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "interaction",
+      "streaming",
+      "style"
+    ]
+  },
   "bimogen-paper-notes": {
     "topics": [
       "generation",

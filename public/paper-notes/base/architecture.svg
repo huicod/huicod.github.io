@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1182" viewBox="0 0 1000 1182" lang="zh-CN" role="img" aria-labelledby="title desc">
+  <title id="title">BASE 如何让数字人在对话中开口、倾听和连续做手势</title>
+  <desc id="desc">用户语音送给对话后端，同时触发语音活动检测。后端的回复音频既驱动动作，也提供状态切换事件。说话动作生成器在每个六十帧窗口内固定四十帧已发历史，生成二十帧。前十帧和上一个窗口的前瞻融合后输出，后十帧留给下一轮。仅在训练时用 DAHP 扰动真实动作前缀，保持目标后缀不变。</desc>
+  <defs>
+    <style>
+      text { font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif; fill:#203738 }
+      .title { font-size:31px; font-weight:700 }
+      .section { font-size:23px; font-weight:700; fill:#265e55 }
+      .head { font-size:21px; font-weight:700 }
+      .copy { font-size:18px }
+      .small { font-size:16px; fill:#466260 }
+      .row { font-size:17px; font-weight:700; text-anchor:middle }
+      .cell { font-size:17px; text-anchor:middle }
+      .card { stroke-width:1.4 }
+      .audio { fill:#edf5fa; stroke:#a6c2d1 }
+      .state { fill:#fbf4e9; stroke:#d9bea0 }
+      .flow { fill:#ebf5ef; stroke:#9fc1ae }
+      .train { fill:#f2f0f7; stroke:#b9accb }
+      .hist { fill:#e8eef2; stroke:#adbdc5 }
+      .emit { fill:#d4ecdc; stroke:#87ad98 }
+      .ahead { fill:#f9e6c8; stroke:#c9a571 }
+      .line,.connector { fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-width:2.3 }
+      .line { stroke:#557571; marker-end:url(#arrow) }
+      .connector { stroke:#a07131; marker-end:url(#amber) }
+    </style>
+    <marker id="arrow" viewBox="0 0 8 8" markerWidth="7" markerHeight="7" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#557571"/></marker>
+    <marker id="amber" viewBox="0 0 8 8" markerWidth="6" markerHeight="6" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#a07131"/></marker>
+  </defs>
+  <rect x="1" y="1" width="998" height="1180" rx="16" fill="#fff" stroke="#c6d6d3"/>
+  <text x="37" y="53" class="title">BASE 如何让数字人接话，并把手势接到下一句？</text>
+  <text x="38" y="88" class="small">两路声音各有用途。对话后端给出回复音频，动作层按自己的时间轴生成和播放。</text>
+
+  <text x="38" y="140" class="section">对话端与动作端如何连接</text>
+  <g><rect x="39" y="162" width="234" height="82" rx="10" class="audio card"/>
+    <text x="58" y="194" class="head">用户的麦克风</text>
+    <text x="58" y="224" class="copy">用户说话或中途插话</text></g>
+  <path d="M276 203H321" class="line"/>
+  <g><rect x="325" y="162" width="289" height="82" rx="10" class="audio card"/>
+    <text x="345" y="194" class="head">可替换的对话后端</text>
+    <text x="345" y="224" class="copy">级联、全双工模型或云端 API</text></g>
+  <path d="M617 203H663" class="line"/>
+  <g><rect x="667" y="162" width="294" height="82" rx="10" class="audio card"/>
+    <text x="685" y="194" class="head">回复音频适配器</text>
+    <text x="685" y="224" class="copy">重采样、分帧并排入时间轴</text></g>
+  <path d="M113 246V290" class="line"/>
+  <path d="M722 246V262H340V290" class="line"/>
+  <text x="420" y="284" class="small">回复开始与结束事件</text>
+  <path d="M850 246V290" class="line"/>
+  <g><rect x="39" y="294" width="444" height="119" rx="10" class="state card"/>
+    <text x="58" y="328" class="head">会话状态管理器</text>
+    <text x="58" y="359" class="copy">用户语音活动检测（VAD）与回复事件共同驱动</text>
+    <text x="58" y="389" class="copy">空闲、倾听、说话、被打断、主动发起对话</text></g>
+  <g><rect x="509" y="294" width="452" height="119" rx="10" class="audio card"/>
+    <text x="528" y="328" class="head">从回复音频取得说话动作条件</text>
+    <text x="528" y="359" class="copy">WavLM 提取声学特征，A2E 估计面部表情。</text>
+    <text x="528" y="389" class="copy">原音频另送播放端，与动作逐帧配对。</text></g>
+
+  <text x="38" y="466" class="section">说话时，每 10 帧推进一次动作窗口</text>
+  <path d="M848 416V485" class="line"/>
+  <g><rect x="39" y="488" width="922" height="90" rx="10" class="flow card"/>
+    <text x="58" y="523" class="head">StreamTalk 的分部位流匹配 DiT</text>
+    <text x="58" y="555" class="copy">输入声学特征、面部表情、说话人风格 ID 和已发动作历史。6 层 DiT 用 8 步 Euler 采样，CFG 为 4。</text></g>
+  <path d="M500 580V594" class="line"/>
+  <rect x="39" y="597" width="922" height="210" rx="10" fill="#f7faf8" stroke="#c2d4c9"/>
+  <text x="58" y="628" class="head">相邻两窗在同一条时间轴上怎样重叠？</text>
+  <text x="114" y="678" class="row">上一窗</text>
+  <g><rect x="202" y="650" width="400" height="44" class="hist"/><text x="402" y="678" class="cell">40 帧已发历史</text></g>
+  <g><rect x="602" y="650" width="100" height="44" class="emit"/><text x="652" y="678" class="cell">发出 10</text></g>
+  <g><rect x="702" y="650" width="100" height="44" class="ahead"/><text x="752" y="678" class="cell">前瞻 10</text></g>
+  <path d="M752 696V709" class="connector"/>
+  <text x="114" y="741" class="row">本窗</text>
+  <g><rect x="302" y="713" width="400" height="44" class="hist"/><text x="502" y="741" class="cell">40 帧已发历史</text></g>
+  <g><rect x="702" y="713" width="100" height="44" class="emit"/><text x="752" y="741" class="cell">发出 10</text></g>
+  <g><rect x="802" y="713" width="100" height="44" class="ahead"/><text x="852" y="741" class="cell">前瞻 10</text></g>
+  <text x="58" y="788" class="small">纵向对齐代表同一时刻。上一窗暂存的前瞻与本窗重新预测的前 10 帧融合，前一预测的权重从 0.5 逐帧减小。</text>
+  <path d="M250 810V834" class="line"/>
+  <path d="M38 901H18V542H36" class="line"/>
+  <g><rect x="39" y="839" width="429" height="121" rx="10" class="flow card"/>
+    <text x="58" y="873" class="head">接缝修正，再回写已发历史</text>
+    <text x="58" y="905" class="copy">根部和躯干在窗首向历史速度平滑过渡。</text>
+    <text x="58" y="935" class="copy">输出帧对根部和脊柱做 1.5 Hz 因果低通。</text></g>
+  <path d="M471 898H505" class="line"/>
+  <g><rect x="509" y="839" width="452" height="121" rx="10" class="state card"/>
+    <text x="529" y="873" class="head">打包音画并切换表演</text>
+    <text x="529" y="905" class="copy">动作帧、对应音频片段和表情同步播放。</text>
+    <text x="529" y="935" class="copy">状态管理器调度说话、倾听叠加与空闲动作。</text></g>
+
+  <text x="38" y="1014" class="section">训练阶段如何为在线续写做准备</text>
+  <g><rect x="39" y="1035" width="427" height="116" rx="10" class="train card"/>
+    <text x="58" y="1070" class="head">① 从已有模型适配滑窗续写</text>
+    <text x="58" y="1101" class="copy">一半训练样本给定动作前缀，补全末 6–20 帧。</text>
+    <text x="58" y="1131" class="copy">另一半沿用预训练时的随机掩码。</text></g>
+  <path d="M469 1094H505" class="line"/>
+  <g><rect x="509" y="1035" width="452" height="116" rx="10" class="train card"/>
+    <text x="529" y="1070" class="head">② DAHP 模拟自身历史积累的误差</text>
+    <text x="529" y="1101" class="copy">扰动真值前缀的速度、幅度或关节噪声。</text>
+    <text x="529" y="1131" class="copy">扰动在前缀末 8 帧渐消，目标后缀保持真值。</text></g>
+</svg>

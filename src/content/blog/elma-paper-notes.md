@@ -2,7 +2,7 @@
 title: "[NeurIPS2026] ELMA：用跨段回指评测长期动作的状态延续"
 description: "详解 ELMA 的连续视频动作提取、情节式描述和依赖标注，以及 ELMABench 的历史文本条件与目标段评测；核对主表、标注质量、版本差异及完整序列复现边界。"
 pubDate: "2026-11-10T12:11:00+08:00"
-updatedDate: "2026-11-10"
+updatedDate: "2026-11-26"
 badge: "Paper"
 tags: ["ELMA", "ELMABench", "Long-Term-Motion", "Text-to-Motion", "Anaphora", "Dataset", "Paper-Notes"]
 ---
@@ -17,11 +17,11 @@ tags: ["ELMA", "ELMABench", "Long-Term-Motion", "Text-to-Motion", "Anaphora", "D
 
 <details class="paper-meta"><summary>论文信息与阅读范围 · NeurIPS 2026，Evaluations & Datasets Track</summary>
 
-论文：*ELMA: Benchmarking Anaphoric Compositions for Long-Term Text-to-Motion Generation*。作者：**Shun Kato、Dixin Yang、Kotaro Amaya、Yuiga Wada、Kazumi Fukuda、Takashi Shibuya、Yuki Mitsufuji、Mariko Isogawa**，来自 Keio University、Keio AI Center 与 Sony Group Corporation。正式出处 **NeurIPS 2026，Evaluations & Datasets Track**；已交叉核对作者项目、arXiv录用说明及会议目录条目139367。[会议目录][venue]
+论文：*ELMA: Benchmarking Anaphoric Compositions for Long-Term Text-to-Motion Generation*。作者：**Shun Kato、Dixin Yang、Kotaro Amaya、Yuiga Wada、Kazumi Fukuda、Takashi Shibuya、Yuki Mitsufuji、Mariko Isogawa**，来自 Keio University、Keio AI Center 与 Sony Group Corporation。论文获 **NeurIPS 2026 Evaluations & Datasets Track** 录用。会议将海报安排在悉尼当地时间 12 月 8 日 10:00–13:00，展位 S3802。[会议海报页][venue] · [arXiv 录用记录][record]
 
 本次以 **arXiv:2610.13549v3，2026-11-06，23页**为主，阅读正文和附录A–F；对比v1和作者项目页以核对表2–3的列序差异。重点是数据、任务、基线协议和失败结果，**ELMA并不是新提出的一套通用动作生成网络**。
 
-截至 **2026-11-10**，公开仓库提供 FlowMDM 的 A2M 评测包装和检查点入口，数据在 Hugging Face；README区分论文使用的 **数据v1.0** 与清理测试集、修正根高度后的 **数据v2**。论文的 arXiv v3 与数据版本不是同一编号系统。本次未下载完整数据、加载权重或运行动作生成。[代码与版本说明][repo] · [数据][data]
+截至 **2026-11-26**，作者已公开 FlowMDM 的 A2M 评测脚本、检查点入口与 ELMA 数据。复核论文结果时应选 **数据 v1.0**，公开检查点和归一化统计量与这一版配套。**数据 v2** 清理了测试样本并修正了根节点高度。论文的 arXiv 版本单独编号。本次核查以原文、仓库说明和数据文件目录为据。[代码与版本说明][repo] · [数据][data]
 
 </details>
 
@@ -108,7 +108,7 @@ ELMA 专门研究长期动作里**后一句需要继承前一句状态**的情�
 
 论文图6给出连续持剑动作：前段建立“剑横在胸前”的状态，后段要求继续抬剑。理解后段时，前段的“胸前”决定了起始位置；如果只看到后一句，动作可以有多个合理起点。
 
-在ELMA的标注中，后段会关联到提供状态的前段。A2M基线把两段及更早相关文本嵌入纳入条件，由FlowMDM生成连续运动，再截取依赖目标段评测。作者图6展示A2M训练／推理更好地延续了该起点；这是一例定性结果，不代表每条持物约束均被保证。生成数据接口也没有显式剑的刚体状态和手—剑接触求解。[图6、§6.4][paper]
+在 ELMA 的标注中，后段会关联到提供状态的前段。A2M 基线将当前段与此前**所有段**的文本嵌入加权求和，包括没有被标为依赖来源的段。FlowMDM 据此生成连续动作，评测再依照标签截取目标段。作者图 6 展示了该例中抬剑起点的差异。要判断手和剑是否持续接触，还需要追踪剑的刚体状态，并测量手与剑的相对运动。[图6、§6.1、§6.4][paper]
 
 ### 训练/推理
 
@@ -213,8 +213,8 @@ ELMA 专门研究长期动作里**后一句需要继承前一句状态**的情�
 ## 来源
 
 - [论文v3完整HTML][html] · [23页PDF][paper] · [用于列序核对的v1][v1]。主线依据§3–6、图3–6、表1–3；自动标注质量依据附录C、表6；训练与复现范围依据附录D。
-- [NeurIPS 2026会议目录（ELMA条目）][venue] · [作者项目及结果表][project] · [公开评测代码和版本说明][repo] · [ELMA数据][data]。
-- 核对日期：**2026-11-10**。数字来自作者报告，版本冲突已明确标出；架构图为教学重绘，未运行训练、推理或评测。
+- [NeurIPS 2026 海报条目][venue] · [作者项目及结果表][project] · [公开评测代码和版本说明][repo] · [ELMA 数据][data]。
+- **2026-11-26 复核**。最新公开稿为 arXiv v3。表格数字取自作者报告，架构图按论文重绘。
 
 [html]: https://arxiv.org/html/2610.13549v3
 [paper]: https://arxiv.org/pdf/2610.13549v3
@@ -222,6 +222,7 @@ ELMA 专门研究长期动作里**后一句需要继承前一句状态**的情�
 [project]: https://elma-dataset.github.io/
 [repo]: https://github.com/shun31y/elmabench
 [data]: https://huggingface.co/datasets/shun31y/ELMA
-[venue]: https://neurips.cc/Downloads/2026
+[venue]: https://neurips.cc/virtual/2026/loc/sydney/poster/139367
+[record]: https://arxiv.org/abs/2610.13549
 
 </div>
