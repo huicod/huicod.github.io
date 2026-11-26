@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="898" viewBox="0 0 1080 898" role="img" aria-labelledby="title desc">
+  <title id="title">HARI4D：先稳住物体，再修正全身和手指</title>
+  <desc id="desc">输入单目彩色视频、人与物掩膜。先估计人体姿势、深度、手的接触和可见性；在静止帧重建物体网格，在接触帧估尺度。带历史信息的跟踪器估计刚体轨迹并固定。ReachNet 迭代三次把身体和手腕调整到位，TouchNet 用腕周围的表面及过去和未来帧一次修正手指和腕朝向。最终输出同一相机坐标系中的人体与刚体动画。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#426a7d"/></marker>
+    <marker id="warm" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#8b5c3d"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;fill:#213f49}
+      .head{font-size:32px;font-weight:700}.subtitle,.small{font-size:17px}.subtitle{fill:#506974}
+      .label{font-size:23px;font-weight:700}.body{font-size:18px}
+      .node>rect{stroke-width:1.5}.input{fill:#f5f7f4;stroke:#b3c2b9}
+      .vision{fill:#edf5f9;stroke:#9cbcc9}.learned{fill:#fff3e4;stroke:#cda782}
+      .out{fill:#edf5ee;stroke:#a6bcaa}.line,.flow{fill:none;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+      .line{stroke:#426a7d}.flow{stroke:#8b5c3d}.preserve{stroke-dasharray:6 6}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1078" height="896" rx="15" fill="white" stroke="#d3deda"/>
+  <text x="30" y="47" class="head">HARI4D 怎样从单目视频恢复手与物体的接触？</text>
+  <text x="31" y="78" class="subtitle">先在同一相机坐标系中重建人和物，再以物体为参照，分两级调整人体。</text>
+
+  <g class="node">
+    <rect class="input" x="30" y="101" width="1020" height="64" rx="10"/>
+    <text x="51" y="141" class="label">观测输入</text>
+    <text x="181" y="141" class="body">单目 RGB 视频 + 逐帧人体掩膜、物体掩膜</text>
+  </g>
+
+  <path class="line" d="M540 165V182 M267 182H788"/>
+  <g class="line" marker-end="url(#arrow)"><path d="M267 182V198"/><path d="M788 182V198"/></g>
+  <g class="node">
+    <rect class="vision" x="30" y="201" width="482" height="135" rx="10"/>
+    <text x="51" y="235" class="label">人体初值与左右手接触提示</text>
+    <text x="51" y="268" class="body">SAM 3D Body 估计人体，再拟合 SMPL-X。</text>
+    <text x="51" y="297" class="body">HOI-DETR 判断每只手此时是否在与物体交互。</text>
+    <text x="51" y="322" class="small">可见的人体区域还为单目深度提供校准依据。</text>
+  </g>
+  <g class="node">
+    <rect class="vision" x="552" y="201" width="498" height="135" rx="10"/>
+    <text x="573" y="235" class="label">刚体形状与实际尺度</text>
+    <text x="573" y="268" class="body">在物体清楚可见的静止帧 B，用 SAM 3D 建网格。</text>
+    <text x="573" y="297" class="body">在接触帧 A，用对齐的 MoGe-3 深度估计尺度。</text>
+    <text x="573" y="322" class="small">当两帧无法分别取得时，可由同一帧兼任。</text>
+  </g>
+  <path class="line" d="M512 284H547" marker-end="url(#arrow)"/>
+
+  <path class="line" d="M801 336V365" marker-end="url(#arrow)"/>
+  <path class="line" d="M267 336V537" marker-end="url(#arrow)"/>
+  <text x="41" y="406" class="small">初始人体姿势</text>
+  <text x="41" y="435" class="small">逐手接触与可见性线索</text>
+  <g class="node">
+    <rect class="vision" x="413" y="369" width="637" height="121" rx="10"/>
+    <text x="435" y="403" class="label">历史条件物体跟踪器</text>
+    <text x="435" y="435" class="body">卡尔曼滤波给出初值；过往相对位姿通过 FiLM 调节</text>
+    <text x="435" y="464" class="body">FoundationPose 修正器，输出每帧刚体平移与旋转。</text>
+  </g>
+  <path class="line" d="M715 490V537" marker-end="url(#arrow)"/>
+  <path class="line preserve" d="M983 490V838H946" marker-end="url(#arrow)"/>
+  <text x="823" y="519" class="small">物体轨迹固定</text>
+
+  <g class="node">
+    <rect class="learned" x="30" y="541" width="910" height="94" rx="10"/>
+    <text x="51" y="576" class="label">ReachNet × 3：先把身体和手腕放到位</text>
+    <text x="51" y="610" class="body">身体与双臂的表面锚点查询物体近点及法线。时空注意力后分头更新躯干与肩、肘、腕。</text>
+  </g>
+  <path class="flow" d="M486 635V662" marker-end="url(#warm)"/>
+  <path class="line" d="M983 718H946" marker-end="url(#arrow)"/>
+  <g class="node">
+    <rect class="learned" x="30" y="666" width="910" height="107" rx="10"/>
+    <text x="51" y="701" class="label">TouchNet × 1：固定手腕位置，再调整腕朝向和手指</text>
+    <text x="51" y="733" class="body">单手 90 帧窗口，每帧 15 个指关节 + 5 个指尖读取局部物体表面、接触及可见性。</text>
+    <text x="51" y="758" class="small">结合前后帧预测关节偏移与腕朝向，以逆运动学恢复 SMPL-X 手部姿态。</text>
+  </g>
+
+  <path class="flow" d="M486 773V797" marker-end="url(#warm)"/>
+  <g class="node">
+    <rect class="out" x="30" y="801" width="910" height="68" rx="10"/>
+    <text x="51" y="843" class="label">逐帧 3D 重建</text>
+    <text x="237" y="843" class="body">含手指的 SMPL-X 人体 + 同一物体网格的 6 自由度运动</text>
+  </g>
+</svg>

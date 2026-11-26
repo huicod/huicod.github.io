@@ -1212,6 +1212,17 @@
       "parts"
     ]
   },
+  "hari4d-paper-notes": {
+    "topics": [
+      "video",
+      "character"
+    ],
+    "methods": [],
+    "controls": [
+      "interaction",
+      "parts"
+    ]
+  },
   "hesp-paper-notes": {
     "topics": [
       "generation",
