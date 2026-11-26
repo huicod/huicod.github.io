@@ -2067,6 +2067,17 @@
     ],
     "controls": []
   },
+  "motion-beyond-morphology-paper-notes": {
+    "topics": [
+      "video",
+      "generation"
+    ],
+    "methods": [
+      "diffusion",
+      "flow"
+    ],
+    "controls": []
+  },
   "motion-omni-paper-notes": {
     "topics": [
       "gesture",
@@ -2129,6 +2140,19 @@
       "retrieval"
     ],
     "controls": []
+  },
+  "motion4motion-paper-notes": {
+    "topics": [
+      "video",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "parts"
+    ]
   },
   "motionbeat-paper-notes": {
     "topics": [
@@ -2914,6 +2938,16 @@
       "parts"
     ]
   },
+  "reenact-anything-paper-notes": {
+    "topics": [
+      "video",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
   "rhythmic-gesticulator-paper-notes": {
     "topics": [
       "gesture",
@@ -3521,6 +3555,17 @@
       "time"
     ]
   },
+  "tt-vidt-paper-notes": {
+    "topics": [
+      "representation",
+      "understanding",
+      "video"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
   "u-mind-paper-notes": {
     "topics": [
       "gesture",
@@ -3771,6 +3816,19 @@
       "style"
     ]
   },
+  "whatmoves-paper-notes": {
+    "topics": [
+      "video",
+      "representation",
+      "understanding"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space"
+    ]
+  },
   "x-mogen-paper-notes": {
     "topics": [
       "generation",
@@ -3805,6 +3863,19 @@
     "controls": [
       "style",
       "space"
+    ]
+  },
+  "zipmo-paper-notes": {
+    "topics": [
+      "representation",
+      "video"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "space",
+      "time"
     ]
   },
   "zomg-paper-notes": {

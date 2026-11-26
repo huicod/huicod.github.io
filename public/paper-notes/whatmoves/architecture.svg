@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1224" viewBox="0 0 1000 1224" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">What Moves? 如何从完整场景取出指定对象的动作</title>
+  <desc id="desc">从源首帧及其掩码得到内容查询，再用它读完整参考视频，得到每个区域随时间变化的动作向量。训练用区域内的未来二维点轨迹监督。迁移时将每条源动作与目标图中对应区域的内容配对，作为条件送入视频生成器。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#416b7c"/></marker>
+    <marker id="dashed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#8d6d48"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203945}
+      .title{font-size:31px;font-weight:700}.stage{font-size:24px;font-weight:700;fill:#2a5c64}.head{font-size:23px;font-weight:700}.body{font-size:20px}.hint{font-size:17px;fill:#415a64}
+      .motion{fill:#edf5fa;stroke:#96b9c8}.content{fill:#fff4e8;stroke:#d5af8b}.model{fill:#ebf4ed;stroke:#9db9a8}.neutral{fill:#f3f7f6;stroke:#b5c9c4}
+      .box{stroke-width:1.5}.line,.aux{fill:none;stroke:#416b7c;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;marker-end:url(#arrow)}
+      .aux{stroke:#8d6d48;stroke-dasharray:6 5;marker-end:url(#dashed)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1222" rx="15" fill="white" stroke="#cad8d5"/>
+  <text x="34" y="49" class="title">What Moves? 如何从完整场景中取出一个对象的动作？</text>
+  <text x="35" y="82" class="hint">蓝色表示运动与场景，米色表示区域内容或轨迹监督。k 是区域编号，t 是时间。</text>
+  <text x="34" y="132" class="stage">区域编码 · 指定观察对象，保留场景参照</text>
+  <g>
+    <rect x="31" y="154" width="455" height="112" rx="12" class="box motion"/>
+    <text x="51" y="190" class="head">完整参考视频</text>
+    <text x="51" y="223" class="body">逐帧提取图像块特征，保留整幅画面。</text>
+    <text x="51" y="250" class="hint">背景和其他对象提供运镜、遮挡与相对位置线索。</text>
+  </g>
+  <g>
+    <rect x="514" y="154" width="455" height="112" rx="12" class="box content"/>
+    <text x="534" y="190" class="head">源首帧与对象掩码</text>
+    <text x="534" y="223" class="body">在帧特征上按掩码做注意力池化。</text>
+    <text x="534" y="250" class="hint">每个对象得到一个静态内容查询 cₖ。</text>
+  </g>
+  <path d="M257 267v32" class="line"/><path d="M741 267v32" class="line"/>
+  <g>
+    <rect x="31" y="304" width="938" height="126" rx="12" class="box motion"/>
+    <text x="51" y="341" class="head">运动编码器 · 同一对象查询连续读取完整视频</text>
+    <text x="51" y="376" class="body">将 cₖ 沿时间复制，在时空 Transformer 中与所有帧的图像块交互，读出区域动作 mₖ,ₜ。</text>
+    <text x="51" y="409" class="hint">公开编码器单次读 8 帧，每个区域输出 5 个 384 维向量；多窗口可沿视频滑动。</text>
+  </g>
+  <path d="M258 432v36" class="aux"/><path d="M742 432v36" class="line"/>
+  <g>
+    <rect x="31" y="475" width="455" height="194" rx="12" class="box content"/>
+    <text x="51" y="513" class="head">训练分支 · 预测区域内点轨迹</text>
+    <text x="51" y="547" class="body">在掩码内采样点，用 TAPNext 跟踪。</text>
+    <text x="51" y="578" class="body">解码器读取当前帧、点、cₖ 和 mₖ,ₜ，</text>
+    <text x="51" y="609" class="body">预测这些点在未来帧的二维位置。</text>
+    <text x="51" y="644" class="hint">只对有效未来位置计算平方误差。</text>
+  </g>
+  <g>
+    <rect x="514" y="475" width="455" height="194" rx="12" class="box motion"/>
+    <text x="534" y="513" class="head">编码结果 · 每个区域一条动作序列</text>
+    <text x="534" y="547" class="body">例如从视频 A 取出行人的动作，</text>
+    <text x="534" y="578" class="body">从视频 B 取出另一主体的动作。</text>
+    <text x="534" y="612" class="hint">这些连续特征可独立用于局部动作识别，</text>
+    <text x="534" y="638" class="hint">也能送入下方的视频生成器。</text>
+  </g>
+  <path d="M31 710h938" stroke="#c3d2ce" stroke-width="1.5"/>
+  <text x="34" y="753" class="stage">场景合成 · 把源动作分配给目标图里的对象</text>
+  <g>
+    <rect x="31" y="779" width="455" height="108" rx="12" class="box motion"/>
+    <text x="51" y="816" class="head">从源视频选中的动作</text>
+    <text x="51" y="850" class="body">为每个目标指定一条源动作序列。</text>
+    <text x="51" y="875" class="hint">各条序列可取自同一视频，也可取自不同视频。</text>
+  </g>
+  <g>
+    <rect x="514" y="779" width="455" height="108" rx="12" class="box content"/>
+    <text x="534" y="816" class="head">目标首帧与各对象的掩码</text>
+    <text x="534" y="850" class="body">内容编码器读取目标区域的外观。</text>
+    <text x="534" y="875" class="hint">目标掩码质心为相应条件提供空间位置。</text>
+  </g>
+  <path d="M257 889v31" class="line"/><path d="M742 889v31" class="line"/>
+  <g>
+    <rect x="31" y="926" width="938" height="135" rx="12" class="box model"/>
+    <text x="51" y="962" class="head">按区域配对 · 源动作 ＋ 目标内容 → 视频生成器</text>
+    <text x="51" y="997" class="body">按视频潜帧对齐动作，将各对象的条件 token 与画面 token 一起送入自注意力层。</text>
+    <text x="51" y="1030" class="hint">论文适配 CogVideoX-5B，使用 LoRA 微调；公开生成管线使用 Wan，画面还可由文本描述。</text>
+  </g>
+  <path d="M500 1063v35" class="line"/>
+  <g>
+    <rect x="31" y="1105" width="938" height="92" rx="12" class="box neutral"/>
+    <text x="51" y="1141" class="head">输出 · 新画面中的多个对象分别执行分配的运动</text>
+    <text x="51" y="1174" class="body">控制效果从生成视频里检验，需同时观察目标区域的跟随程度及区域外的运动泄漏。</text>
+  </g>
+</svg>

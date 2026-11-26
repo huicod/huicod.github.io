@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="987" viewBox="0 0 1000 987" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">Reenact Anything 的两次运行：反演参考动作，再生成目标视频</title>
+  <desc id="desc">从一个参考片段优化 75 个连续条件向量。参考和目标首帧的图像潜变量分别给两次运行提供外观。冻结的 Stable Video Diffusion 用视频特征查询运动嵌入，最后生成目标视频。</desc>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#426a7e"/></marker>
+    <marker id="grad" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5 0 10Z" fill="#94704b"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203743}.title{font-weight:700;font-size:31px}.stage{font-size:24px;font-weight:700;fill:#2e5e65}.head{font-size:23px;font-weight:700}.body{font-size:20px}.hint{font-size:17px;fill:#455d66}
+      .blue{fill:#edf5fa;stroke:#9bbac7}.orange{fill:#fff4e8;stroke:#d6b292}.green{fill:#edf5ef;stroke:#a1bdaa}.neutral{fill:#f4f7f6;stroke:#bbcdc9}.box{stroke-width:1.5}
+      .line,.back{fill:none;stroke:#426a7e;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arr)}.back{stroke:#94704b;stroke-dasharray:5 4;marker-end:url(#grad)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="985" rx="15" fill="white" stroke="#c8d7d4"/>
+  <text x="34" y="49" class="title">怎样把参考马匹的步态迁移到另一张图？</text>
+  <text x="34" y="82" class="hint">实线表示前向数据流，虚线是参考片的重建误差反向更新条件向量。两次运行共用冻结的 SVD。</text>
+  <text x="34" y="131" class="stage">针对一段参考片反演 · 每换一种参考运动，重新优化一次</text>
+  <g>
+    <rect x="31" y="151" width="448" height="119" rx="12" class="box blue"/>
+    <text x="51" y="187" class="head">参考视频 · 固定 14 帧</text>
+    <text x="51" y="222" class="body">将首帧潜变量复制到各时刻，</text>
+    <text x="51" y="249" class="body">与加噪的参考视频潜变量拼接。</text>
+  </g>
+  <g>
+    <rect x="520" y="151" width="430" height="119" rx="12" class="box orange"/>
+    <text x="540" y="187" class="head">待优化的运动嵌入 m</text>
+    <text x="540" y="222" class="body">各帧的 CLIP 图像特征用于初始化，</text>
+    <text x="540" y="249" class="body">另以全段均值初始化共享的一组。</text>
+  </g>
+  <path d="M253 271v30" class="line"/><path d="M738 271v30" class="line"/>
+  <g>
+    <rect x="31" y="308" width="919" height="132" rx="12" class="box green"/>
+    <text x="51" y="345" class="head">冻结图生视频模型 · 从带噪输入预测干净的参考视频</text>
+    <text x="51" y="379" class="body">视频特征提供查询 Q，运动嵌入 m 提供键 K 和值 V。</text>
+    <text x="51" y="412" class="body">空间交叉注意力每帧使用本帧的 5 个向量；时间交叉注意力使用另 5 个共享向量。</text>
+  </g>
+  <path d="M255 441v29" class="line"/>
+  <g>
+    <rect x="31" y="477" width="448" height="93" rx="12" class="box neutral"/>
+    <text x="51" y="513" class="head">与原参考视频计算扩散训练损失</text>
+    <text x="51" y="546" class="hint">Adam 更新 m，默认 1,000 次迭代。</text>
+  </g>
+  <path d="M255 571v11H974V208h-18" class="back"/>
+  <g>
+    <rect x="520" y="477" width="430" height="93" rx="12" class="box orange"/>
+    <text x="540" y="513" class="head">收敛后保存 m*</text>
+    <text x="540" y="546" class="hint">14 × 5 ＋ 5 ＝ 75 个连续向量，跨目标复用。</text>
+  </g>
+  <path d="M735 441v29" class="line"/>
+  <path d="M31 602h936" stroke="#c3d3ce" stroke-width="1.5"/>
+  <text x="34" y="643" class="stage">迁移到目标图片 · 换掉首帧，沿用同一份 m*</text>
+  <g>
+    <rect x="31" y="665" width="448" height="98" rx="12" class="box blue"/>
+    <text x="51" y="702" class="head">目标图像 ＋ 随机视频噪声</text>
+    <text x="51" y="736" class="body">目标首帧潜变量提供主体、场景与布局。</text>
+  </g>
+  <g>
+    <rect x="520" y="665" width="430" height="98" rx="12" class="box orange"/>
+    <text x="540" y="702" class="head">参考运动 m*</text>
+    <text x="540" y="736" class="body">替换原本供交叉注意力读取的条件。</text>
+  </g>
+  <path d="M255 765v29" class="line"/><path d="M735 765v29" class="line"/>
+  <g>
+    <rect x="31" y="800" width="919" height="72" rx="12" class="box green"/>
+    <text x="51" y="844" class="head">同一套冻结的 SVD 反复去噪 → VAE 解码</text>
+  </g>
+  <path d="M490 873v25" class="line"/>
+  <g>
+    <rect x="31" y="906" width="919" height="55" rx="12" class="box neutral"/>
+    <text x="51" y="941" class="body">输出 RGB 视频。例如给同一张卡通狗图换上小跑或跑步参考，比较其颠簸和起伏。</text>
+  </g>
+</svg>

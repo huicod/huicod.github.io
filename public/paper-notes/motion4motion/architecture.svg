@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1060" viewBox="0 0 1000 1060" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">Motion4Motion 怎样让新主体沿参考视频的轨迹运动</title>
+  <desc id="desc">左侧从源首帧与目标首帧产生跨主体点对应，从源视频取得每个点的跨帧轨迹。右侧从静止目标或文字生成初始目标视频，反演缓存首帧外观。两条支线汇入冻结的 Wan：让复制的目标外观键沿轨迹做旋转位置编码，值保留目标外观，查询遵循原有位置编码。最后恢复普通去噪和解码。</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#496a79"/></marker>
+    <marker id="b" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#986937"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#213943}
+      .title{font-size:33px;font-weight:700}.sub{font-size:21px;fill:#4c6269}
+      .head{font-size:24px;font-weight:700}.body{font-size:20px}.small{font-size:18px;fill:#445b62}
+      .stage{font-size:23px;font-weight:700}.blueText{fill:#245b75}.goldText{fill:#84612c}.greenText{fill:#356b52}
+      .card{stroke-width:1.6}.blue{fill:#ecf5fa;stroke:#9cbecf}.gold{fill:#fcf3e6;stroke:#d5b88d}.green{fill:#edf6ef;stroke:#9ebda5}
+      .wire,.awire{fill:none;stroke:#496a79;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;marker-end:url(#a)}
+      .awire{stroke:#986937;marker-end:url(#b)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1058" rx="16" fill="#fbfcfa" stroke="#cfdbd5"/>
+  <text x="40" y="59" class="title">Motion4Motion 如何把动作迁给另一个主体？</text>
+  <text x="41" y="95" class="sub">同一个目标部位，从源视频继承运动，从目标首帧保留外观。</text>
+  <text x="43" y="150" class="stage blueText">A　建立目标点与源轨迹的对应</text>
+  <text x="535" y="150" class="stage goldText">B　取得目标外观与起始噪声</text>
+  <rect x="40" y="171" width="431" height="102" rx="12" class="card blue"/>
+  <text x="60" y="209" class="head">源视频 ＋ 目标首帧</text>
+  <text x="60" y="247" class="body">在源首帧主体掩码内采样锚点。</text>
+  <rect x="529" y="171" width="431" height="102" rx="12" class="card gold"/>
+  <text x="549" y="209" class="head">目标图像或文字</text>
+  <text x="549" y="247" class="body">由 Wan-I2V 或 T2V 生成初始视频。</text>
+  <path d="M254 273v29" class="wire"/><path d="M745 273v29" class="awire"/>
+  <rect x="40" y="311" width="431" height="139" rx="12" class="card blue"/>
+  <text x="60" y="351" class="head">两次查找，共用源锚点编号</text>
+  <text x="60" y="390" class="body">跨首帧匹配 → 对应哪个目标点？</text>
+  <text x="60" y="424" class="body">源视频跟踪 → 该点逐帧去了哪里？</text>
+  <rect x="529" y="311" width="431" height="139" rx="12" class="card gold"/>
+  <text x="549" y="351" class="head">确定性反演</text>
+  <text x="549" y="390" class="body">提供去噪的起始潜变量，并缓存</text>
+  <text x="549" y="424" class="body">各层目标首帧的键 K 与值 V。</text>
+  <path d="M254 450v29" class="wire"/><path d="M745 450v29" class="awire"/>
+  <rect x="40" y="487" width="431" height="103" rx="12" class="card blue"/>
+  <text x="60" y="526" class="head">目标点 → 源轨迹</text>
+  <text x="60" y="565" class="body">每一帧给出该部位对应的网格坐标。</text>
+  <rect x="529" y="487" width="431" height="103" rx="12" class="card gold"/>
+  <text x="549" y="526" class="head">按目标点提取首帧外观</text>
+  <text x="549" y="565" class="body">复制每个点的 K 和 V，供各帧使用。</text>
+  <path d="M471 533h50" class="wire"/>
+  <path d="M254 590v57" class="wire"/><path d="M745 590v57" class="awire"/>
+  <rect x="40" y="655" width="920" height="190" rx="12" class="card green"/>
+  <text x="60" y="698" class="head greenText">C　冻结的 Wan-T2V-14B · 前 35 / 50 个去噪步</text>
+  <text x="61" y="741" class="body">Q　保留查询及其原位置，让当前时空位置寻找可用特征。</text>
+  <text x="61" y="782" class="body">K　保留原有键；追加目标外观键，按轨迹坐标施加 RoPE。</text>
+  <text x="61" y="822" class="body">V　保留原有值；追加目标外观值，供注意力按匹配权重读取。</text>
+  <path d="M500 845v36" class="wire"/>
+  <rect x="40" y="889" width="920" height="106" rx="12" class="card green"/>
+  <text x="60" y="929" class="head greenText">恢复普通自注意力 → 完成去噪 → 解码得到视频帧</text>
+  <text x="61" y="968" class="body">狗跑动的点轨迹驱动狮子的外观；人驱动桌子时，先用掩码指定对应桌腿。</text>
+  <text x="41" y="1030" class="small">根据原文图 3、图 4 与算法 1 重绘。箭头表示推理时传递的数据，模型参数保持冻结。</text>
+</svg>

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1116" viewBox="0 0 1000 1116" role="img" lang="zh-CN" aria-labelledby="title desc">
+  <title id="title">Motion Beyond Morphology 怎样用无配对视频学跨物种迁移？</title>
+  <desc id="desc">阶段一一次给每段参考视频挑选一种适用的运动视图，训练重建源片；随后组合新目标，合成和过滤参考到目标的训练对。阶段二继承权重，直接读取原始参考视频，学习生成配对的目标视频。</desc>
+  <defs>
+    <marker id="tip" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto" viewBox="0 0 7 6"><path d="M0 0 7 3 0 6z" fill="#476862"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#20363b}
+      .title{font-size:29px;font-weight:700}.head{font-size:22px;font-weight:700}.body{font-size:18px}.small{font-size:17px;fill:#405861}.step{font-size:22px;font-weight:700;fill:#325e58}
+      .blue{fill:#ecf4fa;stroke:#9fbecf}.green{fill:#eaf4ee;stroke:#9cbaac}.orange{fill:#fff4e7;stroke:#d9b99b}.gray{fill:#f4f6f5;stroke:#b7c8c4}.card{stroke-width:1.5}
+      .flow{fill:none;stroke:#476862;stroke-width:2.5;stroke-linejoin:round;marker-end:url(#tip)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1114" rx="15" fill="white" stroke="#c8d9d5"/>
+  <text x="34" y="48" class="title">Motion Beyond Morphology 怎样用无配对视频学跨物种迁移？</text>
+  <text x="35" y="81" class="small">顺着箭头先看训练数据如何形成。底部是发布论文中实际采用的推理流程。</text>
+  <text x="32" y="125" class="step">阶段 I　学会读运动视图，再用它制造跨类别示范</text>
+  <g><rect x="30" y="147" width="456" height="113" rx="11" class="blue card"/>
+  <text x="49" y="180" class="head">参考片段 → 选一种适用的运动视图</text>
+  <text x="49" y="210" class="body">动物骨架、带深度的中心轨迹、稠密点轨迹、</text>
+  <text x="49" y="236" class="body">刚体 6 自由度坐标轴、前景边缘。</text>
+  </g>
+  <g><rect x="514" y="147" width="456" height="113" rx="11" class="orange card"/>
+  <text x="533" y="180" class="head">原片首帧＋视频描述</text>
+  <text x="533" y="210" class="body">首帧与运动视图各经 3D VAE 编码，</text>
+  <text x="533" y="236" class="body">文字经文本编码器。</text>
+  </g>
+  <path d="M258 262 V285" class="flow"/>
+  <path d="M742 262 V285" class="flow"/>
+  <g><rect x="30" y="290" width="940" height="104" rx="11" class="gray card"/>
+  <text x="49" y="323" class="head">训练阶段 I 的视频生成器：在这些条件下重建原片</text>
+  <text x="49" y="353" class="body">用流匹配训练。同一网络学会从不同视图读取摆动、位移或转向等线索。</text>
+  <text x="49" y="379" class="body">约 160 万段未配对视频用于本阶段。</text>
+  </g>
+  <path d="M258 396 V419" class="flow"/>
+  <g><rect x="30" y="424" width="456" height="106" rx="11" class="blue card"/>
+  <text x="49" y="457" class="head">保留参考片的运动视图</text>
+  <text x="49" y="487" class="body">生成前先剔除提取不可靠的运动视图。</text>
+  </g>
+  <g><rect x="514" y="424" width="456" height="106" rx="11" class="orange card"/>
+  <text x="533" y="457" class="head">换成另一类别的目标条件</text>
+  <text x="533" y="487" class="body">用新目标的画面或描述规定生成内容。</text>
+  </g>
+  <path d="M258 532 V555" class="flow"/>
+  <path d="M742 532 V555" class="flow"/>
+  <g><rect x="30" y="560" width="940" height="106" rx="11" class="green card"/>
+  <text x="49" y="593" class="head">阶段 I 模型合成新目标，筛出可当作示范的视频对</text>
+  <text x="49" y="623" class="body">检查动作是否保留、是否符合目标、有无源外观泄漏和画面质量。</text>
+  <text x="49" y="649" class="body">留下三元组：原始参考视频、目标条件、筛选通过的合成目标视频。</text>
+  </g>
+  <path d="M498 668 V690" class="flow"/>
+  <g><rect x="30" y="695" width="940" height="109" rx="11" class="green card"/>
+  <text x="49" y="728" class="head">阶段 II　继承阶段 I 权重，换掉运动输入，用筛过的示范再训练</text>
+  <text x="49" y="758" class="body">把原始参考 RGB 视频经 3D VAE 编码作为条件；把合成目标视频用作监督。</text>
+  <text x="49" y="784" class="body">模型学习哪些动态可以跨越参考与目标的外形差异。</text>
+  </g>
+  <text x="32" y="854" class="step">推理　直接使用一段新参考视频</text>
+  <g><rect x="30" y="878" width="456" height="96" rx="11" class="blue card"/>
+  <text x="49" y="911" class="head">参考 RGB 视频 → 3D VAE</text>
+  <text x="49" y="941" class="body">这一阶段省去五类视图的显式提取。</text>
+  </g>
+  <g><rect x="514" y="878" width="456" height="96" rx="11" class="orange card"/>
+  <text x="533" y="911" class="head">目标描述＋可选的目标图</text>
+  <text x="533" y="941" class="body">分别支持文字指定或图片指定目标。</text>
+  </g>
+  <path d="M258 976 V997" class="flow"/>
+  <path d="M742 976 V997" class="flow"/>
+  <g><rect x="30" y="1002" width="940" height="88" rx="11" class="green card"/>
+  <text x="49" y="1035" class="head">阶段 II 生成器从噪声迭代生成潜变量 → 解码成目标 RGB 视频</text>
+  <text x="49" y="1065" class="body">用户能约定参考动作和目标外观；不同形态之间怎样实现这段动作，由模型推断。</text>
+  </g>
+</svg>

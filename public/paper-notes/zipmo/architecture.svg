@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1003" viewBox="0 0 1000 1003" role="img" lang="zh-CN" aria-labelledby="title desc">
+  <title id="title">ZipMo 怎样用一张图和少量目标点，预测整幅画面的运动？</title>
+  <desc id="desc">用首帧与稀疏跟踪轨迹训练运动 VAE，压缩成单个空间网格，再通过查询首帧位置和时刻解码二维轨迹。训练流匹配网络在该空间生成，给定首帧及目标点或任务文本即可推理。机器人实验另用控制头输出七维动作。</desc>
+  <defs>
+    <marker id="tip" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto" viewBox="0 0 7 6"><path d="M0 0 7 3 0 6z" fill="#476862"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#20363b}
+      .title{font-size:29px;font-weight:700}.head{font-size:22px;font-weight:700}.body{font-size:18px}.small{font-size:17px;fill:#405861}.step{font-size:22px;font-weight:700;fill:#325e58}
+      .blue{fill:#ecf4fa;stroke:#9fbecf}.green{fill:#eaf4ee;stroke:#9cbaac}.orange{fill:#fff4e7;stroke:#d9b99b}.gray{fill:#f4f6f5;stroke:#b7c8c4}.card{stroke-width:1.5}
+      .flow{fill:none;stroke:#476862;stroke-width:2.5;stroke-linejoin:round;marker-end:url(#tip)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1001" rx="15" fill="white" stroke="#c8d9d5"/>
+  <text x="34" y="48" class="title">ZipMo 怎样用一张图和少量目标点，预测整幅画面的运动？</text>
+  <text x="35" y="81" class="small">蓝色表示图像或轨迹观测；绿色表示可采样的运动潜变量；橙色表示用户给定的条件。</text>
+  <text x="32" y="126" class="step">第一阶段　从已有视频学习可查询的运动表示</text>
+  <g><rect x="30" y="148" width="456" height="110" rx="11" class="blue card"/>
+  <text x="49" y="181" class="head">视频 → 跟踪器 → 稀疏二维轨迹</text>
+  <text x="49" y="211" class="body">训练素材中抽取首帧上的点并跟踪 64 帧。</text>
+  <text x="49" y="237" class="body">训练时只把其中一部分轨迹送入编码器。</text>
+  </g>
+  <g><rect x="514" y="148" width="456" height="110" rx="11" class="blue card"/>
+  <text x="533" y="181" class="head">首帧 → DINOv2 图像特征</text>
+  <text x="533" y="211" class="body">它提供物体边界和场景上下文，同时</text>
+  <text x="533" y="237" class="body">供运动编码器和解码器读取。</text>
+  </g>
+  <path d="M258 260 V282" class="flow"/>
+  <path d="M742 260 V282" class="flow"/>
+  <g><rect x="30" y="287" width="940" height="110" rx="11" class="green card"/>
+  <text x="49" y="320" class="head">运动 VAE：跟踪点与首帧特征 → 一张 16 × 16 × 16 的运动网格</text>
+  <text x="49" y="350" class="body">轨迹按起点和时刻编码；64 帧的变化压进单张空间网格。</text>
+  <text x="49" y="376" class="body">训练解码器时既重建已输入的轨迹，也预测那些被留出的轨迹。</text>
+  </g>
+  <path d="M501 399 V423" class="flow"/>
+  <g><rect x="30" y="428" width="940" height="91" rx="11" class="gray card"/>
+  <text x="49" y="461" class="head">训练出来的读出方式：首帧查询点 (x₀, y₀)＋查询时刻 t → 预测 (xₜ, yₜ)</text>
+  <text x="49" y="491" class="body">查询还读取首帧和运动网格；同一张网格可以回答多个点在许多时刻的位置。</text>
+  </g>
+  <text x="32" y="570" class="step">第二阶段　学习生成运动网格；推理时从噪声开始</text>
+  <g><rect x="30" y="592" width="456" height="112" rx="11" class="blue card"/>
+  <text x="49" y="625" class="head">初始场景：首帧图像特征</text>
+  <text x="49" y="655" class="body">训练使用已有轨迹编码出的网格作目标；</text>
+  <text x="49" y="681" class="body">实际预测时只需起始画面。</text>
+  </g>
+  <g><rect x="514" y="592" width="456" height="112" rx="11" class="orange card"/>
+  <text x="533" y="625" class="head">空间目标点或任务文字</text>
+  <text x="533" y="655" class="body">开放域用指定起点、目标位置和时刻的 poke；</text>
+  <text x="533" y="681" class="body">LIBERO 的另一组模型读取任务描述。</text>
+  </g>
+  <path d="M258 706 V731" class="flow"/>
+  <path d="M742 706 V731" class="flow"/>
+  <g><rect x="30" y="736" width="940" height="91" rx="11" class="green card"/>
+  <text x="49" y="769" class="head">条件流匹配：噪声网格＋场景＋条件 → 一份可能的运动网格</text>
+  <text x="49" y="799" class="body">不同随机种子可以给同一目标提供不同的中间路径。</text>
+  </g>
+  <path d="M258 829 V854" class="flow"/>
+  <path d="M742 829 V854" class="flow"/>
+  <g><rect x="30" y="859" width="456" height="117" rx="11" class="blue card"/>
+  <text x="49" y="892" class="head">轨迹读出：查询任意首帧位置</text>
+  <text x="49" y="922" class="body">VAE 解码器输出随时间变化的二维坐标。</text>
+  <text x="49" y="948" class="body">可用轨迹比较转弯、幅度和终点误差。</text>
+  </g>
+  <g><rect x="514" y="859" width="456" height="117" rx="11" class="orange card"/>
+  <text x="533" y="892" class="head">机器人实验：另接策略头</text>
+  <text x="533" y="922" class="body">用预测的运动表示产生 7 维动作，</text>
+  <text x="533" y="948" class="body">仿真执行一步，再观察并重新规划。</text>
+  </g>
+</svg>

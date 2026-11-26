@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="944" viewBox="0 0 1000 944" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">TT-VidT 的编码、首帧条件与逐帧重建</title>
+  <desc id="desc">八帧视频先经二维空间层，再由时间层在粗空间特征和运动 token 之间交换信息。训练时用首帧全分辨率空间特征和目标时刻运动编码还原目标帧；特征提取时只运行编码器。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 9 5 0 10z" fill="#445d72"/></marker>
+    <marker id="blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 9 5 0 10z" fill="#2d7091"/></marker>
+    <marker id="green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 9 5 0 10z" fill="#237463"/></marker>
+    <style>
+      text { font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", system-ui, sans-serif; fill:#193447 }
+      .title { font-size:34px; font-weight:700 }
+      .sect { font-size:21px; font-weight:700 }
+      .name { font-size:22px; font-weight:700 }
+      .body { font-size:18px }
+      .small { font-size:16px }
+      .muted { fill:#4a6372 }
+      .path { fill:none; stroke:#445d72; stroke-width:2.8; stroke-linejoin:round; stroke-linecap:round; marker-end:url(#arrow) }
+      .appear { fill:none; stroke:#2d7091; stroke-width:2.8; stroke-linejoin:round; marker-end:url(#blue) }
+      .move { fill:none; stroke:#237463; stroke-width:2.8; stroke-linejoin:round; marker-end:url(#green) }
+      .card { stroke-width:1.5 }
+    </style>
+  </defs>
+  <rect width="1000" height="944" rx="22" fill="#fafcfd"/>
+  <text x="42" y="58" class="title">TT-VidT 如何把时间变化编码进视频特征</text>
+  <text x="42" y="95" class="body muted">首帧提供场景外观，跨帧通道记录各时刻新增的信息。</text>
+
+  <rect x="42" y="131" width="916" height="77" rx="11" fill="#f0f3f6" stroke="#c6d0d6" class="card"/>
+  <text x="66" y="163" class="name">输入视频</text>
+  <text x="66" y="191" class="body">采样 8 帧 RGB  ·  6 fps  ·  每帧 256 × 256</text>
+  <path d="M500 209V237" class="path"/>
+
+  <rect x="42" y="241" width="916" height="250" rx="15" fill="#f2f6f9" stroke="#bfced9" class="card"/>
+  <text x="65" y="277" class="sect">编码器内部  ·  逐帧空间层与跨帧时间层交替 12 次</text>
+  <rect x="65" y="307" width="365" height="144" rx="11" fill="#e3eff9" stroke="#8eafc8" class="card"/>
+  <text x="85" y="343" class="name">DINOv3 二维空间层</text>
+  <text x="85" y="378" class="body">每帧 256 个图像块 + 8 个运动 token</text>
+  <text x="85" y="410" class="body">本帧自注意力汇集纹理、形状和位置</text>
+  <path d="M432 374H515" class="path"/>
+  <rect x="521" y="307" width="412" height="144" rx="11" fill="#e1f3ed" stroke="#81b7a6" class="card"/>
+  <text x="541" y="343" class="name">TT3D 时间层</text>
+  <text x="541" y="378" class="body">每帧 8 个运动 token + 16 个粗空间 token</text>
+  <text x="541" y="410" class="body">当前帧读取自身和历史，以 192 个位置通信</text>
+  <path d="M725 453V470H245V454" class="path"/>
+
+  <path d="M250 492V531" class="appear"/>
+  <path d="M731 492V531" class="move"/>
+  <rect x="42" y="537" width="414" height="92" rx="11" fill="#e3eff9" stroke="#8eafc8" class="card"/>
+  <text x="66" y="573" class="name">首帧外观 z₁</text>
+  <text x="66" y="606" class="body">保留首帧全部 256 个空间位置</text>
+  <rect x="520" y="537" width="438" height="92" rx="11" fill="#e1f3ed" stroke="#81b7a6" class="card"/>
+  <text x="544" y="573" class="name">时刻 t 的运动表示 mₜ</text>
+  <text x="544" y="606" class="body">汇聚当前帧中已与历史交互的运动 token</text>
+
+  <path d="M247 630V688" class="appear"/>
+  <path d="M639 630V655H452V688" class="move"/>
+  <path d="M764 630V688" class="move"/>
+
+  <rect x="42" y="695" width="529" height="188" rx="13" fill="#fff4df" stroke="#d5b87b" class="card"/>
+  <text x="66" y="732" class="name">预训练  ·  Diff Compression</text>
+  <text x="66" y="769" class="body">目标帧潜变量加噪，DiT 结合 z₁ 与 mₜ 去噪。</text>
+  <text x="66" y="802" class="body">对同一首帧之后的 7 个时刻分别重建，</text>
+  <text x="66" y="834" class="body">平均损失，联合更新编码器和解码器。</text>
+
+  <rect x="605" y="695" width="353" height="188" rx="13" fill="#eaf3f0" stroke="#8eb3a7" class="card"/>
+  <text x="629" y="732" class="name">使用时  ·  提取运动特征</text>
+  <text x="629" y="769" class="body">每帧输出 1 个 768 维向量</text>
+  <text x="629" y="801" class="body">整段形状 [B, 8, 1, 768]</text>
+  <text x="629" y="834" class="body">冻结编码器，训练动作分类头。</text>
+  <text x="42" y="918" class="small muted">据论文图 1–2、§3 与作者公开的编码器接口重绘。</text>
+</svg>
