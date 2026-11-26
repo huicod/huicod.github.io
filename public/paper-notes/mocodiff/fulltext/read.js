@@ -27,6 +27,9 @@ input.accept = isSupplement ? '.pdf,.zip' : '.pdf';
 const layout = await fetch('./' + section + '.json').then(r => {
   if (!r.ok) throw new Error('版面文件读取失败，请刷新重试。');
   return r.json();
+}).catch(error => {
+  message.textContent = '版面信息加载失败，请刷新页面重试。';
+  throw error;
 });
 
 async function database() {
