@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1126" viewBox="0 0 1000 1126" role="img" aria-labelledby="title desc">
+  <title id="title">VISTA 如何用文字决定动作，用参考视频调节表演风格</title>
+  <desc id="desc">上方是训练双通道自编码器。三维动作及其渲染视频分别编码，对齐后均可经共享解码器还原动作。下方是生成流程。文字经 CLIP 和掩码自回归 Transformer 提供各位置的上下文。视频经 ViViT、视频编码器、时序统计池化得到全段风格向量。两路在扩散 MLP 中以 Dual-AdaLN 合并，逐轮补全动作潜序列后用共享解码器生成三维骨骼动作。</desc>
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 8 4 0 8Z" fill="#246783"/></marker>
+    <marker id="b" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 8 4 0 8Z" fill="#9a562c"/></marker>
+    <marker id="c" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 8 4 0 8Z" fill="#657575"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#163740}
+      .title{font-size:32px;font-weight:700}.section{font-size:23px;font-weight:700}
+      .heading{font-size:21px;font-weight:700}.body{font-size:18px}.small{font-size:16px;fill:#4d6266}
+      .blue{fill:#176282}.amber{fill:#924c27}.green{fill:#285947}
+      .rail{stroke:#dae4e3;stroke-width:1}.node rect{stroke-width:1.5}
+      .content{fill:#eff7fb;stroke:#97bdcd}.style{fill:#fff3e9;stroke:#d4a987}
+      .shared{fill:#f1f7f3;stroke:#a8c4b5}.neutral{fill:#f6f8f7;stroke:#becaca}
+      .hint{fill:#fafbf9;stroke:#aab9b3;stroke-dasharray:5 5}
+      .wire,.cw,.sw{fill:none;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+      .wire{stroke:#657575;marker-end:url(#c)}.cw{stroke:#246783;marker-end:url(#a)}.sw{stroke:#9a562c;marker-end:url(#b)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1124" rx="15" fill="#fff" stroke="#cbd9d9"/>
+  <text x="32" y="53" class="title">VISTA 怎样把参考视频的风格加进文字动作？</text>
+  <text x="33" y="87" class="body">先学会在视频与动作之间转换，再把文本内容和视频风格送入生成器的不同位置。</text>
+  <line x1="32" y1="108" x2="968" y2="108" class="rail"/>
+  <text x="32" y="146" class="section">阶段一　用成对的动作与渲染视频训练双通道自编码器</text>
+
+  <g class="node">
+    <rect x="32" y="170" width="451" height="105" rx="10" class="neutral"/>
+    <text x="51" y="203" class="heading">动作通道</text>
+    <text x="51" y="235" class="body">三维骨骼序列 → 动作编码器 → 动作潜序列</text>
+    <text x="51" y="259" class="small">对齐损失在动作一侧停止梯度。</text>
+  </g>
+  <g class="node">
+    <rect x="517" y="170" width="451" height="105" rx="10" class="neutral"/>
+    <text x="536" y="203" class="heading">视频通道</text>
+    <text x="536" y="235" class="body">同一动作的渲染 → 冻结的 ViViT → 视频编码器</text>
+    <text x="536" y="259" class="small">由时空视频特征得到视频潜序列。</text>
+  </g>
+  <path d="M254 276V304" class="wire"/>
+  <path d="M742 276V304" class="wire"/>
+  <g class="node">
+    <rect x="32" y="308" width="936" height="74" rx="10" class="shared"/>
+    <text x="51" y="339" class="heading green">共享潜空间与动作解码器</text>
+    <text x="51" y="365" class="body">对齐配对的潜序列，两路都要能由同一个解码器重建动作。生成时复用视频通道和解码器。</text>
+  </g>
+  <line x1="32" y1="413" x2="968" y2="413" class="rail"/>
+  <text x="32" y="453" class="section">阶段二　文字给出各位置的内容，视频给出全段风格</text>
+  <g class="node">
+    <rect x="32" y="478" width="451" height="86" rx="10" class="content"/>
+    <text x="51" y="511" class="heading blue">文字 → 冻结的 CLIP 文本编码器</text>
+    <text x="51" y="542" class="body">例如“一边向前走，一边双手拍掌”。</text>
+  </g>
+  <g class="node">
+    <rect x="517" y="478" width="451" height="86" rx="10" class="style"/>
+    <text x="536" y="511" class="heading amber">参考视频 → ViViT 与视频编码器</text>
+    <text x="536" y="542" class="body">例如 Aeroplane 风格片段，编码成视频潜序列。</text>
+  </g>
+  <path d="M254 565V592" class="cw"/>
+  <path d="M743 565V592" class="sw"/>
+  <g class="node">
+    <rect x="32" y="596" width="451" height="113" rx="10" class="content"/>
+    <text x="51" y="630" class="heading blue">掩码自回归 Transformer</text>
+    <text x="51" y="661" class="body">结合文本与当前动作潜序列，用双向注意力</text>
+    <text x="51" y="687" class="body">给每个待补位置生成各自的上下文。</text>
+  </g>
+  <g class="node">
+    <rect x="517" y="596" width="451" height="113" rx="10" class="style"/>
+    <text x="536" y="630" class="heading amber">把整段视频汇成一个风格向量</text>
+    <text x="536" y="661" class="body">沿时间取均值和标准差，拼接后经两层 MLP</text>
+    <text x="536" y="687" class="body">投影为 512 维，各动作位置共用同一份。</text>
+  </g>
+  <path d="M254 710V751" class="cw"/>
+  <path d="M743 710V751" class="sw"/>
+  <g class="node">
+    <rect x="32" y="755" width="936" height="111" rx="10" class="shared"/>
+    <text x="51" y="790" class="heading green">Diffusion MLP 在待补位置去噪</text>
+    <text x="51" y="821" class="body">内容块在前，专用风格块在后。Dual-AdaLN 将上下文和风格变成偏移、缩放与门控参数，</text>
+    <text x="51" y="848" class="body">越靠后的块给风格越大权重。三路引导可分别调节文本与风格的强度。</text>
+  </g>
+  <path d="M500 867V899" class="wire"/>
+  <g class="node">
+    <rect x="32" y="903" width="936" height="87" rx="10" class="shared"/>
+    <text x="51" y="936" class="heading green">逐轮解除掩码 → 完整动作潜序列 → 共享解码器 → 三维动作</text>
+    <text x="51" y="967" class="body">从全掩码开始，按余弦日程补全。输出每帧 67 维，包含根轨迹和 21 个关节相对根的位置。</text>
+  </g>
+  <g class="node">
+    <rect x="32" y="1016" width="936" height="83" rx="10" class="hint"/>
+    <text x="51" y="1046" class="heading">训练时怎样学习未配对的组合？</text>
+    <text x="51" y="1077" class="body">从另一批次取风格视频，先给内容加风格，再用空风格恢复内容。循环损失比较被掩码的位置。</text>
+  </g>
+</svg>
