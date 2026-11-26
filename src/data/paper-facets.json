@@ -638,6 +638,18 @@
     ],
     "controls": []
   },
+  "dismo-paper-notes": {
+    "topics": [
+      "video",
+      "representation",
+      "understanding"
+    ],
+    "methods": [
+      "flow",
+      "diffusion"
+    ],
+    "controls": []
+  },
   "dmp-paper-notes": {
     "topics": [
       "representation",

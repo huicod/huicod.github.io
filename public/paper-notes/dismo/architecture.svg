@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1132" viewBox="0 0 1000 1132" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">DisMo 怎样从参考视频提取动作，再让新主体演出？</title>
+  <desc id="desc">训练时，同一段视频提供增强过的画面、原始源帧和未来帧。动作提取器读增强后的整段，按时刻输出动作向量。帧生成器从源帧、动作向量和时间间隔预测未来画面，通过流匹配训练两者。迁移时，参考视频提供动作，新主体由图像或文字指定。可让帧生成器逐帧滚动，或训练条件低秩适配器接入冻结的视频生成模型。两条路径都输出视频。</desc>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#3f6c80"/></marker>
+    <marker id="aug" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#997347"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#1f3640}
+      .title{font-size:30px;font-weight:700}.head{font-size:23px;font-weight:700}.body{font-size:20px}.hint{font-size:17px;fill:#435961}
+      .stage{font-size:24px;font-weight:700;fill:#2f5e66}
+      .motion{fill:#edf5fa;stroke:#9dbdce}.appearance{fill:#fff4e7;stroke:#d4ae84}.model{fill:#ebf4ee;stroke:#a2bfaf}.neutral{fill:#f4f7f6;stroke:#b9c9c7}
+      .box{stroke-width:1.5}.line,.aux{fill:none;stroke:#3f6c80;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;marker-end:url(#arr)}
+      .aux{stroke:#997347;stroke-dasharray:6 5;marker-end:url(#aug)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1130" rx="15" fill="white" stroke="#c8d8d3"/>
+  <text x="34" y="50" class="title">DisMo 怎样从参考视频提取动作，再让新主体演出？</text>
+  <text x="35" y="82" class="hint">蓝色跟踪动作，米色跟踪外观或训练目标。上半图学习表示，下半图用同一表示驱动新画面。</text>
+
+  <text x="34" y="134" class="stage">训练阶段 · 从同一段视频取出两路信息</text>
+  <g>
+    <rect x="31" y="157" width="455" height="98" rx="12" class="box motion"/>
+    <text x="51" y="193" class="head">运动变化从哪里来？</text>
+    <text x="51" y="224" class="body">取一个短片段，各帧使用同一组增强参数。</text>
+    <text x="51" y="247" class="hint">原文配置为 8 帧、6 FPS，可改变裁剪与颜色。</text>
+  </g>
+  <g>
+    <rect x="514" y="157" width="455" height="98" rx="12" class="box appearance"/>
+    <text x="534" y="193" class="head">场景长什么样？</text>
+    <text x="534" y="224" class="body">保留原视频中时刻 t 的源帧 xₜ。</text>
+    <text x="534" y="247" class="hint">另取 Δ 帧以后的真实画面，作训练目标。</text>
+  </g>
+  <path d="M257 256v30" class="line"/>
+  <g>
+    <rect x="31" y="291" width="455" height="123" rx="12" class="box motion"/>
+    <text x="51" y="327" class="head">动作提取器 M</text>
+    <text x="51" y="359" class="body">DINOv2 逐帧提特征，3D ViT 联合读片段。</text>
+    <text x="51" y="389" class="hint">按时刻放入可学习查询，读出连续动作向量 mₜ。</text>
+  </g>
+  <path d="M741 256v30" class="line"/>
+  <g>
+    <rect x="514" y="291" width="455" height="123" rx="12" class="box appearance"/>
+    <text x="534" y="327" class="head">未来帧的流匹配监督</text>
+    <text x="534" y="359" class="body">让噪声向真实未来帧的表示过渡。</text>
+    <text x="534" y="389" class="hint">得到带噪目标及相应速度标签，供训练使用。</text>
+  </g>
+  <path d="M259 415v31" class="line"/>
+  <path d="M967 202h14v226H771v18" class="line"/>
+  <path d="M741 415v31" class="aux"/>
+  <g>
+    <rect x="31" y="452" width="938" height="113" rx="12" class="box model"/>
+    <text x="51" y="489" class="head">双路条件帧生成器 F · 预测未来画面</text>
+    <text x="51" y="521" class="body">由源帧给出外观，由 mₜ 给出变化，结合间隔 Δ，预测带噪目标的速度场。</text>
+    <text x="51" y="549" class="hint">虚线表示训练监督。速度预测误差同时训练 M 与 F；每次任务只须还原一个未来时刻的画面。</text>
+  </g>
+
+  <path d="M32 599h936" stroke="#c2d1cb" stroke-width="1.5"/>
+  <text x="34" y="643" class="stage">迁移阶段 · 动作来自参考视频，外观由新目标提供</text>
+  <g>
+    <rect x="31" y="667" width="938" height="86" rx="12" class="box motion"/>
+    <text x="51" y="702" class="head">参考视频 → 复用训练好的动作提取器 M → 一串带时间位置的动作向量</text>
+    <text x="51" y="735" class="hint">相同的动作表示可以通过以下两条路径生成视频。</text>
+  </g>
+  <path d="M257 755v30" class="line"/><path d="M743 755v30" class="line"/>
+  <g>
+    <rect x="31" y="790" width="455" height="180" rx="12" class="box model"/>
+    <text x="51" y="826" class="head">路径 A · 帧生成器逐帧推演</text>
+    <text x="51" y="862" class="body">从新主体的目标首帧出发。</text>
+    <text x="51" y="896" class="body">F 读取当前画面和对应时刻的动作向量，</text>
+    <text x="51" y="926" class="body">生成下一帧，再把新画面作为下一次输入。</text>
+    <text x="51" y="955" class="hint">适合直接查看单步预测能传播怎样的变化。</text>
+  </g>
+  <g>
+    <rect x="514" y="790" width="455" height="180" rx="12" class="box model"/>
+    <text x="534" y="826" class="head">路径 B · 适配预训练视频模型</text>
+    <text x="534" y="862" class="body">文字或目标首帧指定新主体与场景。</text>
+    <text x="534" y="896" class="body">映射网络将动作向量按视频潜帧对齐，</text>
+    <text x="534" y="926" class="body">条件 LoRA 在相应时刻调制视频主干。</text>
+    <text x="534" y="955" class="hint">固定动作提取器和视频主干，训练新增模块。</text>
+  </g>
+  <path d="M257 972v26" class="line"/><path d="M743 972v26" class="line"/>
+  <g>
+    <rect x="31" y="1004" width="938" height="98" rx="12" class="box neutral"/>
+    <text x="51" y="1041" class="head">输出 · 新主体表演参考动作的视频</text>
+    <text x="51" y="1076" class="body">目标角色的外观可以改变；若要可编辑的三维骨架，还需另行从画面恢复人体动作。</text>
+  </g>
+</svg>
