@@ -3846,6 +3846,18 @@
     ],
     "controls": []
   },
+  "unimo-video-motion-paper-notes": {
+    "topics": [
+      "video",
+      "generation",
+      "representation",
+      "multimodal"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": []
+  },
   "unimotion-mtv-paper-notes": {
     "topics": [
       "multimodal",
