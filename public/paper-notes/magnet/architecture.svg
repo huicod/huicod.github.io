@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1300" viewBox="0 0 960 1300" lang="zh-CN" role="img" aria-labelledby="title desc">
+  <title id="title">MAGNet 怎样在同一个模型中生成多个人的动作</title>
+  <desc id="desc">先训练单人姿态 VQ-VAE，再冻结它。将其姿态向量、每人自己的位移转向和对其他人的相对变换拼成动作词元。DFoT 训练时按人和时间块独立加噪，推理时固定已知词元，用同一个去噪器补全未知区域。图中并列示例展示舞伴补全与联合未来预测，并区分轮流生成和长序列滚动。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#47706c"/></marker>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#f9e5bd"/><path d="M-2 2l4-4M0 7l7-7m-2 9l4-4" stroke="#d9b77a" fill="none" stroke-width="1"/></pattern>
+    <g id="known"><rect width="35" height="24" rx="4" fill="#c6e1d6" stroke="#80ab9a"/></g>
+    <g id="target"><rect width="35" height="24" rx="4" fill="url(#hatch)" stroke="#c29c60"/></g>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#213b3b}
+      .title{font-size:30px;font-weight:700}.section{font-size:23px;font-weight:700;fill:#285d57}
+      .head{font-size:21px;font-weight:700}.copy{font-size:18px}.note{font-size:16px;fill:#486363}
+      .box&gt;rect{stroke-width:1.4}.input{fill:#edf4fa;stroke:#adc5d7}.codec{fill:#f4eff7;stroke:#c7b9d0}
+      .model{fill:#edf5ef;stroke:#a6c2b1}.mode{fill:#f7f9fa;stroke:#c5d2d5}.out{fill:#fcf5e9;stroke:#d9c49e}
+      .edge,.join{fill:none;stroke:#47706c;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+      .edge{marker-end:url(#arrow)}.small{font-size:16px;fill:#435b5c}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="958" height="1298" rx="16" fill="#fff" stroke="#c6d4d3"/>
+  <text class="title" x="40" y="54">MAGNet 怎样让多个人在同一段动作中相互配合？</text>
+  <text class="copy" x="40" y="88">每个词元对应一个人、一个时间块；固定哪些词元，决定生成谁的哪段动作。</text>
+
+  <text class="section" x="40" y="143">训练　从单人姿态到多人关系</text>
+  <g class="box"><rect class="input" x="40" y="163" width="880" height="77" rx="10"/>
+    <text class="head" x="60" y="193">多人动作记录</text>
+    <text class="copy" x="60" y="220">为每人在每帧建立骨盆坐标系及其地面投影坐标系，得到局部姿态、自身移动和相对位置。</text></g>
+  <path class="join" d="M480 242v13"/><path class="edge" d="M480 255H255v14"/><path class="edge" d="M480 255h225v14"/>
+  <g class="box"><rect class="codec" x="40" y="273" width="425" height="144" rx="10"/>
+    <text class="head" x="59" y="305">① 单人姿态 VQ-VAE</text>
+    <text class="copy" x="59" y="336">编码关节旋转、根部高度与倾斜。</text>
+    <text class="copy" x="59" y="364">体形和自身运动作条件，每 4 帧量化一次。</text>
+    <text class="note" x="59" y="393">用重建误差学习姿态码本，随后冻结。</text></g>
+  <g class="box"><rect class="input" x="495" y="273" width="425" height="144" rx="10"/>
+    <text class="head" x="514" y="305">保留两类显式变换</text>
+    <text class="copy" x="514" y="336">自身：与上个时刻相比，如何移动、转身。</text>
+    <text class="copy" x="514" y="364">跨人：在我的坐标系中，每位伙伴在哪、</text>
+    <text class="copy" x="514" y="391">朝向哪里。每个人对应 P − 1 位伙伴。</text></g>
+  <path class="join" d="M252 419v14h455v-14"/><path class="edge" d="M480 433v17"/>
+  <g class="box"><rect class="model" x="40" y="455" width="880" height="76" rx="10"/>
+    <text class="head" x="60" y="488">拼成一个人的一个时间块</text>
+    <text class="copy" x="60" y="514">姿态码本向量 ＋ 自身跨帧变换 ＋ 到各伙伴的相对变换，共同组成动作词元。</text></g>
+  <path class="edge" d="M480 533v24"/>
+  <g class="box"><rect class="model" x="40" y="562" width="880" height="110" rx="10"/>
+    <text class="head" x="60" y="595">② 多人 Diffusion Forcing Transformer（DFoT）</text>
+    <text class="copy" x="60" y="625">每个“人 × 时间块”各抽一个噪声等级。模型同时读取带噪词元，预测干净向量与变换。</text>
+    <text class="note" x="60" y="652">训练同时检查跨人变换能否由上一时刻的相对关系和两人的移动推得。</text></g>
+
+  <text class="section" x="40" y="729">推理　选择保留的观测，复用同一个去噪器</text>
+  <use href="#known" x="41" y="752"/><text class="note" x="87" y="770">实色：保留已知动作</text>
+  <use href="#target" x="293" y="752"/><text class="note" x="339" y="770">斜纹：从噪声生成</text>
+  <text class="note" x="580" y="770">每列一个时间块，时间向右 →</text>
+  <g class="box"><rect class="mode" x="40" y="795" width="425" height="151" rx="10"/>
+    <text class="head" x="59" y="828">补全舞伴</text><text class="small" x="59" y="870">舞者甲</text><text class="small" x="59" y="909">舞者乙</text>
+    <use href="#known" x="143" y="852"/><use href="#known" x="186" y="852"/><use href="#known" x="229" y="852"/><use href="#known" x="272" y="852"/><use href="#known" x="315" y="852"/><use href="#known" x="358" y="852"/>
+    <use href="#target" x="143" y="891"/><use href="#target" x="186" y="891"/><use href="#target" x="229" y="891"/><use href="#target" x="272" y="891"/><use href="#target" x="315" y="891"/><use href="#target" x="358" y="891"/></g>
+  <g class="box"><rect class="mode" x="495" y="795" width="425" height="151" rx="10"/>
+    <text class="head" x="514" y="828">共同预测未来</text><text class="small" x="514" y="870">舞者甲</text><text class="small" x="514" y="909">舞者乙</text>
+    <use href="#known" x="598" y="852"/><use href="#known" x="641" y="852"/><use href="#target" x="684" y="852"/><use href="#target" x="727" y="852"/><use href="#target" x="770" y="852"/><use href="#target" x="813" y="852"/>
+    <use href="#known" x="598" y="891"/><use href="#known" x="641" y="891"/><use href="#target" x="684" y="891"/><use href="#target" x="727" y="891"/><use href="#target" x="770" y="891"/><use href="#target" x="813" y="891"/></g>
+  <path class="join" d="M252 948v13h455v-13"/><path class="edge" d="M480 961v16"/>
+  <g class="box"><rect class="model" x="40" y="982" width="880" height="90" rx="10"/>
+    <text class="head" x="60" y="1015">DFoT 按选定的顺序去噪</text>
+    <text class="copy" x="60" y="1046">轮流生成时，先生成甲的当前块，再让乙看见它；同步分人采样时，双方只看已有历史。</text></g>
+  <path class="edge" d="M480 1074v21"/>
+  <g class="box"><rect class="out" x="40" y="1100" width="880" height="96" rx="10"/>
+    <text class="head" x="60" y="1134">姿态解码与运动还原</text>
+    <text class="copy" x="60" y="1166">冻结的解码器结合体形与预测的自身变换还原姿态，再沿根部运动放置角色，得到多人三维动作。</text></g>
+  <text class="copy" x="42" y="1234">继续生成：保留上一窗口末端作为新的已知历史，向前滚动。</text>
+  <text class="note" x="42" y="1274">据作者图 2–3、§3.1–3.3 与附录 A.3 重绘。方格用于说明可见条件，不代表实际窗口长度。</text>
+</svg>

@@ -1879,6 +1879,19 @@
     ],
     "controls": []
   },
+  "magnet-paper-notes": {
+    "topics": [
+      "generation"
+    ],
+    "methods": [
+      "diffusion",
+      "tokens"
+    ],
+    "controls": [
+      "time",
+      "interaction"
+    ]
+  },
   "mate-paper-notes": {
     "topics": [
       "understanding",
