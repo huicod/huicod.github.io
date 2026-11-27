@@ -120,6 +120,19 @@
       "streaming"
     ]
   },
+  "arflow-paper-notes": {
+    "topics": [
+      "generation",
+      "character"
+    ],
+    "methods": [
+      "flow"
+    ],
+    "controls": [
+      "interaction",
+      "streaming"
+    ]
+  },
   "armflow-paper-notes": {
     "topics": [
       "generation",

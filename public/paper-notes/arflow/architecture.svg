@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1220" viewBox="0 0 960 1220" lang="zh-CN" role="img" aria-labelledby="title desc">
+  <title id="title">ARFlow 如何把发起者的动作变成另一人的反应</title>
+  <desc id="desc">训练时，以一对真实动作和反应构造插值状态，训练 Transformer 预测反应端点。推理从观测动作出发，重复预测端点、修正穿透、校正起点和重投影，输出反应者运动。在线设置只使用当前和过去的动作帧。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#47706c"/></marker>
+    <marker id="loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#386a90"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#213b3b}
+      .title{font-size:29px;font-weight:700}.section{font-size:23px;font-weight:700;fill:#285d57}
+      .head{font-size:21px;font-weight:700}.copy{font-size:18px}.note{font-size:16px;fill:#496263}.eq{font-family:"Cambria Math","Microsoft YaHei",sans-serif;font-size:20px}
+      .box rect{stroke-width:1.4}.io{fill:#edf4fa;stroke:#aec7d9}.model{fill:#edf5ef;stroke:#a9c4af}.train{fill:#f5f1f7;stroke:#c6b9cd}.fix{fill:#f9f4e8;stroke:#d7c299}
+      .edge,.iter,.join{fill:none;stroke:#47706c;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+      .edge{marker-end:url(#arrow)}.iter{stroke:#386a90;stroke-dasharray:6 5;marker-end:url(#loop)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="958" height="1218" rx="16" fill="#fff" stroke="#c6d4d3"/>
+  <text x="40" y="51" class="title">ARFlow 如何把一个人的动作变成另一个人的反应？</text>
+  <text x="40" y="84" class="note">动作帧描述身体何时运动。流时间 t 表示一次生成走了多远，从动作端 0 走到反应端 1。</text>
+
+  <text x="40" y="135" class="section">训练　从配对动作学习反应端点</text>
+  <g class="box"><rect class="io" x="40" y="154" width="425" height="84" rx="10"/>
+    <text class="head" x="60" y="188">发起者动作 x₀</text>
+    <text class="copy" x="60" y="218">一段交互中，先做出动作的人的姿态序列。</text></g>
+  <g class="box"><rect class="io" x="495" y="154" width="425" height="84" rx="10"/>
+    <text class="head" x="515" y="188">配对的真实反应 x₁</text>
+    <text class="copy" x="515" y="218">同一段交互中，另一人的姿态序列。</text></g>
+  <path class="join" d="M252 239v16h230m225-16v16H482"/><path class="edge" d="M482 255v15"/>
+  <g class="box"><rect class="train" x="40" y="276" width="880" height="91" rx="10"/>
+    <text class="head" x="60" y="310">采样流时间 t，沿这对动作插值</text>
+    <text class="eq" x="60" y="343">xₜ = t x₁ + [1 − (1 − σₘᵢₙ)t] x₀</text>
+    <text class="note" x="470" y="344">xₜ 是运动表示的中间状态，供网络学习恢复 x₁。</text></g>
+  <path class="edge" d="M480 369v23"/>
+  <g class="box"><rect class="model" x="40" y="397" width="880" height="98" rx="10"/>
+    <text class="head" x="60" y="432">端点预测器 G　·　8 层 Transformer 解码器</text>
+    <text class="copy" x="60" y="464">动作帧投影并加入位置编码；时间 t 和可选动作类别提供额外输入，输出完整反应估计。</text></g>
+  <path class="edge" d="M480 497v21"/>
+  <g class="box"><rect class="train" x="40" y="523" width="880" height="66" rx="10"/>
+    <text class="copy" x="60" y="564">用真实反应监督 G，同时比较两人之间的关节距离、相对朝向和位移。</text></g>
+
+  <text x="40" y="641" class="section">推理　从观测动作出发，逐步修正反应</text>
+  <g class="box"><rect class="io" x="40" y="661" width="425" height="95" rx="10"/>
+    <text class="head" x="60" y="695">在线输入</text>
+    <text class="copy" x="60" y="728">只读到当前帧，以因果掩码逐帧生成。</text></g>
+  <g class="box"><rect class="io" x="495" y="661" width="425" height="95" rx="10"/>
+    <text class="head" x="515" y="695">离线输入</text>
+    <text class="copy" x="515" y="728">整段发起者动作已知，可关闭因果掩码。</text></g>
+  <path class="join" d="M252 758v15h228m228-15v15H480"/><path class="edge" d="M480 773v12"/>
+  <g class="box"><rect class="model" x="40" y="790" width="880" height="71" rx="10"/>
+    <text class="head" x="60" y="822">复用训练好的 G，预测当前这一步的反应端点</text>
+    <text class="note" x="60" y="847">初始状态取观测动作 x₀；后续读入上一步重投影得到的状态。</text></g>
+  <path class="join" d="M480 863v11"/><path class="edge" d="M480 874H252v13"/><path class="edge" d="M480 874h228v13"/>
+  <g class="box"><rect class="fix" x="40" y="892" width="425" height="112" rx="10"/>
+    <text class="head" x="60" y="927">修正反应端</text>
+    <text class="copy" x="60" y="957">以发起者身体的有符号距离场计算穿透。</text>
+    <text class="copy" x="60" y="984">沿降低穿透损失的方向调整预测姿态。</text></g>
+  <g class="box"><rect class="fix" x="495" y="892" width="425" height="112" rx="10"/>
+    <text class="head" x="515" y="927">校正动作端</text>
+    <text class="copy" x="515" y="957">由当前状态和预测端点反推起点，</text>
+    <text class="copy" x="515" y="984">再与真实观测起点 x₀ 加权，减小偏移。</text></g>
+  <path class="join" d="M252 1006v13h228m228-13v13H480"/><path class="edge" d="M480 1019v12"/>
+  <g class="box"><rect class="model" x="40" y="1037" width="880" height="61" rx="10"/>
+    <text class="copy" x="60" y="1074">重投影　沿修正后的两端重新插值，得到下一采样时刻的状态。</text></g>
+  <path class="iter" d="M921 1067h16V824h-14"/>
+  <path class="edge" d="M480 1100v20"/>
+  <g class="box"><rect class="io" x="40" y="1124" width="880" height="45" rx="10"/>
+    <text class="copy" x="60" y="1153">采样结束　输出反应者的三维动作。蓝色虚线表示尚未到达终点时继续迭代。</text></g>
+  <text class="note" x="40" y="1200">依据作者项目及 arXiv v3 的图 2、图 3、算法 2 和附录 E 重绘。</text>
+</svg>
