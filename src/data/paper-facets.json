@@ -842,6 +842,19 @@
     ],
     "controls": []
   },
+  "egoreact-paper-notes": {
+    "topics": [
+      "video",
+      "generation"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "interaction",
+      "streaming"
+    ]
+  },
   "elma-paper-notes": {
     "topics": [
       "understanding",

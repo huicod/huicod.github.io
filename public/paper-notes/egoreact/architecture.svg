@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1280" viewBox="0 0 960 1280" lang="zh-CN" role="img" aria-labelledby="title desc">
+  <title id="title">EgoReAct 怎样从眼前的画面生成观察者的全身反应？</title>
+  <desc id="desc">上半部分展示离线训练。HRD 把合成反应的头轨迹用于控制第一人称视频的镜头；动作 VQ-VAE 把反应序列编码为训练目标。下半部分展示推理。视频的语义和深度与已经生成的头部速度、上一动作编号一起指导因果 Transformer。预测的新编号经解码后还原观察者本人的三维全身动作，并更新下一步的历史。</desc>
+  <defs>
+    <marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#426b65"/></marker>
+    <marker id="trainArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#896394"/></marker>
+    <marker id="loopArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#ad7740"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203b3b}
+      .title{font-size:29px;font-weight:700}.section{font-size:23px;font-weight:700;fill:#285d57}
+      .h{font-size:21px;font-weight:700}.copy{font-size:18px}.mini{font-size:16px;fill:#405d5b}
+      .box&gt;rect{stroke-width:1.5}.train{fill:#f5f0f7;stroke:#c5b5ce}.input{fill:#edf4fa;stroke:#aec6d8}
+      .model{fill:#edf5ef;stroke:#a6c3b2}.out{fill:#fcf5e9;stroke:#d7c49e}
+      .line,.arrow,.target,.feedback{fill:none;stroke:#426b65;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      .arrow{marker-end:url(#flow)}.target{stroke:#896394;stroke-dasharray:6 5;marker-end:url(#trainArrow)}
+      .feedback{stroke:#ad7740;marker-end:url(#loopArrow)}.feedback-join{fill:#ad7740}
+    </style>
+  </defs>
+  <rect width="958" height="1278" x="1" y="1" rx="16" fill="#fff" stroke="#c6d4d3"/>
+  <text class="title" x="36" y="52">EgoReAct 怎样从眼前的画面生成观察者的全身反应？</text>
+  <text class="copy" x="37" y="86">画面来自反应者的第一人称视点。模型要生成的是这位观察者自己的三维动作。</text>
+
+  <text class="section" x="36" y="131">离线训练　让相机运动与反应配对，并学习动作编号</text>
+  <g class="box">
+    <rect class="train" x="36" y="151" width="422" height="143" rx="10"/>
+    <text class="h" x="53" y="183">训练样本　第一人称视频与反应动作</text>
+    <text class="copy" x="53" y="215">根据场景描述分别合成视频和反应动作，</text>
+    <text class="copy" x="53" y="244">提取反应者的头轨迹，作为相机轨迹</text>
+    <text class="copy" x="53" y="273">重生成对齐视频。两者组成 HRD 样本。</text>
+  </g>
+  <g class="box">
+    <rect class="train" x="496" y="151" width="424" height="143" rx="10"/>
+    <text class="h" x="513" y="183">先训练动作编解码器　VQ-VAE</text>
+    <text class="copy" x="513" y="215">反应动作（每帧 263 维）经编码、量化，</text>
+    <text class="copy" x="513" y="244">由动作编号重建原动作。时间下采样四倍，</text>
+    <text class="copy" x="513" y="273">每四个动作帧对应一个离散编号。</text>
+  </g>
+  <path class="arrow" d="M460 229H493"/>
+  <path class="arrow" d="M248 295V320"/>
+  <path class="target" d="M708 295V320"/>
+  <g class="box">
+    <rect class="train" x="36" y="323" width="884" height="68" rx="10"/>
+    <text class="h" x="53" y="352">再训练自回归 Transformer</text>
+    <text class="copy" x="53" y="378">根据配对视频及动作历史预测下一个动作编号，以编码器给出的编号为监督。</text>
+  </g>
+
+  <text class="section" x="36" y="446">流式推理　观察画面，结合已生成的动作逐步回应</text>
+  <g class="box">
+    <rect class="input" x="36" y="469" width="420" height="87" rx="10"/>
+    <text class="h" x="53" y="503">外部输入　第一人称 RGB 视频</text>
+    <text class="copy" x="53" y="536">同一段画面提供视觉内容和深度线索。</text>
+  </g>
+  <g class="box">
+    <rect class="input" x="492" y="469" width="406" height="87" rx="10"/>
+    <text class="h" x="509" y="503">内部历史　观察者先前的反应</text>
+    <text class="copy" x="509" y="536">保存上次动作编号与解码出的头部位置。</text>
+  </g>
+  <path class="line" d="M246 557V578M136 578H350"/>
+  <path class="arrow" d="M136 578V598"/><path class="arrow" d="M350 578V598"/>
+  <path class="line" d="M695 557V578M586 578H803"/>
+  <path class="arrow" d="M586 578V598"/><path class="arrow" d="M803 578V598"/>
+  <g class="box">
+    <rect class="model" x="36" y="601" width="201" height="122" rx="10"/>
+    <text class="h" x="51" y="634">画面语义</text>
+    <text class="mini" x="51" y="665">DINOv2 读取图像，</text>
+    <text class="mini" x="51" y="692">取末层 [CLS] 特征。</text>
+  </g>
+  <g class="box">
+    <rect class="model" x="253" y="601" width="203" height="122" rx="10"/>
+    <text class="h" x="268" y="634">场景深度</text>
+    <text class="mini" x="268" y="665">从视频估计公制深度，</text>
+    <text class="mini" x="268" y="692">再用浅层卷积编码。</text>
+  </g>
+  <g class="box">
+    <rect class="model" x="492" y="601" width="194" height="122" rx="10"/>
+    <text class="h" x="507" y="634">前一帧头部速度</text>
+    <text class="mini" x="507" y="665">从已生成头部位置</text>
+    <text class="mini" x="507" y="692">做差分，再经 MLP。</text>
+  </g>
+  <g class="box">
+    <rect class="model" x="701" y="601" width="197" height="122" rx="10"/>
+    <text class="h" x="716" y="634">上一动作编号</text>
+    <text class="mini" x="716" y="665">将编号映射为向量，</text>
+    <text class="mini" x="716" y="692">起步使用 [BOS]。</text>
+  </g>
+  <path class="line" d="M136 724V751H803V724M350 724V751M586 724V751"/>
+  <path class="arrow" d="M469 751V772"/>
+  <g class="box">
+    <rect class="model" x="36" y="775" width="862" height="77" rx="10"/>
+    <text class="h" x="53" y="807">条件融合</text>
+    <text class="copy" x="53" y="837">四路各 384 维，拼成 1536 维，投影为一个 384 维条件词元。</text>
+  </g>
+  <path class="arrow" d="M469 853V881"/>
+  <g class="box">
+    <rect class="model" x="36" y="884" width="862" height="82" rx="10"/>
+    <text class="h" x="53" y="916">自回归 Transformer　预测下一个动作编号</text>
+    <text class="copy" x="53" y="948">因果注意力按时间读取条件与历史，输出新编号的分布。</text>
+  </g>
+  <path class="arrow" d="M469 967V995"/>
+  <g class="box">
+    <rect class="model" x="36" y="998" width="862" height="80" rx="10"/>
+    <text class="h" x="53" y="1030">复用动作码本与 VQ 解码器</text>
+    <text class="copy" x="53" y="1062">按编号查找动作向量，解码成连续动作并读取头部三维位置。</text>
+  </g>
+  <path class="arrow" d="M469 1079V1107"/>
+  <g class="box">
+    <rect class="out" x="36" y="1110" width="862" height="81" rx="10"/>
+    <text class="h" x="53" y="1142">输出　观察者本人的三维全身反应</text>
+    <text class="copy" x="53" y="1174">新画面到达后，以已生成的动作与头部运动为历史，继续下一步。</text>
+  </g>
+  <path class="feedback" d="M899 1038H928V512H901"/>
+  <path d="M899 928H927" stroke="#ad7740" stroke-width="2" fill="none"/>
+  <circle class="feedback-join" cx="928" cy="928" r="3.5"/>
+  <path class="target" d="M39 1222H78"/><text class="mini" x="89" y="1228">训练目标</text>
+  <path class="feedback" d="M198 1222H237"/><text class="mini" x="248" y="1228">推理反馈，前两帧头速初始化为零</text>
+  <text class="mini" x="37" y="1258">据原文图 2、图 4 与 §4.1–4.2 重绘。时间压缩率指动作编解码器；视频分支用可用的视觉条件。</text>
+</svg>
