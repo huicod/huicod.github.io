@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 1180" width="960" height="1180" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">SynMotion 怎样让新主体完成参考视频里的动作？</title>
+  <desc id="desc">上半部是逐动作训练。抽到真实参考视频时更新主体和动作嵌入，抽到基础模型生成的主体先验视频时冻结动作嵌入。每种动作得到语义和视觉两组权重。下半部是生成。文字编码按主体和动作拆分，加入学到的残差，经细化器合并为语义条件。冻结的视频扩散 Transformer 在注意力中加载动作适配器。模型依照新主体提示词生成视频，图生视频时还接收目标图像。输出是 RGB 视频。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#213c3a}
+      .title{font-size:32px;font-weight:700}.section{font-size:23px;font-weight:700;fill:#245d57}
+      .head{font-size:20px;font-weight:700}.body{font-size:18px}.small{font-size:16px;fill:#385d57}
+      .data{fill:#f6f9f8;stroke:#b7c9c3}.semantic{fill:#edf4fa;stroke:#a4bfd2}
+      .visual{fill:#fbf2e7;stroke:#cfb38d}.model{fill:#edf5ef;stroke:#a5c2af}
+      .block{stroke-width:1.5}.edge,.route{fill:none;stroke:#486e66;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      .edge{marker-end:url(#arrow)}.divider{stroke:#cbd8d4;stroke-width:1}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#486e66"/></marker>
+  </defs>
+  <rect x="1" y="1" width="958" height="1178" rx="16" fill="white" stroke="#c6d4d0"/>
+  <text class="title" x="36" y="56">SynMotion 怎样让新主体完成参考视频里的动作？</text>
+  <text class="body" x="38" y="88">先用少量示例学会一种动作，再为不同主体生成执行该动作的视频。</text>
+
+  <text class="section" x="38" y="141">训练　为每种动作单独学习两组权重</text>
+  <g class="card">
+    <rect class="block data" x="38" y="161" width="423" height="155" rx="12"/>
+    <text class="head" x="57" y="195">真实参考视频　采样概率 75%</text>
+    <text class="body" x="57" y="229">少量示例中，不同的人完成同一目标动作。</text>
+    <text class="body" x="57" y="261">本步同时更新主体嵌入与动作嵌入，</text>
+    <text class="body" x="57" y="289">学习该动作的具体做法。</text>
+  </g>
+  <g class="card">
+    <rect class="block data" x="484" y="161" width="438" height="155" rx="12"/>
+    <text class="head" x="503" y="195">主体先验视频（SPV）　采样概率 25%</text>
+    <text class="body" x="503" y="229">冻结的基础模型生成常见动作，如斑马行走。</text>
+    <text class="body" x="503" y="261">本步更新主体嵌入、冻结动作嵌入，</text>
+    <text class="body" x="503" y="289">保留生成多种主体的能力。</text>
+  </g>
+  <path class="route" d="M250 317V332H703V317"/>
+  <path class="edge" d="M480 332V348"/>
+  <g class="card">
+    <rect class="block model" x="38" y="350" width="884" height="114" rx="12"/>
+    <text class="head" x="57" y="384">以视频去噪为监督</text>
+    <text class="body" x="57" y="416">3D VAE 编码选中的视频。加噪潜变量与对应文字的语义条件一同进入去噪模型。</text>
+    <text class="body" x="57" y="445">基础模型权重冻结。每种动作保存一组语义分支权重和一组视觉适配器权重。</text>
+  </g>
+  <line class="divider" x1="38" y1="488" x2="922" y2="488"/>
+
+  <text class="section" x="38" y="531">生成　选择已学动作，换一个主体</text>
+  <g class="card">
+    <rect class="block data" x="38" y="552" width="884" height="87" rx="12"/>
+    <text class="head" x="57" y="586">输入新主体的提示词，载入对应动作的两组权重</text>
+    <text class="body" x="57" y="617">例如使用“企鹅跳舞”和舞蹈权重。图生视频时另给一张企鹅图像，指定首帧外观。</text>
+  </g>
+  <path class="route" d="M480 640V652 M275 652H729"/>
+  <path class="edge" d="M275 652V673"/><path class="edge" d="M729 652V673"/>
+  <g class="card">
+    <rect class="block semantic" x="38" y="676" width="475" height="211" rx="12"/>
+    <text class="head" x="57" y="709">语义分支　分别表示“谁”和“做什么”</text>
+    <text class="body" x="57" y="745">多模态语言模型编码文字，按词的位置与角色</text>
+    <text class="body" x="57" y="773">划分出主体、动作两段。两段各自加上经过</text>
+    <text class="body" x="57" y="801">Zero-Conv 的已学残差，再拼接送入细化器。</text>
+    <text class="body" x="57" y="838">细化器融合两段语义，经第二个 Zero-Conv</text>
+    <text class="body" x="57" y="866">加回原序列，形成去噪的文本条件。</text>
+  </g>
+  <g class="card">
+    <rect class="block visual" x="534" y="676" width="388" height="211" rx="12"/>
+    <text class="head" x="553" y="709">视觉分支　动作感知适配器</text>
+    <text class="body" x="553" y="745">载入动作对应的低秩更新 ΔW = BA。</text>
+    <text class="body" x="553" y="780">在文本块、视频块和单流块中，</text>
+    <text class="body" x="553" y="808">将低秩更新加到注意力投影上。</text>
+    <text class="body" x="553" y="848">Q、K、V 的原权重 W 均保持冻结。</text>
+  </g>
+  <path class="route" d="M275 888V909H729V888"/>
+  <path class="edge" d="M480 909V928"/>
+  <g class="card">
+    <rect class="block model" x="38" y="930" width="884" height="90" rx="12"/>
+    <text class="head" x="57" y="966">HunyuanVideo 的多模态扩散 Transformer（MM-DiT）</text>
+    <text class="body" x="57" y="998">以语义分支输出为条件，在装有适配器的骨干内逐步去噪，得到视频潜变量。</text>
+  </g>
+  <path class="edge" d="M480 1021V1044"/>
+  <g class="card">
+    <rect class="block data" x="38" y="1046" width="884" height="75" rx="12"/>
+    <text class="head" x="57" y="1077">视频 VAE 解码 → 新主体执行定制动作的 RGB 视频</text>
+    <text class="small" x="57" y="1103">论文评测文生视频与图生视频。作者发布的采样入口使用提示词、目标图像与动作权重。</text>
+  </g>
+  <text class="small" x="38" y="1157">按原文图 2、§3.1–3.3、§4.1 与作者图生视频推理入口重绘。</text>
+</svg>

@@ -3564,6 +3564,17 @@
       "streaming"
     ]
   },
+  "synmotion-paper-notes": {
+    "topics": [
+      "video",
+      "generation",
+      "multimodal"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
   "syntalker-paper-notes": {
     "topics": [
       "gesture",
