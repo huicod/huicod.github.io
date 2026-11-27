@@ -1377,6 +1377,20 @@
     ],
     "controls": []
   },
+  "human-x-paper-notes": {
+    "topics": [
+      "character",
+      "generation"
+    ],
+    "methods": [
+      "diffusion",
+      "physics"
+    ],
+    "controls": [
+      "interaction",
+      "streaming"
+    ]
+  },
   "humanmac-paper-notes": {
     "topics": [
       "generation",
