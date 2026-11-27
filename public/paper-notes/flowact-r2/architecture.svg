@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1160" viewBox="0 0 960 1160" lang="zh-CN" role="img" aria-labelledby="title desc">
+  <title id="title">FlowAct-R2 如何在直播中回应插话、切换参考并继续表演</title>
+  <desc id="desc">播前从多模态素材准备人物设定、议程和技能。直播时，观众输入和会话历史与准备好的资源共同进入调度器。调度器决定做什么与何时做，产生滚动提示、驱动音频和可换的参考。经改造的 Seedance 2.0 Mini 以这些条件和历史画面为输入，连续输出数字人视频。</desc>
+  <defs>
+    <style>
+      text {font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#18373b}
+      .title {font-size:28px;font-weight:bold}
+      .sec {font-size:23px;font-weight:bold;fill:#215d61}
+      .head {font-size:21px;font-weight:bold}
+      .body {font-size:18px}
+      .small {font-size:16px;fill:#425e65}
+      .cell {font-size:16px;text-anchor:middle}
+      .box {stroke-width:1.5}
+      .prep {fill:#f5f2f9;stroke:#c4b8d2}
+      .state {fill:#edf5f8;stroke:#abc4cb}
+      .gen {fill:#eef6ef;stroke:#abc5b0}
+      .gold {fill:#faf5eb;stroke:#d7c19b}
+      .arr {fill:none;stroke:#45716f;stroke-width:2;stroke-linejoin:round;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" markerWidth="7" markerHeight="7" refX="8.8" refY="5" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#45716f"/></marker>
+  </defs>
+  <rect x="1" y="1" width="958" height="1158" rx="16" fill="white" stroke="#c2d2cf"/>
+  <text x="34" y="53" class="title">FlowAct-R2 怎样在直播里换商品、答问题，再接着演？</text>
+  <text x="34" y="89" class="small">沿着一次观众插话，追踪行为决定怎样变成下一段视频。根据论文图 2 与第 2 节重绘。</text>
+
+  <text x="34" y="145" class="sec">开播前，准备可以随时调用的资源</text>
+  <rect x="34" y="166" width="342" height="104" rx="10" class="prep box"/>
+  <text x="53" y="202" class="head">人物素材</text>
+  <text x="53" y="235" class="body">文字、图像、声音、视频和人工脚本</text>
+  <path d="M379 218H417" class="arr"/>
+  <rect x="423" y="166" width="503" height="104" rx="10" class="prep box"/>
+  <text x="443" y="202" class="head">离线规划</text>
+  <text x="443" y="235" class="body">确定人设、编排整场议程、整理可复用的技能素材。</text>
+
+  <text x="34" y="331" class="sec">直播时，决定做什么、何时做</text>
+  <path d="M673 273V353" class="arr"/>
+  <rect x="34" y="358" width="342" height="117" rx="10" class="state box"/>
+  <text x="53" y="394" class="head">此刻的观众与上下文</text>
+  <text x="53" y="426" class="body">观众发来的文字或语音</text>
+  <text x="53" y="454" class="small">会话历史随互动更新，以摘要供后续决策。</text>
+  <path d="M379 417H417" class="arr"/>
+  <rect x="423" y="358" width="503" height="117" rx="10" class="state box"/>
+  <text x="443" y="394" class="head">在线交互智能体</text>
+  <text x="443" y="426" class="body">行为决定选内容，调度决定开始、叠加、延后、</text>
+  <text x="443" y="454" class="body">打断或恢复，让观众的插话可以改变原议程。</text>
+  <path d="M673 477V499" class="arr"/>
+  <rect x="34" y="504" width="892" height="145" rx="10" class="state box"/>
+  <text x="53" y="538" class="head">行为时间轴</text>
+  <text x="212" y="538" class="small">下列顺序为教学示例，各段长度随事件改变。</text>
+  <g>
+    <rect x="55" y="557" width="195" height="38" rx="5" fill="#dbebe4"/><text x="152" y="582" class="cell">讲话 · 展示商品 A</text>
+    <rect x="258" y="557" width="178" height="38" rx="5" fill="#f7ead3"/><text x="347" y="582" class="cell">倾听 · 观众提问</text>
+    <rect x="444" y="557" width="185" height="38" rx="5" fill="#dbebe4"/><text x="536" y="582" class="cell">讲话 · 回答问题</text>
+    <rect x="637" y="557" width="268" height="38" rx="5" fill="#e5dff1"/><text x="771" y="582" class="cell">执行技能 · 换商品 B 展示</text>
+  </g>
+  <text x="55" y="627" class="small">议程也能在无人提问时推进。智能体把安排落实为连续更新的生成条件。</text>
+  <path d="M480 651V675" class="arr"/>
+  <rect x="34" y="680" width="892" height="95" rx="10" class="gold box"/>
+  <text x="53" y="716" class="head">智能体交给生成器什么？</text>
+  <text x="53" y="749" class="body">滚动动作提示　＋　驱动声音　＋　按需切换的图像、音频或视频参考（例如商品 B 的图）。</text>
+
+  <text x="34" y="837" class="sec">视频生成器如何接住这些变化</text>
+  <path d="M807 777V854" class="arr"/>
+  <rect x="34" y="859" width="892" height="153" rx="10" class="gen box"/>
+  <text x="54" y="894" class="head">流式多模态参考 DiT · 从 Seedance 2.0 Mini 的参考到视频模型适配</text>
+  <text x="54" y="930" class="body">用视频时间轴的位置编码对齐新参考块，用联合参考与图像条件维持身份和外观。</text>
+  <text x="54" y="962" class="body">将部分加噪的历史运动画面作为条件，以减轻误差累积。分块续写，并由粗到细恢复细节。</text>
+  <text x="54" y="991" class="small">声音训练支持口形、表情与头部姿态的协调。</text>
+  <path d="M480 1014V1041" class="arr"/>
+  <rect x="34" y="1046" width="892" height="88" rx="10" class="gen box"/>
+  <text x="54" y="1081" class="head">观众收到连续的 720p 数字人视频</text>
+  <text x="54" y="1113" class="body">动作体现为像素中的表演。手是否接触指定物体，需要从画面另行判断。</text>
+</svg>

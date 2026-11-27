@@ -1013,6 +1013,20 @@
       "streaming"
     ]
   },
+  "flowact-r2-paper-notes": {
+    "topics": [
+      "video",
+      "multimodal"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "streaming",
+      "interaction",
+      "time"
+    ]
+  },
   "flowerdance-paper-notes": {
     "topics": [
       "dance",
@@ -2382,6 +2396,19 @@
       "time",
       "space",
       "parts"
+    ]
+  },
+  "motionstream-paper-notes": {
+    "topics": [
+      "video"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "streaming",
+      "time"
     ]
   },
   "motionstreamer-paper-notes": {

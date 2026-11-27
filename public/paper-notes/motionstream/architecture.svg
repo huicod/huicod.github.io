@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1192" viewBox="0 0 1000 1192" role="img" lang="zh-CN" aria-labelledby="ms-title ms-desc">
+  <title id="ms-title">MotionStream 怎样把二维轨迹变成可持续生成的视频？</title>
+  <desc id="ms-desc">跟踪视频点、用户拖动像素和投影视点路径都产生二维轨迹。轨迹编码与带噪视频潜变量拼接。双向教师先用流匹配训练，再蒸馏为因果学生。学生生成每一块时只保留开头的锚点及最近的历史块。解码得到 RGB 视频帧。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 0,10 Z" fill="#47756b"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203637}
+      .title{font-size:30px;font-weight:700}.heading{font-size:23px;font-weight:700;fill:#285b55}
+      .head{font-size:20px;font-weight:700}.copy{font-size:17px}.note{font-size:16px;fill:#465e60}
+      .cell{font-size:15px;font-weight:600;text-anchor:middle;dominant-baseline:middle}
+      .violet{fill:#f4eff9;stroke:#cdbfdb}.green{fill:#eaf5ee;stroke:#abc8b4}.blue{fill:#edf4f9;stroke:#b1c6d4}.sand{fill:#fff3df;stroke:#dfc497}.gray{fill:#f7f9f9;stroke:#c6d2d2}.ghost{fill:#fafbfb;stroke:#cbd5d5;stroke-dasharray:4 4}
+      .edge{fill:none;stroke:#47756b;stroke-width:2;stroke-linejoin:round;marker-end:url(#arrow)}
+      .rule{stroke:#cad6d5;stroke-width:1}.frame{stroke-width:1.4}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="998" height="1190" rx="16" fill="#fff" stroke="#c1d2d0"/>
+  <text x="36" y="54" class="title">MotionStream 怎样把二维轨迹变成可持续生成的视频？</text>
+  <text x="36" y="89" class="note">首图提供外观，文字描述场景和变化，轨迹指定可见点的移动方向。</text>
+
+  <text x="36" y="147" class="heading">三种控制共用同一条轨迹输入路径</text>
+  <g><rect x="36" y="171" width="292" height="90" rx="10" class="blue frame"/>
+    <text x="54" y="204" class="head">拖动图像</text>
+    <text x="54" y="238" class="copy">鼠标移动局部区域的控制点。</text></g>
+  <g><rect x="355" y="171" width="290" height="90" rx="10" class="blue frame"/>
+    <text x="373" y="204" class="head">移植参考运动</text>
+    <text x="373" y="238" class="copy">用跟踪器提取视频中的点轨迹。</text></g>
+  <g><rect x="672" y="171" width="292" height="90" rx="10" class="blue frame"/>
+    <text x="690" y="204" class="head">移动虚拟相机</text>
+    <text x="690" y="238" class="copy">用深度和相机位姿投影出轨迹。</text></g>
+  <path d="M181 263V294" class="edge"/><path d="M500 263V294" class="edge"/><path d="M818 263V294" class="edge"/>
+  <g><rect x="36" y="299" width="928" height="95" rx="10" class="green frame"/>
+    <text x="54" y="333" class="head">把二维轨迹变成一张随时间变化的特征图</text>
+    <text x="54" y="366" class="copy">同一点沿途写入相同的正弦 ID 编码，仅在可见位置落点。轨迹头在时间上压缩 4 倍，再做逐位置卷积。</text></g>
+
+  <text x="36" y="452" class="heading">离线训练如何得到可以逐块生成的模型？</text>
+  <g><rect x="36" y="476" width="428" height="159" rx="10" class="violet frame"/>
+    <text x="54" y="511" class="head">先训练双向视频教师</text>
+    <text x="54" y="544" class="copy">把轨迹特征与带噪视频潜变量按通道拼接。</text>
+    <text x="54" y="572" class="copy">结合文本与首图，通过流匹配学习去噪。</text>
+    <text x="54" y="607" class="note">训练轨迹取自视频，可使用整段上下文。</text></g>
+  <path d="M467 552H512" class="edge"/>
+  <g><rect x="518" y="476" width="446" height="159" rx="10" class="violet frame"/>
+    <text x="536" y="511" class="head">再蒸馏为少步因果学生</text>
+    <text x="536" y="544" class="copy">先用教师的 ODE 样本对适配因果模型。</text>
+    <text x="536" y="572" class="copy">再让学生用自己生成的历史推演后续块，</text>
+    <text x="536" y="607" class="note">以 DMD 匹配教师在文字和轨迹联合引导下的分布。</text></g>
+
+  <text x="36" y="697" class="heading">实时推理怎样记住外观，并限定每轮计算量？</text>
+  <text x="36" y="730" class="note">以下取首块锚点数 S＝1、局部历史窗 W＝1。两行沿同一时间轴，逐轮向右移动。</text>
+  <rect x="36" y="756" width="928" height="202" rx="10" class="gray frame"/>
+  <g class="cell">
+    <text x="294" y="782">第 1 块</text><text x="412" y="782">第 2 块</text><text x="530" y="782">第 3 块</text>
+    <text x="648" y="782">第 4 块</text><text x="766" y="782">第 5 块</text><text x="884" y="782">第 6 块</text>
+  </g>
+  <text x="54" y="835" class="head">生成第 5 块</text>
+  <text x="54" y="905" class="head">生成第 6 块</text>
+  <g class="frame">
+    <rect x="242" y="803" width="104" height="44" rx="7" class="blue"/><rect x="360" y="803" width="104" height="44" rx="7" class="ghost"/><rect x="478" y="803" width="104" height="44" rx="7" class="ghost"/><rect x="596" y="803" width="104" height="44" rx="7" class="green"/><rect x="714" y="803" width="104" height="44" rx="7" class="sand"/><rect x="832" y="803" width="104" height="44" rx="7" class="ghost"/>
+    <rect x="242" y="873" width="104" height="44" rx="7" class="blue"/><rect x="360" y="873" width="104" height="44" rx="7" class="ghost"/><rect x="478" y="873" width="104" height="44" rx="7" class="ghost"/><rect x="596" y="873" width="104" height="44" rx="7" class="ghost"/><rect x="714" y="873" width="104" height="44" rx="7" class="green"/><rect x="832" y="873" width="104" height="44" rx="7" class="sand"/>
+  </g>
+  <g class="cell">
+    <text x="294" y="825">首块锚点</text><text x="648" y="825">最近历史</text><text x="766" y="825">当前去噪</text>
+    <text x="294" y="895">首块锚点</text><text x="766" y="895">最近历史</text><text x="884" y="895">当前去噪</text>
+  </g>
+  <path d="M766 849V869" class="edge"/>
+  <text x="54" y="943" class="note">虚线框在本轮不参与注意力。第 5 块生成后，其键和值进入缓存，供第 6 块读取。</text>
+  <path d="M499 961V992" class="edge"/>
+  <g><rect x="36" y="996" width="928" height="140" rx="10" class="green frame"/>
+    <text x="54" y="1032" class="head">当前块经视频 VAE 解码，播放 RGB 画面</text>
+    <text x="54" y="1067" class="copy">接入下一段轨迹后继续生成。首块保留外观参照，最近的块提供局部运动上下文。</text>
+    <text x="54" y="1102" class="note">可用 Tiny VAE 缩短解码时间。轨迹跟随由生成结果中的可见点误差评估，输出接口是像素视频。</text></g>
+  <text x="36" y="1168" class="note">据原文图 2、§3.1–3.2 与 §4.4 重绘。</text>
+</svg>

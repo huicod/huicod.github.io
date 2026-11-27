@@ -22,7 +22,7 @@ tags: ["MotionStreamer", "Streaming-Motion", "Autoregressive", "Causal-Represent
 
 本篇阅读 **CVF 11 页正文与 5 页补充材料**，核对正文图 2–4、表 1–4，补充 A–F 的训练设置、表示与限制。方向：流式文本动作、因果编码、连续潜变量、自回归扩散。核查日期：2026-11-06。
 
-[官方仓库][repo]已公开动作表示处理、TAE、TMR 评估器、动作生成与流式训练代码，并提供多项模型与数据下载入口。固定核查提交 **`8aace3f6`**；本文未下载训练数据与权重、未运行模型。**MotionStreamer\*** 在 TimelineControl 表中指重新训练的比较版本，不是单独论文；也不要将本论文与题名相近的 MotionStream 混同。
+[官方仓库][repo]已公开动作表示处理、TAE、TMR 评估器、动作生成与流式训练代码，并提供多项模型与数据下载入口。固定核查提交 **`8aace3f6`**；本文未下载训练数据与权重、未运行模型。**MotionStreamer\*** 在 TimelineControl 表中指重新训练的比较版本，不是单独论文。题名相近的 [MotionStream（ICLR 2026）](/blog/iclr2026-motionstream/) 用点轨迹控制视频生成。
 
 </details>
 
