@@ -2705,6 +2705,19 @@
       "time"
     ]
   },
+  "odoriko-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "dance",
+      "video",
+      "character"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": []
+  },
   "omni2sound-paper-notes": {
     "topics": ["multimodal", "video"],
     "methods": ["diffusion"],

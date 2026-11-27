@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1260" viewBox="0 0 960 1260" lang="zh-CN" role="img" aria-labelledby="title desc">
+  <title id="title">Odoriko 怎样用一套去噪器生成动作，也从视频估计动作和体型？</title>
+  <desc id="desc">文字生成和音乐生成可接收给定体型，视频重建默认估计体型。文本词元进入前八层，音乐、视频和二维关节点的逐帧特征与动作对齐后相加，全局条件与扩散步一起编码。模型先用人体模板做多模态建模，再用十维体型系数精修动作。每个扩散步均预测干净的连续动作。估计模式还预测模板和体型系数，推理结束时汇总各步结果。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#446b65"/></marker>
+    <marker id="shape" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#90683a"/></marker>
+    <marker id="train" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8b6c96"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203b3b}
+      .title{font-size:29px;font-weight:700}.section{font-size:23px;font-weight:700;fill:#285d57}
+      .head{font-size:20px;font-weight:700}.copy{font-size:18px}.note{font-size:16px;fill:#425e5c}
+      .box>rect{stroke-width:1.4}.input{fill:#edf4fa;stroke:#adc5d7}.mode{fill:#f7f9fa;stroke:#c5d2d5}
+      .model{fill:#edf5ef;stroke:#a6c2b1}.body{fill:#fcf4e9;stroke:#d8be94}.training{fill:#f4eff7;stroke:#c7b9d0}
+      .edge,.join,.cond,.learn{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      .edge,.join{stroke:#446b65}.edge{marker-end:url(#arrow)}.cond{stroke:#90683a;marker-end:url(#shape)}
+      .learn{stroke:#8b6c96;stroke-dasharray:6 5;marker-end:url(#train)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="958" height="1258" rx="16" fill="white" stroke="#c6d4d3"/>
+  <text class="title" x="38" y="50">Odoriko 如何让体型参与动作生成与视频重建？</text>
+  <text class="copy" x="39" y="82">文本与音乐用来生成新动作；给定视频时，模型估计画面中人物的动作与体型。</text>
+
+  <text class="section" x="38" y="129">任务输入　按任务选择观测</text>
+  <g class="box">
+    <rect class="input" x="38" y="149" width="269" height="108" rx="10"/>
+    <text class="head" x="53" y="180">文本 → 动作</text>
+    <text class="copy" x="53" y="213">T5 提取词元特征；</text>
+    <text class="copy" x="53" y="239">CLIP 提取整句特征。</text>
+  </g>
+  <g class="box">
+    <rect class="input" x="322" y="149" width="263" height="108" rx="10"/>
+    <text class="head" x="337" y="180">音乐 → 舞蹈</text>
+    <text class="copy" x="337" y="213">Jukebox 编码音乐，</text>
+    <text class="copy" x="337" y="239">再经 EDGE 提取时间特征。</text>
+  </g>
+  <g class="box">
+    <rect class="input" x="600" y="149" width="322" height="108" rx="10"/>
+    <text class="head" x="615" y="180">视频 → 三维人体</text>
+    <text class="copy" x="615" y="213">TRAM 编码视频；DWPose 提取</text>
+    <text class="copy" x="615" y="239">18 个二维关节点，再做投影。</text>
+  </g>
+  <path class="join" d="M172 258V275H761V258 M453 258V275"/>
+  <path class="edge" d="M453 275V292"/>
+  <g class="box">
+    <rect class="model" x="38" y="295" width="884" height="112" rx="10"/>
+    <text class="head" x="55" y="326">两种粒度的条件</text>
+    <text class="copy" x="55" y="358">局部：T5 词元与动作词元拼接；音乐、视频和二维关节点与动作帧对齐后逐帧相加。</text>
+    <text class="copy" x="55" y="386">全局：用 CLIP 句向量或时序特征池化结果，与扩散步 t 的嵌入相加，作为全局词元。</text>
+  </g>
+  <path class="edge" d="M77 408V423H21V656H36"/>
+
+  <text class="section" x="38" y="458">同一去噪器　每个扩散步都直接预测干净动作</text>
+  <g class="box">
+    <rect class="input" x="38" y="481" width="558" height="98" rx="10"/>
+    <text class="head" x="55" y="511">当前带噪动作　xₜ</text>
+    <text class="copy" x="55" y="542">训练时给参考动作加噪；推理从噪声开始逐步更新。</text>
+    <text class="note" x="55" y="566">动作用连续的根部运动和关节旋转表示。</text>
+  </g>
+  <g class="box">
+    <rect class="body" x="633" y="481" width="289" height="98" rx="10"/>
+    <text class="head" x="649" y="511">体型信息来自哪里？</text>
+    <text class="copy" x="649" y="542">生成时可指定；视频重建时</text>
+    <text class="copy" x="649" y="566">通常由模型估计。</text>
+  </g>
+  <path class="edge" d="M317 580V605"/>
+  <path class="cond" d="M778 580V605"/>
+  <g class="box">
+    <rect class="model" x="38" y="609" width="558" height="106" rx="10"/>
+    <text class="head" x="55" y="642">前 8 层　多模态动作 Transformer</text>
+    <text class="copy" x="55" y="673">动作、可用的文本词元、全局条件及体型标记</text>
+    <text class="copy" x="55" y="698">联合做注意力，让动作与任务条件相符。</text>
+  </g>
+  <g class="box">
+    <rect class="body" x="633" y="609" width="289" height="106" rx="10"/>
+    <text class="head" x="649" y="642">模板类别 g</text>
+    <text class="copy" x="649" y="673">已知时使用 SMPL 模板嵌入；</text>
+    <text class="copy" x="649" y="698">估计时使用可学习标记。</text>
+  </g>
+  <path class="cond" d="M632 661H600"/>
+  <path class="edge" d="M317 716V742"/>
+  <path class="cond" d="M778 716V742"/>
+  <g class="box">
+    <rect class="model" x="38" y="746" width="558" height="105" rx="10"/>
+    <text class="head" x="55" y="779">后 8 层　动作精修 Transformer</text>
+    <text class="copy" x="55" y="809">移除文本词元，保留全局上下文，结合体型特征</text>
+    <text class="copy" x="55" y="834">调整动作细节。</text>
+  </g>
+  <g class="box">
+    <rect class="body" x="633" y="746" width="289" height="105" rx="10"/>
+    <text class="head" x="649" y="779">十维体型系数 β</text>
+    <text class="copy" x="649" y="809">已知时将 β 投影为体型词元；</text>
+    <text class="copy" x="649" y="834">估计时使用可学习标记。</text>
+  </g>
+  <path class="cond" d="M632 797H600"/>
+  <path class="edge" d="M317 852V876"/>
+  <g class="box">
+    <rect class="model" x="38" y="880" width="884" height="86" rx="10"/>
+    <text class="head" x="55" y="912">本步读出　动作头预测干净运动；估计模式还读出模板类别与体型系数</text>
+    <text class="copy" x="55" y="944">采样器据此更新带噪动作，下一扩散步重复上述过程。</text>
+  </g>
+  <path class="learn" d="M239 967V1004"/>
+  <path class="edge" d="M681 967V1004"/>
+  <g class="box">
+    <rect class="training" x="38" y="1008" width="409" height="141" rx="10"/>
+    <text class="head" x="55" y="1040">训练监督</text>
+    <text class="copy" x="55" y="1072">所有任务都监督干净动作。</text>
+    <text class="copy" x="55" y="1099">估计模式另用模板分类和 β 回归损失；</text>
+    <text class="copy" x="55" y="1126">体型已知时关闭这两项损失。</text>
+  </g>
+  <g class="box">
+    <rect class="mode" x="466" y="1008" width="456" height="141" rx="10"/>
+    <text class="head" x="483" y="1040">推理输出</text>
+    <text class="copy" x="483" y="1072">生成：与文本或音乐、指定体型相应的动作。</text>
+    <text class="copy" x="483" y="1099">估计：镜头中人物的三维动作及体型；</text>
+    <text class="copy" x="483" y="1126">各扩散步的体型预测取平均。</text>
+  </g>
+  <text class="note" x="39" y="1188">缺少体型标注的生成数据（如 FineDance）使用占位词元，该设置不检验指定体型的效果。</text>
+  <text class="note" x="39" y="1225">按原文图 3、§3 与附录 A 重绘。棕色箭头为分阶段的体型条件，紫色虚线表示训练监督。</text>
+</svg>
