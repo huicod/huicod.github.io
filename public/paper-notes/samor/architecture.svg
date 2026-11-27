@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1312" viewBox="0 0 960 1312" lang="zh-CN" role="img" aria-labelledby="title desc">
+  <title id="title">SAMoR 怎样把同一组动作码交给不同的骨架？</title>
+  <desc id="desc">图分两个阶段。先由源动作和源骨架产生逐关节特征，八个查询聚合成部位，并作六级残差量化。训练中以能识别的关节名监督注意力。重建或迁移时可直接使用源码，文本生成或编辑时用 MaskGIT 产生或更新选定的码。目标骨架的关节从八个部位读出信息，经解码还原三维关节位置。若要驱动网格，还需反向运动学和蒙皮。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#416b66"/></marker>
+    <marker id="guide" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8d6c96"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203b3b}
+      .title{font-size:30px;font-weight:700}.section{font-size:23px;font-weight:700;fill:#285d57}
+      .head{font-size:21px;font-weight:700}.copy{font-size:18px}.note{font-size:16px;fill:#465f60}
+      .box&gt;rect{stroke-width:1.4}.input{fill:#edf4fa;stroke:#adc5d7}.model{fill:#edf5ef;stroke:#a6c2b1}
+      .train{fill:#f4eff7;stroke:#c7b9d0}.mode{fill:#f7f9fa;stroke:#c5d2d5}.out{fill:#fcf5e9;stroke:#d9c49e}
+      .edge,.join,.training{fill:none;stroke:#416b66;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      .edge{marker-end:url(#arrow)}.training{stroke:#8d6c96;stroke-dasharray:5 5;marker-end:url(#guide)}
+      .slot{fill:#d8e6da;stroke:#95b59d}.chip{font-size:16px;font-weight:600;fill:#2c5140;text-anchor:middle}
+    </style>
+  </defs>
+  <rect width="958" height="1310" x="1" y="1" rx="16" fill="#fff" stroke="#c6d4d3"/>
+  <text class="title" x="38" y="52">SAMoR 怎样把同一组动作码交给不同的骨架？</text>
+  <text class="copy" x="39" y="85">每四帧共享八个部位槽。谁向这些槽写入、谁从中读取，由各自的骨架决定。</text>
+
+  <text class="section" x="38" y="132">学习动作表示　从数量可变的关节到固定的八个部位</text>
+  <g class="box">
+    <rect class="input" x="38" y="153" width="420" height="92" rx="10"/>
+    <text class="head" x="55" y="184">源动作　T 帧 × J 个关节</text>
+    <text class="copy" x="55" y="218">跨骨架设置使用根相对位置和速度。</text>
+  </g>
+  <g class="box">
+    <rect class="input" x="484" y="153" width="438" height="92" rx="10"/>
+    <text class="head" x="501" y="184">源骨架条件</text>
+    <text class="copy" x="501" y="218">关节树、静态参考姿态、关节名的 CLIP 特征。</text>
+  </g>
+  <path class="join" d="M248 246V264H703V246"/>
+  <path class="edge" d="M480 264V282"/>
+  <g class="box">
+    <rect class="model" x="38" y="286" width="884" height="82" rx="10"/>
+    <text class="head" x="55" y="317">图 Transformer 编码器</text>
+    <text class="copy" x="55" y="348">交替读取同一关节的时间序列、同一帧的骨架关系；时间下采样后保留全部 J 个关节。</text>
+  </g>
+  <path class="edge" d="M291 369V391"/>
+  <g class="box">
+    <rect class="model" x="38" y="395" width="506" height="112" rx="10"/>
+    <text class="head" x="55" y="426">八个部位查询，从 J 个关节汇集信息</text>
+    <text class="copy" x="55" y="455">查询是 Q，逐关节特征提供 K、V。</text>
+    <text class="copy" x="55" y="483">不同角色的左前肢或左翼可以进入同一槽。</text>
+  </g>
+  <g class="box">
+    <rect class="train" x="589" y="395" width="333" height="112" rx="10"/>
+    <text class="head" x="605" y="426">训练监督</text>
+    <text class="note" x="605" y="454">已匹配的关节名提供分组目标。</text>
+    <text class="note" x="605" y="480">随机丢弃名字特征，仍保留监督。</text>
+  </g>
+  <path class="training" d="M587 453H548"/>
+  <path class="edge" d="M291 508V531"/>
+  <g class="box">
+    <rect class="model" x="38" y="535" width="884" height="134" rx="10"/>
+    <text class="head" x="55" y="567">跨骨架共享的部位码</text>
+    <g>
+      <rect class="slot" x="56" y="583" width="90" height="29" rx="5"/><text class="chip" x="101" y="603">下躯干</text>
+      <rect class="slot" x="156" y="583" width="90" height="29" rx="5"/><text class="chip" x="201" y="603">上躯干</text>
+      <rect class="slot" x="256" y="583" width="95" height="29" rx="5"/><text class="chip" x="303" y="603">头与颈</text>
+      <rect class="slot" x="361" y="583" width="112" height="29" rx="5"/><text class="chip" x="417" y="603">左臂／翼</text>
+      <rect class="slot" x="483" y="583" width="112" height="29" rx="5"/><text class="chip" x="539" y="603">右臂／翼</text>
+      <rect class="slot" x="605" y="583" width="90" height="29" rx="5"/><text class="chip" x="650" y="603">左腿</text>
+      <rect class="slot" x="705" y="583" width="90" height="29" rx="5"/><text class="chip" x="750" y="603">右腿</text>
+      <rect class="slot" x="805" y="583" width="90" height="29" rx="5"/><text class="chip" x="850" y="603">尾部</text>
+    </g>
+    <text class="copy" x="55" y="646">槽间交换信息后作六级残差量化。以 64 帧为例，得到 16 个时间块 × 8 个槽 × 6 级索引。</text>
+  </g>
+
+  <text class="section" x="38" y="721">使用动作表示　先确定动作码，再选择解码的目标骨架</text>
+  <g class="box">
+    <rect class="mode" x="38" y="742" width="420" height="137" rx="10"/>
+    <text class="head" x="55" y="773">重建或跨骨架迁移</text>
+    <text class="copy" x="55" y="804">直接取源动作编码出的部位码。</text>
+    <text class="copy" x="55" y="832">重建时沿用源骨架；迁移时更换</text>
+    <text class="copy" x="55" y="858">下方的目标骨架条件。</text>
+  </g>
+  <g class="box">
+    <rect class="mode" x="484" y="742" width="438" height="137" rx="10"/>
+    <text class="head" x="501" y="773">文本生成或部位编辑　MaskGIT</text>
+    <text class="copy" x="501" y="804">给定文本、目标骨架，训练时预测遮住的码。</text>
+    <text class="copy" x="501" y="832">生成从全遮挡开始；编辑只遮所选部位。</text>
+    <text class="copy" x="501" y="858">先补第一级索引，再补余下五级。</text>
+  </g>
+  <path class="join" d="M248 880V899H703V880"/>
+  <path class="edge" d="M248 899V920"/>
+  <g class="box">
+    <rect class="model" x="38" y="924" width="420" height="84" rx="10"/>
+    <text class="head" x="55" y="956">供解码的八组部位特征</text>
+    <text class="copy" x="55" y="987">按各级索引查码本，把量化向量相加。</text>
+  </g>
+  <g class="box">
+    <rect class="input" x="484" y="924" width="438" height="84" rx="10"/>
+    <text class="head" x="501" y="956">目标骨架　关节数 J′ 可与 J 不同</text>
+    <text class="copy" x="501" y="987">提供树、单帧姿态和可用关节名。</text>
+  </g>
+  <path class="join" d="M248 1009V1028H703V1009"/>
+  <path class="edge" d="M480 1028V1046"/>
+  <g class="box">
+    <rect class="model" x="38" y="1050" width="884" height="91" rx="10"/>
+    <text class="head" x="55" y="1083">目标骨架解码器　从八个部位读回 J′ 个关节</text>
+    <text class="copy" x="55" y="1116">每个目标关节提供查询，读取量化部位特征，再恢复逐帧运动。训练用原骨架上的动作监督重建。</text>
+  </g>
+  <path class="edge" d="M480 1142V1163"/>
+  <g class="box">
+    <rect class="out" x="38" y="1167" width="884" height="89" rx="10"/>
+    <text class="head" x="55" y="1199">跨骨架输出　目标角色的关节位置与速度</text>
+    <text class="copy" x="55" y="1230">生成网格动画时，另用反向运动学求旋转、用蒙皮权重驱动网格；沿骨轴的扭转仍有歧义。</text>
+  </g>
+  <text class="note" x="39" y="1286">据论文图 2、§3、附录 A–B 重绘。八个名称是监督所用的功能分组，具体关节由注意力软分配。</text>
+</svg>

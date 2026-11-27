@@ -3164,6 +3164,20 @@
       "parts"
     ]
   },
+  "samor-paper-notes": {
+    "topics": [
+      "representation",
+      "character",
+      "generation",
+      "editing"
+    ],
+    "methods": [
+      "tokens"
+    ],
+    "controls": [
+      "parts"
+    ]
+  },
   "sata-paper-notes": {
     "topics": [
       "representation",
