@@ -716,6 +716,20 @@
     ],
     "controls": []
   },
+  "dualflow-paper-notes": {
+    "topics": [
+      "generation",
+      "dance",
+      "multimodal"
+    ],
+    "methods": [
+      "flow",
+      "retrieval"
+    ],
+    "controls": [
+      "interaction"
+    ]
+  },
   "dualtrack-paper-notes": {
     "topics": [
       "gesture",

@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1165" viewBox="0 0 960 1165" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">DualFlow 如何联合生成两个人的动作，或让一人回应另一人？</title>
+  <desc id="desc">文本和音乐分别编码为直接条件，也用于检索空间关系、身体运动、节奏和音乐四类动作示例。交互模式从两人的噪声出发。反应模式固定 A 的已知动作，只给 B 采样噪声。两种模式均用二十个 DualFlow 块预测整流流的速度。块内依次进行多尺度卷积、自注意力、音乐交叉注意力、人物间交叉注意力、检索交叉注意力和前馈变换。交互模式双向交换人物信息；反应模式由 B 查询 A，最多前瞻十帧。数值积分分别输出 A 和 B 两套动作，或只生成 B。训练使用速度回归、速度三元组、几何和双人交互损失。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203a38}
+      .title{font-size:30px;font-weight:700}.section{font-size:23px;font-weight:700;fill:#245c57}
+      .head{font-size:20px;font-weight:700}.body{font-size:18px}.note{font-size:16px;fill:#455f59}
+      .card{stroke-width:1.5}.input{fill:#f3f7f5;stroke:#b5cbc2}.retrieval{fill:#f4f2f8;stroke:#c9bfd8}
+      .model{fill:#edf4fa;stroke:#a7c2d6}.modeA{fill:#edf5ee;stroke:#a6c8b0}.modeB{fill:#faf5ec;stroke:#d0bc9a}
+      .step{fill:#fff;stroke:#b1c6d5;stroke-width:1.2}
+      .arrow{fill:none;stroke:#476f65;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .rule{stroke:#d6e2dd;stroke-width:1}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#476f65"/></marker>
+  </defs>
+  <rect x="1" y="1" width="958" height="1163" rx="16" fill="#fff" stroke="#c5d3cd"/>
+  <text class="title" x="38" y="52">DualFlow 如何生成双人动作，又如何生成单人反应？</text>
+  <text class="body" x="38" y="86">A、B 的动作共用以 A 根关节为基准的坐标系。每人每帧 262 维，包含足部接触状态。</text>
+
+  <text class="section" x="38" y="138">文本、音乐与检索到的动作示例</text>
+  <g>
+    <rect class="card input" x="38" y="156" width="358" height="124" rx="11"/>
+    <text class="head" x="56" y="188">直接条件（可单独或同时提供）</text>
+    <text class="body" x="56" y="224">文本 → CLIP → 文本与流时间嵌入</text>
+    <text class="body" x="56" y="257">音乐 → Jukebox → 音乐序列特征</text>
+  </g>
+  <path class="arrow" d="M397 216H429"/>
+  <g>
+    <rect class="card retrieval" x="434" y="156" width="488" height="124" rx="11"/>
+    <text class="head" x="452" y="188">从动作库检索示例</text>
+    <text class="body" x="452" y="218">GPT-4o 拆文本为空间关系、身体动作、节奏三项；</text>
+    <text class="body" x="452" y="243">音乐特征作为第四路查询。各路按相似度与时长</text>
+    <text class="body" x="452" y="268">匹配取前 k 个动作，将其投影、拼接为检索条件。</text>
+  </g>
+  <path class="arrow" d="M38 249H20V529H36" stroke-dasharray="4 5"/>
+  <path class="arrow" d="M922 249H940V529H924" stroke-dasharray="4 5"/>
+
+  <text class="section" x="38" y="336">同一模型，两种运动初始状态</text>
+  <g>
+    <rect class="card modeA" x="38" y="353" width="427" height="103" rx="11"/>
+    <text class="head" x="56" y="385">交互生成｜A 与 B 都待生成</text>
+    <text class="body" x="56" y="417">从两组高斯噪声 [ε<tspan baseline-shift="sub" font-size="13">A</tspan>, ε<tspan baseline-shift="sub" font-size="13">B</tspan>] 出发，</text>
+    <text class="body" x="56" y="443">每个积分步都更新两人的姿态序列。</text>
+  </g>
+  <g>
+    <rect class="card modeB" x="495" y="353" width="427" height="103" rx="11"/>
+    <text class="head" x="513" y="385">反应生成｜给定 A，生成 B</text>
+    <text class="body" x="513" y="417">初始状态为 [已知动作 A, ε<tspan baseline-shift="sub" font-size="13">B</tspan>]。</text>
+    <text class="body" x="513" y="443">A 固定作条件，仅更新回应者 B。</text>
+  </g>
+  <path class="arrow" d="M252 457V479"/>
+  <path class="arrow" d="M708 457V479"/>
+  <g>
+    <rect class="card model" x="38" y="483" width="884" height="280" rx="11"/>
+    <text class="head" x="56" y="518">条件速度预测器 vθ　·　两条人物分支　·　连续堆叠 20 个 DualFlow 块</text>
+    <text class="body" x="56" y="550">各人动作经线性投影和位置编码送入块内。文本与流时间通过条件 LayerNorm 调制特征。</text>
+    <g>
+      <rect class="step" x="56" y="570" width="246" height="109" rx="9"/>
+      <text class="head" x="71" y="603">人物自身与音乐</text>
+      <text class="body" x="71" y="631">多尺度卷积 → 自注意力</text>
+      <text class="body" x="71" y="658">→ 音乐交叉注意力</text>
+    </g>
+    <path class="arrow" d="M303 625H326"/>
+    <g>
+      <rect class="step" x="330" y="570" width="300" height="109" rx="9"/>
+      <text class="head" x="345" y="603">人物间交叉注意力</text>
+      <text class="body" x="345" y="631">交互：A、B 互读彼此的动作。</text>
+      <text class="body" x="345" y="658">反应：B 查询，A 提供键和值。</text>
+    </g>
+    <path class="arrow" d="M631 625H653"/>
+    <g>
+      <rect class="step" x="657" y="570" width="247" height="109" rx="9"/>
+      <text class="head" x="672" y="603">检索示例与输出</text>
+      <text class="body" x="672" y="631">当前动作查询检索到的示例</text>
+      <text class="body" x="672" y="658">→ 前馈层 → 下一块</text>
+    </g>
+    <text class="body" x="56" y="718">反应模式的时间掩码：B 的第 i 帧只读取 A 的第 j ≤ i + 10 帧。</text>
+    <text class="note" x="56" y="746">例如，B 在第 40 帧可读取 A 至第 50 帧。这个可见范围作用在人物间注意力上。</text>
+  </g>
+  <path class="arrow" d="M252 764V786"/>
+  <path class="arrow" d="M708 764V786"/>
+  <g>
+    <rect class="card modeA" x="38" y="790" width="427" height="94" rx="11"/>
+    <text class="head" x="56" y="823">输出双人速度 [v<tspan baseline-shift="sub" font-size="14">A</tspan>, v<tspan baseline-shift="sub" font-size="14">B</tspan>]</text>
+    <text class="body" x="56" y="859">从流时间 0 积分到 1，得到 A、B 两套动作。</text>
+  </g>
+  <g>
+    <rect class="card modeB" x="495" y="790" width="427" height="94" rx="11"/>
+    <text class="head" x="513" y="823">输出反应速度 [0, v<tspan baseline-shift="sub" font-size="14">B</tspan>]</text>
+    <text class="body" x="513" y="859">在同一流时间内积分，得到 B 对 A 的反应。</text>
+  </g>
+
+  <text class="section" x="38" y="941">训练时，什么信号教会这个速度场？</text>
+  <g>
+    <rect class="card input" x="38" y="959" width="427" height="138" rx="11"/>
+    <text class="head" x="56" y="992">直线插值与速度对比</text>
+    <text class="body" x="56" y="1025">在噪声 ε 与真实动作 x 之间随机取一点，</text>
+    <text class="body" x="56" y="1053">回归目标速度 x − ε。三元组对比损失让</text>
+    <text class="body" x="56" y="1081">语义或节奏相近的样本具有相近的预测速度。</text>
+  </g>
+  <g>
+    <rect class="card input" x="495" y="959" width="427" height="138" rx="11"/>
+    <text class="head" x="513" y="992">人体几何与双人关系</text>
+    <text class="body" x="513" y="1025">监督足接触、关节速度和骨长，并比较双人</text>
+    <text class="body" x="513" y="1053">关节距离与朝向。同步损失按关节间距和</text>
+    <text class="body" x="513" y="1081">部位重要性加权；反应模式以真实 A 为参照。</text>
+  </g>
+  <line class="rule" x1="38" y1="1120" x2="922" y2="1120"/>
+  <text class="note" x="38" y="1147">据 Gupta 等，DualFlow（ICLR 2026）图 2、方法 §3 与附录 D 重绘。</text>
+</svg>
