@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1430" viewBox="0 0 1080 1430" role="img" aria-labelledby="title desc">
+  <title id="title">ELLSA 2 怎样一边对话，一边生成手势和表情？</title>
+  <desc id="desc">用户的连续语音进入对话主干。主干产生文本来驱动语音合成，还提供倾听隐藏状态，语音合成器提供说话隐藏状态。两者分别叠加同期声学特征。回复文字领先其声音，允许模型根据当前上下文选择是否调用已知手势。每隔零点八秒，生成器接收当块说与听的条件、可选模板以及历史，自回归生成六个动作潜步，每步并行给出十八个索引。上身、手和表情经解码恢复为三十赫兹的动作。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 10 5 0 10z" fill="#37756f"/></marker>
+    <marker id="guideArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 10 5 0 10z" fill="#946d31"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#18383e}
+      .title{font-size:32px;font-weight:700}.section{font-size:23px;font-weight:700}.sub{font-size:20px;font-weight:700}.body{font-size:18px}.small{font-size:16px}
+      .box{stroke-width:1.5}.voice{fill:#edf5fa;stroke:#a8c2d3}.motion{fill:#eff7f3;stroke:#a5c2b4}.guide{fill:#fbf5e9;stroke:#cfb888}.train{fill:#f4f5f1;stroke:#bcc9bb}
+      .edge{fill:none;stroke:#37756f;stroke-width:2;marker-end:url(#arrow)}.optional{fill:none;stroke:#946d31;stroke-width:2;stroke-dasharray:6 4;marker-end:url(#guideArrow)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1078" height="1428" rx="16" fill="#fff" stroke="#bdcec8"/>
+  <text class="title" x="42" y="53">ELLSA 2 怎样一边对话，一边生成手势和表情？</text>
+  <text class="body" x="43" y="88">说到「房子很宽敞」时，可以用双手比出空间；模型安静倾听时，同一生成器仍然工作。</text>
+
+  <text class="section" x="42" y="142">对话与发声　对话主干按 80 ms 时间步接收用户语音</text>
+  <rect class="box voice" x="42" y="165" width="248" height="132" rx="11"/>
+  <text class="sub" x="61" y="200">用户来音</text>
+  <text class="body" x="61" y="235">编码最新语音片段，</text>
+  <text class="body" x="61" y="264">送入正在运行的对话。</text>
+  <path class="edge" d="M290 230H318"/>
+  <rect class="box voice" x="323" y="165" width="341" height="132" rx="11"/>
+  <text class="sub" x="343" y="200">对话主干</text>
+  <text class="body" x="343" y="235">读取来音与对话前缀，</text>
+  <text class="body" x="343" y="264">输出回复文本或静默标记。</text>
+  <path class="edge" d="M664 230H693"/>
+  <rect class="box voice" x="698" y="165" width="340" height="132" rx="11"/>
+  <text class="sub" x="717" y="200">流式语音合成器</text>
+  <text class="body" x="717" y="235">普通文本触发语音合成；</text>
+  <text class="body" x="717" y="264">静默期间跳过发声。</text>
+
+  <path class="edge" d="M456 297V322H287V353"/>
+  <path class="edge" d="M782 297V311H543V353"/>
+  <path class="optional" d="M598 297V337H854V353"/>
+  <rect class="box motion" x="42" y="358" width="535" height="267" rx="11"/>
+  <text class="sub" x="62" y="394">当前块的说、听条件</text>
+  <text class="body" x="62" y="432">听：用户声学特征 ＋ 对话主干末层状态。</text>
+  <text class="body" x="62" y="464">说：模型声学特征 ＋ 语音合成器末层状态。</text>
+  <text class="body" x="62" y="505">冻结的 SPEAR 编码两路声音。投影、对齐后，</text>
+  <text class="body" x="62" y="535">每 0.8 秒有 10 个听条件、10 个说条件。</text>
+  <text class="small" x="62" y="573">模型静默时，说侧缺少的合成器状态用可学空表示</text>
+  <text class="small" x="62" y="598">占位，听侧继续从用户语音取上下文。</text>
+  <rect class="box guide" x="605" y="358" width="433" height="267" rx="11"/>
+  <text class="sub" x="625" y="394">可选：在回复文本中发现语义锚点</text>
+  <text class="body" x="625" y="432">生成的短语末尾命中词典，定位动作家族。</text>
+  <text class="body" x="625" y="464">调用头读取主干第 16、20、24 层，</text>
+  <text class="body" x="625" y="494">判断此处是否适合做这个动作。</text>
+  <text class="body" x="625" y="535">接受：取家族内排名最高的示例并排期。</text>
+  <text class="body" x="625" y="565">缺席或拒绝：继续自由生成。</text>
+  <text class="small" x="625" y="599">预见的是模型自己的回复文字，用户语音仍按时到达。</text>
+
+  <path class="edge" d="M306 625v43"/>
+  <path class="optional" d="M820 625v43"/>
+  <rect class="box motion" x="42" y="673" width="996" height="216" rx="11"/>
+  <text class="section" x="63" y="710">手势与表情生成器　每 0.8 秒处理一块</text>
+  <text class="body" x="63" y="748">块内次序：可选的模板片段 → 当前说条件 → 当前听条件 → 六个动作潜步，按时间逐步预测。</text>
+  <text class="body" x="63" y="782">因果注意力读取当前条件、已生成的动作与先前区块；未来区块不可见。</text>
+  <text class="body" x="63" y="816">模板只提供上身与手的编码，模型仍逐步预测新动作。脸和嘴使用当前对话的生成目标。</text>
+  <text class="small" x="63" y="856">上下文最长 20 秒；刷新缓存时保留末尾三块。模板按词末时间对齐，示例结束后回到自由生成。</text>
+  <path class="edge" d="M536 889v32"/>
+
+  <rect class="box motion" x="42" y="926" width="996" height="167" rx="11"/>
+  <text class="section" x="63" y="963">动作解码　每个潜步同时预测 18 个离散索引</text>
+  <text class="body" x="63" y="1001">上身 6 个　＋　手部 6 个　＋　非口部表情 4 个　＋　口部表情 2 个</text>
+  <text class="body" x="63" y="1035">各区量化器解码为 SMPL-H 上身与手、FLAME 表情。每块 6 个潜步对应 24 帧，播放为 30 Hz。</text>
+  <text class="small" x="63" y="1068">两路声音是条件，生成的身体与面部属于模型一方。输出不含下肢运动。</text>
+
+  <text class="section" x="42" y="1151">训练时，动作生成和「是否调用」分别怎样学？</text>
+  <rect class="box train" x="42" y="1175" width="543" height="183" rx="11"/>
+  <text class="sub" x="62" y="1210">生成器课程与整机对齐</text>
+  <text class="body" x="62" y="1243">先学流式语音识别，再学手势，再加入表情。</text>
+  <text class="body" x="62" y="1277">对话主干与语音合成器预训练后，先冻结语音系统</text>
+  <text class="body" x="62" y="1307">对齐动作分支，再联合优化语音与非语言生成。</text>
+  <rect class="box train" x="605" y="1175" width="433" height="183" rx="11"/>
+  <text class="sub" x="625" y="1210">模板库与调用监督</text>
+  <text class="body" x="625" y="1243">视频核验与筛选得到 3,227 个动作示例。</text>
+  <text class="body" x="625" y="1277">两位模型评审根据动作描述与上下文前缀，</text>
+  <text class="body" x="625" y="1307">标注候选动作在此处是否自然、有信息量。</text>
+  <text class="small" x="43" y="1397">依据 Wang 等，arXiv:2610.21452v1，图 1–3、§3 及附录 A.1–A.6、B.3 重绘。</text>
+</svg>

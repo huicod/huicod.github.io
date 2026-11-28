@@ -898,6 +898,22 @@
       "streaming"
     ]
   },
+  "ellsa2-paper-notes": {
+    "topics": [
+      "gesture",
+      "multimodal",
+      "character"
+    ],
+    "methods": [
+      "tokens",
+      "language",
+      "retrieval"
+    ],
+    "controls": [
+      "streaming",
+      "interaction"
+    ]
+  },
   "elma-paper-notes": {
     "topics": [
       "understanding",
