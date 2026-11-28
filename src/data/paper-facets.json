@@ -199,6 +199,20 @@
     ],
     "controls": []
   },
+  "camdm-paper-notes": {
+    "topics": [
+      "character",
+      "generation"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "style",
+      "streaming"
+    ]
+  },
   "casa-paper-notes": {
     "topics": [
       "understanding"
@@ -251,6 +265,21 @@
     ],
     "controls": [
       "style"
+    ]
+  },
+  "closd-paper-notes": {
+    "topics": [
+      "character",
+      "generation"
+    ],
+    "methods": [
+      "diffusion",
+      "physics"
+    ],
+    "controls": [
+      "space",
+      "interaction",
+      "streaming"
     ]
   },
   "cmdm-paper-notes": {

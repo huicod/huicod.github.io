@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1030" viewBox="0 0 960 1030" role="img" aria-labelledby="title desc">
+  <title id="title">CAMDM 如何把游戏控制变成连续动作</title>
+  <desc id="desc">输入包括角色最近十帧姿态、离散风格标签、连续的未来根轨迹和朝向。多个条件分别嵌入，Transformer 通过八步扩散预测四十五帧姿态，控制保持时通常执行十五帧。执行后的姿态与预测出的剩余根轨迹回到下一窗口。训练用动作捕捉监督与历史随机屏蔽。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#37706a"/></marker>
+    <style>
+      text {font-family:"Microsoft YaHei","Noto Sans CJK SC","Arial",sans-serif;fill:#19383d}
+      .title{font-size:32px;font-weight:700}.head{font-size:22px;font-weight:700}.sub{font-size:20px;font-weight:700}.body{font-size:19px}.small{font-size:17px}
+      .box{stroke:#9ab9af;stroke-width:1.7;fill:#f0f7f3}.cond{fill:#edf4fa;stroke:#abc5d6}.action{fill:#faf4e9;stroke:#d6bd91}
+      .edge{fill:none;stroke:#37706a;stroke-width:2.3;marker-end:url(#arrow)}.loop{fill:none;stroke:#57887c;stroke-width:2.1;stroke-dasharray:7 5;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="958" height="1028" rx="15" fill="white" stroke="#bfcec8"/>
+  <text class="title" x="39" y="52">CAMDM 如何把游戏控制变成连续动作？</text>
+  <text class="body" x="40" y="88">论文设置按 30 Hz 采样。灰绿色虚线是下一窗口的反馈，浅色区域区分用途。</text>
+  <text class="head" x="40" y="140">玩家给定的控制，与角色当前的身体状态</text>
+  <rect class="box cond" x="40" y="160" width="310" height="125" rx="10"/>
+  <text class="sub" x="59" y="195">离散风格 + 最近姿态</text>
+  <text class="body" x="59" y="231">风格索引：如左脚跳、右脚跳</text>
+  <text class="body" x="59" y="263">历史：角色已执行的 10 帧</text>
+  <rect class="box cond" x="379" y="160" width="513" height="125" rx="10"/>
+  <text class="sub" x="397" y="195">连续控制：未来在地面上往哪走、朝哪看</text>
+  <text class="body" x="397" y="231">摇杆 → 弹簧阻尼平滑 → 目标轨迹</text>
+  <text class="body" x="397" y="263">与上轮预测并延长的根轨迹融合，形成条件</text>
+  <path class="edge" d="M192 285v34"/><path class="edge" d="M627 285v34"/>
+  <rect class="box" x="40" y="319" width="852" height="117" rx="10"/>
+  <text class="sub" x="60" y="354">条件分别编码，再按序列拼接</text>
+  <text class="body" x="60" y="387">扩散步、风格、未来平面位移、未来朝向、历史姿态、带噪未来姿态</text>
+  <text class="small" x="60" y="416">风格是类别；根轨迹和朝向保留时间顺序；每种特征有自己的嵌入入口。</text>
+  <path class="edge" d="M460 436v36"/>
+  <rect class="box" x="40" y="472" width="852" height="121" rx="10"/>
+  <text class="sub" x="60" y="507">Transformer 编码器 + 扩散采样（论文模型为 8 步）</text>
+  <text class="body" x="60" y="541">每步预测干净的未来姿态；采样器据此更新噪声状态，直到得到整段动作。</text>
+  <text class="small" x="60" y="574">切换风格时，将使用历史与屏蔽历史的两种预测按 γ = 0.7 混合。</text>
+  <path class="edge" d="M460 593v36"/>
+  <rect class="box action" x="40" y="629" width="852" height="121" rx="10"/>
+  <text class="sub" x="60" y="664">输出 45 帧连续姿态（1.5 秒），驱动角色骨架</text>
+  <text class="body" x="60" y="698">每帧含根的三维平移和各关节相对父关节的 6D 旋转。</text>
+  <text class="body" x="60" y="730">控制保持时通常应用前 15 帧（0.5 秒），之后重新生成下一窗口。</text>
+  <path class="loop" d="M892 704h39V218h-36"/>
+  <path class="loop" d="M40 704H20V218h17"/>
+  <text class="small" x="42" y="788">左侧反馈已执行姿态；右侧反馈预测根路径，末端按最近 15 个轨迹点往返延长。</text>
+  <text class="head" x="40" y="849">训练时，模型如何学会跟随控制又能换风格？</text>
+  <rect class="box" x="40" y="868" width="852" height="102" rx="10"/>
+  <text class="body" x="60" y="906">100STYLE 动捕 → 切分历史与真实未来、为未来加噪 → 监督干净动作预测。</text>
+  <text class="body" x="60" y="943">监督姿态、关节位置、足接触与速度；随机屏蔽 15% 的历史条件以学习双路预测。</text>
+  <text class="small" x="40" y="1008">依据 Chen 等人论文图 2–3、§3.2–3.3 与作者的公开实现重绘。</text>
+</svg>

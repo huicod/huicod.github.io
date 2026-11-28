@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 1060" role="img" aria-labelledby="title desc">
+  <title id="title">CLoSD 的规划与物理跟踪闭环</title>
+  <desc id="desc">文字、末帧目标和最近二十帧仿真历史输入 DiP，十步扩散生成四十帧计划。PHC 逐帧给出 PD 目标，由仿真执行。执行结果反馈给跟踪器，也经格式转换作为下一轮规划的历史。下方为训练流程。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#25675e"/></marker>
+    <marker id="blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#3e6395"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC","PingFang SC",sans-serif;fill:#20393e}
+      .h{font-size:32px;font-weight:700}.sec{font-size:21px;font-weight:700;fill:#25675e}.title{font-size:21px;font-weight:700}.body{font-size:17px}.small{font-size:16px}.muted{fill:#475d60}
+      .f{fill:none;stroke:#25675e;stroke-width:2.5;stroke-linejoin:round;marker-end:url(#arrow)}.back{fill:none;stroke:#3e6395;stroke-width:2.5;stroke-linejoin:round;marker-end:url(#blue)}.rule{stroke:#b9ccc7;stroke-width:1}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="938" height="1058" rx="16" fill="#fff" stroke="#b9ccc7"/>
+  <text x="32" y="51" class="h">CLoSD｜哪段动作成为下一次规划的历史？</text>
+  <text x="32" y="83" class="body muted">绿色箭头连接参考动作与执行，蓝色箭头把实际仿真状态送回。</text>
+  <path class="rule" d="M32 105H908"/>
+  <text x="32" y="144" class="sec">运行时 · 规划下一段参考动作</text>
+  <rect x="40" y="167" width="438" height="139" rx="11" fill="#f1f7f3" stroke="#a8c8ba"/>
+  <text x="58" y="202" class="title">用户或状态机更新任务</text>
+  <text x="58" y="235" class="body">文字 → 冻结 DistilBERT → 词级特征</text>
+  <text x="58" y="264" class="body">目标关节坐标、朝向、有效位 → 目标嵌入</text>
+  <text x="58" y="290" class="small muted">目标作用在本段末帧，各项可单独启用。</text>
+  <rect x="512" y="167" width="343" height="139" rx="11" fill="#eef4fb" stroke="#a6bbd5"/>
+  <text x="530" y="202" class="title">动作输入</text>
+  <text x="530" y="235" class="body">最近 20 帧实际历史（约 1 秒）</text>
+  <text x="530" y="264" class="body">与 40 帧待去噪的未来拼接</text>
+  <text x="530" y="290" class="small muted">规划时间轴 20 Hz，每帧 263 维。</text>
+  <path class="f" d="M255 306V337"/><path class="f" d="M682 306V337"/>
+  <rect x="40" y="341" width="815" height="128" rx="11" fill="#e6f2ed" stroke="#85b4a2"/>
+  <text x="58" y="378" class="title">DiP · 一次规划调用，进行 10 步扩散去噪</text>
+  <text x="58" y="411" class="body">8 层 Transformer 解码器；动作查询文字和“目标＋扩散步”条件。</text>
+  <text x="58" y="441" class="body">每步估计干净的未来 40 帧；最终得到位置、旋转、速度等连续特征。</text>
+  <path class="f" d="M253 469V505"/>
+  <text x="275" y="495" class="small muted">相对表示转世界关节参考 · 对齐跟踪帧率</text>
+  <rect x="40" y="510" width="815" height="143" rx="11" fill="#fff8e9" stroke="#d5bb82"/>
+  <text x="58" y="547" class="title">PHC 跟踪策略与物理仿真 · 逐帧执行</text>
+  <text x="58" y="583" class="body">参考姿态与真实状态的偏差 → 策略给出各自由度 PD 目标</text>
+  <text x="58" y="612" class="body">→ 控制器施力 → 仿真更新身体与接触 → 新状态供下一跟踪步使用。</text>
+  <text x="58" y="638" class="small muted">公开实现以 30 Hz 跟踪，默认 40 个规划帧对应约 60 个跟踪帧。</text>
+  <path class="f" d="M253 653V688"/>
+  <rect x="40" y="692" width="815" height="100" rx="11" fill="#eef4fb" stroke="#a6bbd5"/>
+  <text x="58" y="728" class="title">执行结果进入历史缓冲</text>
+  <text x="58" y="763" class="body">取最近一秒实际运动，转换回相对表示。下一轮从已到达的位置续写。</text>
+  <path class="back" d="M855 740H887V236H860"/>
+  <path class="rule" d="M32 826H908"/>
+  <text x="32" y="866" class="sec">训练时 · 两路预训练，再让跟踪器适应生成的计划</text>
+  <rect x="40" y="887" width="397" height="118" rx="11" fill="#f5f7f5" stroke="#c2cec5"/>
+  <text x="57" y="921" class="title">HumanML3D → DiP</text>
+  <text x="57" y="950" class="small">截取“历史＋未来”，给未来加噪。</text>
+  <text x="57" y="976" class="small">用干净未来和真实末帧目标监督。</text>
+  <rect x="464" y="887" width="433" height="118" rx="11" fill="#f5f7f5" stroke="#c2cec5"/>
+  <text x="481" y="921" class="title">AMASS → 跟踪策略 → 闭环微调</text>
+  <text x="481" y="950" class="small">先学习跟踪动捕，再固定 DiP，在有物体</text>
+  <text x="481" y="976" class="small">的仿真中用 PPO 微调同一个跟踪策略。</text>
+  <text x="32" y="1036" class="small muted">依据 Tevet 等，ICLR 2025，图 2、§4–5 与作者公开实现重绘。</text>
+</svg>
