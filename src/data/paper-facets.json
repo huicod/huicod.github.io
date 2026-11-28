@@ -2818,6 +2818,22 @@
     ],
     "controls": []
   },
+  "omnimotion-x-paper-notes": {
+    "topics": [
+      "multimodal",
+      "generation",
+      "gesture",
+      "dance",
+      "editing"
+    ],
+    "methods": [
+      "diffusion"
+    ],
+    "controls": [
+      "space",
+      "time"
+    ]
+  },
   "opendance-paper-notes": {
     "topics": [
       "dance",

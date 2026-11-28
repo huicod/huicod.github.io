@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1000" viewBox="0 0 880 1000" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">OmniMotion-X 的片段内去噪、片段间续写与训练顺序</title>
+  <desc id="desc">五类可选条件分别编码和投影为条件前缀。带噪全身动作和扩散步一起进入共享去噪器。分部位解码器预测当前片段的干净动作；如有全局约束可用梯度引导采样。段内反复去噪，段间将已生成片段作为下一段的可选参考。训练按文本、参考、全局和音频条件递进。</desc>
+  <defs>
+    <style>
+      text { font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif; fill:#193340 }
+      .title{font-size:28px;font-weight:700}.lead{font-size:17px;fill:#445e69}
+      .head{font-size:20px;font-weight:700}.key{font-size:17px;font-weight:700}.body{font-size:16px}.small{font-size:15px;fill:#43616b}
+      .ar,.dot{stroke:#456977;fill:none;stroke-width:2.1;marker-end:url(#tip)}
+      .dot{stroke-dasharray:5 4}.rule{stroke:#c4d8d3;stroke-width:1}
+    </style>
+    <marker id="tip" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#456977"/></marker>
+  </defs>
+  <rect x="0.5" y="0.5" width="879" height="999" rx="15" fill="#fff" stroke="#c4d3d8"/>
+  <text class="title" x="26" y="46">OmniMotion-X 如何逐段生成全身动作？</text>
+  <text class="lead" x="27" y="77">默认每段 150 帧。段内反复去噪，生成的片段又可以成为下一段的参考。</text>
+
+  <g aria-label="按任务提供的条件">
+    <rect x="22" y="102" width="562" height="299" rx="12" fill="#eef6f3" stroke="#a2c1b4"/>
+    <text x="41" y="137" class="head">按任务选择条件</text>
+    <path class="rule" d="M41 154h524"/>
+    <text class="key" x="41" y="182">文字</text><text class="body" x="149" y="182">冻结的 T5-XXL 编码动作描述。</text>
+    <text class="key" x="41" y="223">全局姿态</text><text class="body" x="149" y="223">时空掩码选定关节与时刻，再编码已知量。</text>
+    <text class="key" x="41" y="264">语音</text><text class="body" x="149" y="264">16 kHz 波形经一维残差卷积，得到语音特征。</text>
+    <text class="key" x="41" y="305">音乐</text><text class="body" x="149" y="305">Librosa 提取 35 维声学特征，含节拍与起音。</text>
+    <text class="key" x="41" y="346">参考动作</text><text class="body" x="149" y="346">按身体部位编码已有片段，首段可留空。</text>
+    <path class="rule" d="M41 363h524"/>
+    <text class="key" x="41" y="386">各路分别投影到同一宽度，拼成条件前缀。</text>
+  </g>
+  <g aria-label="当前待生成的片段">
+    <rect x="608" y="102" width="250" height="299" rx="12" fill="#eef4fa" stroke="#a7bfd1"/>
+    <text x="626" y="137" class="head">当前片段</text>
+    <path d="M626 154h214" stroke="#c5d4df"/>
+    <text class="key" x="626" y="184">带噪动作 xₜ</text>
+    <text class="body" x="626" y="216">各部位独立线性投影。</text>
+    <text class="body" x="626" y="245">各帧保留时间顺序。</text>
+    <text class="key" x="626" y="298">扩散步 t</text>
+    <text class="body" x="626" y="330">加入步数嵌入，表明</text>
+    <text class="body" x="626" y="357">当前采样的去噪阶段。</text>
+  </g>
+  <path class="ar" d="M302 402v30"/><path class="ar" d="M733 402v30"/>
+  <g aria-label="共享生成器">
+    <rect x="22" y="436" width="836" height="94" rx="12" fill="#e8f1f6" stroke="#9db8c8"/>
+    <text class="head" x="41" y="472">共享扩散 Transformer（DiT）</text>
+    <text class="body" x="41" y="507">条件前缀与带噪动作序列一同做自注意力。只读取原带噪动作位置的输出，用于重建当前片段。</text>
+  </g>
+  <path class="ar" d="M263 531v32"/>
+  <g aria-label="输出和可选采样引导">
+    <rect x="22" y="568" width="496" height="99" rx="12" fill="#edf5ef" stroke="#abc4af"/>
+    <text class="head" x="41" y="605">按部位解码干净动作估计</text>
+    <text class="body" x="41" y="640">得到根部、身体、手与面的连续全身动作特征。</text>
+    <rect x="555" y="568" width="303" height="99" rx="12" fill="#fbf5e9" stroke="#cbb98d" stroke-dasharray="5 4"/>
+    <text class="key" x="573" y="604">有全局约束时，可选梯度引导</text>
+    <text class="body" x="573" y="638">按时空掩码引导动作估计。</text>
+    <path class="dot" d="M553 617h-32"/>
+  </g>
+  <path class="ar" d="M263 668v30"/>
+  <g aria-label="推理的两个时间尺度">
+    <rect x="22" y="703" width="836" height="102" rx="12" fill="#f5f8f9" stroke="#bdccd1"/>
+    <path d="M435 720v67" stroke="#d0dcdc"/>
+    <text class="key" x="41" y="737">段内 · 更新当前序列</text>
+    <text class="body" x="41" y="770">根据估计进入下一去噪步，迭代至完成。</text>
+    <text class="key" x="455" y="737">段间 · 接着生成</text>
+    <text class="body" x="455" y="770">上一段可送回参考分支，继续生成下一段。</text>
+  </g>
+  <g aria-label="训练逐步加入条件">
+    <text class="head" x="24" y="852">训练时怎样让弱条件先发挥作用？</text>
+    <rect x="22" y="871" width="185" height="68" rx="9" fill="#f2f0f7" stroke="#c3bad2"/>
+    <text class="key" x="36" y="899">从文字开始</text><text class="small" x="36" y="923">46 万步</text>
+    <path class="ar" d="M208 905h24"/>
+    <rect x="236" y="871" width="185" height="68" rx="9" fill="#f2f0f7" stroke="#c3bad2"/>
+    <text class="key" x="250" y="899">加入参考动作</text><text class="small" x="250" y="923">再训练 46 万步</text>
+    <path class="ar" d="M422 905h24"/>
+    <rect x="450" y="871" width="185" height="68" rx="9" fill="#f2f0f7" stroke="#c3bad2"/>
+    <text class="key" x="464" y="899">加入全局控制</text><text class="small" x="464" y="923">再训练 23 万步</text>
+    <path class="ar" d="M636 905h24"/>
+    <rect x="664" y="871" width="194" height="68" rx="9" fill="#f2f0f7" stroke="#c3bad2"/>
+    <text class="key" x="678" y="899">加入语音与音乐</text><text class="small" x="678" y="923">再训练 92 万步</text>
+    <text class="small" x="24" y="974">依据正文图 2–3、§4–5.1 及会议补充图 3–5。训练与测试可用真实前段或留空，推理也可用自选动作。</text>
+  </g>
+</svg>
