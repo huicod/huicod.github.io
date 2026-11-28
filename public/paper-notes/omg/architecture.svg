@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1326" viewBox="0 0 960 1326" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">OMG 如何把多模态指令变成 G1 的全身动作？</title>
+  <desc id="desc">上方展示训练数据流。从公开人体和机器人动作出发，统一至 G1 骨架、对齐各类标注，并通过仿真跟踪筛查。扩散模型学习从带噪未来预测干净运动。推理时，语言与十帧动作历史经交叉注意力进入每个去噪块，逐帧对齐的音频和人体关节参考经 FiLM 输入。生成器直接产生六十帧、一百二十五维的局部运动参考，恢复世界坐标后交给预训练的 HoloMotion。跟踪器结合机器人观测输出关节控制，部署于 G1 的 Orin，参考轨迹由外置 RTX 4090 计算。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#203a38}
+      .title{font-size:30px;font-weight:700}.section{font-size:23px;font-weight:700;fill:#245c57}
+      .head{font-size:20px;font-weight:700}.body{font-size:18px}.note{font-size:16px;fill:#455f59}
+      .card{stroke-width:1.5}.data{fill:#f4f2f8;stroke:#c9bfd8}.input{fill:#f3f7f5;stroke:#b5cbc2}
+      .net{fill:#edf4fa;stroke:#a7c2d6}.motion{fill:#edf5ee;stroke:#a6c8b0}
+      .control{fill:#f8f5ef;stroke:#cdbda2}.arrow{fill:none;stroke:#476f65;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .rule{stroke:#d6e2dd;stroke-width:1}.subrule{stroke:#bfd1dc;stroke-width:1}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#476f65"/></marker>
+  </defs>
+  <rect x="1" y="1" width="958" height="1324" rx="16" fill="#fff" stroke="#c5d3cd"/>
+  <text class="title" x="38" y="51">OMG 如何把多模态指令变成 G1 的全身动作？</text>
+  <text class="body" x="38" y="85">先规划未来两秒的参考运动，再由机载跟踪器结合机器人状态执行。</text>
+
+  <text class="section" x="38" y="137">训练　从异构动作数据学出 G1 运动分布</text>
+  <g>
+    <rect class="card data" x="38" y="156" width="248" height="123" rx="11"/>
+    <text class="head" x="54" y="188">动作与已有标注</text>
+    <text class="body" x="54" y="222">汇集人体与机器人动作，</text>
+    <text class="body" x="54" y="252">保留已有的配套条件。</text>
+  </g>
+  <path class="arrow" d="M287 217H315"/>
+  <g>
+    <rect class="card data" x="319" y="156" width="278" height="123" rx="11"/>
+    <text class="head" x="335" y="188">统一到机器人骨架</text>
+    <text class="body" x="335" y="222">用 GMR 重定向，音频对齐；</text>
+    <text class="body" x="335" y="252">按需渲染并补充语言标注。</text>
+  </g>
+  <path class="arrow" d="M598 217H626"/>
+  <g>
+    <rect class="card data" x="630" y="156" width="292" height="123" rx="11"/>
+    <text class="head" x="646" y="188">仿真筛查与切片</text>
+    <text class="body" x="646" y="222">跟踪回放，剔除持续跌倒片段。</text>
+    <text class="body" x="646" y="252">OMG-Data 共 1,174.66 小时。</text>
+  </g>
+  <path class="arrow" d="M776 280V306"/>
+  <g>
+    <rect class="card data" x="38" y="310" width="884" height="83" rx="11"/>
+    <text class="head" x="55" y="342">生成器的学习目标</text>
+    <text class="body" x="55" y="372">随机丢弃部分可用条件；给未来动作加噪，监督 OMG-DiT 还原干净的连续 G1 运动。</text>
+  </g>
+  <line class="rule" x1="38" x2="922" y1="421" y2="421"/>
+
+  <text class="section" x="38" y="460">推理　历史、指令与带噪运动怎样进入同一个生成器？</text>
+  <g>
+    <rect class="card input" x="38" y="482" width="416" height="111" rx="11"/>
+    <text class="head" x="54" y="513">整段上下文　文字与运动历史</text>
+    <text class="body" x="54" y="546">文字 → 冻结的 T5-Base → 文字特征</text>
+    <text class="body" x="54" y="575">最近 10 帧 G1 运动 → MLP → 历史特征</text>
+  </g>
+  <path class="arrow" d="M455 538H507"/>
+  <g>
+    <rect class="card input" x="38" y="612" width="416" height="145" rx="11"/>
+    <text class="head" x="54" y="643">逐帧条件　与待生成的运动对齐</text>
+    <text class="body" x="54" y="676">声音 → 每帧 35 维声学特征 → MLP</text>
+    <text class="body" x="54" y="705">人体参考 → 每帧 22 个三维关节 → MLP</text>
+    <text class="note" x="54" y="736">只启用当前提供的模态。</text>
+  </g>
+  <path class="arrow" d="M455 672H507"/>
+  <g>
+    <rect class="card input" x="38" y="776" width="416" height="104" rx="11"/>
+    <text class="head" x="54" y="807">待生成的 60 帧</text>
+    <text class="body" x="54" y="841">带噪运动特征与扩散步嵌入拼接，</text>
+    <text class="body" x="54" y="867">投影为随时间排列的运动特征。</text>
+  </g>
+  <path class="arrow" d="M455 824H507"/>
+  <g>
+    <rect class="card net" x="511" y="482" width="411" height="398" rx="11"/>
+    <text class="head" x="529" y="514">OMG-DiT　外置生成器</text>
+    <text class="body" x="529" y="549">交叉注意力：未来帧的运动特征</text>
+    <text class="body" x="529" y="578">读取历史与文字。</text>
+    <line class="subrule" x1="529" x2="903" y1="605" y2="605"/>
+    <text class="body" x="529" y="644">FiLM：按帧调节每层特征的尺度</text>
+    <text class="body" x="529" y="673">和偏移，注入声音或人体关节信息。</text>
+    <text class="note" x="529" y="711">多模态组合可用 CFG 对各条件加权。</text>
+    <line class="subrule" x1="529" x2="903" y1="742" y2="742"/>
+    <text class="body" x="529" y="780">未来帧之间做双向时间自注意力。</text>
+    <text class="body" x="529" y="816">默认 DDIM 采样 50 步，</text>
+    <text class="body" x="529" y="849">每次估计干净的未来动作。</text>
+  </g>
+  <path class="arrow" d="M718 881V907"/>
+  <g>
+    <rect class="card motion" x="38" y="911" width="884" height="103" rx="11"/>
+    <text class="head" x="55" y="943">输出参考轨迹　60 帧 × 125 维，30 Hz</text>
+    <text class="body" x="55" y="975">每帧含根位置 3 维、根朝向 6 维、29 个关节角与 29 个连杆的位置（87 维）。</text>
+    <text class="body" x="55" y="1001">用最后一帧历史的根位置和朝向把局部预测恢复到世界坐标。</text>
+  </g>
+  <path class="arrow" d="M232 1015V1070"/>
+  <text class="note" x="245" y="1049">有线传输参考运动</text>
+  <text class="section" x="539" y="1054">执行　机载低层控制</text>
+  <g>
+    <rect class="card control" x="38" y="1074" width="416" height="108" rx="11"/>
+    <text class="head" x="54" y="1107">预训练跟踪器 HoloMotion</text>
+    <text class="body" x="54" y="1140">读取参考轨迹与机器人自身观测，</text>
+    <text class="body" x="54" y="1168">在机载 Orin 上输出关节控制动作。</text>
+  </g>
+  <path class="arrow" d="M455 1127H507"/>
+  <g>
+    <rect class="card motion" x="511" y="1074" width="411" height="108" rx="11"/>
+    <text class="head" x="529" y="1107">Unitree G1 的实际全身运动</text>
+    <text class="body" x="529" y="1140">机器人执行关节控制；跟踪结果</text>
+    <text class="body" x="529" y="1168">取决于当前状态与参考动作的可跟踪性。</text>
+  </g>
+  <line class="rule" x1="38" x2="922" y1="1208" y2="1208"/>
+  <text class="note" x="38" y="1238">扩展接口：Pico 稀疏关键点可微调帧级适配器；视觉导航实验另行学习 RGB 条件。</text>
+  <text class="note" x="38" y="1266">部署分工：外置 RTX 4090 规划动作，机载 Orin 跟踪执行。</text>
+  <text class="note" x="38" y="1296">据原文图 1–3、§3–4、附录 C.1–C.6 与 E.5 重绘。</text>
+</svg>

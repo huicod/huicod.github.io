@@ -2718,6 +2718,20 @@
     ],
     "controls": []
   },
+  "omg-paper-notes": {
+    "topics": [
+      "character",
+      "multimodal",
+      "generation"
+    ],
+    "methods": [
+      "diffusion",
+      "physics"
+    ],
+    "controls": [
+      "streaming"
+    ]
+  },
   "omni2sound-paper-notes": {
     "topics": ["multimodal", "video"],
     "methods": ["diffusion"],
