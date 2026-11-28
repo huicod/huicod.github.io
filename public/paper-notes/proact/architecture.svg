@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="1344" viewBox="0 0 1060 1344" role="img" aria-labelledby="title desc">
+  <title id="title">ProAct 怎样在对话中主动邀请观众看海报？</title>
+  <desc id="desc">用户语音与摄像机画面分别进入并行的认知和行为系统。认知系统每约四秒更新一次记忆并规划。最高动机分达四分可生成手势和移动意图，五分可干预对话。行为系统在倾听时也不断生成姿态。两路音频与可选文字意图共同驱动分块流匹配，缓存重叠姿态使块间衔接。语言、上身姿态和底层步态从不同通道执行。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.7" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#36766d"/></marker>
+    <marker id="auxArrow" viewBox="0 0 10 10" refX="8.7" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#547886"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#17383e}
+      .title{font-size:33px;font-weight:700}.head{font-size:23px;font-weight:700}.sub{font-size:20px;font-weight:700}.body{font-size:18px}.small{font-size:16px}
+      .label{font-size:16px;font-weight:700;fill:#45686b}
+      .cog{fill:#edf4fa;stroke:#a7c0d4}.act{fill:#eff7f3;stroke:#a0c0af}.out{fill:#fcf5e8;stroke:#d5bd90}.train{fill:#f4f5f1;stroke:#bac7b7}
+      .box{stroke-width:1.6}.edge{fill:none;stroke:#36766d;stroke-width:2.1;marker-end:url(#arrow)}.bypass{fill:none;stroke:#547886;stroke-width:1.8;stroke-dasharray:6 5;marker-end:url(#auxArrow)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="1058" height="1342" rx="15" fill="#fff" stroke="#bdcdc7"/>
+  <text class="title" x="40" y="51">ProAct 怎样在对话中主动邀请观众看海报？</text>
+  <text class="body" x="41" y="87">以「观众走近展板，机器人转身并招呼对方」为例。认知系统决定何时介入，行为系统持续生成动作。</text>
+
+  <rect class="box cog" x="45" y="110" width="970" height="76" rx="11"/>
+  <text class="sub" x="66" y="140">感知输入</text>
+  <text class="body" x="67" y="168">用户麦克风、机器人第一视角画面；语音转写形成对话历史。语音与画面也直接进入实时行为系统。</text>
+
+  <text class="head" x="45" y="226">认知系统　约每 4 秒完成一轮，两种推理并行</text>
+  <path class="edge" d="M755 186v49H290v9"/><path class="edge" d="M755 231v13"/>
+  <rect class="box cog" x="45" y="246" width="455" height="154" rx="10"/>
+  <text class="sub" x="62" y="278">上下文编码器　更新下一轮的记忆</text>
+  <text class="body" x="62" y="313">取最近 5 轮转写、3 张新画面、上轮计划与记忆。</text>
+  <text class="body" x="62" y="344">将用户状态、待办事项、机器人此前的介入</text>
+  <text class="body" x="62" y="374">压缩成短摘要，写入记忆库。</text>
+  <rect class="box cog" x="535" y="246" width="480" height="154" rx="10"/>
+  <text class="sub" x="553" y="278">行为规划器　决定当前是否介入</text>
+  <text class="body" x="553" y="313">取本轮转写、最新画面、上轮记忆与计划。</text>
+  <text class="body" x="553" y="344">对场景、意图、对话、社交规范和情绪评分；</text>
+  <text class="body" x="553" y="374">取五项最高分，再检查近期是否已有相同介入。</text>
+  <path class="bypass" d="M274 400v24h451v-22"/>
+  <rect x="383" y="411" width="207" height="25" fill="white"/>
+  <text class="label" x="395" y="431">本轮记忆供下一轮使用</text>
+  <path class="edge" d="M802 400v54"/>
+  <rect class="box cog" x="45" y="457" width="970" height="99" rx="10"/>
+  <text class="sub" x="65" y="494">主动计划</text>
+  <text class="body" x="176" y="493">最高分低于 4，保持常规互动；达到 4 可安排手势或移动；达到 5 才允许主动干预对话。</text>
+  <text class="body" x="67" y="531">计划按通道送入行为系统。语言按话轮生成，动作在倾听和说话时都持续生成。</text>
+  <path class="edge" d="M185 556v32"/><path class="edge" d="M542 556v32"/><path class="edge" d="M885 556v32"/>
+
+  <rect class="box act" x="45" y="590" width="282" height="196" rx="10"/>
+  <text class="sub" x="62" y="625">语言通道</text>
+  <text class="body" x="62" y="658">语音、画面 → GPT Realtime</text>
+  <text class="body" x="62" y="689">判断话轮结束后流式回复。</text>
+  <text class="body" x="62" y="720">主动语言计划可补充提示，</text>
+  <text class="body" x="62" y="750">发起提醒或介入对话。</text>
+  <rect class="box act" x="347" y="590" width="391" height="196" rx="10"/>
+  <text class="sub" x="365" y="625">手势通道</text>
+  <text class="body" x="365" y="658">「身体部位 + 动作」文字 → CLIP 编码。</text>
+  <text class="body" x="365" y="689">ControlNet 通过残差把可选意图</text>
+  <text class="body" x="365" y="720">注入音频驱动的动作生成器。</text>
+  <text class="body" x="365" y="750">没有新手势计划时仍可随音频动作。</text>
+  <rect class="box act" x="758" y="590" width="257" height="196" rx="10"/>
+  <text class="sub" x="776" y="625">移动通道</text>
+  <text class="body" x="776" y="658">前进／后退、转身、停留</text>
+  <text class="body" x="776" y="689">→ 速度与持续时间</text>
+  <text class="body" x="776" y="720">→ G1 自带步态控制器。</text>
+  <text class="body" x="776" y="750">步态切换对齐步态周期。</text>
+
+  <path class="bypass" d="M45 150H20V672h22"/>
+  <path class="edge" d="M185 786v24h175v22"/>
+  <text class="small" x="199" y="804">机器人的语音也参与动作生成</text>
+  <path class="edge" d="M542 786v46"/>
+  <rect class="box act" x="45" y="835" width="970" height="171" rx="10"/>
+  <text class="sub" x="64" y="869">流式动作生成器　每次预测一个连续姿态块</text>
+  <text class="body" x="64" y="904">用户与机器人两路音频对齐，逐帧特征拼接，与流时间共同调节 DiT；手势意图通过独立控制分支注入。</text>
+  <text class="body" x="64" y="936">从噪声出发，Euler 积分产生连续姿态；上块末尾的 ℓ 帧被缓存，在下一块的每一步覆盖重叠前缀。</text>
+  <text class="small" x="64" y="976">论文设置 n = 150 帧、ℓ = 30 帧、30 Hz；另以 1 秒动作块报告模型计算用时，计时不含完整交互链路。</text>
+  <path class="edge" d="M544 1006v35"/>
+  <path class="edge" d="M1015 694h23v373h-20"/>
+  <path class="edge" d="M45 750H24v347h18"/>
+  <rect class="box out" x="45" y="1042" width="970" height="108" rx="10"/>
+  <text class="sub" x="64" y="1077">G1 执行　语音播放、上身与下身分别驱动</text>
+  <text class="body" x="64" y="1110">上身跟踪经过平滑、限幅的目标关节角；下身由步态控制器维持平衡。客户端按块标识对齐动作和音频。</text>
+
+  <text class="head" x="45" y="1193">训练时，节奏和文字意图分别怎样学？</text>
+  <rect class="box train" x="45" y="1211" width="970" height="84" rx="10"/>
+  <text class="body" x="65" y="1244">① Photoreal 双人音频与动作 → 训练音频基座。　② 冻结基座，使用 SeG 动作与重标文字训练 ControlNet。</text>
+  <text class="small" x="67" y="1275">SeG 没有同步语音，第二阶段用高斯噪声填充音频通道。认知规划使用提示词，在另一条路径上工作。</text>
+  <text class="small" x="45" y="1326">依据 Zhang 等人论文图 2、3、9，§4–6 与作者公开客户端重绘。</text>
+</svg>

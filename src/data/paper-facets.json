@@ -3021,6 +3021,21 @@
     ],
     "controls": []
   },
+  "proact-paper-notes": {
+    "topics": [
+      "gesture",
+      "character",
+      "multimodal"
+    ],
+    "methods": [
+      "flow",
+      "language"
+    ],
+    "controls": [
+      "interaction",
+      "streaming"
+    ]
+  },
   "progmogen-paper-notes": {
     "topics": [
       "generation"
