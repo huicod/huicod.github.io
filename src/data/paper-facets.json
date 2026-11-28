@@ -452,6 +452,16 @@
       "parts"
     ]
   },
+  "dance-style-embedding-paper-notes": {
+    "topics": [
+      "dance",
+      "representation"
+    ],
+    "methods": [],
+    "controls": [
+      "style"
+    ]
+  },
   "danceba-paper-notes": {
     "topics": [
       "dance"

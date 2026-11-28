@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="924" height="984" viewBox="0 0 924 984" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">参考舞蹈、音乐与起始姿势怎样共同生成一段舞？</title>
+  <desc id="desc">参考舞段的二维关节逐帧作绝对差，经过卷积和 GRU 后查询共享的风格原型，得到一个风格向量。每个时间步先将它加到 Transformer 编码的音乐上，再拼接由姿态 VAE 编码的起姿。双向 LSTM 和全连接层产生连续的二维骨架，另可渲染为视频。训练中以同类和异类风格的成对监督、动作重建和起姿 VAE 的损失更新模型。推理时可保持音乐和起姿，更换参考舞段以生成不同舞种。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.4" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0 10 5 0 10z" fill="#47646e"/></marker>
+    <marker id="optional" viewBox="0 0 10 10" refX="8.4" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto"><path d="M0 0 10 5 0 10z" fill="#897361"/></marker>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#203c43}
+      .title{font-size:31px;font-weight:700}.lead{font-size:18px;fill:#4b6066}
+      .section{font-size:22px;font-weight:700}.sub{font-size:19px;font-weight:700}
+      .body{font-size:17px}.small{font-size:16px}.output{font-size:17px;font-weight:700}
+      .line{fill:none;stroke:#47646e;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .aux{fill:none;stroke:#897361;stroke-width:2;stroke-dasharray:5 5;marker-end:url(#optional)}
+    </style>
+  </defs>
+  <rect x="1" y="1" width="922" height="982" rx="16" fill="#fff" stroke="#c6d2d2"/>
+  <text x="36" y="53" class="title">同一首音乐，怎样换一种跳法？</text>
+  <text x="37" y="85" class="lead">先从参考舞段提取一个风格向量，再让整段音乐的每一帧都读取它。</text>
+
+  <!-- Three condition streams. The first two meet at addition, the last at concatenation. -->
+  <g>
+    <rect x="36" y="118" width="273" height="293" rx="11" fill="#edf6f1" stroke="#a4c2b2"/>
+    <text x="55" y="155" class="section">参考舞段</text>
+    <text x="55" y="185" class="body">OpenPose 提取二维关节。</text>
+    <path d="M55 205 H290" stroke="#c1d8cc"/>
+    <text x="55" y="238" class="sub">动作编码器</text>
+    <text x="55" y="266" class="body">相邻帧坐标取绝对差，</text>
+    <text x="55" y="293" class="body">卷积与 GRU 汇总为向量。</text>
+    <text x="55" y="335" class="sub">可学习的风格原型 W</text>
+    <text x="55" y="363" class="body">按相似度给各原型加权，</text>
+    <text x="55" y="390" class="output">得到整段共用的风格 c。</text>
+  </g>
+  <g>
+    <rect x="326" y="118" width="272" height="293" rx="11" fill="#fbf4e6" stroke="#d7bf92"/>
+    <text x="345" y="155" class="section">目标音乐</text>
+    <text x="345" y="185" class="body">提取逐帧声学特征。</text>
+    <path d="M345 205 H579" stroke="#e4d2b2"/>
+    <text x="345" y="238" class="sub">音乐编码器</text>
+    <text x="345" y="266" class="body">多层 Transformer 结合</text>
+    <text x="345" y="293" class="body">前后时刻的音乐线索。</text>
+    <text x="345" y="363" class="body">时间顺序保留，每帧拥有</text>
+    <text x="345" y="390" class="output">自己的音乐表示 zₘ(t)。</text>
+  </g>
+  <g>
+    <rect x="615" y="118" width="273" height="293" rx="11" fill="#edf4f9" stroke="#abc4d4"/>
+    <text x="634" y="155" class="section">起始姿势</text>
+    <text x="634" y="185" class="body">一帧骨架提供起姿条件。</text>
+    <path d="M634 205 H869" stroke="#cad9e4"/>
+    <text x="634" y="238" class="sub">姿态 VAE</text>
+    <text x="634" y="266" class="body">编码给定姿态。续接时</text>
+    <text x="634" y="293" class="body">可选用上一段的末帧。</text>
+    <text x="634" y="363" class="body">也可从先验采样，获得</text>
+    <text x="634" y="390" class="output">起姿潜向量 zᵢₙᵢₜ。</text>
+  </g>
+
+  <path class="line" d="M172 411 V463"/>
+  <path class="line" d="M462 411 V463"/>
+  <path class="line" d="M752 411 V463"/>
+  <rect x="36" y="468" width="482" height="108" rx="11" fill="#f4f8f5" stroke="#b2c7bb"/>
+  <text x="55" y="508" class="sub">逐帧相加</text>
+  <text x="55" y="544" class="body">沿时间复制 c，加到每一帧的音乐表示上。</text>
+  <path class="line" d="M518 523 H568"/>
+  <rect x="574" y="468" width="314" height="108" rx="11" fill="#f1f6fa" stroke="#afc6d5"/>
+  <text x="593" y="508" class="sub">再拼接起姿向量</text>
+  <text x="593" y="544" class="body">每帧共享同一份起姿条件。</text>
+
+  <path class="line" d="M731 576 V606 H163 V635"/>
+  <g>
+    <rect x="36" y="640" width="254" height="100" rx="11" fill="#e9f2f3" stroke="#a6c1c4"/>
+    <text x="55" y="680" class="sub">舞蹈生成器</text>
+    <text x="55" y="713" class="body">双向 LSTM 与全连接层</text>
+    <path class="line" d="M290 690 H325"/>
+    <rect x="331" y="640" width="262" height="100" rx="11" fill="#edf6f1" stroke="#a4c2b2"/>
+    <text x="350" y="680" class="sub">连续二维舞蹈骨架</text>
+    <text x="350" y="713" class="body">每帧 21 个关节 × 2 个坐标</text>
+    <path class="aux" d="M593 690 H628"/>
+    <rect x="634" y="640" width="254" height="100" rx="11" fill="#faf6f0" stroke="#cbbca9" stroke-dasharray="5 4"/>
+    <text x="653" y="680" class="sub">可选的视频展示</text>
+    <text x="653" y="713" class="body">渲染模型将骨架转成画面。</text>
+  </g>
+
+  <rect x="36" y="774" width="852" height="99" rx="11" fill="#f4f3f8" stroke="#c9c4d7"/>
+  <text x="55" y="813" class="sub">训练监督</text>
+  <text x="171" y="813" class="body">风格向量按舞种成对比较，同类拉近，异类拉开至间隔 1。</text>
+  <text x="171" y="846" class="body">生成骨架用逐帧 L1 重建，姿态 VAE 另用单帧 L1 重建与 KL 正则。</text>
+  <text x="36" y="920" class="sub">推理时可以做的对照</text>
+  <text x="36" y="954" class="body">固定音乐和起姿，换用 Popping、Locking 或 Anime 参考片段，比较三段新生成的编舞。</text>
+</svg>
