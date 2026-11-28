@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1250" viewBox="0 0 960 1250" role="img" aria-labelledby="figure-title figure-desc" lang="zh-CN">
+  <title id="figure-title">PRISM 如何用同一张潜变量网格完成动作生成和续接？</title>
+  <desc id="figure-desc">上半部展示两步训练。因果动作 VAE 将 SMPL 动作压缩为时间乘 23 个运动学单元的连续网格，每格 16 维。流匹配生成器学习在干净前缀和文字条件下还原目标网格。下半部展示推理。纯文本生成从全噪声网格起步，有前缀时固定开头的已知潜变量。运动学单元流 Transformer 接收网格、逐格噪声水平以及 T5 文字特征，通过骨架位置编码和关节深度调度计算流速度。VAE 解码为连续的根轨迹与旋转；续接时将上一段末尾重新编码，结合下一段动作说明继续生成。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#213d3a}
+      .title{font-size:30px;font-weight:700}.section{font-size:23px;font-weight:700;fill:#235854}
+      .head{font-size:20px;font-weight:700}.body{font-size:18px}.note{font-size:16px;fill:#455d5a}
+      .card{stroke-width:1.5}.train{fill:#f3f2f8;stroke:#c9c1d5}.input{fill:#f4f7f6;stroke:#b5c9c2}
+      .gridbox{fill:#f7f9fa;stroke:#b7c9cd}.network{fill:#edf4fa;stroke:#abc3d3}.out{fill:#edf5ef;stroke:#a8c8b1}
+      .arrow,.feedback{fill:none;stroke:#476d65;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .feedback{stroke:#688079;stroke-dasharray:6 5}.separator{stroke:#d5e0dd;stroke-width:1}
+      .clean{fill:#a9d4bc;stroke:#649279}.target{fill:url(#hatch);stroke:#9baec3}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#476d65"/></marker>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#dce6f2"/><path d="M-1 1L1-1 M0 7L7 0 M6 8L8 6" stroke="#a7bcd2" stroke-width="1"/></pattern>
+    <g id="clean-row" class="clean"><rect width="40" height="12" rx="2"/><rect x="45" width="40" height="12" rx="2"/><rect x="90" width="40" height="12" rx="2"/><rect x="135" width="40" height="12" rx="2"/></g>
+    <g id="target-row" class="target"><rect width="40" height="12" rx="2"/><rect x="45" width="40" height="12" rx="2"/><rect x="90" width="40" height="12" rx="2"/><rect x="135" width="40" height="12" rx="2"/></g>
+  </defs>
+  <rect x="1" y="1" width="958" height="1248" rx="16" fill="#fff" stroke="#c5d3cd"/>
+  <text class="title" x="38" y="52">PRISM 如何用同一张网格生成动作、续接动作？</text>
+  <text class="body" x="38" y="86">每列固定对应一个运动学单元，每行对应一个压缩后的时间位置。</text>
+
+  <text class="section" x="38" y="139">训练　先学动作表示，再学条件生成</text>
+  <rect class="card train" x="38" y="160" width="252" height="131" rx="11"/>
+  <text class="head" x="54" y="193">SMPL 运动学单元</text>
+  <text class="body" x="54" y="225">根位置与位移、全局朝向、</text>
+  <text class="body" x="54" y="254">21 个关节的局部旋转。</text>
+  <path class="arrow" d="M290 225 H319"/>
+  <rect class="card train" x="323" y="160" width="270" height="131" rx="11"/>
+  <text class="head" x="339" y="193">因果动作 VAE</text>
+  <text class="body" x="339" y="225">只沿时间约压缩 4 倍；</text>
+  <text class="body" x="339" y="254">在瓶颈处让各单元交互。</text>
+  <path class="arrow" d="M593 225 H622"/>
+  <rect class="card train" x="626" y="160" width="296" height="131" rx="11"/>
+  <text class="head" x="642" y="193">连续潜变量网格 Z</text>
+  <text class="body" x="642" y="225">压缩时间 × 23 单元 × 16 维。</text>
+  <text class="body" x="642" y="254">每格仍保留本单元的位置。</text>
+  <text class="note" x="40" y="322">VAE 的监督包括参数重建、正向运动学关节位置、累计位移轨迹与 KL 正则。</text>
+  <path class="arrow" d="M780 291 V304 H892 V350"/>
+  <rect class="card train" x="38" y="353" width="884" height="84" rx="11"/>
+  <text class="head" x="56" y="384">流匹配训练</text>
+  <text class="body" x="56" y="414">给目标格混入噪声，给定的前缀格保持干净；训练生成器根据文本和逐格噪声水平预测流速度。</text>
+
+  <line class="separator" x1="38" y1="464" x2="922" y2="464"/>
+  <text class="section" x="38" y="504">推理　给哪些格保留动作，决定这一段怎样开始</text>
+  <rect class="card gridbox" x="38" y="527" width="558" height="243" rx="12"/>
+  <text class="head" x="56" y="561">本段的动作潜变量</text>
+  <text class="body" x="56" y="594">纯文本生成：全部目标格从噪声开始。</text>
+  <text class="body" x="56" y="624">姿态引导：用 VAE 编码起始姿态或动作前缀。</text>
+  <use href="#clean-row" x="82" y="653"/><use href="#target-row" x="82" y="672"/><use href="#target-row" x="82" y="691"/>
+  <path d="M67 652 V705" class="arrow"/>
+  <text class="note" x="278" y="664">已知前缀，τ = 0，保持干净</text>
+  <text class="note" x="278" y="699">目标格，τ &gt; 0，逐步生成</text>
+  <text class="note" x="56" y="742">向下为时间；图中只画出部分运动学单元。</text>
+  <rect class="card input" x="619" y="527" width="303" height="243" rx="12"/>
+  <text class="head" x="637" y="561">本段的文字条件</text>
+  <text class="body" x="637" y="600">单段：给一条动作描述。</text>
+  <text class="body" x="637" y="633">叙事：先拆成有顺序的</text>
+  <text class="body" x="637" y="661">短动作，并预测各段时长。</text>
+  <text class="body" x="637" y="708">T5-XXL 编码当前段描述，</text>
+  <text class="body" x="637" y="736">经交叉注意力送入生成器。</text>
+
+  <path class="arrow" d="M316 770 V800"/>
+  <path class="arrow" d="M770 770 V800"/>
+  <rect class="card network" x="38" y="803" width="884" height="164" rx="12"/>
+  <text class="head" x="56" y="837">运动学单元流 Transformer（KU-FlowT）</text>
+  <text class="body" x="56" y="872">KT-RoPE 用骨架树修正关节轴的位置坐标，帮助注意力识别单元之间的关系。</text>
+  <text class="body" x="56" y="906">KAFS 按关节深度调整采样时的噪声水平与步长。根部沿用基础时间表。</text>
+  <text class="body" x="56" y="940">同一网络随流速度更新目标格；默认采样 50 个 Euler 步。</text>
+  <path class="arrow" d="M480 967 V995"/>
+  <rect class="card out" x="38" y="998" width="884" height="142" rx="12"/>
+  <text class="head" x="56" y="1031">VAE 解码　从连续网格恢复本段骨架动作</text>
+  <text class="body" x="56" y="1066">解出全局朝向和局部关节旋转。根轨迹的高度取绝对位置，水平位置由位移累加。</text>
+  <text class="body" x="56" y="1101">继续下一段时，将本段末尾重新编码为干净前缀；拼接时去掉重复的前缀帧。</text>
+  <path class="feedback" d="M38 1087 H19 V640 H36"/>
+
+  <text class="note" x="38" y="1178">虚线表示跨段循环。叙事评测用上一段末尾 5 帧；论文验证的姿态条件集中在片段开头。</text>
+  <text class="note" x="38" y="1212">按 arXiv v4 图 2、§III–IV、附录 A–B 重绘。</text>
+</svg>
