@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1326" viewBox="0 0 960 1326" role="img" aria-labelledby="title desc" lang="zh-CN">
+  <title id="title">SentiAvatar 怎样把一句话变成身体动作和面部表情？</title>
+  <desc id="desc">训练时，先学习身体和面部的离散表示，再在通用动作上预训练身体规划器，用 SuSuInterActs 学习对话表演。推理时，动作描述和稀疏语音码共同规划身体关键动作；连续语音特征一边引导身体补全，一边直接生成面部码。两个解码器分别输出三维关节旋转和表情系数。续接下一句可以使用前一轮的关键码。</desc>
+  <defs>
+    <style>
+      text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#223b3a}
+      .title{font-size:31px;font-weight:700}.section{font-size:23px;font-weight:700;fill:#265a56}
+      .head{font-size:20px;font-weight:700}.body{font-size:18px}.note{font-size:16px;fill:#426460}
+      .box{stroke-width:1.5}.train{fill:#f4f3f8;stroke:#c9c1d4}.input{fill:#f5f8f7;stroke:#b6c9c4}
+      .speech{fill:#edf5f1;stroke:#a8c4b7}.bodypath{fill:#eef4fa;stroke:#a4bdcf}
+      .facepath{fill:#fbf2e8;stroke:#d5b996}.out{fill:#eff5f1;stroke:#acc4b5}
+      .wire,.arrow{fill:none;stroke:#4d7168;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      .arrow{marker-end:url(#arrow)}.divider{stroke:#d4dfdb;stroke-width:1}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#4d7168"/></marker>
+  </defs>
+  <rect x="1" y="1" width="958" height="1324" rx="16" fill="#fff" stroke="#c6d4ce"/>
+  <text class="title" x="37" y="55">SentiAvatar 怎样让人物边说边动？</text>
+  <text class="body" x="38" y="88">动作描述指明要做什么。语音既参与身体规划，也驱动身体细节和面部表情。</text>
+
+  <text class="section" x="38" y="139">训练　从动作库和对话表演中学习</text>
+  <g class="card">
+    <rect class="box train" x="38" y="158" width="419" height="155" rx="12"/>
+    <text class="head" x="56" y="192">通用动作　预训练身体规划器</text>
+    <text class="body" x="56" y="227">200,544 段动作统一骨架并转为身体码。</text>
+    <text class="body" x="56" y="256">以 Qwen-0.5B 为起点，学习根据中文</text>
+    <text class="body" x="56" y="284">动作描述自回归预测动作码。</text>
+  </g>
+  <g class="card">
+    <rect class="box train" x="476" y="158" width="446" height="155" rx="12"/>
+    <text class="head" x="494" y="192">SuSuInterActs　适配对话表演</text>
+    <text class="body" x="494" y="227">身体、面部各用独立 R-VQVAE 学习离散码。</text>
+    <text class="body" x="494" y="256">用行为标注与语音微调身体规划器；两路</text>
+    <text class="body" x="494" y="284">补全器从对应的动作码或表情码获得监督。</text>
+  </g>
+  <line class="divider" x1="38" y1="339" x2="922" y2="339"/>
+
+  <text class="section" x="38" y="380">推理　两种语音表示，身体与面部并行生成</text>
+  <g class="card">
+    <rect class="box input" x="38" y="400" width="378" height="101" rx="12"/>
+    <text class="head" x="56" y="436">动作描述</text>
+    <text class="body" x="56" y="470">例如“无奈地耸肩”。</text>
+  </g>
+  <g class="card">
+    <rect class="box input" x="436" y="400" width="486" height="101" rx="12"/>
+    <text class="head" x="454" y="436">这句台词的语音波形</text>
+    <text class="body" x="454" y="470">HuBERT 提取 50 Hz 特征，重采样至 20 Hz。</text>
+  </g>
+  <path class="arrow" d="M189 502V534"/>
+  <path class="wire" d="M670 502V517H362 M670 517H724"/>
+  <path class="arrow" d="M362 517V534"/><path class="arrow" d="M724 517V534"/>
+  <g class="card">
+    <rect class="box bodypath" x="38" y="537" width="432" height="101" rx="12"/>
+    <text class="head" x="56" y="573">规划条件　动作描述 + 稀疏语音码</text>
+    <text class="body" x="56" y="606">K-means 量化语音，按关键位置间隔取样。</text>
+  </g>
+  <g class="card">
+    <rect class="box speech" x="490" y="537" width="432" height="101" rx="12"/>
+    <text class="head" x="508" y="573">共享条件　连续语音特征</text>
+    <text class="body" x="508" y="606">保留每步 768 维特征，同时送给两路补全器。</text>
+  </g>
+  <path class="arrow" d="M249 639V674"/>
+  <path class="wire" d="M704 639V655H514V953"/>
+  <path class="arrow" d="M514 953H473"/>
+  <path class="arrow" d="M704 655V674"/>
+  <g class="card">
+    <rect class="box bodypath" x="38" y="677" width="432" height="173" rx="12"/>
+    <text class="head" x="56" y="714">身体①　LLM 规划关键动作</text>
+    <text class="body" x="56" y="750">按间隔 t 预测稀疏关键位置，每处输出</text>
+    <text class="body" x="56" y="778">一组 4 个残差量化码，确定粗略的动作走向。</text>
+    <text class="body" x="56" y="814">多轮时，可接入上一句末尾两对语音与动作码。</text>
+  </g>
+  <path class="arrow" d="M249 851V886"/>
+  <g class="card">
+    <rect class="box bodypath" x="38" y="889" width="432" height="168" rx="12"/>
+    <text class="head" x="56" y="926">身体②　音频引导的动作补全</text>
+    <text class="body" x="56" y="960">两端关键码已知。t = 4 时，中间缺 3 组码。</text>
+    <text class="body" x="56" y="989">将投影后的语音与动作嵌入相加；6 轮迭代</text>
+    <text class="body" x="56" y="1017">逐步接受高置信度预测，补齐整段身体码。</text>
+  </g>
+  <g class="card">
+    <rect class="box facepath" x="548" y="677" width="374" height="173" rx="12"/>
+    <text class="head" x="566" y="714">面部　直接由语音生成表情码</text>
+    <text class="body" x="566" y="750">Face Infill Transformer 读取语音，</text>
+    <text class="body" x="566" y="778">每个位置产生 2 个残差量化码。</text>
+    <text class="body" x="566" y="814">这一路独立于身体的关键动作规划。</text>
+  </g>
+  <path class="arrow" d="M735 851V1093"/><path class="arrow" d="M249 1058V1093"/>
+  <g class="card">
+    <rect class="box out" x="38" y="1096" width="432" height="111" rx="12"/>
+    <text class="head" x="56" y="1133">身体解码　连续三维动作</text>
+    <text class="body" x="56" y="1168">Motion R-VQVAE 解出 63 个关节的旋转，</text>
+    <text class="body" x="56" y="1193">驱动包含手部的角色骨架。</text>
+  </g>
+  <g class="card">
+    <rect class="box out" x="548" y="1096" width="374" height="111" rx="12"/>
+    <text class="head" x="566" y="1133">面部解码　连续表情</text>
+    <text class="body" x="566" y="1168">Face R-VQVAE 解出 51 维 ARKit</text>
+    <text class="body" x="566" y="1193">表情系数，与身体动作同步播放。</text>
+  </g>
+  <text class="note" x="38" y="1253">上半部为训练监督；推理时只读本句条件及可选的上一轮上下文。面部情绪标签不作为生成输入。</text>
+  <text class="note" x="38" y="1285">依据原文图 3、§4.1–4.7 及附录 B 重绘。</text>
+</svg>

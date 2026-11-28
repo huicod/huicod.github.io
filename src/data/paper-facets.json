@@ -3314,6 +3314,20 @@
     ],
     "controls": []
   },
+  "sentiavatar-paper-notes": {
+    "topics": [
+      "gesture",
+      "generation",
+      "multimodal"
+    ],
+    "methods": [
+      "language",
+      "tokens"
+    ],
+    "controls": [
+      "streaming"
+    ]
+  },
   "sfcontrol-paper-notes": {
     "topics": [
       "generation"
